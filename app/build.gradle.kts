@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.google.services)
     alias(libs.plugins.ksp)
+    id("com.google.dagger.hilt.android")
 }
 
 val properties = Properties().apply {
