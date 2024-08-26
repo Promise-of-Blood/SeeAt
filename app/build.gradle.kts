@@ -1,4 +1,5 @@
-import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+import java.io.FileInputStream
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
@@ -6,6 +7,10 @@ plugins {
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.google.services)
     alias(libs.plugins.ksp)
+}
+
+val properties = Properties().apply {
+    load(FileInputStream(rootProject.file("local.properties")))
 }
 
 android {
@@ -24,13 +29,18 @@ android {
         buildConfigField(
             "String",
             "KAKAO_APP_KEY",
-            gradleLocalProperties(rootDir, providers).getProperty("KAKAO_APP_KEY")
+            properties["KAKAO_APP_KEY"] as String
         )
     }
 
     buildTypes {
+        debug {
+            isMinifyEnabled = false
+            manifestPlaceholders["NAVER_CLIENT_ID"] = properties["NAVER_CLIENT_ID"] as String
+        }
         release {
             isMinifyEnabled = false
+            manifestPlaceholders["NAVER_CLIENT_ID"] = properties["NAVER_CLIENT_ID"] as String
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -90,4 +100,5 @@ dependencies {
 
     // naver
     implementation(libs.naver.login)
+    implementation(libs.naver.map)
 }
