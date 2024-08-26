@@ -7,27 +7,27 @@
 
     <fragment
         android:id="@+id/navigation_add_marker"
-        android:name="com.pob.seeat.presentation.view.SampleFragment"
+        android:name="com.pob.seeat.presentation.view.home.HomeFragment"
         android:label="@string/navigation_add_marker"
-        tools:layout="@layout/fragment_sample" />
+        tools:layout="@layout/fragment_home" />
     <fragment
         android:id="@+id/navigation_message"
-        android:name="com.pob.seeat.presentation.view.SampleFragment"
+        android:name="com.pob.seeat.presentation.view.home.HomeFragment"
         android:label="@string/navigation_message"
-        tools:layout="@layout/fragment_sample" />
+        tools:layout="@layout/fragment_home" />
     <fragment
         android:id="@+id/navigation_home"
-        android:name="com.pob.seeat.presentation.view.SampleFragment"
+        android:name="com.pob.seeat.presentation.view.home.HomeFragment"
         android:label="@string/navigation_home"
-        tools:layout="@layout/fragment_sample" />
+        tools:layout="@layout/fragment_home" />
     <fragment
         android:id="@+id/navigation_bookmark"
-        android:name="com.pob.seeat.presentation.view.SampleFragment"
+        android:name="com.pob.seeat.presentation.view.home.HomeFragment"
         android:label="@string/navigation_bookmark"
-        tools:layout="@layout/fragment_sample" />
+        tools:layout="@layout/fragment_home" />
     <fragment
         android:id="@+id/navigation_my_page"
-        android:name="com.pob.seeat.presentation.view.SampleFragment"
+        android:name="com.pob.seeat.presentation.view.home.HomeFragment"
         android:label="@string/navigation_my_page"
-        tools:layout="@layout/fragment_sample" />
+        tools:layout="@layout/fragment_home" />
 </navigation>
