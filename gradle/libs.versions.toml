@@ -1,0 +1,80 @@
+[versions]
+agp = "8.5.2"
+glide = "4.16.0"
+kakaoMap = "2.11.9"
+firebaseBom = "33.2.0"
+hilt = "2.48.1"
+kotlin = "1.9.25"
+coreKtx = "1.13.1"
+junit = "4.13.2"
+junitVersion = "1.2.1"
+espressoCore = "3.6.1"
+appcompat = "1.7.0"
+kotlinxCoroutinesAndroid = "1.7.3"
+material = "1.12.0"
+activity = "1.9.1"
+fragment= "1.8.2"
+constraintlayout = "2.1.4"
+googleServices = "4.4.2"
+kotlinPlugin = "1.8.10"
+naverLogin = "5.9.1"
+retrofit = "2.11.0"
+okhttp3 = "4.12.0"
+ksp = "1.9.25-1.0.20"
+kakaoLogin = "2.20.1"
+viewpager2 = "1.1.0"
+
+[libraries]
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-fragment-ktx = {group = "androidx.fragment", name = "fragment-ktx", version.ref = "fragment"}
+androidx-viewpager2 = { module = "androidx.viewpager2:viewpager2", version.ref = "viewpager2" }
+dagger-hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
+glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
+hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinxCoroutinesAndroid" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+
+# Network
+okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp3"}
+okhttp-logging = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp3"}
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+retrofit-converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
+
+# Firebase
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
+firebase-analytics-ktx = { module = "com.google.firebase:firebase-analytics-ktx" }
+firebase-auth-ktx = { module = "com.google.firebase:firebase-auth-ktx" }
+firebase-firestore-ktx = { module = "com.google.firebase:firebase-firestore-ktx" }
+
+# kakao
+kakao-login = { module = "com.kakao.sdk:v2-user", version.ref = "kakaoLogin" }
+kakao-maps = { module = "com.kakao.maps.open:android", version.ref = "kakaoMap" }
+
+# naver
+naver-login = { module = "com.navercorp.nid:oauth-jdk8", version.ref = "naverLogin" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
+kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize",  version.ref = "kotlinPlugin"}
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+
+[bundles]
+retrofit = [
+    "retrofit",
+    "retrofit-converter-gson",
+    "okhttp",
+    "okhttp-logging"
+]
+firebase = [
+    "firebase-analytics-ktx",
+    "firebase-auth-ktx",
+    "firebase-firestore-ktx"
+]

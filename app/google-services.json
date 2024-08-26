@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "557859659489",
+    "project_id": "sampleproject-e6950",
+    "storage_bucket": "sampleproject-e6950.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:557859659489:android:ec9e9ac35be4e3f39da1a0",
+        "android_client_info": {
+          "package_name": "com.pob.seeat"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCmn5q3B1NNqH-5f-pTTf70bjCEZqwiHSo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
