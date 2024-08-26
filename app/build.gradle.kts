@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.google.services)
     alias(libs.plugins.ksp)
+    kotlin("kapt")
     id("com.google.dagger.hilt.android")
 }
 
@@ -89,7 +90,7 @@ dependencies {
 
     // hilt
     implementation(libs.dagger.hilt.android)
-    ksp(libs.hilt.compiler)
+    kapt(libs.hilt.compiler)
 
     // viewpager2
     implementation(libs.androidx.viewpager2)
