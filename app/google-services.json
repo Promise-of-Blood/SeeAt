@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "557859659489",
-    "project_id": "sampleproject-e6950",
-    "storage_bucket": "sampleproject-e6950.appspot.com"
+    "project_number": "463627349451",
+    "project_id": "seeat-b7769",
+    "storage_bucket": "seeat-b7769.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:557859659489:android:ec9e9ac35be4e3f39da1a0",
+        "mobilesdk_app_id": "1:463627349451:android:ea3b6123d0761b55fcda4e",
         "android_client_info": {
           "package_name": "com.pob.seeat"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCmn5q3B1NNqH-5f-pTTf70bjCEZqwiHSo"
+          "current_key": "AIzaSyBmFxX8kx_KOgVVlX42uRAFZA5zTJKmvvM"
         }
       ],
       "services": {
