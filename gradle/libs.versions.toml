@@ -24,6 +24,9 @@ okhttp3 = "4.12.0"
 ksp = "1.9.25-1.0.20"
 kakaoLogin = "2.20.1"
 viewpager2 = "1.1.0"
+navigationFragmentKtx = "2.7.7"
+navigationUiKtx = "2.7.7"
+
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-fragment-ktx = {group = "androidx.fragment", name = "fragment-ktx", version.ref = "fragment"}
@@ -60,6 +63,8 @@ kakao-maps = { module = "com.kakao.maps.open:android", version.ref = "kakaoMap" 
 
 # naver
 naver-login = { module = "com.navercorp.nid:oauth-jdk8", version.ref = "naverLogin" }
+androidx-navigation-fragment-ktx = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigationFragmentKtx" }
+androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navigationUiKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
