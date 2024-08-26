@@ -1,5 +1,5 @@
 package com.pob.seeat.presentation.viewmodel
 
-// test
+// test 22
 class SampleViewModel {
 }
