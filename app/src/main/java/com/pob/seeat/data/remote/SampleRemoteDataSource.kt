@@ -1,5 +1,6 @@
 package com.pob.seeat.data.remote
 
+import dagger.Provides
 import retrofit2.http.GET
 import retrofit2.http.Query
 

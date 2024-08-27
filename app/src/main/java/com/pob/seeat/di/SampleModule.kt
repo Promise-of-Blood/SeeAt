@@ -58,6 +58,8 @@ object SampleModuleRetrofitModule {
             .build()
     }
 
+    @Provides
+    @Singleton
     fun provideSampleRemoteDataSource(retrofit: Retrofit): SampleRemoteDataSource {
         return retrofit.create(SampleRemoteDataSource::class.java)
     }
