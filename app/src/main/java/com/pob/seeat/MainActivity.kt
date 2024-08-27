@@ -31,6 +31,10 @@ class MainActivity : AppCompatActivity() {
         navMain.setupWithNavController(navController)
     }
 
+    /**
+     * Bottom Navigation의 Visibility를 설정합니다.
+     * @param visibility Bottom Navigation의 Visibility ex. View.GONE, View.VISIBLE
+     * */
     fun setBottomNavigationVisibility(visibility: Int) = with(binding) {
         navMain.visibility = visibility
         navShadow.visibility = visibility
