@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.pob.seeat.R
 import com.pob.seeat.databinding.FragmentMyPageBinding
@@ -49,10 +50,18 @@ class MyPageFragment : Fragment() {
         initView()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
+    }
+
     private fun initView() = with(binding) {
+        mbMyPageTerms.setOnClickListener {
+            findNavController().navigate(R.id.action_my_page_to_terms_of_service)
+        }
         mbMyPageOss.setOnClickListener {
             startActivity(Intent(requireContext(), OssLicensesMenuActivity::class.java))
-            OssLicensesMenuActivity.setActivityTitle(getString(R.string.oss_license))
+            OssLicensesMenuActivity.setActivityTitle(getString(R.string.my_page_oss_license))
         }
     }
 
