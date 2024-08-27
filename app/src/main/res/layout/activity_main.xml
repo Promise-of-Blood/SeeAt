@@ -23,6 +23,7 @@
         app:navGraph="@navigation/main_navigation" />
 
     <View
+        android:id="@+id/nav_shadow"
         android:layout_width="0dp"
         android:layout_height="20dp"
         android:background="@drawable/shape_shadow"

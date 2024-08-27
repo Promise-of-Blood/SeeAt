@@ -30,4 +30,9 @@ class MainActivity : AppCompatActivity() {
         val navController = navHostFragment.navController
         navMain.setupWithNavController(navController)
     }
+
+    fun setBottomNavigationVisibility(visibility: Int) = with(binding) {
+        navMain.visibility = visibility
+        navShadow.visibility = visibility
+    }
 }
