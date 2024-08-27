@@ -21,7 +21,7 @@ kotlinPlugin = "1.8.10"
 naverLogin = "5.9.1"
 retrofit = "2.11.0"
 okhttp3 = "4.12.0"
-ksp = "1.9.25-1.0.20"
+ksp = "2.0.0-1.0.23"
 kakaoLogin = "2.20.1"
 viewpager2 = "1.1.0"
 [libraries]
