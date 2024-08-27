@@ -1,13 +1,13 @@
 <resources>
     <string name="app_name">SeeAt</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-
     <!-- bottom navigation -->
     <string name="navigation_add_marker">마커 추가</string>
     <string name="navigation_message">메세지</string>
     <string name="navigation_home">홈화면</string>
     <string name="navigation_bookmark">북마크</string>
     <string name="navigation_my_page">내 페이지</string>
+
+    <!-- home fragment -->
+    <string name="search_hint">검색어를 입력하세요</string>
 </resources>
