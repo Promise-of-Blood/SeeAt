@@ -26,15 +26,28 @@ class SampleViewModel @Inject constructor(
 
     //
     fun getSampleImageList(query: String) {
+
         viewModelScope.launch {
+            _sampleUiState.value = UiState.Loading
             sampleRepository.searchUserImageList(query)
-                .zip(sampleRepository.searchUserVideoList(query)) { imageList, videoList ->
-                    return@zip (imageList + videoList).sortedByDescending { it.dateTime }
-                }.flowOn(Dispatchers.IO).catch { error ->
+                .flowOn(Dispatchers.IO)
+                .catch { error ->
                     _sampleUiState.value = UiState.Error(error.toString())
-                }.collect {
-                    _sampleUiState.value = UiState.Success(it)
+                }
+                .collect { list ->
+                    _sampleUiState.value = UiState.Success(list)
                 }
         }
+
+//        viewModelScope.launch {
+//            sampleRepository.searchUserImageList(query)
+//                .zip(sampleRepository.searchUserVideoList(query)) { imageList, videoList ->
+//                    return@zip (imageList + videoList).sortedByDescending { it.dateTime }
+//                }.flowOn(Dispatchers.IO).catch { error ->
+//                    _sampleUiState.value = UiState.Error(error.toString())
+//                }.collect {
+//                    _sampleUiState.value = UiState.Success(it)
+//                }
+//        }
     }
 }
