@@ -7,8 +7,11 @@ import com.pob.seeat.domain.model.toVideoUser
 import com.pob.seeat.domain.repository.SampleRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class SampleRepositoryImpl(private val sampleRemoteDataSource: SampleRemoteDataSource) :
+@Singleton
+class SampleRepositoryImpl @Inject constructor(private val sampleRemoteDataSource: SampleRemoteDataSource) :
     SampleRepository {
     override suspend fun searchUserImageList(query: String): Flow<List<SampleModel>> {
         return flow { emit(toImageUser(sampleRemoteDataSource.getSearchImage(query).documents.orEmpty())) }

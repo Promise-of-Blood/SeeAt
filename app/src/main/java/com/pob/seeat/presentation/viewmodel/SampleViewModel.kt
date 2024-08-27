@@ -42,15 +42,15 @@ class SampleViewModel @Inject constructor(
         }
     }
 }
-
-class SampleViewModelFactory() :
-    ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(
-        modelClass: Class<T>,
-        extras: CreationExtras
-    ): T {
-        return SampleViewModel(
-            sampleRepository = SampleRepositoryImpl(RetrofitClient.sampleRemoteDataSource),
-        ) as T
-    }
-}
+//
+//class SampleViewModelFactory() :
+//    ViewModelProvider.Factory {
+//    override fun <T : ViewModel> create(
+//        modelClass: Class<T>,
+//        extras: CreationExtras
+//    ): T {
+//        return SampleViewModel(
+//            sampleRepository = SampleRepositoryImpl(RetrofitClient.sampleRemoteDataSource),
+//        ) as T
+//    }
+//}

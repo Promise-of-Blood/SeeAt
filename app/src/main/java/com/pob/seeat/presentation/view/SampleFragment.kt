@@ -9,10 +9,8 @@ import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import com.pob.seeat.R
 import com.pob.seeat.databinding.FragmentSampleBinding
 import com.pob.seeat.presentation.viewmodel.SampleViewModel
-import com.pob.seeat.presentation.viewmodel.SampleViewModelFactory
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -27,9 +25,7 @@ class SampleFragment : Fragment() {
     private var _binding: FragmentSampleBinding? = null
     private val binding get() = _binding!!
 
-    private val sampleViewmodel by viewModels<SampleViewModel> {
-        SampleViewModelFactory()
-    }
+    private val sampleViewmodel: SampleViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

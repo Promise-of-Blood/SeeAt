@@ -6,6 +6,7 @@ import com.pob.seeat.data.repository.SampleRepositoryImpl
 import com.pob.seeat.domain.repository.SampleRepository
 import com.pob.seeat.network.AuthorizationInterceptor
 import com.pob.seeat.network.RetrofitClient
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -20,14 +21,14 @@ import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
 @Module
-@InstallIn(ViewModelComponent::class)
-object SampleRepositoryModule {
+@InstallIn(SingletonComponent::class)
+abstract class SampleRepositoryModule {
 
-    @ViewModelScoped
-    @Provides
-    fun provideFavoriteRepository(
-        @ApplicationContext context: Context
-    ): SampleRepository = SampleRepositoryImpl(RetrofitClient.sampleRemoteDataSource)
+    @Singleton
+    @Binds
+    abstract fun bindSampleRepository(
+        sampleRepositoryImpl: SampleRepositoryImpl
+    ): SampleRepository
 }
 
 @Module
