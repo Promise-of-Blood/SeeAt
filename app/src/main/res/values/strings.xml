@@ -10,4 +10,7 @@
     <string name="navigation_home">홈화면</string>
     <string name="navigation_bookmark">북마크</string>
     <string name="navigation_my_page">내 페이지</string>
+
+    <!-- oss license -->
+    <string name="oss_license">오픈소스 라이선스</string>
 </resources>
