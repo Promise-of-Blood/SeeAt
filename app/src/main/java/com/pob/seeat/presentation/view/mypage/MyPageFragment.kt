@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
+import com.pob.seeat.BuildConfig
 import com.pob.seeat.R
 import com.pob.seeat.databinding.FragmentMyPageBinding
 
@@ -63,6 +64,7 @@ class MyPageFragment : Fragment() {
             startActivity(Intent(requireContext(), OssLicensesMenuActivity::class.java))
             OssLicensesMenuActivity.setActivityTitle(getString(R.string.my_page_oss_license))
         }
+        tvMyPageVersion.text = getString(R.string.my_page_version, BuildConfig.VERSION_NAME)
     }
 
     companion object {
