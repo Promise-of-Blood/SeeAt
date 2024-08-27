@@ -3,7 +3,8 @@ package com.pob.seeat.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pob.seeat.domain.model.SampleModel
-import com.pob.seeat.domain.repository.SampleRepository
+import com.pob.seeat.domain.usecase.GetSampleImageListUseCase
+import com.pob.seeat.domain.usecase.GetSampleVideoListUseCase
 import com.pob.seeat.presentation.view.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -18,7 +19,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SampleViewModel @Inject constructor(
-    private val sampleRepository: SampleRepository
+    private val getSampleImageListUseCase: GetSampleImageListUseCase,
+    private val getSampleVideoListUseCase: GetSampleVideoListUseCase
 ) : ViewModel() {
 
     private val _sampleUiState = MutableStateFlow<UiState<List<SampleModel>>>(UiState.Loading)
@@ -29,7 +31,7 @@ class SampleViewModel @Inject constructor(
 
         viewModelScope.launch {
             _sampleUiState.value = UiState.Loading
-            sampleRepository.searchUserImageList(query)
+            getSampleImageListUseCase(query)
                 .flowOn(Dispatchers.IO)
                 .catch { error ->
                     _sampleUiState.value = UiState.Error(error.toString())
@@ -39,15 +41,15 @@ class SampleViewModel @Inject constructor(
                 }
         }
 
-//        viewModelScope.launch {
-//            sampleRepository.searchUserImageList(query)
-//                .zip(sampleRepository.searchUserVideoList(query)) { imageList, videoList ->
-//                    return@zip (imageList + videoList).sortedByDescending { it.dateTime }
-//                }.flowOn(Dispatchers.IO).catch { error ->
-//                    _sampleUiState.value = UiState.Error(error.toString())
-//                }.collect {
-//                    _sampleUiState.value = UiState.Success(it)
-//                }
-//        }
+        viewModelScope.launch {
+            getSampleImageListUseCase(query)
+                .zip(getSampleVideoListUseCase(query)) { imageList, videoList ->
+                    return@zip (imageList + videoList).sortedByDescending { it.dateTime }
+                }.flowOn(Dispatchers.IO).catch { error ->
+                    _sampleUiState.value = UiState.Error(error.toString())
+                }.collect {
+                    _sampleUiState.value = UiState.Success(it)
+                }
+        }
     }
 }
