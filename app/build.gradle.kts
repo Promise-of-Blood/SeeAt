@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.google.services)
     alias(libs.plugins.ksp)
+    kotlin("kapt")
     id("com.google.dagger.hilt.android")
 }
 
@@ -68,6 +69,8 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.navigation.fragment.ktx)
+    implementation(libs.androidx.navigation.ui.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -87,7 +90,7 @@ dependencies {
 
     // hilt
     implementation(libs.dagger.hilt.android)
-    ksp(libs.hilt.compiler)
+    kapt(libs.hilt.compiler)
 
     // viewpager2
     implementation(libs.androidx.viewpager2)
