@@ -12,7 +12,9 @@ import com.google.firebase.messaging.FirebaseMessaging
 import com.naver.maps.map.MapFragment
 import com.pob.seeat.R
 import com.pob.seeat.databinding.FragmentHomeBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
