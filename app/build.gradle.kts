@@ -9,6 +9,7 @@ plugins {
     alias(libs.plugins.ksp)
     kotlin("kapt")
     id("com.google.dagger.hilt.android")
+    id("com.google.android.gms.oss-licenses-plugin")
 }
 
 val properties = Properties().apply {
@@ -105,4 +106,7 @@ dependencies {
     // naver
     implementation(libs.naver.login)
     implementation(libs.naver.map)
+
+    // oss
+    implementation(libs.play.services.oss.licenses)
 }
