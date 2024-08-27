@@ -50,7 +50,7 @@ class SampleViewModelFactory() :
         extras: CreationExtras
     ): T {
         return SampleViewModel(
-            sampleRepository = SampleRepositoryImpl(RetrofitClient.searchRemoteDataSource),
+            sampleRepository = SampleRepositoryImpl(RetrofitClient.sampleRemoteDataSource),
         ) as T
     }
 }

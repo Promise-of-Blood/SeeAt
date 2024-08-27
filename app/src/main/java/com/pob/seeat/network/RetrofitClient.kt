@@ -31,7 +31,7 @@ object RetrofitClient {
     }
 
     //retrofit 클래스로 interface 구현
-    val searchRemoteDataSource: SampleRemoteDataSource by lazy {
+    val sampleRemoteDataSource: SampleRemoteDataSource by lazy {
         retrofit.create(SampleRemoteDataSource::class.java)
     }
 }
