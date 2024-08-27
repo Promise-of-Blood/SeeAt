@@ -11,6 +11,8 @@ import dagger.hilt.components.SingletonComponent
 @InstallIn(SingletonComponent::class)
 object SampleModule {
 
+    // 스코프 추가
+    // @Singleton,
     // 인터페이스에 추가 시
 //    @Binds
     // 다른 클래스에 추가 시
