@@ -1,18 +1,13 @@
 package com.pob.seeat.di
 
-import android.content.Context
 import com.pob.seeat.data.remote.SampleRemoteDataSource
 import com.pob.seeat.data.repository.SampleRepositoryImpl
 import com.pob.seeat.domain.repository.SampleRepository
 import com.pob.seeat.network.AuthorizationInterceptor
-import com.pob.seeat.network.RetrofitClient
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ViewModelComponent
-import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.android.scopes.ViewModelScoped
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor

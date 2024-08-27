@@ -1,13 +1,9 @@
 package com.pob.seeat.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.CreationExtras
-import com.pob.seeat.data.repository.SampleRepositoryImpl
 import com.pob.seeat.domain.model.SampleModel
 import com.pob.seeat.domain.repository.SampleRepository
-import com.pob.seeat.network.RetrofitClient
 import com.pob.seeat.presentation.view.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -42,15 +38,3 @@ class SampleViewModel @Inject constructor(
         }
     }
 }
-//
-//class SampleViewModelFactory() :
-//    ViewModelProvider.Factory {
-//    override fun <T : ViewModel> create(
-//        modelClass: Class<T>,
-//        extras: CreationExtras
-//    ): T {
-//        return SampleViewModel(
-//            sampleRepository = SampleRepositoryImpl(RetrofitClient.sampleRemoteDataSource),
-//        ) as T
-//    }
-//}
