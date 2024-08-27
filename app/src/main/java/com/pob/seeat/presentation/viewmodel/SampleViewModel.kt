@@ -28,8 +28,8 @@ class SampleViewModel @Inject constructor(
     fun getSampleImageList(query: String) {
         viewModelScope.launch {
             sampleRepository.searchUserImageList(query)
-                .zip(sampleRepository.searchUserVideoList(query)) { imageList, vidioList ->
-                    return@zip (imageList + vidioList).sortedByDescending { it.dateTime }
+                .zip(sampleRepository.searchUserVideoList(query)) { imageList, videoList ->
+                    return@zip (imageList + videoList).sortedByDescending { it.dateTime }
                 }.flowOn(Dispatchers.IO).catch { error ->
                     _sampleUiState.value = UiState.Error(error.toString())
                 }.collect {
