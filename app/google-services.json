@@ -12,7 +12,20 @@
           "package_name": "com.pob.seeat"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "569674873919-5oemq798lmtu23ji71sqlaf45nrc3s6a.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.pob.seeat",
+            "certificate_hash": "b58bc0a33dcc56624513f21efdf8474519980d2e"
+          }
+        },
+        {
+          "client_id": "569674873919-9dv0m1mrtpa74hitddb88pniasgp8up7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDn1vMeD5uiUAUI83ZU2lnAQ536LFsHZFQ"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "569674873919-9dv0m1mrtpa74hitddb88pniasgp8up7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

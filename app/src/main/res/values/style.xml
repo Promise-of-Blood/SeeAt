@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="google_button" parent="Widget.Material3.Button">
+        <item name="android:background">@drawable/shape_radius_10</item>
+        <item name="backgroundTint">@color/white</item>
+    </style>
+
+</resources>
