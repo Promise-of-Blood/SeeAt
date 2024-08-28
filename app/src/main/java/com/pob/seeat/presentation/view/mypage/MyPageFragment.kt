@@ -11,6 +11,8 @@ import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.pob.seeat.BuildConfig
 import com.pob.seeat.R
 import com.pob.seeat.databinding.FragmentMyPageBinding
+import com.pob.seeat.presentation.view.mypage.settings.SettingsActivity
+import com.pob.seeat.utils.GoogleAuthUtil
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -65,6 +67,14 @@ class MyPageFragment : Fragment() {
             OssLicensesMenuActivity.setActivityTitle(getString(R.string.my_page_oss_license))
         }
         tvMyPageVersion.text = getString(R.string.my_page_version, BuildConfig.VERSION_NAME)
+
+        mbMyPageSettings.setOnClickListener {
+            startActivity(Intent(requireContext(),SettingsActivity::class.java))
+        }
+
+        mbMyPageLogout.setOnClickListener {
+            GoogleAuthUtil.googleLogout(requireActivity())
+        }
     }
 
     companion object {

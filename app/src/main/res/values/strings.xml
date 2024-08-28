@@ -11,13 +11,23 @@
     <string name="navigation_bookmark">북마크</string>
     <string name="navigation_my_page">내 페이지</string>
 
+    <!-- Login Activity -->
+    <string name="btn_google_login">구글 아이디로 로그인</string>
+
     <!-- home fragment -->
     <string name="search_hint">검색어를 입력하세요</string>
 
     <!-- my page -->
     <string name="my_page_terms_of_service">서비스 이용약관</string>
     <string name="my_page_oss_license">오픈소스 라이선스</string>
+    <string name="my_page_settings">설정</string>
     <string name="my_page_version">버전 %s</string>
+    <string name="my_page_logout">로그아웃</string>
+
+    <!-- my page -->
+    <string name="settings_account">계정 설정</string>
+    <string name="settings_delete_account">회원 탈퇴</string>
+
 
     <!-- alarm -->
     <string name="alarm_title">알림</string>
