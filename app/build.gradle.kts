@@ -31,7 +31,7 @@ android {
         buildConfigField(
             "String",
             "KAKAO_APP_KEY",
-            properties["KAKAO_APP_KEY"] as String
+            "\"${properties["KAKAO_APP_KEY"]}\""
         )
 
         buildConfigField(
