@@ -1,6 +1,7 @@
 package com.pob.seeat.di
 
 import com.pob.seeat.data.remote.SampleRemoteDataSource
+import com.pob.seeat.data.remote.SeoulApiRemoteDataSource
 import com.pob.seeat.network.AuthorizationInterceptor
 import dagger.Module
 import dagger.Provides
@@ -57,10 +58,11 @@ object RetrofitModule {
             .build()
     }
 
+    // TODO 지금은 Seoul만 받지만, 나중을 고려해, DataSource의 부모도 만들 필요가 있어보임
     @Provides
     @Singleton
-    fun provideRemoteDataSource (retrofit: Retrofit): SampleRemoteDataSource {
-        return retrofit.create(SampleRemoteDataSource::class.java)
+    fun provideRemoteDataSource (retrofit: Retrofit): SeoulApiRemoteDataSource {
+        return retrofit.create(SeoulApiRemoteDataSource::class.java)
     }
 
 }
