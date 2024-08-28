@@ -8,7 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.google.android.gms.tasks.OnCompleteListener
-import com.google.firebase.messaging.FirebaseMessaging
+//import com.google.firebase.messaging.FirebaseMessaging
 import com.naver.maps.map.MapFragment
 import com.pob.seeat.R
 import com.pob.seeat.databinding.FragmentHomeBinding
@@ -40,21 +40,21 @@ class HomeFragment : Fragment() {
                 naverMap.isIndoorEnabled = true
             }
         }
-        FirebaseMessaging.getInstance().token.addOnCompleteListener(
-            OnCompleteListener { task ->
-                if (!task.isSuccessful) {
-                    Log.w("FirebaseMessagingToken", "Fetching FCM registration token failed", task.exception)
-                    return@OnCompleteListener
-                }
-
-                // Get new FCM registration token
-                val token = task.result
-
-                // Log and toast
-//                val msg = getString(R.string.msg_token_fmt, token)
-                Log.d("FirebaseMessagingToken", token)
-                Toast.makeText(requireContext(), token, Toast.LENGTH_SHORT).show()
-            }
-        )
+//        FirebaseMessaging.getInstance().token.addOnCompleteListener(
+//            OnCompleteListener { task ->
+//                if (!task.isSuccessful) {
+//                    Log.w("FirebaseMessagingToken", "Fetching FCM registration token failed", task.exception)
+//                    return@OnCompleteListener
+//                }
+//
+//                // Get new FCM registration token
+//                val token = task.result
+//
+//                // Log and toast
+////                val msg = getString(R.string.msg_token_fmt, token)
+//                Log.d("FirebaseMessagingToken", token)
+//                Toast.makeText(requireContext(), token, Toast.LENGTH_SHORT).show()
+//            }
+//        )
     }
 }

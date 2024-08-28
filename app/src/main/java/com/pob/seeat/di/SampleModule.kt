@@ -13,6 +13,9 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import javax.inject.Inject
+import javax.inject.Named
+import javax.inject.Qualifier
 import javax.inject.Singleton
 
 @Module
@@ -24,6 +27,19 @@ abstract class SampleRepositoryModule {
     abstract fun bindSampleRepository(
         sampleRepositoryImpl: SampleRepositoryImpl
     ): SampleRepository
+
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+abstract class UrlModule {
+
+    @Singleton
+    @Binds
+    abstract fun bindUrl(
+        @Named("url_seoul_restroom") url: String
+    ): String
+
 }
 
 @Module
@@ -31,6 +47,7 @@ abstract class SampleRepositoryModule {
 object SampleModuleRetrofitModule {
 
     private const val SAMPLE_BASE_URL = "https://dapi.kakao.com"
+    private const val SEOUL_RESTROOM_URL = "https://openAPI.seoul.go.kr:8088/"
 
     @Provides
     @Singleton
@@ -45,21 +62,28 @@ object SampleModuleRetrofitModule {
 
     @Singleton
     @Provides
-    fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
+    @Named("url_seoul_restroom")
+    fun provideSeoulRestroomUrl() : String = SEOUL_RESTROOM_URL
+
+    @Singleton
+    @Provides
+    @Named("url_sample")
+    fun provideSampleUrl() : String = SAMPLE_BASE_URL
+
+    @Singleton
+    @Provides
+    fun provideRetrofit (okHttpClient: OkHttpClient, @Named("url_seoul_restroom") url: String): Retrofit {
         return Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create())
             .client(okHttpClient)
-            .baseUrl(SAMPLE_BASE_URL)
+            .baseUrl(url)
             .build()
     }
 
     @Provides
     @Singleton
-    fun provideSampleRemoteDataSource(retrofit: Retrofit): SampleRemoteDataSource {
+    fun provideSampleRemoteDataSource (retrofit: Retrofit): SampleRemoteDataSource {
         return retrofit.create(SampleRemoteDataSource::class.java)
     }
 
 }
-
-
-
