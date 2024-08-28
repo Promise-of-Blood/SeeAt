@@ -1,10 +1,13 @@
 package com.pob.seeat.presentation.view.home
 
+import android.content.res.ColorStateList
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.pob.seeat.R
 
@@ -30,24 +33,28 @@ class TagAdapter(private val tagList: List<Tag>) : RecyclerView.Adapter<TagAdapt
         val tag = tagList[position]
         holder.bind(tag)
 
+        // 선택된 항목의 backgroundTint 변경
+        val itemLayout = holder.itemView.findViewById<ConstraintLayout>(R.id.item_tag_layout)
+        val color = if (position == selectedPosition) {
+            ContextCompat.getColor(holder.itemView.context, R.color.tertiary)
+        } else {
+            ContextCompat.getColor(holder.itemView.context, R.color.white)
+        }
+        itemLayout.backgroundTintList = ColorStateList.valueOf(color)
+
         holder.itemView.setOnClickListener {
-            // 기존 선택된 아이템과 현재 선택한 아이템이 다를 경우
-            if (position != selectedPosition) {
-                // 선택된 위치를 업데이트
+            // 선택된 위치를 업데이트하고 RecyclerView를 갱신
+            if (position == selectedPosition) {
+                // 동일한 항목을 다시 클릭한 경우 선택 해제
+                selectedPosition = RecyclerView.NO_POSITION
+            } else {
+                // 다른 항목을 클릭한 경우 선택된 위치를 업데이트
                 val previousPosition = selectedPosition
                 selectedPosition = position
-
-                // 이전에 선택된 아이템과 현재 선택된 아이템을 갱신
                 notifyItemChanged(previousPosition)
-                notifyItemChanged(selectedPosition)
             }
 
-            // 아이템이 선택된 경우 배경색을 변경
-            if (position == selectedPosition) {
-                holder.itemView.setBackgroundColor(R.color.tertiary)
-            } else {
-                holder.itemView.setBackgroundColor(R.color.white)
-            }
+            notifyItemChanged(position) // 현재 선택된 항목 갱신
 
             // 클릭 리스너 호출
             itemClickListener?.onItemClick(it, position)
