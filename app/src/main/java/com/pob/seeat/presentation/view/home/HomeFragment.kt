@@ -53,6 +53,7 @@ class HomeFragment : Fragment() {
             Tag("노래방", R.drawable.ic_microphone_line, Color.parseColor("#9A7EFF")),
             Tag("도움", R.drawable.ic_flag, Color.parseColor("#5196FF")),
             Tag("긴급", R.drawable.ic_megaphone, Color.parseColor("#FF3939")),
+            Tag("기타", R.drawable.ic_sparkles, Color.parseColor("#FFDF60"))
         )
 
         binding.apply {
