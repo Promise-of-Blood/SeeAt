@@ -12,6 +12,7 @@ import com.pob.seeat.BuildConfig
 import com.pob.seeat.R
 import com.pob.seeat.databinding.FragmentMyPageBinding
 import com.pob.seeat.presentation.view.mypage.settings.SettingsActivity
+import com.pob.seeat.utils.GoogleAuthUtil
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -72,7 +73,7 @@ class MyPageFragment : Fragment() {
         }
 
         mbMyPageLogout.setOnClickListener {
-
+            GoogleAuthUtil.googleLogout(requireActivity())
         }
     }
 

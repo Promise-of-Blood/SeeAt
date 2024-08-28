@@ -69,7 +69,7 @@ class LoginActivity : AppCompatActivity() {
         GoogleAuthUtil.initialize(this@LoginActivity)
 
 
-        binding.btnGoogleLogin.setOnClickListener {
+        clBtnLogin.setOnClickListener {
             GoogleAuthUtil.googleLogin(this@LoginActivity,googleSignInLauncher)
         }
 

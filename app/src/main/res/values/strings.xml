@@ -11,6 +11,9 @@
     <string name="navigation_bookmark">북마크</string>
     <string name="navigation_my_page">내 페이지</string>
 
+    <!-- Login Activity -->
+    <string name="btn_google_login">구글 아이디로 로그인</string>
+
     <!-- home fragment -->
     <string name="search_hint">검색어를 입력하세요</string>
 
