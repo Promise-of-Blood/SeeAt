@@ -5,7 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:name=".utils.SeeAtApplication"
+        android:name=".SeeAtApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -18,10 +18,6 @@
         <activity
             android:name=".presentation.view.LoginActivity"
             android:exported="true" />
-
-        <meta-data
-            android:name="com.naver.maps.map.CLIENT_ID"
-            android:value="${NAVER_CLIENT_ID}" />
 
         <activity
             android:name=".MainActivity"
