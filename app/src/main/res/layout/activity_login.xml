@@ -14,28 +14,40 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.3"/>
 
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guide_line_vertical_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.1"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guide_line_vertical_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.9"/>
+
     <ImageView
         android:id="@+id/iv_main_icon"
         android:layout_width="0dp"
-        app:layout_constraintWidth_percent="0.3"
+        app:layout_constraintWidth_percent="0.25"
         android:layout_height="0dp"
         android:src="@drawable/iv_main_icon"
-        android:layout_marginStart="16dp"
         app:layout_constraintTop_toTopOf="@id/guide_line1"
         app:layout_constraintBottom_toBottomOf="@id/guide_line2"
-        app:layout_constraintStart_toStartOf="parent"/>
+        app:layout_constraintStart_toStartOf="@id/guide_line_vertical_1"/>
 
 
     <ImageView
         android:id="@+id/iv_logo"
         android:layout_width="0dp"
-        app:layout_constraintWidth_percent="0.6"
         android:layout_height="0dp"
         android:src="@drawable/iv_logo"
-        android:layout_marginEnd="16dp"
         app:layout_constraintTop_toTopOf="@id/guide_line1"
         app:layout_constraintBottom_toBottomOf="@id/guide_line2"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintStart_toEndOf="@id/iv_main_icon"
+        app:layout_constraintEnd_toEndOf="@id/guide_line_vertical_2"/>
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guide_line2"
@@ -49,59 +61,55 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.95"/>
+        app:layout_constraintGuide_percent="0.9"/>
 
-    <Button
-        android:id="@+id/iv_kakao_login"
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_btn_login"
         android:layout_width="0dp"
-        app:layout_constraintWidth_percent="0.9"
         android:layout_height="0dp"
         app:layout_constraintHeight_percent="0.07"
-        android:text="카카오 아이디로 로그인하기"
-        android:background="@drawable/shape_radius_10"
-        android:backgroundTint="#FFEB3B"
-        android:layout_marginBottom="16dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/btn_naver_login"
-        />
+        android:elevation="20dp"
+        app:layout_constraintStart_toStartOf="@id/guide_line_vertical_1"
+        app:layout_constraintEnd_toEndOf="@id/guide_line_vertical_2"
+        app:layout_constraintBottom_toBottomOf="@id/guide_line3">
 
-    <com.navercorp.nid.oauth.view.NidOAuthLoginButton
-        android:id="@+id/btn_naver_login"
-        android:layout_width="0dp"
-        app:layout_constraintWidth_percent="1"
-        android:layout_height="0dp"
-        app:layout_constraintHeight_percent="0.08"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginBottom="16dp"
-        app:layout_constraintBottom_toTopOf="@id/iv_google_login"/>
 
-<!--        -->
-<!--    <Button-->
-<!--        android:id="@+id/iv_naver_login"-->
-<!--        android:layout_width="0dp"-->
-<!--        app:layout_constraintWidth_percent="0.9"-->
-<!--        android:layout_height="0dp"-->
-<!--        app:layout_constraintHeight_percent="0.07"-->
-<!--        android:background="@drawable/shape_radius_10"-->
-<!--        android:text="네이버 아이디로 로그인하기"-->
-<!--        android:layout_marginBottom="16dp"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintBottom_toTopOf="@id/iv_google_login"/>-->
+        <ImageView
+            android:id="@+id/btn_google_login"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/shape_radius_10"
+            android:backgroundTint="@color/white"
+            />
 
-    <Button
-        android:id="@+id/iv_google_login"
-        android:layout_width="0dp"
-        app:layout_constraintWidth_percent="0.9"
-        android:layout_height="0dp"
-        app:layout_constraintHeight_percent="0.07"
-        android:background="@drawable/shape_radius_10"
-        android:text="구글 아이디로 로그인하기"
-        android:layout_marginTop="16dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="@id/guide_line3"/>
+        <ImageView
+            android:id="@+id/iv_google_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_google"
+            android:layout_marginStart="16dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+        <TextView
+            android:id="@+id/tv_google_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_google_login"
+            android:textSize="16sp"
+            android:textColor="@color/black"
+            android:layout_marginStart="16dp"
+            app:layout_constraintStart_toEndOf="@id/iv_google_icon"
+            app:layout_constraintTop_toTopOf="@id/iv_google_icon"
+            app:layout_constraintBottom_toBottomOf="@id/iv_google_icon"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
 
 
 

@@ -31,37 +31,24 @@ android {
         buildConfigField(
             "String",
             "KAKAO_APP_KEY",
-            properties["KAKAO_APP_KEY"] as String
+            "\"${properties["KAKAO_APP_KEY"]}\""
         )
 
         buildConfigField(
             "String",
-            "NAVER_CLIENT_ID",
-            "\"${properties["NAVER_CLIENT_ID"]}\""
+            "WEB_CLIENT_ID",
+            "\"${properties["WEB_CLIENT_ID"]}\""
         )
 
-        buildConfigField(
-            "String",
-            "NAVER_CLIENT_SECRET",
-            "\"${properties["NAVER_CLIENT_SECRET"]}\""
-        )
-
-        buildConfigField(
-            "String",
-            "NAVER_CLIENT_NAME",
-            "\"${properties["NAVER_CLIENT_NAME"]}\""
-        )
 
     }
 
     buildTypes {
         debug {
             isMinifyEnabled = false
-            manifestPlaceholders["NAVER_CLIENT_ID"] = properties["NAVER_CLIENT_ID"] as String
         }
         release {
             isMinifyEnabled = false
-            manifestPlaceholders["NAVER_CLIENT_ID"] = properties["NAVER_CLIENT_ID"] as String
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -124,6 +111,9 @@ dependencies {
     // naver
     implementation(libs.naver.login)
     implementation(libs.naver.map)
+
+    //google
+    implementation(libs.play.services.auth)
 
     // oss
     implementation(libs.play.services.oss.licenses)

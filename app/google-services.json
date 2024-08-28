@@ -1,26 +1,44 @@
 {
   "project_info": {
-    "project_number": "463627349451",
-    "project_id": "seeat-b7769",
-    "storage_bucket": "seeat-b7769.appspot.com"
+    "project_number": "569674873919",
+    "project_id": "see-at",
+    "storage_bucket": "see-at.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:463627349451:android:ea3b6123d0761b55fcda4e",
+        "mobilesdk_app_id": "1:569674873919:android:80eb1ad6d0888425544c8a",
         "android_client_info": {
           "package_name": "com.pob.seeat"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "569674873919-5oemq798lmtu23ji71sqlaf45nrc3s6a.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.pob.seeat",
+            "certificate_hash": "b58bc0a33dcc56624513f21efdf8474519980d2e"
+          }
+        },
+        {
+          "client_id": "569674873919-9dv0m1mrtpa74hitddb88pniasgp8up7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyBmFxX8kx_KOgVVlX42uRAFZA5zTJKmvvM"
+          "current_key": "AIzaSyDn1vMeD5uiUAUI83ZU2lnAQ536LFsHZFQ"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "569674873919-9dv0m1mrtpa74hitddb88pniasgp8up7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
