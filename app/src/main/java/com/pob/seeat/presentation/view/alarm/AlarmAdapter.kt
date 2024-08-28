@@ -11,12 +11,15 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.pob.seeat.R
 import com.pob.seeat.databinding.ItemAlarmBinding
-import com.pob.seeat.presentation.model.Alarm
+import com.pob.seeat.domain.model.AlarmModel
 
-class AlarmAdapter(private val onClick: (Alarm) -> Unit) :
-    ListAdapter<Alarm, AlarmAdapter.ViewHolder>(object : DiffUtil.ItemCallback<Alarm>() {
-        override fun areItemsTheSame(oldItem: Alarm, newItem: Alarm) = oldItem.id == newItem.id
-        override fun areContentsTheSame(oldItem: Alarm, newItem: Alarm) = oldItem == newItem
+class AlarmAdapter(private val onClick: (AlarmModel) -> Unit) :
+    ListAdapter<AlarmModel, AlarmAdapter.ViewHolder>(object : DiffUtil.ItemCallback<AlarmModel>() {
+        override fun areItemsTheSame(oldItem: AlarmModel, newItem: AlarmModel) =
+            oldItem.uId == newItem.uId
+
+        override fun areContentsTheSame(oldItem: AlarmModel, newItem: AlarmModel) =
+            oldItem == newItem
     }) {
     class ViewHolder(binding: ItemAlarmBinding) : RecyclerView.ViewHolder(binding.root) {
         private val title = binding.tvAlarmTitle
@@ -25,19 +28,14 @@ class AlarmAdapter(private val onClick: (Alarm) -> Unit) :
         private val time = binding.tvAlarmTime
         private val image = binding.ivAlarmImage
 
-        fun bind(alarm: Alarm, onClick: (Alarm) -> Unit) {
-            if (alarm.type == "like") {
-                content.visibility = View.INVISIBLE
-                description.text = itemView.context.getString(R.string.alarm_description_like, "아무개")
-            } else {
-                content.visibility = View.VISIBLE
-                description.text = itemView.context.getString(R.string.alarm_description_comment)
-            }
-            title.text = itemView.context.getString(R.string.alarm_post_title, alarm.title)
+        fun bind(alarm: AlarmModel, onClick: (AlarmModel) -> Unit) {
+            content.visibility = View.VISIBLE
+            description.text = itemView.context.getString(R.string.alarm_description_comment)
+            title.text = itemView.context.getString(R.string.alarm_post_title, alarm.postTitle)
             content.text = alarm.content
-            time.text = alarm.time
+            time.text = alarm.createdAt.toString()
             Glide.with(image.context)
-                .load(alarm.image)
+                .load(alarm.postImage)
                 .apply(RequestOptions.bitmapTransform(RoundedCorners(10)))
                 .into(image)
             itemView.apply {
