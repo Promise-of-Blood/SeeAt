@@ -9,6 +9,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.tasks.OnCompleteListener
 //import com.google.firebase.messaging.FirebaseMessaging
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,12 +19,18 @@ import androidx.recyclerview.widget.RecyclerView
 import com.naver.maps.map.MapFragment
 import com.pob.seeat.R
 import com.pob.seeat.databinding.FragmentHomeBinding
+import com.pob.seeat.presentation.view.UiState
+import com.pob.seeat.presentation.viewmodel.RestroomViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
+
+    private val restroomViewModel : RestroomViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -33,6 +42,7 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initViewModel()
         if (savedInstanceState == null) {
             val mapFragment = MapFragment.newInstance()
             childFragmentManager.beginTransaction()
@@ -69,6 +79,25 @@ class HomeFragment : Fragment() {
 
             val marginDecoration = MarginItemDecoration(24) // 16dp 마진
             rvTagList.addItemDecoration(marginDecoration)
+        }
+    }
+
+    private fun initViewModel() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            restroomViewModel.getRestroomUiState()
+            restroomViewModel.restroomUiState.flowWithLifecycle(viewLifecycleOwner.lifecycle).collectLatest { uiState ->
+                when(uiState) {
+                    is UiState.Error -> {
+                        Log.e("Restroom", "화장실 데이터 없음 ${uiState.message}")
+                    }
+                    UiState.Loading -> {
+                        Log.d("Restroom", "화장실 데이터 로딩")
+                    }
+                    is UiState.Success -> {
+                        Log.d("Restroom", "화장실 데이터 : ${uiState.data}")
+                    }
+                }
+            }
         }
     }
 }

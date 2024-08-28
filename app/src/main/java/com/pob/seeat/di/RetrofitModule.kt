@@ -24,8 +24,8 @@ annotation class SeoulRestroomUrl
 @InstallIn(SingletonComponent::class)
 object RetrofitModule {
 
-    private const val SAMPLE_BASE_URL = "https://dapi.kakao.com"
-    private const val SEOUL_RESTROOM_URL = "https://openAPI.seoul.go.kr:8088/"
+//    private const val SAMPLE_BASE_URL = "https://dapi.kakao.com"
+    private const val SEOUL_RESTROOM_URL = "http://openAPI.seoul.go.kr:8088"
 
     @Provides
     @Singleton
@@ -43,10 +43,10 @@ object RetrofitModule {
     @SeoulRestroomUrl
     fun provideSeoulRestroomUrl() : String = SEOUL_RESTROOM_URL
 
-    @Singleton
-    @Provides
-    @SampleBaseUrl
-    fun provideSampleUrl() : String = SAMPLE_BASE_URL
+//    @Singleton
+//    @Provides
+//    @SampleBaseUrl
+//    fun provideSampleUrl() : String = SAMPLE_BASE_URL
 
     @Singleton
     @Provides
@@ -59,6 +59,12 @@ object RetrofitModule {
     }
 
     // TODO 지금은 Seoul만 받지만, 나중을 고려해, DataSource의 부모도 만들 필요가 있어보임
+    @Provides
+    @Singleton
+    fun provideSampleRemoteDataSource (retrofit: Retrofit): SampleRemoteDataSource {
+        return retrofit.create(SampleRemoteDataSource::class.java)
+    }
+
     @Provides
     @Singleton
     fun provideRemoteDataSource (retrofit: Retrofit): SeoulApiRemoteDataSource {
