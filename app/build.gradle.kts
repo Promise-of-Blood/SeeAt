@@ -124,6 +124,7 @@ dependencies {
     // naver
     implementation(libs.naver.login)
     implementation(libs.naver.map)
+    implementation(libs.play.services.location)
 
     // oss
     implementation(libs.play.services.oss.licenses)
