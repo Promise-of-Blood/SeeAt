@@ -38,8 +38,6 @@ class LoginActivity : AppCompatActivity() {
         }
         initView()
 
-        val keyhash = Utility.getKeyHash(this)
-        Log.e("해시", keyhash)
     }
 
     private fun initView() = with(binding) {
