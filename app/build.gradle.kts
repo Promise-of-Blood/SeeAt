@@ -7,8 +7,8 @@ plugins {
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.google.services)
     alias(libs.plugins.ksp)
-    kotlin("kapt")
     id("com.google.dagger.hilt.android")
+    id("com.google.android.gms.oss-licenses-plugin")
 }
 
 val properties = Properties().apply {
@@ -33,6 +33,25 @@ android {
             "KAKAO_APP_KEY",
             properties["KAKAO_APP_KEY"] as String
         )
+
+        buildConfigField(
+            "String",
+            "NAVER_CLIENT_ID",
+            "\"${properties["NAVER_CLIENT_ID"]}\""
+        )
+
+        buildConfigField(
+            "String",
+            "NAVER_CLIENT_SECRET",
+            "\"${properties["NAVER_CLIENT_SECRET"]}\""
+        )
+
+        buildConfigField(
+            "String",
+            "NAVER_CLIENT_NAME",
+            "\"${properties["NAVER_CLIENT_NAME"]}\""
+        )
+
     }
 
     buildTypes {
@@ -90,7 +109,7 @@ dependencies {
 
     // hilt
     implementation(libs.dagger.hilt.android)
-    kapt(libs.hilt.compiler)
+    ksp(libs.hilt.compiler)
 
     // viewpager2
     implementation(libs.androidx.viewpager2)
@@ -105,4 +124,7 @@ dependencies {
     // naver
     implementation(libs.naver.login)
     implementation(libs.naver.map)
+
+    // oss
+    implementation(libs.play.services.oss.licenses)
 }
