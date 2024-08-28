@@ -31,27 +31,26 @@ import com.pob.seeat.BuildConfig
 import com.pob.seeat.MainActivity
 import com.pob.seeat.R
 import com.pob.seeat.databinding.ActivityLoginBinding
+import com.pob.seeat.utils.GoogleAuthUtil
+import com.pob.seeat.utils.GoogleAuthUtil.firebaseAuthWithGoogle
+import com.pob.seeat.utils.GoogleAuthUtil.googleLogin
 
 
 class LoginActivity : AppCompatActivity() {
     private val binding: ActivityLoginBinding by lazy { ActivityLoginBinding.inflate(layoutInflater) }
 
-    private lateinit var googleSignInClient : GoogleSignInClient
-    private lateinit var firebaseAuth : FirebaseAuth
-
-    private val googleSignInLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
-        result ->
-        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
-        Log.d("구글 로그인 1", task.toString() )
-        try{
-            val account = task.getResult(ApiException::class.java)!!
-            Log.d("구글 로그인 2 성공", "account idToken : ${account.idToken}")
-            firebaseAuthWithGoogle(account.idToken!!)
-        }catch (e:ApiException){
-            Log.e("구글 로그인 실패", "signInResult:failed code=" + e.statusCode)
-            Toast.makeText(this,"Google 로그인에 실패했습니다.", Toast.LENGTH_SHORT).show()
+    private val googleSignInLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            GoogleAuthUtil.handleSignInResult(this, result.resultCode, result.data,
+                onSuccess = {
+                    Toast.makeText(this, "환영합니다!", Toast.LENGTH_SHORT).show()
+                    startActivity(Intent(this, MainActivity::class.java))
+                    finish()
+                },
+                onFailure = {
+                    Toast.makeText(this, "Google 로그인에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                })
         }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,56 +66,15 @@ class LoginActivity : AppCompatActivity() {
 
     private fun initView() = with(binding) {
 
-        firebaseAuth = FirebaseAuth.getInstance()
+        GoogleAuthUtil.initialize(this@LoginActivity)
 
-        if(firebaseAuth.currentUser != null){
-            startActivity(Intent(this@LoginActivity, MainActivity::class.java))
-            finish()
-            return
-        }
-
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestServerAuthCode(BuildConfig.WEB_CLIENT_ID)
-            .requestIdToken(BuildConfig.WEB_CLIENT_ID)
-            .requestEmail()
-            .build()
-
-        googleSignInClient = GoogleSignIn.getClient(this@LoginActivity, gso)
 
         binding.btnGoogleLogin.setOnClickListener {
-            googleLogin()
+            GoogleAuthUtil.googleLogin(this@LoginActivity,googleSignInLauncher)
         }
 
 
     }
-
-    private fun googleLogin() {
-        val signInIntent = googleSignInClient.signInIntent
-        googleSignInLauncher.launch(signInIntent)
-    }
-
-    private fun firebaseAuthWithGoogle(idToken: String){
-        Log.d("구글 로그인 3", idToken)
-        val credential = GoogleAuthProvider.getCredential(idToken, null)
-        firebaseAuth.signInWithCredential(credential)
-            .addOnCompleteListener(this) { task ->
-                if (task.isSuccessful) {
-                    // 로그인 성공
-                    val user = firebaseAuth.currentUser
-                    Toast.makeText(this, "환영합니다, ${user?.displayName}!", Toast.LENGTH_SHORT).show()
-                    // 여기서 로그인 후 화면 전환 등의 작업을 수행할 수 있습니다.
-                    startActivity(Intent(this, MainActivity::class.java))
-                    finish()
-                } else {
-                    // 로그인 실패
-                    Toast.makeText(this, "Firebase 인증에 실패했습니다.", Toast.LENGTH_SHORT).show()
-                }
-            }
-
-    }
-
-
-
 
 
 //    서버 필요해서 일단 죽임
