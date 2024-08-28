@@ -11,6 +11,9 @@
     <string name="navigation_bookmark">북마크</string>
     <string name="navigation_my_page">내 페이지</string>
 
+    <!-- home fragment -->
+    <string name="search_hint">검색어를 입력하세요</string>
+
     <!-- my page -->
     <string name="my_page_terms_of_service">서비스 이용약관</string>
     <string name="my_page_oss_license">오픈소스 라이선스</string>
