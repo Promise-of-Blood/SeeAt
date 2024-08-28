@@ -1,8 +1,7 @@
 package com.pob.seeat.data.repository
 
 import com.pob.seeat.data.remote.SeoulApiRemoteDataSource
-import com.pob.seeat.data.remote.response.seoulrestroom.DATA
-import com.pob.seeat.data.remote.response.test.Row
+import com.pob.seeat.data.remote.response.seoulrestroom.Row
 import com.pob.seeat.domain.model.RestroomModel
 import com.pob.seeat.domain.repository.RestroomApiRepository
 import kotlinx.coroutines.flow.Flow

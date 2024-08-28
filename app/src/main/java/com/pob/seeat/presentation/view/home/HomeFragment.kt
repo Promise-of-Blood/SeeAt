@@ -42,7 +42,7 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initViewModel()
+        initRestroomViewModel()
         if (savedInstanceState == null) {
             val mapFragment = MapFragment.newInstance()
             childFragmentManager.beginTransaction()
@@ -82,7 +82,7 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun initViewModel() {
+    private fun initRestroomViewModel() {
         viewLifecycleOwner.lifecycleScope.launch {
             restroomViewModel.getRestroomUiState()
             restroomViewModel.restroomUiState.flowWithLifecycle(viewLifecycleOwner.lifecycle).collectLatest { uiState ->
