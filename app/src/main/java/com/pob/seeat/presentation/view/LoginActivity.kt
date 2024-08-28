@@ -55,9 +55,9 @@ class LoginActivity : AppCompatActivity() {
 
         val oAuthLoginCallback = object :OAuthLoginCallback{
             override fun onSuccess() {
-                    val name: String
-                    val email: String
-                    val gender: String
+                    var name: String
+                    var email: String
+                    var gender: String
                 NidOAuthLogin().callProfileApi(object : NidProfileCallback<NidProfileResponse>{
                     override fun onSuccess(result: NidProfileResponse) {
                         name = result.profile?.name.toString()
