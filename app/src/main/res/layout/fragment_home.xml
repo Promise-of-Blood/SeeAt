@@ -73,15 +73,26 @@
         android:id="@+id/persistent_bottom_sheet"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#ebebeb"
+        android:background="@drawable/white_round_top_border_20"
         android:padding="16dp"
         app:behavior_draggable="true"
-        app:behavior_expandedOffset="0dp"
-        app:behavior_fitToContents="true"
-        app:behavior_halfExpandedRatio="0.5"
+        app:behavior_expandedOffset="150dp"
+        app:behavior_fitToContents="false"
+        app:behavior_halfExpandedRatio="0.4"
         app:behavior_hideable="false"
-        app:behavior_peekHeight="5dp"
+        app:behavior_peekHeight="0dp"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+
+        <View
+            android:id="@+id/view_top_bar"
+            android:layout_width="100dp"
+            android:layout_height="6dp"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/gray_round_border_20"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
 
         <TextView
             android:id="@+id/textView"
@@ -91,7 +102,7 @@
             android:textSize="24sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/view_top_bar" />
 
         <TextView
             android:layout_width="match_parent"
