@@ -23,7 +23,7 @@ fun alarmList(): List<AlarmResponse> {
             postTitle = "으아 어이없어",
             postImage = "https://picsum.photos/200",
             content = "나 공명선인데 나 140 맞다",
-            createdAt = LocalDateTime.now().withNano(Random.nextInt(100000)),
+            createdAt = LocalDateTime.now().minusSeconds(Random.nextLong(700000)),
             isRead = listOf(true, false).random(),
         ),
         AlarmResponse(
@@ -31,7 +31,7 @@ fun alarmList(): List<AlarmResponse> {
             postTitle = "으아 어이없어",
             postImage = "https://picsum.photos/200",
             content = "나 공명선인데 나 140 맞다",
-            createdAt = LocalDateTime.now().withNano(Random.nextInt(100000)),
+            createdAt = LocalDateTime.now().minusSeconds(Random.nextLong(700000)),
             isRead = listOf(true, false).random(),
         ),
         AlarmResponse(
@@ -39,7 +39,7 @@ fun alarmList(): List<AlarmResponse> {
             postTitle = "으아 어이없어",
             postImage = "https://picsum.photos/200",
             content = "나 공명선인데 나 140 맞다",
-            createdAt = LocalDateTime.now().withNano(Random.nextInt(100000)),
+            createdAt = LocalDateTime.now().minusSeconds(Random.nextLong(700000)),
             isRead = listOf(true, false).random(),
         ),
         AlarmResponse(
@@ -47,7 +47,7 @@ fun alarmList(): List<AlarmResponse> {
             postTitle = "으아 어이없어",
             postImage = "https://picsum.photos/200",
             content = "나 공명선인데 나 140 맞다",
-            createdAt = LocalDateTime.now().withNano(Random.nextInt(100000)),
+            createdAt = LocalDateTime.now().minusSeconds(Random.nextLong(700000)),
             isRead = listOf(true, false).random(),
         ),
         AlarmResponse(
@@ -55,7 +55,7 @@ fun alarmList(): List<AlarmResponse> {
             postTitle = "으아 어이없어",
             postImage = "https://picsum.photos/200",
             content = "나 공명선인데 나 140 맞다",
-            createdAt = LocalDateTime.now().withNano(Random.nextInt(100000)),
+            createdAt = LocalDateTime.now().minusSeconds(Random.nextLong(700000)),
             isRead = listOf(true, false).random(),
         ),
         AlarmResponse(
@@ -63,7 +63,7 @@ fun alarmList(): List<AlarmResponse> {
             postTitle = "으아 어이없어",
             postImage = "https://picsum.photos/200",
             content = "나 공명선인데 나 140 맞다",
-            createdAt = LocalDateTime.now().withNano(Random.nextInt(100000)),
+            createdAt = LocalDateTime.now().minusSeconds(Random.nextLong(700000)),
             isRead = listOf(true, false).random(),
         ),
         AlarmResponse(
@@ -71,7 +71,7 @@ fun alarmList(): List<AlarmResponse> {
             postTitle = "으아 어이없어",
             postImage = "https://picsum.photos/200",
             content = "나 공명선인데 나 140 맞다",
-            createdAt = LocalDateTime.now().withNano(Random.nextInt(100000)),
+            createdAt = LocalDateTime.now().minusSeconds(Random.nextLong(700000)),
             isRead = listOf(true, false).random(),
         ),
         AlarmResponse(
@@ -79,7 +79,7 @@ fun alarmList(): List<AlarmResponse> {
             postTitle = "으아 어이없어",
             postImage = "https://picsum.photos/200",
             content = "나 공명선인데 나 140 맞다",
-            createdAt = LocalDateTime.now().withNano(Random.nextInt(100000)),
+            createdAt = LocalDateTime.now().minusSeconds(Random.nextLong(700000)),
             isRead = listOf(true, false).random(),
         ),
         AlarmResponse(
@@ -87,7 +87,7 @@ fun alarmList(): List<AlarmResponse> {
             postTitle = "으아 어이없어",
             postImage = "https://picsum.photos/200",
             content = "나 공명선인데 나 140 맞다",
-            createdAt = LocalDateTime.now().withNano(Random.nextInt(100000)),
+            createdAt = LocalDateTime.now().minusSeconds(Random.nextLong(700000)),
             isRead = listOf(true, false).random(),
         ),
         AlarmResponse(
@@ -95,7 +95,7 @@ fun alarmList(): List<AlarmResponse> {
             postTitle = "으아 어이없어",
             postImage = "https://picsum.photos/200",
             content = "나 공명선인데 나 140 맞다",
-            createdAt = LocalDateTime.now().withNano(Random.nextInt(100000)),
+            createdAt = LocalDateTime.now().minusSeconds(Random.nextLong(700000)),
             isRead = listOf(true, false).random(),
         ),
         AlarmResponse(
@@ -103,7 +103,7 @@ fun alarmList(): List<AlarmResponse> {
             postTitle = "으아 어이없어",
             postImage = "https://picsum.photos/200",
             content = "나 공명선인데 나 140 맞다",
-            createdAt = LocalDateTime.now().withNano(Random.nextInt(100000)),
+            createdAt = LocalDateTime.now().minusSeconds(Random.nextLong(700000)),
             isRead = listOf(true, false).random(),
         ),
     )

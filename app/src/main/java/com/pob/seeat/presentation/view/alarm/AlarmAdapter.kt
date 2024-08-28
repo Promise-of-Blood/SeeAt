@@ -12,6 +12,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.pob.seeat.R
 import com.pob.seeat.databinding.ItemAlarmBinding
 import com.pob.seeat.domain.model.AlarmModel
+import com.pob.seeat.utils.Utils.toKoreanDiffString
 
 class AlarmAdapter(private val onClick: (AlarmModel) -> Unit) :
     ListAdapter<AlarmModel, AlarmAdapter.ViewHolder>(object : DiffUtil.ItemCallback<AlarmModel>() {
@@ -33,7 +34,7 @@ class AlarmAdapter(private val onClick: (AlarmModel) -> Unit) :
             description.text = itemView.context.getString(R.string.alarm_description_comment)
             title.text = itemView.context.getString(R.string.alarm_post_title, alarm.postTitle)
             content.text = alarm.content
-            time.text = alarm.createdAt.toString()
+            time.text = alarm.createdAt.toKoreanDiffString()
             Glide.with(image.context)
                 .load(alarm.postImage)
                 .apply(RequestOptions.bitmapTransform(RoundedCorners(10)))
