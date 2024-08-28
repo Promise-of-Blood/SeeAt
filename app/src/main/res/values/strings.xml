@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">SeeAt</string>
 
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
     <!-- bottom navigation -->
     <string name="navigation_add_marker">마커 추가</string>
     <string name="navigation_message">메세지</string>
