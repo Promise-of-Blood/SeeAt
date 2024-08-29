@@ -16,6 +16,7 @@ import com.pob.seeat.presentation.viewmodel.SampleViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 @AndroidEntryPoint
 class MessageFragment : Fragment() {
@@ -39,6 +40,7 @@ class MessageFragment : Fragment() {
         return binding.root
 
     }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

@@ -10,7 +10,8 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        >
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar_message"
@@ -26,24 +27,73 @@
             />
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/cl_info"
+            android:id="@+id/cl_feed_info"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="16dp"
             app:layout_constraintTop_toBottomOf="@id/toolbar_message"
+            android:background="@color/white"
+            android:layout_marginTop="8dp"
             >
 
             <com.google.android.material.card.MaterialCardView
-                android:layout_width="70dp"
-                android:layout_height="70dp"
+                android:id="@+id/cv_message_feed"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
                 app:cardCornerRadius="10dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
                 >
                 
                 <ImageView
-                    android:layout_width=""
-                    android:layout_height=""
+                    android:id="@+id/iv_message_feed"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    />
                 
             </com.google.android.material.card.MaterialCardView>
+
+            <TextView
+                android:id="@+id/tv_message_feed_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toEndOf="@id/cv_message_feed"
+                app:layout_constraintTop_toTopOf="@id/cv_message_feed"
+                android:text="@string/message_feed_title"
+                android:layout_marginStart="16dp"
+                android:textSize="16sp"
+                android:maxLines="1"
+                android:maxEms="10"
+                android:ellipsize="end"
+                />
+            
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_message_feed_tag"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintStart_toStartOf="@id/tv_message_feed_title"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_message_feed_title"
+                tools:itemCount="2"
+                tools:listitem="@layout/item_message_tag"
+                android:ellipsize="end"
+                />
+
+            <TextView
+                android:id="@+id/tv_message_feed_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/rv_message_feed_tag"
+                app:layout_constraintStart_toStartOf="@id/rv_message_feed_tag"
+                android:text="@string/message_feed_content"
+                android:textSize="12sp"
+                android:textColor="@color/light_gray"
+                android:maxLines="2"
+                android:maxEms="15"
+                />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
