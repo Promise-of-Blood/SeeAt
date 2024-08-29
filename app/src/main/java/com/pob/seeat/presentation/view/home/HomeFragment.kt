@@ -9,19 +9,33 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
+import android.widget.Toast
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
+import com.google.android.gms.tasks.OnCompleteListener
+//import com.google.firebase.messaging.FirebaseMessaging
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.naver.maps.map.MapFragment
 import com.pob.seeat.R
 import com.pob.seeat.databinding.FragmentHomeBinding
+import com.pob.seeat.presentation.view.UiState
+import com.pob.seeat.presentation.viewmodel.RestroomViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
     lateinit var behavior: BottomSheetBehavior<ConstraintLayout>
     private val TAG = "PersistentActivity"
+    private val restroomViewModel : RestroomViewModel by viewModels()
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -32,6 +46,7 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initRestroomViewModel()
         if (savedInstanceState == null) {
             val mapFragment = MapFragment.newInstance()
             childFragmentManager.beginTransaction()
@@ -108,15 +123,29 @@ class HomeFragment : Fragment() {
         })
     }
 
+
+    private fun initRestroomViewModel() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            restroomViewModel.getRestroomUiState()
+            restroomViewModel.restroomUiState.flowWithLifecycle(viewLifecycleOwner.lifecycle).collectLatest { uiState ->
+                when(uiState) {
+                    is UiState.Error -> {
+                        Log.e("Restroom", "화장실 데이터 없음 ${uiState.message}")
+                    }
+                    UiState.Loading -> {
+                        Log.d("Restroom", "화장실 데이터 로딩")
+                    }
+                    is UiState.Success -> {
+                        Log.d("Restroom", "화장실 데이터 : ${uiState.data}")
+                    }
+                }
+            }
+        }
+    }
 }
 
 class MarginItemDecoration(private val spaceHeight: Int) : RecyclerView.ItemDecoration() {
-    override fun getItemOffsets(
-        outRect: Rect,
-        view: View,
-        parent: RecyclerView,
-        state: RecyclerView.State
-    ) {
+    override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
         with(outRect) {
             if (parent.getChildAdapterPosition(view) == 0) {
                 left = spaceHeight // 첫 번째 아이템에는 왼쪽 마진을 추가
@@ -125,4 +154,3 @@ class MarginItemDecoration(private val spaceHeight: Int) : RecyclerView.ItemDeco
         }
     }
 }
-
