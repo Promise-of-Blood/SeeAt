@@ -68,6 +68,8 @@ class LoginActivity : AppCompatActivity() {
 
         GoogleAuthUtil.initialize(this@LoginActivity)
 
+        loginCheck()
+
 
         clBtnLogin.setOnClickListener {
             GoogleAuthUtil.googleLogin(this@LoginActivity,googleSignInLauncher)
@@ -76,6 +78,21 @@ class LoginActivity : AppCompatActivity() {
 
     }
 
+    private fun loginCheck(){
+        val currentUser = FirebaseAuth.getInstance().currentUser
+
+        if (currentUser != null){
+            Log.d("LoginActivity","현재 로그인 유저 : ${currentUser.email}")
+            navigateToHome()
+        }
+    }
+
+    private fun navigateToHome(){
+        val intent = Intent(this,MainActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(intent)
+        finish()
+    }
 
 //    서버 필요해서 일단 죽임
 //    private fun kakaoLogin() {

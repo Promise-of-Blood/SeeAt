@@ -64,7 +64,7 @@
             android:id="@+id/rv_tag_list"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="6dp"
             android:clipToPadding="false"
             android:orientation="horizontal"
             android:scrollbars="none"
@@ -81,32 +81,44 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
-            android:layout_marginBottom="100dp"
+            android:layout_marginBottom="16dp"
             android:background="@drawable/background_corners_radius_32dp"
             android:elevation="8dp"
             android:padding="8dp"
             android:src="@drawable/ic_location"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/ib_add_marker"
             app:layout_constraintEnd_toEndOf="parent"
             app:tint="@color/light_gray" />
+
+        <ImageButton
+            android:id="@+id/ib_add_marker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="100dp"
+            android:background="@drawable/background_corners_radius_32dp"
+            android:elevation="8dp"
+            android:padding="8dp"
+            android:src="@drawable/ic_add_location"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:tint="@color/primary" />
 
         <com.naver.maps.map.widget.LogoView
             android:id="@+id/naver_logo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            app:layout_constraintBottom_toBottomOf="@id/ib_location"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/ib_location" />
+            app:layout_constraintBottom_toBottomOf="@id/ib_add_marker"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <com.naver.maps.map.widget.ScaleBarView
             android:id="@+id/naver_scale_bar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            app:layout_constraintBottom_toBottomOf="@id/ib_location"
-            app:layout_constraintStart_toEndOf="@id/naver_logo"
-            app:layout_constraintTop_toTopOf="@id/ib_location" />
+            app:layout_constraintBottom_toBottomOf="@id/ib_add_marker"
+            app:layout_constraintStart_toEndOf="@id/naver_logo" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -116,6 +128,7 @@
         android:layout_height="match_parent"
         android:background="@drawable/white_round_top_border_20"
         android:padding="16dp"
+        android:translationY="30dp"
         app:behavior_draggable="true"
         app:behavior_expandedOffset="0dp"
         app:behavior_fitToContents="false"
