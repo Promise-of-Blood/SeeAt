@@ -40,7 +40,6 @@ android {
             "\"${properties["WEB_CLIENT_ID"]}\""
         )
 
-
     }
 
     buildTypes {
