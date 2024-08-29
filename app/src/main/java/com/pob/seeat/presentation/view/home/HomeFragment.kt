@@ -43,7 +43,7 @@ class HomeFragment : Fragment() {
 
     lateinit var behavior: BottomSheetBehavior<ConstraintLayout>
     private val TAG = "PersistentActivity"
-    private val restroomViewModel : RestroomViewModel by viewModels()
+    private val restroomViewModel: RestroomViewModel by viewModels()
 
     private lateinit var naverMap: NaverMap
     private lateinit var locationSource: FusedLocationSource
@@ -68,45 +68,49 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initRestroomViewModel()
+        initNaverMap()
+        initTagRecyclerView()
+        initBottomSheet()
+    }
 
-        /*
-        * 네이버 지도 설정하는 코드
-        * TODO 네이버 로고, ScaleBar 의 위치를
-        *  BottomSheet 의 halfExpanded 까지 따라올 수 있게 구현
-         */
+    /**
+    * 네이버 지도 설정하는 코드
+    * TODO 네이버 로고, ScaleBar 의 위치를
+    *  BottomSheet 의 halfExpanded 까지 따라올 수 있게 구현
+    * */
+    private fun initNaverMap() {
         // 위치 소스 초기화
         locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
 
-        if (savedInstanceState == null) {
-            val mapFragment = MapFragment.newInstance()
-            childFragmentManager.beginTransaction()
-                .replace(R.id.map, mapFragment)
-                .commit()
+        val mapFragment = MapFragment.newInstance()
+        childFragmentManager.beginTransaction()
+            .replace(R.id.map, mapFragment)
+            .commit()
 
-            // NaverMap 객체를 얻기 위해 비동기로 콜백 설정
-            mapFragment.getMapAsync { naverMap ->
-                this.naverMap = naverMap
-                naverMap.isIndoorEnabled = true
-                naverMap.locationSource = locationSource
+        // NaverMap 객체를 얻기 위해 비동기로 콜백 설정
+        mapFragment.getMapAsync { naverMap ->
+            this.naverMap = naverMap
+            naverMap.isIndoorEnabled = true
+            naverMap.locationSource = locationSource
 
-                val uiSettings = naverMap.uiSettings
-                uiSettings.apply {
-                    isLocationButtonEnabled = false
-                    isCompassEnabled = false
-                    isZoomControlEnabled = true
-                    isTiltGesturesEnabled = false
-                    isScaleBarEnabled = false
-                }
-
-                val scaleBarView = binding.naverScaleBar
-                scaleBarView.map = naverMap
+            val uiSettings = naverMap.uiSettings
+            uiSettings.apply {
+                isLocationButtonEnabled = false
+                isCompassEnabled = false
+                isZoomControlEnabled = true
+                isTiltGesturesEnabled = false
+                isScaleBarEnabled = false
             }
+
+            val scaleBarView = binding.naverScaleBar
+            scaleBarView.map = naverMap
         }
+    }
 
-        /*
-        * 태그 리스트 Recycler View 설정
-         */
-
+    /**
+    * 태그 리스트 Recycler View 설정
+    * */
+    private fun initTagRecyclerView() {
         // 태그 리스트 데이터 설정
         val tagList = listOf(
             Tag("전체", R.drawable.ic_map, Color.parseColor("#2ECC87")),
@@ -161,7 +165,9 @@ class HomeFragment : Fragment() {
                 }
             }
         }
+    }
 
+    private fun initBottomSheet() {
         //BottomSheet 옵션 설정
         bottomSheetBehavior = BottomSheetBehavior.from(binding.persistentBottomSheet)
 
@@ -286,60 +292,27 @@ class HomeFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-
-        persistentBottomSheetEvent()
-    }
-
-    private fun persistentBottomSheetEvent() {
-        behavior = BottomSheetBehavior.from(binding.persistentBottomSheet)
-        behavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
-            override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                // 슬라이드 되는 도중 계속 호출
-                Log.d(TAG, "onStateChanged: 드래그 중")
-            }
-
-            override fun onStateChanged(bottomSheet: View, newState: Int) {
-                when (newState) {
-                    BottomSheetBehavior.STATE_COLLAPSED -> {
-                        Log.d(TAG, "onStateChanged: 접음")
-                    }
-
-                    BottomSheetBehavior.STATE_DRAGGING -> {
-                        Log.d(TAG, "onStateChanged: 드래그")
-                    }
-
-                    BottomSheetBehavior.STATE_EXPANDED -> {
-                        Log.d(TAG, "onStateChanged: 펼침")
-                    }
-
-                    BottomSheetBehavior.STATE_HIDDEN -> {
-                        Log.d(TAG, "onStateChanged: 숨기기")
-                    }
-
-                    BottomSheetBehavior.STATE_SETTLING -> {
-                        Log.d(TAG, "onStateChanged: 고정됨")
-                    }
-                }
-            }
-        })
     }
 
     private fun initRestroomViewModel() {
         viewLifecycleOwner.lifecycleScope.launch {
             restroomViewModel.getRestroomUiState()
-            restroomViewModel.restroomUiState.flowWithLifecycle(viewLifecycleOwner.lifecycle).collectLatest { uiState ->
-                when(uiState) {
-                    is UiState.Error -> {
-                        Log.e("Restroom", "화장실 데이터 없음 ${uiState.message}")
-                    }
-                    UiState.Loading -> {
-                        Log.d("Restroom", "화장실 데이터 로딩")
-                    }
-                    is UiState.Success -> {
-                        Log.d("Restroom", "화장실 데이터 : ${uiState.data}")
+            restroomViewModel.restroomUiState.flowWithLifecycle(viewLifecycleOwner.lifecycle)
+                .collectLatest { uiState ->
+                    when (uiState) {
+                        is UiState.Error -> {
+                            Log.e("Restroom", "화장실 데이터 없음 ${uiState.message}")
+                        }
+
+                        UiState.Loading -> {
+                            Log.d("Restroom", "화장실 데이터 로딩")
+                        }
+
+                        is UiState.Success -> {
+                            Log.d("Restroom", "화장실 데이터 : ${uiState.data}")
+                        }
                     }
                 }
-            }
         }
     }
 }
