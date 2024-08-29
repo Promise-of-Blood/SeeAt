@@ -20,6 +20,7 @@ googleServices = "4.4.2"
 kotlinPlugin = "1.8.10"
 naverLogin = "5.9.1"
 ossLicensesPlugin = "0.10.6"
+playServicesAuth = "21.2.0"
 playServicesLocation = "21.3.0"
 playServicesOssLicenses = "17.1.0"
 retrofit = "2.11.0"
@@ -29,6 +30,8 @@ kakaoLogin = "2.20.1"
 viewpager2 = "1.1.0"
 navigationFragmentKtx = "2.7.7"
 navigationUiKtx = "2.7.7"
+firebaseMessagingKtx = "24.0.1"
+kotlin-jvm = "2.0.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -47,6 +50,8 @@ naver-map = { module = "com.naver.maps:map-sdk", version.ref = "naverMap" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+google-services = { module = "com.google.gms:google-services", version.ref = "googleServices" }
+play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
 
 # Network
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp3"}
@@ -81,6 +86,7 @@ google-services = { id = "com.google.gms.google-services", version.ref = "google
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize",  version.ref = "kotlinPlugin"}
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin-jvm" }
 
 [bundles]
 retrofit = [

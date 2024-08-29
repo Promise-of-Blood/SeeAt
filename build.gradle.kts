@@ -7,8 +7,9 @@ plugins {
     alias(libs.plugins.kotlin.parcelize) apply false
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.hilt) apply false
-    id("org.jetbrains.kotlin.jvm") version "2.0.0"
+    alias(libs.plugins.kotlin.jvm) apply false
 }
+
 
 buildscript {
     repositories {
@@ -18,5 +19,6 @@ buildscript {
     dependencies {
         classpath(libs.hilt.android.gradle.plugin)
         classpath(libs.oss.licenses.plugin)
+        classpath(libs.google.services)
     }
 }

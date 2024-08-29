@@ -12,8 +12,14 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewTreeObserver
+import androidx.constraintlayout.widget.ConstraintLayout
 import android.widget.Toast
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
+import com.google.android.gms.tasks.OnCompleteListener
+//import com.google.firebase.messaging.FirebaseMessaging
+import android.view.ViewTreeObserver
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -24,10 +30,20 @@ import com.naver.maps.map.NaverMap
 import com.naver.maps.map.util.FusedLocationSource
 import com.pob.seeat.R
 import com.pob.seeat.databinding.FragmentHomeBinding
+import com.pob.seeat.presentation.view.UiState
+import com.pob.seeat.presentation.viewmodel.RestroomViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
+
+    lateinit var behavior: BottomSheetBehavior<ConstraintLayout>
+    private val TAG = "PersistentActivity"
+    private val restroomViewModel : RestroomViewModel by viewModels()
 
     private lateinit var naverMap: NaverMap
     private lateinit var locationSource: FusedLocationSource
@@ -51,6 +67,7 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initRestroomViewModel()
 
         /*
         * 네이버 지도 설정하는 코드
@@ -269,6 +286,61 @@ class HomeFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+
+        persistentBottomSheetEvent()
+    }
+
+    private fun persistentBottomSheetEvent() {
+        behavior = BottomSheetBehavior.from(binding.persistentBottomSheet)
+        behavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                // 슬라이드 되는 도중 계속 호출
+                Log.d(TAG, "onStateChanged: 드래그 중")
+            }
+
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                when (newState) {
+                    BottomSheetBehavior.STATE_COLLAPSED -> {
+                        Log.d(TAG, "onStateChanged: 접음")
+                    }
+
+                    BottomSheetBehavior.STATE_DRAGGING -> {
+                        Log.d(TAG, "onStateChanged: 드래그")
+                    }
+
+                    BottomSheetBehavior.STATE_EXPANDED -> {
+                        Log.d(TAG, "onStateChanged: 펼침")
+                    }
+
+                    BottomSheetBehavior.STATE_HIDDEN -> {
+                        Log.d(TAG, "onStateChanged: 숨기기")
+                    }
+
+                    BottomSheetBehavior.STATE_SETTLING -> {
+                        Log.d(TAG, "onStateChanged: 고정됨")
+                    }
+                }
+            }
+        })
+    }
+
+    private fun initRestroomViewModel() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            restroomViewModel.getRestroomUiState()
+            restroomViewModel.restroomUiState.flowWithLifecycle(viewLifecycleOwner.lifecycle).collectLatest { uiState ->
+                when(uiState) {
+                    is UiState.Error -> {
+                        Log.e("Restroom", "화장실 데이터 없음 ${uiState.message}")
+                    }
+                    UiState.Loading -> {
+                        Log.d("Restroom", "화장실 데이터 로딩")
+                    }
+                    is UiState.Success -> {
+                        Log.d("Restroom", "화장실 데이터 : ${uiState.data}")
+                    }
+                }
+            }
+        }
     }
 }
 

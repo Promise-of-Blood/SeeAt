@@ -36,20 +36,14 @@ android {
 
         buildConfigField(
             "String",
-            "NAVER_CLIENT_ID",
-            "\"${properties["NAVER_CLIENT_ID"]}\""
-        )
-
-        buildConfigField(
-            "String",
             "NAVER_CLIENT_SECRET",
             "\"${properties["NAVER_CLIENT_SECRET"]}\""
         )
 
         buildConfigField(
             "String",
-            "NAVER_CLIENT_NAME",
-            "\"${properties["NAVER_CLIENT_NAME"]}\""
+            "WEB_CLIENT_ID",
+            "\"${properties["WEB_CLIENT_ID"]}\""
         )
 
     }
@@ -125,6 +119,9 @@ dependencies {
     implementation(libs.naver.login)
     implementation(libs.naver.map)
     implementation(libs.play.services.location)
+
+    //google
+    implementation(libs.play.services.auth)
 
     // oss
     implementation(libs.play.services.oss.licenses)
