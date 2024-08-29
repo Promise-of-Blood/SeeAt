@@ -1,5 +1,6 @@
 package com.pob.seeat.utils
 
+import android.content.res.Resources.getSystem
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -23,4 +24,10 @@ object Utils {
             else -> this.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일"))
         }
     }
+
+    // px to dp
+    val Int.dp get() = (this / getSystem().displayMetrics.density).toInt()
+
+    // dp to px
+    val Float.px get() = (this * getSystem().displayMetrics.density).toInt()
 }
