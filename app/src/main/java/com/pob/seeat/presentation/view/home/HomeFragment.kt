@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.constraintlayout.widget.ConstraintLayout
 import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.flowWithLifecycle
@@ -16,6 +17,7 @@ import com.google.android.gms.tasks.OnCompleteListener
 //import com.google.firebase.messaging.FirebaseMessaging
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.naver.maps.map.MapFragment
 import com.pob.seeat.R
 import com.pob.seeat.databinding.FragmentHomeBinding
@@ -30,6 +32,8 @@ class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
+    lateinit var behavior: BottomSheetBehavior<ConstraintLayout>
+    private val TAG = "PersistentActivity"
     private val restroomViewModel : RestroomViewModel by viewModels()
 
     override fun onCreateView(
@@ -74,13 +78,51 @@ class HomeFragment : Fragment() {
 
         binding.apply {
             val adapter = TagAdapter(tagList)
-            rvTagList.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+            rvTagList.layoutManager =
+                LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
             rvTagList.adapter = adapter
 
             val marginDecoration = MarginItemDecoration(24) // 16dp 마진
             rvTagList.addItemDecoration(marginDecoration)
         }
+
+        persistentBottomSheetEvent()
     }
+
+    private fun persistentBottomSheetEvent() {
+        behavior = BottomSheetBehavior.from(binding.persistentBottomSheet)
+        behavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                // 슬라이드 되는 도중 계속 호출
+                Log.d(TAG, "onStateChanged: 드래그 중")
+            }
+
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                when (newState) {
+                    BottomSheetBehavior.STATE_COLLAPSED -> {
+                        Log.d(TAG, "onStateChanged: 접음")
+                    }
+
+                    BottomSheetBehavior.STATE_DRAGGING -> {
+                        Log.d(TAG, "onStateChanged: 드래그")
+                    }
+
+                    BottomSheetBehavior.STATE_EXPANDED -> {
+                        Log.d(TAG, "onStateChanged: 펼침")
+                    }
+
+                    BottomSheetBehavior.STATE_HIDDEN -> {
+                        Log.d(TAG, "onStateChanged: 숨기기")
+                    }
+
+                    BottomSheetBehavior.STATE_SETTLING -> {
+                        Log.d(TAG, "onStateChanged: 고정됨")
+                    }
+                }
+            }
+        })
+    }
+
 
     private fun initRestroomViewModel() {
         viewLifecycleOwner.lifecycleScope.launch {
