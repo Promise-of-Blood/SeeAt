@@ -45,5 +45,6 @@
     <string name="chat_list_item_time">1시간 전</string>
     <string name="chat_list_item_content">글 내용 글 내용 글 내용 글 내용 글 내용 글 내용</string>
     <string name="chat_list_item_count">3</string>
+    <string name="message_title">상대방</string>
 
 </resources>
