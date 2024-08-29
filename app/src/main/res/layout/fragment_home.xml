@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -17,11 +16,18 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_top_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/transparent"
+            app:layout_constraintTop_toTopOf="parent">
+
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/et_search"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="16dp"
             android:layout_marginEnd="8dp"
             android:background="@drawable/background_corners_radius_8dp"
             android:drawableStart="@drawable/ic_search"
@@ -42,7 +48,7 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginTop="48dp"
-            android:layout_marginEnd="8dp"
+            android:layout_marginEnd="16dp"
             android:background="@drawable/background_corners_radius_8dp"
             android:elevation="16dp"
             android:padding="12dp"
@@ -50,7 +56,7 @@
             android:src="@drawable/ic_bell"
             app:layout_constraintDimensionRatio="1.2:1"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHeight_percent="0.065"
+            app:layout_constraintHeight_percent="0.3"
             app:layout_constraintTop_toTopOf="parent"
             app:tint="@color/light_gray" />
 
@@ -58,12 +64,50 @@
             android:id="@+id/rv_tag_list"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:clipToPadding="false"
             android:orientation="horizontal"
             android:scrollbars="none"
+            tools:listitem="@layout/item_tag"
+            tools:itemCount="1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/iv_alarm" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <ImageButton
+            android:id="@+id/ib_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="100dp"
+            android:background="@drawable/background_corners_radius_32dp"
+            android:elevation="8dp"
+            android:padding="8dp"
+            android:src="@drawable/ic_location"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:tint="@color/light_gray" />
+
+        <com.naver.maps.map.widget.LogoView
+            android:id="@+id/naver_logo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            app:layout_constraintBottom_toBottomOf="@id/ib_location"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/ib_location" />
+
+        <com.naver.maps.map.widget.ScaleBarView
+            android:id="@+id/naver_scale_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            app:layout_constraintBottom_toBottomOf="@id/ib_location"
+            app:layout_constraintStart_toEndOf="@id/naver_logo"
+            app:layout_constraintTop_toTopOf="@id/ib_location" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -73,7 +117,7 @@
         android:background="@drawable/white_round_top_border_20"
         android:padding="16dp"
         app:behavior_draggable="true"
-        app:behavior_expandedOffset="150dp"
+        app:behavior_expandedOffset="0dp"
         app:behavior_fitToContents="false"
         app:behavior_halfExpandedRatio="0.4"
         app:behavior_hideable="false"
