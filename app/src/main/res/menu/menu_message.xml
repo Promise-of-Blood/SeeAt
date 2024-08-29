@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/item_message_dummy1"
+        android:icon="@drawable/ic_info"
+        android:title="더미1" />
+    <item
+        android:id="@+id/item_message_dummy2"
+        android:icon="@drawable/ic_info"
+        android:title="더미2" />
+</menu>

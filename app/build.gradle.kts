@@ -125,4 +125,7 @@ dependencies {
 
     // oss
     implementation(libs.play.services.oss.licenses)
+
+    // timber
+    implementation(libs.timber)
 }

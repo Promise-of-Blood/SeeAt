@@ -9,12 +9,14 @@ import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import com.pob.seeat.R
 import com.pob.seeat.databinding.FragmentMessageBinding
 import com.pob.seeat.databinding.FragmentSampleBinding
 import com.pob.seeat.presentation.viewmodel.SampleViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 @AndroidEntryPoint
 class MessageFragment : Fragment() {
@@ -39,9 +41,9 @@ class MessageFragment : Fragment() {
 
     }
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
     }
 
     override fun onDestroyView() {

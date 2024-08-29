@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "569674873919",
+    "firebase_url": "https://see-at-default-rtdb.firebaseio.com",
     "project_id": "see-at",
     "storage_bucket": "see-at.appspot.com"
   },
@@ -19,6 +20,30 @@
           "android_info": {
             "package_name": "com.pob.seeat",
             "certificate_hash": "b58bc0a33dcc56624513f21efdf8474519980d2e"
+          }
+        },
+        {
+          "client_id": "569674873919-7s4vc6njqqf20p15fn43vqmaq76l23ad.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.pob.seeat",
+            "certificate_hash": "fa814c47b7249e429f6248d94f095661efd76fe6"
+          }
+        },
+        {
+          "client_id": "569674873919-c733qqddopu783icu9g6lbgrko51mc6g.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.pob.seeat",
+            "certificate_hash": "c973ca6c6e52038c8db6f11223a6faf8053ff2f2"
+          }
+        },
+        {
+          "client_id": "569674873919-jpknocl3dbr3li8pgs488bt4fr4sgrj6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.pob.seeat",
+            "certificate_hash": "bd30d987ed77bd4ba369c6b8c76c1ded6293f25a"
           }
         },
         {
