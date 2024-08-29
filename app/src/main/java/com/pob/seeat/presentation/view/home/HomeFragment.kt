@@ -261,7 +261,7 @@ class HomeFragment : Fragment() {
                 val rvLocation = IntArray(2)
                 binding.rvTagList.getLocationOnScreen(rvLocation)
 
-                val rvBottomY = rvLocation[1] + binding.rvTagList.height - 30f.px
+                val rvBottomY = rvLocation[1] + binding.rvTagList.height - 31.0f.px
 
                 bottomSheetBehavior.expandedOffset = rvBottomY
 
