@@ -116,10 +116,10 @@ object GoogleAuthUtil {
 
 
     //로그 찍어보는 용
-    fun checkCurrentUser(activity: Activity){
-        val currentUser = firebaseAuth.currentUser?.uid ?: "없음"
-        Log.d("현재유저","${currentUser}")
-
-    }
+//    fun checkCurrentUser(activity: Activity){
+//        val currentUser = firebaseAuth.currentUser?.uid ?: "없음"
+//        Log.d("현재유저","${currentUser}")
+//
+//    }
 
 }
