@@ -9,4 +9,5 @@
     <color name="secondary">#FF16B200</color>
     <color name="tertiary">#FF99FFCC</color>
     <color name="quaternary">#FF4Bff00</color>
+    <color name="transparent">#00FFFFFF</color>
 </resources>

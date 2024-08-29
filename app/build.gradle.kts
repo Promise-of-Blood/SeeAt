@@ -36,6 +36,12 @@ android {
 
         buildConfigField(
             "String",
+            "NAVER_CLIENT_SECRET",
+            "\"${properties["NAVER_CLIENT_SECRET"]}\""
+        )
+
+        buildConfigField(
+            "String",
             "WEB_CLIENT_ID",
             "\"${properties["WEB_CLIENT_ID"]}\""
         )
@@ -45,9 +51,11 @@ android {
     buildTypes {
         debug {
             isMinifyEnabled = false
+            manifestPlaceholders["NAVER_CLIENT_ID"] = properties["NAVER_CLIENT_ID"] as String
         }
         release {
             isMinifyEnabled = false
+            manifestPlaceholders["NAVER_CLIENT_ID"] = properties["NAVER_CLIENT_ID"] as String
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -110,6 +118,7 @@ dependencies {
     // naver
     implementation(libs.naver.login)
     implementation(libs.naver.map)
+    implementation(libs.play.services.location)
 
     //google
     implementation(libs.play.services.auth)
