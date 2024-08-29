@@ -32,6 +32,7 @@ import com.pob.seeat.R
 import com.pob.seeat.databinding.FragmentHomeBinding
 import com.pob.seeat.presentation.view.UiState
 import com.pob.seeat.presentation.viewmodel.RestroomViewModel
+import com.pob.seeat.utils.Utils.px
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -260,7 +261,7 @@ class HomeFragment : Fragment() {
                 val rvLocation = IntArray(2)
                 binding.rvTagList.getLocationOnScreen(rvLocation)
 
-                val rvBottomY = rvLocation[1] + binding.rvTagList.height
+                val rvBottomY = rvLocation[1] + binding.rvTagList.height - 30f.px
 
                 bottomSheetBehavior.expandedOffset = rvBottomY
 
