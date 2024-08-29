@@ -15,9 +15,6 @@ import javax.inject.Inject
 class MainActivity : AppCompatActivity() {
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
 
-//    @Inject
-//    lateinit var analytics: PresentLogRepository
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
