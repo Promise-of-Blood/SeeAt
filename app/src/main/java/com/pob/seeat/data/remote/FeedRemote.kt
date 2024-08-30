@@ -24,6 +24,22 @@ class FeedRemote @Inject constructor(
         }.filterNotNull()
     }
 
+    suspend fun getFeedList(uid: String): List<FeedModel> {
+        val feedDocuments = firestore.collection("feed")
+            .whereEqualTo("user", uid)
+            .get()
+            .await()
+            .documents
+
+        return feedDocuments.mapNotNull { documentSnapshot ->
+            val tagList = documentSnapshot.get("tagList") as? List<*>
+            documentSnapshot.toObject(FeedModel::class.java)?.copy(
+                feedId = documentSnapshot.id,
+                tags = tagList?.filterIsInstance<String>() ?: emptyList()
+            )
+        }
+    }
+
     suspend fun getFeedById(postId: String): FeedModel? {
         val documentSnapshot = firestore.collection("feed")
             .document(postId)

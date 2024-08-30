@@ -3,6 +3,7 @@ package com.pob.seeat.di
 import com.pob.seeat.data.remote.UserInfoSource
 import com.pob.seeat.data.repository.UserInfoRepositoryImpl
 import com.pob.seeat.data.remote.UserInfoSourceImpl
+import com.pob.seeat.domain.repository.FeedRepository
 import com.pob.seeat.domain.repository.RestroomApiRepository
 import com.pob.seeat.domain.repository.SampleRepository
 import com.pob.seeat.domain.repository.UserInfoRepository
@@ -11,6 +12,7 @@ import com.pob.seeat.domain.usecase.DeleteUserInfoUseCase
 import com.pob.seeat.domain.usecase.GetSampleImageListUseCase
 import com.pob.seeat.domain.usecase.GetSampleVideoListUseCase
 import com.pob.seeat.domain.usecase.GetUserInfoUseCase
+import com.pob.seeat.domain.usecase.UserHistoryUseCase
 import com.pob.seeat.domain.usecase.RestroomApiUseCase
 import com.pob.seeat.domain.usecase.UpdateUserInfoUseCase
 import com.pob.seeat.domain.usecase.UserInfoUseCases
@@ -29,8 +31,9 @@ object UseCaseModule {
     fun provideGetSampleImageListUseCase(repository: SampleRepository): GetSampleImageListUseCase {
         return GetSampleImageListUseCase(repository)
     }
+
     @Provides
-    fun provideGetSampleVideoListUseCase(repository: SampleRepository): GetSampleVideoListUseCase{
+    fun provideGetSampleVideoListUseCase(repository: SampleRepository): GetSampleVideoListUseCase {
         return GetSampleVideoListUseCase(repository)
     }
 }
@@ -39,7 +42,7 @@ object UseCaseModule {
 @InstallIn(ViewModelComponent::class)
 object RestroomUseCaseModule {
     @Provides
-    fun provideRestroomUseCase(restroomApiRepository: RestroomApiRepository) : RestroomApiUseCase {
+    fun provideRestroomUseCase(restroomApiRepository: RestroomApiRepository): RestroomApiUseCase {
         return RestroomApiUseCase(restroomApiRepository)
     }
 }
@@ -82,4 +85,17 @@ abstract class UserInfoSourceModule {
     abstract fun bindUserInfoSource(
         userInfoSourceImpl: UserInfoSourceImpl
     ): UserInfoSource
+}
+
+@Module
+@InstallIn(ViewModelComponent::class)
+object UserHistoryUseCaseModule {
+
+    @Provides
+    fun provideUserHistoryUseCase(
+        userInfoRepository: UserInfoRepository,
+        feedRepository: FeedRepository
+    ): UserHistoryUseCase {
+        return UserHistoryUseCase(userInfoRepository, feedRepository)
+    }
 }

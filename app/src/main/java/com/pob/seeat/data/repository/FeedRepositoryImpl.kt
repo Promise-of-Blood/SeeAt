@@ -22,6 +22,17 @@ class FeedRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun getFeedList(uid: String): Flow<Result<List<FeedModel>>> = flow {
+        emit(Result.Loading)
+        if (uid.isEmpty()) emit(Result.Error("Invalid user ID"))
+        try {
+            val posts = feedRemote.getFeedList(uid)
+            emit(Result.Success(posts))
+        } catch (e: Exception) {
+            emit(Result.Error(e.message ?: "An unknown error occurred"))
+        }
+    }
+
     override suspend fun getFeed(feedId: String): Flow<Result<FeedModel>> = flow {
         emit(Result.Loading)
         try {
