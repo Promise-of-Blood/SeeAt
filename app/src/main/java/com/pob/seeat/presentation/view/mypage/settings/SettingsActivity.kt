@@ -30,6 +30,12 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun initView() = with(binding){
 
+        tvUserEmail.text
+
+        settingsLogout.setOnClickListener {
+            GoogleAuthUtil.googleLogout(this@SettingsActivity)
+        }
+
         settingsDeleteAccount.setOnClickListener {
             GoogleAuthUtil.googleWithdrawal(this@SettingsActivity)
         }
