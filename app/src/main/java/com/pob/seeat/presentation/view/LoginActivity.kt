@@ -6,6 +6,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -31,21 +32,25 @@ import com.pob.seeat.BuildConfig
 import com.pob.seeat.MainActivity
 import com.pob.seeat.R
 import com.pob.seeat.databinding.ActivityLoginBinding
+import com.pob.seeat.presentation.viewmodel.UserInfoViewModel
 import com.pob.seeat.utils.GoogleAuthUtil
 import com.pob.seeat.utils.GoogleAuthUtil.firebaseAuthWithGoogle
 import com.pob.seeat.utils.GoogleAuthUtil.googleLogin
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class LoginActivity : AppCompatActivity() {
     private val binding: ActivityLoginBinding by lazy { ActivityLoginBinding.inflate(layoutInflater) }
+
+    private val userViewModel : UserInfoViewModel by viewModels()
 
     private val googleSignInLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             GoogleAuthUtil.handleSignInResult(this, result.resultCode, result.data,
-                onSuccess = {
+                onSuccess = {uid, email, nickname ->
+                    userViewModel.signUp(uid,email,nickname)
                     Toast.makeText(this, "환영합니다!", Toast.LENGTH_SHORT).show()
-                    startActivity(Intent(this, MainActivity::class.java))
-                    finish()
+                    navigateToHome()
                 },
                 onFailure = {
                     Toast.makeText(this, "Google 로그인에 실패했습니다.", Toast.LENGTH_SHORT).show()
@@ -64,9 +69,13 @@ class LoginActivity : AppCompatActivity() {
         initView()
     }
 
+
+
     private fun initView() = with(binding) {
 
         GoogleAuthUtil.initialize(this@LoginActivity)
+
+        loginCheck()
 
 
         clBtnLogin.setOnClickListener {
@@ -76,6 +85,21 @@ class LoginActivity : AppCompatActivity() {
 
     }
 
+    private fun loginCheck(){
+        val currentUser = FirebaseAuth.getInstance().currentUser
+
+        if (currentUser != null){
+            Log.d("LoginActivity","현재 로그인 유저 : ${currentUser.email}")
+            navigateToHome()
+        }
+    }
+
+    private fun navigateToHome(){
+        val intent = Intent(this,MainActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(intent)
+        finish()
+    }
 
 //    서버 필요해서 일단 죽임
 //    private fun kakaoLogin() {
