@@ -24,12 +24,16 @@
     <string name="my_page_version">버전 %s</string>
     <string name="my_page_logout">로그아웃</string>
 
+    <!-- my page (history) -->
+    <string name="history_feed">작성글</string>
+    <string name="history_comment">작성 댓글</string>
+    <string name="history_liked_feed">좋아요한 글</string>
+
     <!-- my page -->
     <string name="settings_account">계정 설정</string>
     <string name="settings_user_account">현재 로그인 계정</string>
     <string name="settings_logout">로그아웃</string>
     <string name="settings_delete_account">회원 탈퇴</string>
-
 
 
     <!-- alarm -->

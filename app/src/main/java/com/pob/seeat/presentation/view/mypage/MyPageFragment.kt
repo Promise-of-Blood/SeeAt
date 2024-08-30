@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
+import com.google.android.material.tabs.TabLayoutMediator
 import com.pob.seeat.BuildConfig
 import com.pob.seeat.R
 import com.pob.seeat.databinding.FragmentMyPageBinding
@@ -27,6 +28,8 @@ private const val ARG_PARAM2 = "param2"
 class MyPageFragment : Fragment() {
     private var _binding: FragmentMyPageBinding? = null
     private val binding get() = _binding!!
+
+    private val historyAdapter by lazy { HistoryAdapter(requireActivity()) }
 
     // TODO: Rename and change types of parameters
     private var param1: String? = null
@@ -59,6 +62,15 @@ class MyPageFragment : Fragment() {
     }
 
     private fun initView() = with(binding) {
+        vpMyPageHistory.adapter = historyAdapter
+        TabLayoutMediator(tlMyPageHistory, vpMyPageHistory) { tab, position ->
+            when (position) {
+                0 -> tab.text = getString(R.string.history_feed)
+                1 -> tab.text = getString(R.string.history_comment)
+                2 -> tab.text = getString(R.string.history_liked_feed)
+            }
+        }.attach()
+
         mbMyPageTerms.setOnClickListener {
             findNavController().navigate(R.id.action_my_page_to_terms_of_service)
         }

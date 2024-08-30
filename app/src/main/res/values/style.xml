@@ -4,5 +4,7 @@
         <item name="android:background">@drawable/shape_radius_10</item>
         <item name="backgroundTint">@color/white</item>
     </style>
-
+    <style name="tab_text">
+        <item name="android:textSize">14sp</item>
+    </style>
 </resources>
