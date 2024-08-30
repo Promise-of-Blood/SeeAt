@@ -33,8 +33,12 @@ object GoogleAuthUtil {
         Log.d("GoogleAuthUtil", "GoogleSignInClient initialized")
     }
 
-    fun getUserEmail():String?{
-        return firebaseAuth.currentUser?.email
+    fun getUserEmail():String{
+        return firebaseAuth.currentUser?.email ?: ""
+    }
+
+    fun getUserUid():String?{
+        return firebaseAuth.currentUser?.uid
     }
 
     //로그인

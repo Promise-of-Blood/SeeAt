@@ -16,6 +16,9 @@
 
     <!-- SignUp Activity -->
     <string name="signup_title_tb">회원가입</string>
+    <string name="signup_page1">1/3</string>
+    <string name="signup_page2">2/3</string>
+    <string name="signup_page3">3/3</string>
     <string name="signup_title_nickname">활동명을 정해주세요</string>
     <string name="signup_etv_hint">활동명을 입력해주세요</string>
     <string name="signup_title_photo">프로필 사진을 설정해주세요</string>
@@ -26,6 +29,8 @@
     <string name="search_hint">검색어를 입력하세요</string>
 
     <!-- my page -->
+    <string name="my_page_user_post">작성글</string>
+    <string name="my_page_user_comment">작성댓글</string>
     <string name="my_page_terms_of_service">서비스 이용약관</string>
     <string name="my_page_oss_license">오픈소스 라이선스</string>
     <string name="my_page_settings">설정</string>
