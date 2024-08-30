@@ -64,6 +64,8 @@ class LoginActivity : AppCompatActivity() {
         initView()
     }
 
+
+
     private fun initView() = with(binding) {
 
         GoogleAuthUtil.initialize(this@LoginActivity)
