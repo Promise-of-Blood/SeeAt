@@ -88,7 +88,7 @@ class SignUpPhotoFragment : Fragment() {
                     activity.signUpBinding.vpSignUp.currentItem += 1
                 }
             } else {
-                Toast.makeText(requireContext(), "활동명을 입력하세요", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "프로필 사진을 설정해 주세요", Toast.LENGTH_SHORT).show()
             }
 
             //사진 설정안되어있으면 다이얼로그 띄우기
