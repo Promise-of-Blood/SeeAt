@@ -10,6 +10,7 @@ import com.pob.seeat.domain.usecase.CreateUserInfoUseCase
 import com.pob.seeat.domain.usecase.DeleteUserInfoUseCase
 import com.pob.seeat.domain.usecase.GetSampleImageListUseCase
 import com.pob.seeat.domain.usecase.GetSampleVideoListUseCase
+import com.pob.seeat.domain.usecase.GetUserInfoByEmailUseCase
 import com.pob.seeat.domain.usecase.GetUserInfoUseCase
 import com.pob.seeat.domain.usecase.RestroomApiUseCase
 import com.pob.seeat.domain.usecase.UpdateUserInfoUseCase
@@ -56,7 +57,8 @@ object UserUseCaseModule {
             createUserInfoUseCase = CreateUserInfoUseCase(repository),
             updateUserInfoUseCase = UpdateUserInfoUseCase(repository),
             deleteUserInfoUseCase = DeleteUserInfoUseCase(repository),
-            getUserInfoUseCase = GetUserInfoUseCase(repository)
+            getUserInfoUseCase = GetUserInfoUseCase(repository),
+            getUserInfoByEmailUseCase = GetUserInfoByEmailUseCase(repository)
         )
     }
 }
