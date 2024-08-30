@@ -1,21 +1,24 @@
 package com.pob.seeat.di
 
 import com.pob.seeat.data.remote.UserInfoSource
-import com.pob.seeat.data.repository.UserInfoRepositoryImpl
 import com.pob.seeat.data.remote.UserInfoSourceImpl
-import com.pob.seeat.domain.repository.FeedRepository
+import com.pob.seeat.data.repository.UserInfoRepositoryImpl
 import com.pob.seeat.domain.repository.RestroomApiRepository
 import com.pob.seeat.domain.repository.SampleRepository
+import com.pob.seeat.domain.repository.UserHistoryRepository
 import com.pob.seeat.domain.repository.UserInfoRepository
 import com.pob.seeat.domain.usecase.CreateUserInfoUseCase
 import com.pob.seeat.domain.usecase.DeleteUserInfoUseCase
 import com.pob.seeat.domain.usecase.GetSampleImageListUseCase
 import com.pob.seeat.domain.usecase.GetSampleVideoListUseCase
 import com.pob.seeat.domain.usecase.GetUserInfoUseCase
-import com.pob.seeat.domain.usecase.UserHistoryUseCase
 import com.pob.seeat.domain.usecase.RestroomApiUseCase
 import com.pob.seeat.domain.usecase.UpdateUserInfoUseCase
+import com.pob.seeat.domain.usecase.UserCommentHistoryUseCase
+import com.pob.seeat.domain.usecase.UserFeedHistoryUseCase
+import com.pob.seeat.domain.usecase.UserHistoryUseCases
 import com.pob.seeat.domain.usecase.UserInfoUseCases
+import com.pob.seeat.domain.usecase.UserLikedHistoryUseCase
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -88,14 +91,28 @@ abstract class UserInfoSourceModule {
 }
 
 @Module
-@InstallIn(ViewModelComponent::class)
+@InstallIn(SingletonComponent::class)
 object UserHistoryUseCaseModule {
 
     @Provides
-    fun provideUserHistoryUseCase(
+    @Singleton
+    fun provideUserInfoUseCases(
         userInfoRepository: UserInfoRepository,
-        feedRepository: FeedRepository
-    ): UserHistoryUseCase {
-        return UserHistoryUseCase(userInfoRepository, feedRepository)
+        userHistoryRepository: UserHistoryRepository,
+    ): UserHistoryUseCases {
+        return UserHistoryUseCases(
+            userFeedHistoryUseCase = UserFeedHistoryUseCase(
+                userInfoRepository,
+                userHistoryRepository
+            ),
+            userCommentHistoryUseCase = UserCommentHistoryUseCase(
+                userInfoRepository,
+                userHistoryRepository
+            ),
+            userLikedHistoryUseCase = UserLikedHistoryUseCase(
+                userInfoRepository,
+                userHistoryRepository
+            )
+        )
     }
 }
