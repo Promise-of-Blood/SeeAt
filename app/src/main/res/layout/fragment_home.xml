@@ -147,25 +147,14 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/textView"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_bottom_sheet_post_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="bottom sheet"
-            android:textSize="24sp"
+            android:layout_marginTop="20dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/view_top_bar" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="100dp"
-            android:text="Persistent Bottom Sheet"
-            android:textSize="24dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView" />
+            app:layout_constraintTop_toBottomOf="@+id/view_top_bar" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

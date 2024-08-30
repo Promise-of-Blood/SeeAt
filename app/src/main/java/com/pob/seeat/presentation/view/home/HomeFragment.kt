@@ -21,6 +21,7 @@ import com.google.android.gms.tasks.OnCompleteListener
 //import com.google.firebase.messaging.FirebaseMessaging
 import android.view.ViewTreeObserver
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -30,7 +31,10 @@ import com.naver.maps.map.NaverMap
 import com.naver.maps.map.util.FusedLocationSource
 import com.pob.seeat.R
 import com.pob.seeat.databinding.FragmentHomeBinding
+import com.pob.seeat.domain.model.FeedModel
 import com.pob.seeat.presentation.view.UiState
+import com.pob.seeat.presentation.viewmodel.AlarmViewModel
+import com.pob.seeat.presentation.viewmodel.FeedListViewModel
 import com.pob.seeat.presentation.viewmodel.RestroomViewModel
 import com.pob.seeat.utils.Utils.px
 import dagger.hilt.android.AndroidEntryPoint
@@ -45,7 +49,7 @@ class HomeFragment : Fragment() {
     lateinit var behavior: BottomSheetBehavior<ConstraintLayout>
     private val TAG = "PersistentActivity"
     private val restroomViewModel: RestroomViewModel by viewModels()
-
+    private val feedListViewModel by viewModels<FeedListViewModel>()
     private lateinit var naverMap: NaverMap
     private lateinit var locationSource: FusedLocationSource
     private var isLocationTrackingEnabled = false
@@ -53,6 +57,8 @@ class HomeFragment : Fragment() {
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
 
     private var isExpanded = false
+
+    private val bottomSheetFeedAdapter: BottomSheetFeedAdapter by lazy { BottomSheetFeedAdapter(::handleClickFeed) }
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
@@ -72,13 +78,37 @@ class HomeFragment : Fragment() {
         initNaverMap()
         initTagRecyclerView()
         initBottomSheet()
+        initFeedListViewModel()
+
+    }
+
+    private fun initFeedListViewModel() = with(feedListViewModel) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            feedListUiState.flowWithLifecycle(viewLifecycleOwner.lifecycle)
+                .collectLatest { response ->
+                    when(response){
+                        is UiState.Error ->{
+                            Toast.makeText(requireContext(), response.message, Toast.LENGTH_SHORT).show()
+                        }
+
+                        is UiState.Loading -> {
+                            binding.rvBottomSheetPostList.isVisible = false
+                        }
+
+                        is UiState.Success -> {
+                            binding.rvBottomSheetPostList.isVisible = true
+                            bottomSheetFeedAdapter.submitList(response.data)
+                        }
+                    }
+                }
+        }
     }
 
     /**
-    * 네이버 지도 설정하는 코드
-    * TODO 네이버 로고, ScaleBar 의 위치를
-    *  BottomSheet 의 halfExpanded 까지 따라올 수 있게 구현
-    * */
+     * 네이버 지도 설정하는 코드
+     * TODO 네이버 로고, ScaleBar 의 위치를
+     *  BottomSheet 의 halfExpanded 까지 따라올 수 있게 구현
+     * */
     private fun initNaverMap() {
         // 위치 소스 초기화
         locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
@@ -109,8 +139,8 @@ class HomeFragment : Fragment() {
     }
 
     /**
-    * 태그 리스트 Recycler View 설정
-    * */
+     * 태그 리스트 Recycler View 설정
+     * */
     private fun initTagRecyclerView() {
         // 태그 리스트 데이터 설정
         val tagList = listOf(
@@ -293,6 +323,10 @@ class HomeFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun handleClickFeed(feed: FeedModel) {
+        feedListViewModel.getFeedListUiState(feed)
     }
 
     private fun initRestroomViewModel() {

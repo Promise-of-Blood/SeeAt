@@ -1,10 +1,9 @@
-package com.pob.seeat.domain.model
+package com.pob.seeat.data.model
 
 import java.util.Date
-import java.util.UUID
 
-data class PostModel(
-    val uId: String = UUID.randomUUID().toString(),
+data class FeedResponse (
+    val uId: String?,
     val thumbnailUrl: String?,
     val tagName: String?,
     val title: String?,
@@ -12,7 +11,5 @@ data class PostModel(
     val commentCount: Int?,
     val likeCount: Int?,
     val username: String?,
-    val isBookmark: Boolean = false,
     val dateTime: Date?,
 )
-
