@@ -11,10 +11,18 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class MyPageViewModel @Inject constructor(private val userInfoUseCases: UserInfoUseCases) : ViewModel() {
+class UserInfoViewModel @Inject constructor(private val userInfoUseCases: UserInfoUseCases) : ViewModel() {
 
     private val _userInfo = MutableStateFlow<UserInfoModel?>(null)
     val userInfo : StateFlow<UserInfoModel?> get() = _userInfo
+
+    fun signUp(uid:String, email:String, nickname:String){
+        val newUser = UserInfoModel(uid,email,nickname)
+
+        viewModelScope.launch {
+            userInfoUseCases.createUserInfoUseCase.execute(newUser)
+        }
+    }
 
     fun createUserInfo(userInfo : UserInfoModel){
         viewModelScope.launch {
