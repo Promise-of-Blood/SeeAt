@@ -46,11 +46,17 @@ class SignUpNameFragment : Fragment() {
     }
 
     private fun initView() = with(binding) {
+
+        val name = userViewModel.tempUserInfo.value?.name ?:"활동명을 입력해주세요"
+        etvSignupName.setText(name)
+
         btnSignupNext.setOnClickListener {
-            val name = etvSignupName.text.toString()
 
             if (name.isNotBlank()) {
-                userViewModel.saveTempUserInfo(name = name)
+
+                val etvText = etvSignupName.text.toString()
+
+                userViewModel.saveTempUserInfo(name = etvText)
                 Log.d("TempUserInfo","tempUserInfo : ${userViewModel.tempUserInfo.value}")
 
                 (activity as? SignUpActivity)?.let { activity ->
