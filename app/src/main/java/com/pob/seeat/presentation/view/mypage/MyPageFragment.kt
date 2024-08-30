@@ -29,8 +29,6 @@ class MyPageFragment : Fragment() {
     private var _binding: FragmentMyPageBinding? = null
     private val binding get() = _binding!!
 
-    private val viewPagerAdapter by lazy { ViewPagerAdapter(requireActivity()) }
-
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -62,7 +60,7 @@ class MyPageFragment : Fragment() {
     }
 
     private fun initView() = with(binding) {
-        vpMyPageHistory.adapter = viewPagerAdapter
+        vpMyPageHistory.adapter = ViewPagerAdapter(requireActivity())
         TabLayoutMediator(tlMyPageHistory, vpMyPageHistory) { tab, position ->
             when (position) {
                 0 -> tab.text = getString(R.string.history_feed)

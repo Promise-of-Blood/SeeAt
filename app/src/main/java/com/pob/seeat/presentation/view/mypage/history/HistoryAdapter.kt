@@ -5,6 +5,9 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.request.RequestOptions
 import com.pob.seeat.databinding.ItemFeedSummaryBinding
 import com.pob.seeat.databinding.ItemMessageTagBinding
 import com.pob.seeat.presentation.common.ViewHolder
@@ -54,6 +57,7 @@ class HistoryAdapter : ListAdapter<HistoryListItem, ViewHolder<HistoryListItem>>
         private val commentCount = binding.tvFeedCommentCount
         private val likeCount = binding.tvFeedLikeCount
         private val time = binding.tvFeedTime
+        private val image = binding.ivFeedImage
 
         override fun bind(item: HistoryListItem, onClick: (HistoryListItem) -> Unit) {
             (item as HistoryListItem.FeedItem).let { feed ->
@@ -62,6 +66,11 @@ class HistoryAdapter : ListAdapter<HistoryListItem, ViewHolder<HistoryListItem>>
                 commentCount.text = feed.commentCount.toString()
                 likeCount.text = feed.likeCount.toString()
                 time.text = feed.time
+
+                Glide.with(itemView.context)
+                    .load(feed.image)
+                    .apply(RequestOptions.bitmapTransform(RoundedCorners(10)))
+                    .into(image)
 
                 feed.tagList.forEach { tagName ->
                     tagContainer.addView(

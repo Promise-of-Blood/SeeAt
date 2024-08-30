@@ -28,7 +28,7 @@ fun List<FeedModel>.toHistoryListItemList(): List<HistoryListItem> {
             commentCount = it.commentsCount,
             likeCount = it.like,
             time = it.date?.toLocalDateTime()?.toKoreanDiffString() ?: "",
-            image = "",
+            image = "https://picsum.photos/200",
             viewType = HistoryEnum.FEED
         )
     }
