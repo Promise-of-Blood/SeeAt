@@ -31,10 +31,6 @@
             </intent-filter>
 
         </activity>
-
-
-
-
         <!--        <service android:name=".presentation.service.TestFirebaseMessagingService"-->
         <!--            android:exported="true">-->
         <!--            <intent-filter>-->
