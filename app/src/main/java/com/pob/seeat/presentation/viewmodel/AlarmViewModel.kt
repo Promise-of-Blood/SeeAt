@@ -15,7 +15,7 @@ import javax.inject.Inject
 class AlarmViewModel @Inject constructor(
     private val alarmRepository: AlarmRepository
 ) : ViewModel() {
-    var alarmResponse = MutableStateFlow<UiState<List<AlarmModel>>>(UiState.Loading)
+    var alarmResponse = MutableStateFlow<Result<List<AlarmModel>>>(Result.Loading)
         private set
 
     fun getAlarmList() {
@@ -24,9 +24,9 @@ class AlarmViewModel @Inject constructor(
                 .getAlarmList()
                 .collect {
                     when (it) {
-                        is Result.Loading -> alarmResponse.value = UiState.Loading
-                        is Result.Error -> alarmResponse.value = UiState.Error(it.message)
-                        is Result.Success -> alarmResponse.value = UiState.Success(it.data)
+                        is Result.Loading -> alarmResponse.value = Result.Loading
+                        is Result.Error -> alarmResponse.value = Result.Error(it.message)
+                        is Result.Success -> alarmResponse.value = Result.Success(it.data)
                     }
                 }
         }
@@ -38,9 +38,9 @@ class AlarmViewModel @Inject constructor(
                 .readAlarm(uId)
                 .collect {
                     when (it) {
-                        is Result.Loading -> alarmResponse.value = UiState.Loading
-                        is Result.Error -> alarmResponse.value = UiState.Error(it.message)
-                        is Result.Success -> alarmResponse.value = UiState.Success(it.data)
+                        is Result.Loading -> alarmResponse.value = Result.Loading
+                        is Result.Error -> alarmResponse.value = Result.Error(it.message)
+                        is Result.Success -> alarmResponse.value = Result.Success(it.data)
                     }
                 }
         }
