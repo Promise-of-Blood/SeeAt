@@ -26,7 +26,7 @@ class HistoryFragment : Fragment() {
 
     private val historyAdapter by lazy { HistoryAdapter() }
     private val userHistoryViewModel by viewModels<UserHistoryViewModel>()
-    private var position: Int = 0
+    private var position: Int? = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
