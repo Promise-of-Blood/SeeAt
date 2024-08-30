@@ -47,7 +47,7 @@ class HistoryFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initView()
         initViewModel()
-        userHistoryViewModel.getUserFeedHistory()
+        getHistoryList()
     }
 
     override fun onDestroy() {
@@ -65,9 +65,10 @@ class HistoryFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             history.flowWithLifecycle(viewLifecycleOwner.lifecycle)
                 .collectLatest { response ->
-                    when(response){
-                        is UiState.Error ->{
-                            Toast.makeText(requireContext(), response.message, Toast.LENGTH_SHORT).show()
+                    when (response) {
+                        is UiState.Error -> {
+                            Toast.makeText(requireContext(), response.message, Toast.LENGTH_SHORT)
+                                .show()
                         }
 
                         is UiState.Loading -> {
@@ -81,6 +82,12 @@ class HistoryFragment : Fragment() {
                     }
                 }
         }
+    }
+
+    private fun getHistoryList() = when (position) {
+        0 -> userHistoryViewModel.getUserFeedHistory()
+        1 -> userHistoryViewModel.getUserCommentHistory()
+        else -> userHistoryViewModel.getUserLikedHistory()
     }
 
     companion object {

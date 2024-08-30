@@ -8,7 +8,8 @@ import androidx.recyclerview.widget.ListAdapter
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
-import com.pob.seeat.databinding.ItemFeedSummaryBinding
+import com.pob.seeat.databinding.ItemCommentHistoryBinding
+import com.pob.seeat.databinding.ItemFeedHistoryBinding
 import com.pob.seeat.databinding.ItemMessageTagBinding
 import com.pob.seeat.presentation.common.ViewHolder
 import com.pob.seeat.presentation.view.mypage.items.HistoryEnum
@@ -28,20 +29,27 @@ class HistoryAdapter : ListAdapter<HistoryListItem, ViewHolder<HistoryListItem>>
 }) {
     override fun getItemViewType(position: Int) = when (getItem(position)) {
         is HistoryListItem.FeedItem -> HistoryEnum.FEED.viewType
+        is HistoryListItem.CommentItem -> HistoryEnum.COMMENT.viewType
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder<HistoryListItem> {
         val historyViewType = HistoryEnum.entries.find { it.viewType == viewType }
         return when (historyViewType) {
             HistoryEnum.FEED -> FeedViewHolder(
-                ItemFeedSummaryBinding.inflate(
+                ItemFeedHistoryBinding.inflate(
                     LayoutInflater.from(
                         parent.context
                     ), parent, false
                 )
             )
 
-            else -> throw IllegalArgumentException("Invalid view type")
+            else -> CommentViewHolder(
+                ItemCommentHistoryBinding.inflate(
+                    LayoutInflater.from(
+                        parent.context
+                    ), parent, false
+                )
+            )
         }
     }
 
@@ -49,7 +57,7 @@ class HistoryAdapter : ListAdapter<HistoryListItem, ViewHolder<HistoryListItem>>
         holder.bind(getItem(position))
     }
 
-    class FeedViewHolder(binding: ItemFeedSummaryBinding) :
+    class FeedViewHolder(binding: ItemFeedHistoryBinding) :
         ViewHolder<HistoryListItem>(binding.root) {
         private val tagContainer = binding.llFeedTagContainer
         private val title = binding.tvFeedTitle
@@ -88,6 +96,21 @@ class HistoryAdapter : ListAdapter<HistoryListItem, ViewHolder<HistoryListItem>>
                             .root
                     )
                 }
+            }
+        }
+    }
+
+    class CommentViewHolder(binding: ItemCommentHistoryBinding) :
+        ViewHolder<HistoryListItem>(binding.root) {
+        private val comment = binding.tvCommentContent
+        private val likeCount = binding.tvCommentLikeCount
+        private val time = binding.tvCommentTime
+
+        override fun bind(item: HistoryListItem, onClick: (HistoryListItem) -> Unit) {
+            (item as HistoryListItem.CommentItem).let {
+                comment.text = it.comment
+                likeCount.text = it.likeCount.toString()
+                time.text = it.time
             }
         }
     }
