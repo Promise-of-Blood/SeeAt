@@ -31,11 +31,13 @@ import com.naver.maps.map.util.FusedLocationSource
 import com.pob.seeat.R
 import com.pob.seeat.databinding.FragmentHomeBinding
 import com.pob.seeat.presentation.view.UiState
+import com.pob.seeat.presentation.viewmodel.HomeViewModel
 import com.pob.seeat.presentation.viewmodel.RestroomViewModel
 import com.pob.seeat.utils.Utils.px
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import com.pob.seeat.data.model.Result
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
@@ -53,6 +55,8 @@ class HomeFragment : Fragment() {
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
 
     private var isExpanded = false
+
+    private val homeViewModel: HomeViewModel by viewModels()
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
@@ -72,13 +76,60 @@ class HomeFragment : Fragment() {
         initNaverMap()
         initTagRecyclerView()
         initBottomSheet()
+        getFeed()
+
+        // 파이어 스토어 테스트
+//        val db = FirebaseFirestore.getInstance()
+//        binding.ivAlarm.setOnClickListener {
+//            db.collection("feed").get().addOnSuccessListener { result ->
+//                for (document in result) {
+//                    println("Document ID: ${document.id}")
+//                    println("Data: ${document.data}")
+//                    // If you have subcollections
+//                    db.collection("feed").document(document.id).collection("comments")
+//                        .get().addOnSuccessListener { subResult ->
+//                            for (subDocument in subResult) {
+//                                println("  SubDocument ID: ${subDocument.id}")
+//                                println("  SubData: ${subDocument.data}")
+//                            }
+//                        }
+//                }
+//            }
+//        }
+
     }
 
+    private fun getFeed() = with(homeViewModel) {
+
+        getFeedList()
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            feedResponse.flowWithLifecycle(viewLifecycleOwner.lifecycle)
+                .collectLatest { response ->
+                    when (response) {
+                        is Result.Error -> {
+                            Log.e("HomeFragment", "Error: ${response.message}")
+                        }
+
+                        is Result.Loading -> {
+                            Log.d("HomeFragment", "Loading..")
+                        }
+
+                        is Result.Success -> {
+                            val feedList = response.data
+                            Log.d("HomeFragment", feedList.toString())
+                        }
+                    }
+                }
+        }
+    }
+
+
     /**
-    * 네이버 지도 설정하는 코드
-    * TODO 네이버 로고, ScaleBar 의 위치를
-    *  BottomSheet 의 halfExpanded 까지 따라올 수 있게 구현
-    * */
+     * 네이버 지도 설정하는 코드
+     * TODO 네이버 로고, ScaleBar 의 위치를
+     *  BottomSheet 의 halfExpanded 까지 따라올 수 있게 구현
+     * */
     private fun initNaverMap() {
         // 위치 소스 초기화
         locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
@@ -109,8 +160,8 @@ class HomeFragment : Fragment() {
     }
 
     /**
-    * 태그 리스트 Recycler View 설정
-    * */
+     * 태그 리스트 Recycler View 설정
+     * */
     private fun initTagRecyclerView() {
         // 태그 리스트 데이터 설정
         val tagList = listOf(
