@@ -26,7 +26,10 @@
 
     <!-- my page -->
     <string name="settings_account">계정 설정</string>
+    <string name="settings_user_account">현재 로그인 계정</string>
+    <string name="settings_logout">로그아웃</string>
     <string name="settings_delete_account">회원 탈퇴</string>
+
 
 
     <!-- alarm -->

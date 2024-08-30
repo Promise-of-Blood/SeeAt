@@ -13,7 +13,6 @@ import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.pob.seeat.BuildConfig
-import com.pob.seeat.MainActivity
 import com.pob.seeat.presentation.view.LoginActivity
 
 object GoogleAuthUtil {
@@ -46,11 +45,13 @@ object GoogleAuthUtil {
         }
     }
 
-    fun handleSignInResult(activity: Activity, requestCode: Int, data: Intent?, onSuccess: () -> Unit, onFailure: () -> Unit) {
+    fun handleSignInResult(activity: Activity, requestCode: Int, data: Intent?, onSuccess: (uid:String, email:String, nickname:String) -> Unit, onFailure: () -> Unit) {
         val task = GoogleSignIn.getSignedInAccountFromIntent(data)
         try {
             val account = task.getResult(ApiException::class.java)!!
-            firebaseAuthWithGoogle(account.idToken!!, activity, onSuccess, onFailure)
+            firebaseAuthWithGoogle(account.idToken!!, activity, { uid, email, displayName ->
+                onSuccess(uid, email, displayName)  // 성공 시 UID, 이메일, 닉네임 전달
+            }, onFailure)
         } catch (e: ApiException) {
             Log.e("GoogleAuthUtil", "Login failed: ${e.message}", e)
             onFailure()
@@ -58,12 +59,21 @@ object GoogleAuthUtil {
     }
 
     //파이어베이스 인증
-    fun firebaseAuthWithGoogle(idToken: String, activity: Activity, onSuccess: () -> Unit, onFailure: () -> Unit){
+    fun firebaseAuthWithGoogle(idToken: String, activity: Activity, onSuccess: (uid:String, email:String, nickname:String) -> Unit, onFailure: () -> Unit){
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         firebaseAuth.signInWithCredential(credential)
             .addOnCompleteListener(activity) { task ->
                 if (task.isSuccessful) {
-                    onSuccess()
+                    val user = firebaseAuth.currentUser
+                    val uid = user?.uid ?: ""
+                    val email = user?.email ?: ""
+                    val nickname = user?.displayName ?: ""
+
+                    if(uid.isNotEmpty()){
+                        onSuccess(uid,email,nickname)
+                    }else{
+                        onFailure()
+                    }
                 } else {
                     Log.e("GoogleAuthUtil", "Firebase authentication failed: ${task.exception?.message}", task.exception)
                     onFailure()
