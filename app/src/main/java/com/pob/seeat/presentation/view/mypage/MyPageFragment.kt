@@ -29,7 +29,7 @@ class MyPageFragment : Fragment() {
     private var _binding: FragmentMyPageBinding? = null
     private val binding get() = _binding!!
 
-    private val historyAdapter by lazy { HistoryAdapter(requireActivity()) }
+    private val viewPagerAdapter by lazy { ViewPagerAdapter(requireActivity()) }
 
     // TODO: Rename and change types of parameters
     private var param1: String? = null
@@ -62,7 +62,7 @@ class MyPageFragment : Fragment() {
     }
 
     private fun initView() = with(binding) {
-        vpMyPageHistory.adapter = historyAdapter
+        vpMyPageHistory.adapter = viewPagerAdapter
         TabLayoutMediator(tlMyPageHistory, vpMyPageHistory) { tab, position ->
             when (position) {
                 0 -> tab.text = getString(R.string.history_feed)
@@ -81,7 +81,7 @@ class MyPageFragment : Fragment() {
         tvMyPageVersion.text = getString(R.string.my_page_version, BuildConfig.VERSION_NAME)
 
         mbMyPageSettings.setOnClickListener {
-            startActivity(Intent(requireContext(),SettingsActivity::class.java))
+            startActivity(Intent(requireContext(), SettingsActivity::class.java))
         }
 
         mbMyPageLogout.setOnClickListener {
