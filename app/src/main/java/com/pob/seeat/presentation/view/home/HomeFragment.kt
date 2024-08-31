@@ -24,10 +24,19 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
+import com.naver.maps.map.OnMapReadyCallback
+import com.naver.maps.map.clustering.Clusterer
+import com.naver.maps.map.clustering.ClusteringKey
+import com.naver.maps.map.clustering.DefaultLeafMarkerUpdater
+import com.naver.maps.map.clustering.LeafMarkerInfo
+import com.naver.maps.map.overlay.Marker
+import com.naver.maps.map.overlay.Overlay
 import com.naver.maps.map.util.FusedLocationSource
+import com.naver.maps.map.util.MapConstants
 import com.pob.seeat.R
 import com.pob.seeat.databinding.FragmentHomeBinding
 import com.pob.seeat.presentation.view.UiState
@@ -38,6 +47,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import com.pob.seeat.data.model.Result
+import com.pob.seeat.domain.model.FeedModel
+import timber.log.Timber
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
@@ -99,6 +110,12 @@ class HomeFragment : Fragment() {
 
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+
     private fun getFeed() = with(homeViewModel) {
 
         getFeedList()
@@ -118,14 +135,75 @@ class HomeFragment : Fragment() {
                         is Result.Success -> {
                             val feedList = response.data
                             Log.d("HomeFragment", feedList.toString())
+                            updateMarker(feedList)
                         }
                     }
                 }
         }
     }
 
+    private class ItemKey(val id: String, private val position: LatLng) : ClusteringKey {
+        override fun getPosition() = position
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (other == null || javaClass != other.javaClass) return false
+            val itemKey = other as ItemKey
+            return id == itemKey.id
+        }
+
+        override fun hashCode() = id.hashCode()
+    }
 
     /**
+    * 모든 feed 도큐먼트를 가져와 해당 좌표값에 마커 생성
+     * 클릭 시 로그로 정보확인 가능
+     */
+
+    private fun updateMarker(feedList: List<FeedModel>) {
+        var clusterer: Clusterer<ItemKey>? = null
+        val listSize = feedList.size
+
+        clusterer = Clusterer.Builder<ItemKey>()
+            .leafMarkerUpdater(object : DefaultLeafMarkerUpdater() {
+                override fun updateLeafMarker(info: LeafMarkerInfo, marker: Marker) {
+                    super.updateLeafMarker(info, marker)
+                    marker.icon = Marker.DEFAULT_ICON
+
+                    marker.onClickListener = Overlay.OnClickListener {
+                        // ItemKey의 id를 통해 feedList에서 FeedModel을 가져옴
+                        val feedModel = feedList.find { it.feedId == (info.key as ItemKey).id }
+                        feedModel?.let { model ->
+                            Log.d("HomeFragment", "Marker Clicked: ${model.title}, ${model.content}")
+                        } ?: Log.e("HomeFragment", "FeedModel not found for marker")
+                        true
+                    }
+                }
+            })
+            .build()
+            .apply {
+                val keyTagMap = buildMap(listSize) {
+                    repeat(listSize) { i ->
+                        val latitude = feedList[i].location?.latitude
+                        val longitude = feedList[i].location?.longitude
+                        put(
+                            ItemKey(
+                                feedList[i].feedId,  // FeedModel의 feedId를 사용하여 ItemKey 생성
+                                LatLng(latitude!!, longitude!!),
+                            ),
+                            (Math.random() * 5).toInt(),
+                        )
+                    }
+                }
+
+                addAll(keyTagMap)
+                map = naverMap
+            }
+    }
+
+
+
+                            /**
      * 네이버 지도 설정하는 코드
      * TODO 네이버 로고, ScaleBar 의 위치를
      *  BottomSheet 의 halfExpanded 까지 따라올 수 있게 구현
@@ -339,11 +417,6 @@ class HomeFragment : Fragment() {
                 Toast.makeText(requireContext(), "위치 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
             }
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 
     private fun initRestroomViewModel() {
