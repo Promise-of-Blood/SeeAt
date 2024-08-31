@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.viewModels
 import androidx.core.net.toUri
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -91,6 +92,15 @@ class MyPageFragment : Fragment() {
         mbMyPageLogout.setOnClickListener {
             GoogleAuthUtil.googleLogout(requireActivity())
         }
+
+        tvMyPageVersion.setOnClickListener {
+            when((easterEgg) % 3) {
+                0 -> toast("IDKOS : 난 너무 잘생겼어")
+                1 -> toast("IDKOS : 날 보면 볼수록 너무 좋아")
+                2 -> toast("IDKOS : 거울이 나의 삶의 낙이야")
+            }
+            _easterEgg++
+        }
     }
 
     private fun observeUserInfo() {
@@ -106,8 +116,15 @@ class MyPageFragment : Fragment() {
                     Log.e("MyPageFragment", "UserInfo is null")
                 }
             }
-
         }
+        }
+    companion object {
+        var _easterEgg = 0
+        val easterEgg get() = _easterEgg
+    }
+
+    fun toast(bread: String) {
+        Toast.makeText(requireContext(), bread, Toast.LENGTH_SHORT).show()
     }
 }
 
