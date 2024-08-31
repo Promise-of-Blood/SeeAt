@@ -348,6 +348,18 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
+        <EditText
+            android:id="@+id/et_add_comment"
+            android:layout_width="300dp"
+            android:paddingHorizontal="30dp"
+            android:paddingVertical="20dp"
+            android:layout_height="wrap_content"
+            android:hint="@string/input_comment"
+            android:background="@drawable/edittext_shadow"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
