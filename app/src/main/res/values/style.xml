@@ -13,4 +13,12 @@
         <item name="android:padding">16dp</item>
     </style>
 
+    <style name="my_page_edit_profile" parent="Widget.Material3.Button">
+        <item name="android:background">@color/primary</item>
+        <item name="backgroundTint">@color/primary</item>
+        <item name="android:text">@string/my_page_edit_profile</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:padding">8dp</item>
+    </style>
+
 </resources>
