@@ -13,7 +13,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.pob.seeat.BuildConfig
 import com.pob.seeat.presentation.view.sign.LoginActivity
-
 object GoogleAuthUtil {
     private lateinit var googleSignInClient : GoogleSignInClient
     private lateinit var firebaseAuth : FirebaseAuth
