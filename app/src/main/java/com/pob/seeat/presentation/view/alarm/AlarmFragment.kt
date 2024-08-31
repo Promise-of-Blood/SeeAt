@@ -14,9 +14,9 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.pob.seeat.MainActivity
 import com.pob.seeat.R
+import com.pob.seeat.data.model.Result
 import com.pob.seeat.databinding.FragmentAlarmBinding
 import com.pob.seeat.domain.model.AlarmModel
-import com.pob.seeat.presentation.view.UiState
 import com.pob.seeat.presentation.viewmodel.AlarmViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -92,15 +92,15 @@ class AlarmFragment : Fragment() {
             alarmResponse.flowWithLifecycle(viewLifecycleOwner.lifecycle)
                 .collectLatest { response ->
                     when(response){
-                        is UiState.Error ->{
+                        is Result.Error ->{
                             Toast.makeText(requireContext(), response.message, Toast.LENGTH_SHORT).show()
                         }
 
-                        is UiState.Loading -> {
+                        is Result.Loading -> {
                             binding.rvAlarm.isVisible = false
                         }
 
-                        is UiState.Success -> {
+                        is Result.Success -> {
                             binding.rvAlarm.isVisible = true
                             alarmAdapter.submitList(response.data)
                         }

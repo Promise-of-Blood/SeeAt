@@ -1,4 +1,4 @@
-package com.pob.seeat.presentation.view
+package com.pob.seeat.presentation.view.sign
 
 import android.content.Intent
 import android.os.Bundle
@@ -6,46 +6,36 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.common.api.Api
-import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.GoogleAuthProvider
-import com.google.firebase.firestore.auth.User
-import com.kakao.sdk.auth.model.OAuthToken
-import com.kakao.sdk.common.model.AppsErrorCause
-import com.kakao.sdk.common.model.AuthErrorCause
-import com.kakao.sdk.common.util.Utility
-import com.kakao.sdk.user.UserApiClient
-import com.navercorp.nid.NaverIdLoginSDK
-import com.navercorp.nid.oauth.NidOAuthLogin
-import com.navercorp.nid.oauth.OAuthLoginCallback
-import com.navercorp.nid.profile.NidProfileCallback
-import com.navercorp.nid.profile.data.NidProfileResponse
-import com.pob.seeat.BuildConfig
 import com.pob.seeat.MainActivity
 import com.pob.seeat.R
 import com.pob.seeat.databinding.ActivityLoginBinding
+import com.pob.seeat.presentation.viewmodel.UserInfoViewModel
 import com.pob.seeat.utils.GoogleAuthUtil
-import com.pob.seeat.utils.GoogleAuthUtil.firebaseAuthWithGoogle
-import com.pob.seeat.utils.GoogleAuthUtil.googleLogin
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class LoginActivity : AppCompatActivity() {
     private val binding: ActivityLoginBinding by lazy { ActivityLoginBinding.inflate(layoutInflater) }
+
+    private val userViewModel : UserInfoViewModel by viewModels()
 
     private val googleSignInLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             GoogleAuthUtil.handleSignInResult(this, result.resultCode, result.data,
-                onSuccess = {
-                    Toast.makeText(this, "환영합니다!", Toast.LENGTH_SHORT).show()
-                    startActivity(Intent(this, MainActivity::class.java))
-                    finish()
+                onSuccess = {uid, email, nickname ->
+
+                    userViewModel.isOurFamily(
+                        email,
+                        { navigateToHome() },
+                        {
+                            navigateToSignUp(uid,email, nickname)
+                        }
+                    )
                 },
                 onFailure = {
                     Toast.makeText(this, "Google 로그인에 실패했습니다.", Toast.LENGTH_SHORT).show()
@@ -63,6 +53,8 @@ class LoginActivity : AppCompatActivity() {
         }
         initView()
     }
+
+
 
     private fun initView() = with(binding) {
 
@@ -93,6 +85,16 @@ class LoginActivity : AppCompatActivity() {
         startActivity(intent)
         finish()
     }
+
+    private fun navigateToSignUp(uid: String, email: String, nickname: String){
+        val intent = Intent(this,SignUpActivity::class.java).apply {
+            putExtra("uid", uid)
+            putExtra("email", email)
+            putExtra("nickname", nickname)
+        }
+        startActivity(intent)
+    }
+
 
 //    서버 필요해서 일단 죽임
 //    private fun kakaoLogin() {

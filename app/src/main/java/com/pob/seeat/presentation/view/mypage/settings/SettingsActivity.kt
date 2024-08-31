@@ -8,6 +8,7 @@ import androidx.core.view.WindowInsetsCompat
 import com.pob.seeat.R
 import com.pob.seeat.databinding.ActivitySettingsBinding
 import com.pob.seeat.utils.GoogleAuthUtil
+import com.pob.seeat.utils.GoogleAuthUtil.getUserEmail
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -29,6 +30,12 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun initView() = with(binding){
+
+        tvUserEmail.text = getUserEmail()
+
+        settingsLogout.setOnClickListener {
+            GoogleAuthUtil.googleLogout(this@SettingsActivity)
+        }
 
         settingsDeleteAccount.setOnClickListener {
             GoogleAuthUtil.googleWithdrawal(this@SettingsActivity)

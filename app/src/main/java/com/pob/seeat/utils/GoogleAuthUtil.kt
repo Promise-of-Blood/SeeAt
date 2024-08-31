@@ -1,7 +1,6 @@
 package com.pob.seeat.utils
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.util.Log
 import android.widget.Toast
@@ -13,8 +12,7 @@ import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.pob.seeat.BuildConfig
-import com.pob.seeat.MainActivity
-import com.pob.seeat.presentation.view.LoginActivity
+import com.pob.seeat.presentation.view.sign.LoginActivity
 
 object GoogleAuthUtil {
     private lateinit var googleSignInClient : GoogleSignInClient
@@ -35,6 +33,14 @@ object GoogleAuthUtil {
         Log.d("GoogleAuthUtil", "GoogleSignInClient initialized")
     }
 
+    fun getUserEmail():String{
+        return firebaseAuth.currentUser?.email ?: ""
+    }
+
+    fun getUserUid():String?{
+        return firebaseAuth.currentUser?.uid
+    }
+
     //로그인
     fun googleLogin(activity: Activity,launcher : ActivityResultLauncher<Intent>) {
         try {
@@ -46,11 +52,13 @@ object GoogleAuthUtil {
         }
     }
 
-    fun handleSignInResult(activity: Activity, requestCode: Int, data: Intent?, onSuccess: () -> Unit, onFailure: () -> Unit) {
+    fun handleSignInResult(activity: Activity, requestCode: Int, data: Intent?, onSuccess: (uid:String, email:String, nickname:String) -> Unit, onFailure: () -> Unit) {
         val task = GoogleSignIn.getSignedInAccountFromIntent(data)
         try {
             val account = task.getResult(ApiException::class.java)!!
-            firebaseAuthWithGoogle(account.idToken!!, activity, onSuccess, onFailure)
+            firebaseAuthWithGoogle(account.idToken!!, activity, { uid, email, displayName ->
+                onSuccess(uid, email, displayName)  // 성공 시 UID, 이메일, 닉네임 전달
+            }, onFailure)
         } catch (e: ApiException) {
             Log.e("GoogleAuthUtil", "Login failed: ${e.message}", e)
             onFailure()
@@ -58,12 +66,21 @@ object GoogleAuthUtil {
     }
 
     //파이어베이스 인증
-    fun firebaseAuthWithGoogle(idToken: String, activity: Activity, onSuccess: () -> Unit, onFailure: () -> Unit){
+    fun firebaseAuthWithGoogle(idToken: String, activity: Activity, onSuccess: (uid:String, email:String, nickname:String) -> Unit, onFailure: () -> Unit){
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         firebaseAuth.signInWithCredential(credential)
             .addOnCompleteListener(activity) { task ->
                 if (task.isSuccessful) {
-                    onSuccess()
+                    val user = firebaseAuth.currentUser
+                    val uid = user?.uid ?: ""
+                    val email = user?.email ?: ""
+                    val nickname = user?.displayName ?: ""
+
+                    if(uid.isNotEmpty()){
+                        onSuccess(uid,email,nickname)
+                    }else{
+                        onFailure()
+                    }
                 } else {
                     Log.e("GoogleAuthUtil", "Firebase authentication failed: ${task.exception?.message}", task.exception)
                     onFailure()
@@ -82,7 +99,7 @@ object GoogleAuthUtil {
         googleSignInClient.signOut().addOnCompleteListener(activity) {
             if(FirebaseAuth.getInstance().currentUser == null){
                 Toast.makeText(activity, "구글 로그아웃 되었습니다.", Toast.LENGTH_SHORT).show()
-                val intent = Intent(activity,LoginActivity::class.java)
+                val intent = Intent(activity, LoginActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 activity.startActivity(intent)
                 activity.finish()
@@ -102,7 +119,7 @@ object GoogleAuthUtil {
             if (task.isSuccessful) {
                 googleSignInClient.revokeAccess().addOnCompleteListener(activity) {
                     Toast.makeText(activity, "구글 계정이 삭제되었습니다.", Toast.LENGTH_SHORT).show()
-                    val intent = Intent(activity,LoginActivity::class.java)
+                    val intent = Intent(activity, LoginActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     activity.startActivity(intent)
                     activity.finish()

@@ -129,4 +129,7 @@ dependencies {
 
     // timber
     implementation(libs.timber)
+
+    //image implement
+    implementation(libs.android.image.cropper)
 }
