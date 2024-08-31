@@ -17,8 +17,6 @@ import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import com.google.android.gms.tasks.OnCompleteListener
-//import com.google.firebase.messaging.FirebaseMessaging
 import android.view.ViewTreeObserver
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
@@ -326,7 +324,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun handleClickFeed(feed: FeedModel) {
-        feedListViewModel.getFeedListUiState(feed)
+        feedListViewModel.getFeedListUiState("feed")
     }
 
     private fun initRestroomViewModel() {

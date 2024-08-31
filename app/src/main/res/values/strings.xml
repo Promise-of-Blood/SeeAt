@@ -31,7 +31,6 @@
     <string name="settings_delete_account">회원 탈퇴</string>
 
 
-
     <!-- alarm -->
     <string name="alarm_title">알림</string>
     <string name="alarm_image">게시물 이미지</string>
@@ -51,5 +50,12 @@
     <string name="message_title">상대방</string>
     <string name="message_feed_title">글 제목 글 제목 글 제목 글 제목 글 제목 글 제목 글 제목 글 제목 글 제목 글 제목</string>
     <string name="message_feed_content">글 내용 글 내용 글 내용 글 내용 글 내용 글 내용 글 내용 글 내용 글 내용</string>
+    <string name="detail_comment">댓글</string>
+    <string name="detail_like">추천</string>
+    <string name="detail_bookmark">북마크</string>
+    <string name="feed">게시글</string>
+    <string name="writer_info">작성자 정보</string>
+    <string name="do_chat">채팅하기</string>
+    <string name="get_position">위치보기</string>
 
 </resources>
