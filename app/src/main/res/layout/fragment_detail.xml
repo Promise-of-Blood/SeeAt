@@ -330,6 +330,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tv_comment"
                 tools:itemCount="10"
@@ -351,13 +352,28 @@
         <EditText
             android:id="@+id/et_add_comment"
             android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/edittext_shadow"
+            android:hint="@string/input_comment"
             android:paddingHorizontal="30dp"
             android:paddingVertical="20dp"
-            android:layout_height="wrap_content"
-            android:hint="@string/input_comment"
-            android:background="@drawable/edittext_shadow"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_add_comment_button"
+            android:layout_width="70dp"
+            android:layout_height="50dp"
+            android:background="@drawable/selector_btn_green_fill"
+            android:clickable="true"
+            android:layout_marginTop="3dp"
+            android:focusable="true"
+            android:gravity="center"
+            android:text="@string/send"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
 

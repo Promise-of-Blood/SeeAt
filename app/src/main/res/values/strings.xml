@@ -59,5 +59,6 @@
     <string name="get_position">위치보기</string>
     <string name="report">신고</string>
     <string name="input_comment">댓글을 입력해주세요</string>
+    <string name="send">전송</string>
 
 </resources>
