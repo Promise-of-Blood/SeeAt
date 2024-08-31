@@ -7,12 +7,16 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.media.RingtoneManager
+import android.net.Uri
 import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationCompat.BigPictureStyle
+import androidx.core.app.NotificationCompat.PRIORITY_HIGH
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.target.SimpleTarget
@@ -22,6 +26,9 @@ import com.google.firebase.messaging.RemoteMessage
 import com.pob.seeat.MainActivity
 import com.pob.seeat.R
 import timber.log.Timber
+import java.io.InputStream
+import java.net.HttpURLConnection
+import java.net.URL
 
 class TestFirebaseMessagingService : FirebaseMessagingService() {
 
@@ -68,24 +75,22 @@ class TestFirebaseMessagingService : FirebaseMessagingService() {
         // 알림 소리
         val soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
 
-        var bigPictureStyle : BigPictureStyle? = null
+        val bitmapFromUrl = getBitmapFromURL(remoteMessage.notification?.imageUrl.toString())
+        val bigPictureStyle : BigPictureStyle =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+                BigPictureStyle().bigPicture(bitmapFromUrl).showBigPictureWhenCollapsed(true)
+            else
+                BigPictureStyle().bigPicture(bitmapFromUrl)
+
         // 알림에 대한 UI 정보와 작업을 지정한다.
-        Glide.with(this).asBitmap().load(remoteMessage.notification?.imageUrl).into(object : CustomTarget<Bitmap>(300, 300) {
-            override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-                bigPictureStyle = BigPictureStyle().bigPicture(resource)
-            }
-            override fun onLoadCleared(placeholder: Drawable?) {
-
-            }
-        })
-
         val notificationBuilder = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(R.mipmap.ic_launcher) // 아이콘 설정
             .setContentTitle(remoteMessage.notification?.title.toString() ?: "(알 수 없음)") // 제목
             .setContentText(remoteMessage.notification?.body.toString() ?: "(알 수 없음)") // 메시지 내용
-            .setStyle(bigPictureStyle)
+            .setStyle(bigPictureStyle) // 큰 사진을 위한 스타일 적용
             .setAutoCancel(true)
             .setSound(soundUri) // 알림 소리
+            .setPriority(PRIORITY_HIGH)
             .setContentIntent(pendingIntent) // 알림 실행 시 Intent
 
         val notificationManager =
@@ -99,6 +104,16 @@ class TestFirebaseMessagingService : FirebaseMessagingService() {
 
         // 알림 생성
         notificationManager.notify(uniId, notificationBuilder.build())
+    }
+
+    private fun getBitmapFromURL(urlStr: String) : Bitmap {
+        val url = URL(urlStr)
+        val connection : HttpURLConnection = url.openConnection() as HttpURLConnection
+        connection.doInput = true
+        connection.connect()
+        val input: InputStream = connection.inputStream
+        val bitmap = BitmapFactory.decodeStream(input)
+        return bitmap
     }
 
 }

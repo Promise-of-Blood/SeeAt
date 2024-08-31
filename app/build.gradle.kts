@@ -110,6 +110,7 @@ dependencies {
 
     // glide
     implementation(libs.glide)
+    annotationProcessor(libs.glide.compiler)
 
     // kakao
     implementation(libs.kakao.maps)
