@@ -41,25 +41,35 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_writer">
 
-        <ImageView
-            android:id="@+id/iv_writer_image"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:scaleType="centerCrop"
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cv_writer_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="15dp"
+            app:cardElevation="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:src="@drawable/ic_add_location" />
+            app:layout_constraintTop_toTopOf="parent">
+
+
+            <ImageView
+                android:id="@+id/iv_writer_image"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                tools:src="@drawable/ic_beer" />
+
+        </androidx.cardview.widget.CardView>
 
         <TextView
             android:id="@+id/tv_writer_username"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
             android:text="갸륵명선"
+            android:textStyle="bold"
+            android:layout_marginStart="20dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@id/iv_writer_image"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@id/cv_writer_layout"/>
 
         <TextView
             android:id="@+id/tv_chat_button"
@@ -85,7 +95,6 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="20dp"
-        android:layout_marginBottom="30dp"
         app:layout_constraintBottom_toTopOf="@id/cl_comment_layout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -355,8 +364,9 @@
             android:layout_height="wrap_content"
             android:background="@drawable/edittext_shadow"
             android:hint="@string/input_comment"
-            android:paddingHorizontal="30dp"
             android:paddingVertical="20dp"
+            android:paddingStart="45dp"
+            android:paddingEnd="5dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -364,9 +374,9 @@
             android:id="@+id/tv_add_comment_button"
             android:layout_width="70dp"
             android:layout_height="50dp"
+            android:layout_marginTop="3dp"
             android:background="@drawable/selector_btn_green_fill"
             android:clickable="true"
-            android:layout_marginTop="3dp"
             android:focusable="true"
             android:gravity="center"
             android:text="@string/send"
@@ -376,6 +386,24 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cv_send_comment_my_image_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="15dp"
+            app:cardCornerRadius="15dp"
+            app:cardElevation="0dp"
+            app:layout_constraintStart_toStartOf="@id/et_add_comment"
+            app:layout_constraintTop_toTopOf="@id/et_add_comment">
+
+            <ImageView
+                android:id="@+id/iv_send_comment_my_image"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                tools:src="@drawable/ic_home" />
+
+        </androidx.cardview.widget.CardView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
