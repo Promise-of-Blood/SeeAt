@@ -65,7 +65,6 @@ class TagAdapter(private val tagList: List<Tag>) : RecyclerView.Adapter<TagAdapt
         return tagList.size
     }
 
-
     class TagViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val tagImage: ImageView = itemView.findViewById(R.id.iv_tag_icon)
         private val tagName: TextView = itemView.findViewById(R.id.tv_tag_name)
