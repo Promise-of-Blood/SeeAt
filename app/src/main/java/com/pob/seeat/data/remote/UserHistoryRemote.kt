@@ -14,8 +14,10 @@ class UserHistoryRemote @Inject constructor(
         limit: Long?,
         startAfter: String?
     ): List<FeedModel> {
+        val userRef = firestore.collection("user").whereEqualTo("uid", uid).limit(1).get()
+            .await().documents.firstOrNull()?.reference
         val feedDocuments = firestore.collection("feed")
-            .whereEqualTo("user", uid)
+            .whereEqualTo("user", userRef)
         if (limit != null) feedDocuments.limit(limit)
         if (startAfter != null) feedDocuments.startAfter(startAfter)
         return feedDocuments.get().await().documents.mapNotNull { documentSnapshot ->
