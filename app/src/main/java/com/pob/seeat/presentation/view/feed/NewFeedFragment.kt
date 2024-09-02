@@ -54,12 +54,20 @@ class NewFeedFragment : Fragment() {
 
             tvUpload.setOnClickListener {
                 uploadFeed()
+                val rand: Float = (-50..50).random().toFloat() / 1000
+                Timber.tag("NewFeedRand").d("$rand")
+
+                val latitude = 37.565381+(rand)
+                val longitude = 126.97786+(rand)
                 val feedData : HashMap<String, Any> = hashMapOf(
                     "title" to etTitle.text.toString(),
                     "content" to etContent.text.toString(),
                     "date" to Timestamp(Date()),
                     "tagList" to listOf("태그 1", "태그 2", "태그 3"),
-
+                    "location" to GeoPoint(latitude, longitude),
+                    "like" to 0,
+                    "commentsCount" to 0,
+                    "user" to "E2S91qMCU2bpUozIqxdc4LXhw3F2"
                     )
                 val db = Firebase.firestore
                 val ran = (0..10000).random()
