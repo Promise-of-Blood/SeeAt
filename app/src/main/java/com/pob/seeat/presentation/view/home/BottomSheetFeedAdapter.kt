@@ -31,7 +31,7 @@ class BottomSheetFeedAdapter(private val onClick: (FeedModel) -> Unit) :
             tvPostCommentCount.text = item.commentsCount.toString()
             tvPostLikeCount.text = item.like.toString()
             tvPostTimeAgo.text = item.date?.toLocalDateTime()?.toKoreanDiffString()
-            tvPostUsername.text = item.user
+            tvPostUsername.text = item.nickname
             clFeedLayout.setOnClickListener {
                 onClick(item)
             }

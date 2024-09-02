@@ -20,13 +20,23 @@ import androidx.lifecycle.lifecycleScope
 import android.view.ViewTreeObserver
 import androidx.core.content.ContextCompat
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
+import com.naver.maps.map.OnMapReadyCallback
+import com.naver.maps.map.clustering.Clusterer
+import com.naver.maps.map.clustering.ClusteringKey
+import com.naver.maps.map.clustering.DefaultLeafMarkerUpdater
+import com.naver.maps.map.clustering.LeafMarkerInfo
+import com.naver.maps.map.overlay.Marker
+import com.naver.maps.map.overlay.Overlay
 import com.naver.maps.map.util.FusedLocationSource
+import com.naver.maps.map.util.MapConstants
 import com.pob.seeat.R
 import com.pob.seeat.databinding.FragmentHomeBinding
 import com.pob.seeat.presentation.view.UiState
@@ -38,13 +48,14 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import com.pob.seeat.data.model.Result
 import com.pob.seeat.domain.model.FeedModel
+import com.pob.seeat.utils.Utils.tagList
+import timber.log.Timber
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
-    lateinit var behavior: BottomSheetBehavior<ConstraintLayout>
     private val TAG = "PersistentActivity"
     private val restroomViewModel: RestroomViewModel by viewModels()
 
@@ -79,30 +90,27 @@ class HomeFragment : Fragment() {
         initTagRecyclerView()
         initBottomSheet()
         getFeed()
-
-
-        // 파이어 스토어 테스트
-//        val db = FirebaseFirestore.getInstance()
-//        binding.ivAlarm.setOnClickListener {
-//            db.collection("feed").get().addOnSuccessListener { result ->
-//                for (document in result) {
-//                    println("Document ID: ${document.id}")
-//                    println("Data: ${document.data}")
-//                    // If you have subcollections
-//                    db.collection("feed").document(document.id).collection("comments")
-//                        .get().addOnSuccessListener { subResult ->
-//                            for (subDocument in subResult) {
-//                                println("  SubDocument ID: ${subDocument.id}")
-//                                println("  SubData: ${subDocument.data}")
-//                            }
-//                        }
-//                }
-//            }
-//        }
-
-//        initFeedListViewModel()
-
+        initialSetting()
     }
+
+    private fun initialSetting() {
+        binding.run {
+            ibAddMarker.setOnClickListener {
+                findNavController().navigate(R.id.action_home_to_new_feed)
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        getFeed()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
 
     private fun getFeed() = with(homeViewModel) {
 
@@ -122,19 +130,93 @@ class HomeFragment : Fragment() {
 
                         is Result.Success -> {
                             val feedList = response.data
-                            Log.d("HomeFragment", feedList.toString())
+                            Timber.tag("HomeFragment").d("Result.Success: " + feedList.toString())
                             bottomSheetFeedAdapter.submitList(feedList)
+                            updateMarker(feedList)
+                            Log.d("HomeFragment", feedList.toString())
                         }
                     }
                 }
         }
     }
 
+    private class ItemKey(val id: String, private val position: LatLng) : ClusteringKey {
+        override fun getPosition() = position
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (other == null || javaClass != other.javaClass) return false
+            val itemKey = other as ItemKey
+            return id == itemKey.id
+        }
+
+        override fun hashCode() = id.hashCode()
+    }
+
+    /**
+     * 모든 feed 도큐먼트를 가져와 해당 좌표값에 마커 생성
+     * 클릭 시 로그로 정보확인 가능
+     */
+    private fun updateMarker(feedList: List<FeedModel>) {
+        Timber.tag("HomeFragment").d("Enter UpdateMarker..")
+        if (!::naverMap.isInitialized) {
+            Timber.tag("HomeFragment").e("naverMap is not initialized")
+            return
+        }
+
+        var clusterer: Clusterer<ItemKey>? = null
+        val listSize = feedList.size
+
+        clusterer = Clusterer.Builder<ItemKey>()
+            .leafMarkerUpdater(object : DefaultLeafMarkerUpdater() {
+                override fun updateLeafMarker(info: LeafMarkerInfo, marker: Marker) {
+                    super.updateLeafMarker(info, marker)
+                    marker.icon = Marker.DEFAULT_ICON
+
+                    marker.onClickListener = Overlay.OnClickListener {
+                        // ItemKey의 id를 통해 feedList에서 FeedModel을 가져옴
+                        val feedModel = feedList.find { it.feedId == (info.key as ItemKey).id }
+                        feedModel?.let { model ->
+                            Timber.tag("HomeFragment")
+                                .d("Marker Clicked: " + model.feedId + ", " + model.title + ", " + model.content)
+                        } ?: Timber.tag("HomeFragment").e("FeedModel not found for marker")
+                        true
+                    }
+                }
+            })
+            .build()
+            .apply {
+                val keyTagMap = buildMap(listSize) {
+                    repeat(listSize) { i ->
+                        Timber.tag("HomeFragment").d("FeedModel: ${feedList[i]}")
+                        val latitude = feedList[i].location?.latitude
+                        val longitude = feedList[i].location?.longitude
+                        Timber.tag("HomeFragment").d("Latitude: $latitude, Longitude: $longitude")
+                        if (latitude != null && longitude != null) {
+                            put(
+                                ItemKey(
+                                    feedList[i].feedId,  // FeedModel의 feedId를 사용하여 ItemKey 생성
+                                    LatLng(latitude, longitude),
+                                ),
+                                (Math.random() * 5).toInt(),
+                            )
+                        }
+                    }
+                }
+
+                addAll(keyTagMap)
+                map = naverMap
+            }
+    }
+
 
     /**
      * 네이버 지도 설정하는 코드
+     *
      * TODO 네이버 로고, ScaleBar 의 위치를
      *  BottomSheet 의 halfExpanded 까지 따라올 수 있게 구현
+     *
+     *  TODO GPS 버튼 클릭, 위치 권한 미설정 시 재요청
      * */
     private fun initNaverMap() {
         // 위치 소스 초기화
@@ -163,40 +245,8 @@ class HomeFragment : Fragment() {
             val scaleBarView = binding.naverScaleBar
             scaleBarView.map = naverMap
         }
-    }
-
-    /**
-     * 태그 리스트 Recycler View 설정
-     * */
-    private fun initTagRecyclerView() {
-        // 태그 리스트 데이터 설정
-        val tagList = listOf(
-            Tag("전체", R.drawable.ic_map, Color.parseColor("#2ECC87")),
-            Tag("맛집 추천", R.drawable.ic_soup, Color.parseColor("#FFCF30")),
-            Tag("모임", R.drawable.ic_group, Color.parseColor("#A2FF77")),
-            Tag("술 친구", R.drawable.ic_beer_strok, Color.parseColor("#2ECC87")),
-            Tag("운동 친구", R.drawable.ic_gym, Color.parseColor("#2ECC87")),
-            Tag("스터디", R.drawable.ic_pencil, Color.parseColor("#FF9500")),
-            Tag("분실물", R.drawable.ic_lost_item, Color.parseColor("#FFAA75")),
-            Tag("정보공유", R.drawable.ic_info, Color.parseColor("#5145FF")),
-            Tag("질문", R.drawable.ic_question, Color.parseColor("#717171")),
-            Tag("산책", R.drawable.ic_paw, Color.parseColor("#FF9CE1")),
-            Tag("밥친구", R.drawable.ic_restaurant, Color.parseColor("#FFC300")),
-            Tag("노래방", R.drawable.ic_microphone_line, Color.parseColor("#9A7EFF")),
-            Tag("도움", R.drawable.ic_flag, Color.parseColor("#5196FF")),
-            Tag("긴급", R.drawable.ic_megaphone, Color.parseColor("#FF3939")),
-            Tag("기타", R.drawable.ic_sparkles, Color.parseColor("#FFDF60"))
-        )
 
         binding.apply {
-            val adapter = TagAdapter(tagList)
-            rvTagList.layoutManager =
-                LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-            rvTagList.adapter = adapter
-
-            val marginDecoration = MarginItemDecoration(40) // 마진 설정
-            rvTagList.addItemDecoration(marginDecoration)
-
             ibLocation.setOnClickListener {
                 if (::naverMap.isInitialized) {
                     isLocationTrackingEnabled = !isLocationTrackingEnabled
@@ -225,6 +275,27 @@ class HomeFragment : Fragment() {
         }
     }
 
+    /**
+     * 태그 리스트 Recycler View 설정
+     * */
+    private fun initTagRecyclerView() {
+        // 태그 리스트 데이터 설정
+
+        binding.apply {
+            val adapter = TagAdapter(tagList)
+            rvTagList.layoutManager =
+                LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+            rvTagList.adapter = adapter
+
+            val marginDecoration = MarginItemDecoration(16f.px) // 마진 설정
+            rvTagList.addItemDecoration(marginDecoration)
+        }
+    }
+
+    /**
+     * 바텀시트 기본 설정 및
+     * 상태별 동작 설정
+     */
     private fun initBottomSheet() {
         //BottomSheet 옵션 설정
         bottomSheetBehavior = BottomSheetBehavior.from(binding.persistentBottomSheet)
@@ -312,6 +383,8 @@ class HomeFragment : Fragment() {
                 // BottomSheet의 슬라이드 상태에 따라 호출됨 (0.0f ~ 1.0f)
             }
         })
+
+        // 바텀 시트의 최대 높이를 태그 리스트 하단까지 이동
         binding.rvTagList.viewTreeObserver.addOnGlobalLayoutListener(object :
             ViewTreeObserver.OnGlobalLayoutListener {
             override fun onGlobalLayout() {
@@ -375,11 +448,6 @@ class HomeFragment : Fragment() {
                     }
                 }
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 }
 

@@ -69,7 +69,7 @@ class DetailFragment : Fragment() {
                             val feed = response.data
                             Timber.i("HomeFragment", feed.toString())
                             binding.run {
-                                tvWriterUsername.text = feed.user
+                                tvWriterUsername.text = feed.nickname
                                 tvFeedTitle.text = feed.title
                                 //todo 게시글과 내거리차이 계산
                                 //todo 이미지 연결
