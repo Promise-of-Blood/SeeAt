@@ -20,17 +20,16 @@
         android:name="com.pob.seeat.presentation.view.home.HomeFragment"
         android:label="@string/navigation_home"
         tools:layout="@layout/fragment_home">
+
         <action
-<<<<<<< HEAD
             android:id="@+id/action_home_to_new_feed"
             app:destination="@id/navigation_new_feed" />
-=======
+        <action
             android:id="@+id/action_navigation_home_to_navigation_detail"
             app:destination="@id/navigation_detail" />
         <argument
             android:name="feedIdArg"
             app:argType="string" />
->>>>>>> dev
     </fragment>
     <fragment
         android:id="@+id/navigation_bookmark"

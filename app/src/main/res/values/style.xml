@@ -18,7 +18,14 @@
         <item name="android:padding">16dp</item>
     </style>
 
-<<<<<<< HEAD
+    <style name="my_page_edit_profile" parent="Widget.Material3.Button">
+        <item name="android:background">@color/primary</item>
+        <item name="backgroundTint">@color/primary</item>
+        <item name="android:text">@string/my_page_edit_profile</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:padding">8dp</item>
+    </style>
+
     <style name="custom_chip_style" parent="Widget.MaterialComponents.Chip.Action">
         <item name="chipBackgroundColor">@drawable/background_chip_background_selector</item>
         <item name="chipStrokeWidth">0dp</item>
@@ -37,14 +44,6 @@
 
     <style name="RoundCornerModalStyle" parent="Widget.Design.BottomSheet.Modal">
         <item name="android:background">@drawable/background_bottom_sheet</item>
-=======
-    <style name="my_page_edit_profile" parent="Widget.Material3.Button">
-        <item name="android:background">@color/primary</item>
-        <item name="backgroundTint">@color/primary</item>
-        <item name="android:text">@string/my_page_edit_profile</item>
-        <item name="android:textSize">20sp</item>
-        <item name="android:padding">8dp</item>
->>>>>>> dev
     </style>
 
 </resources>

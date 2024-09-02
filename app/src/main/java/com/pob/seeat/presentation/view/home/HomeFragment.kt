@@ -133,6 +133,7 @@ class HomeFragment : Fragment() {
                             Timber.tag("HomeFragment").d("Result.Success: " + feedList.toString())
                             bottomSheetFeedAdapter.submitList(feedList)
                             updateMarker(feedList)
+                            Log.d("HomeFragment", feedList.toString())
                         }
                     }
                 }
