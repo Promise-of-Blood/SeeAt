@@ -21,6 +21,7 @@ import com.google.android.gms.tasks.OnCompleteListener
 //import com.google.firebase.messaging.FirebaseMessaging
 import android.view.ViewTreeObserver
 import androidx.core.content.ContextCompat
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -48,6 +49,9 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import com.pob.seeat.data.model.Result
 import com.pob.seeat.domain.model.FeedModel
+import com.pob.seeat.presentation.view.feed.NewFeedFragment
+import com.pob.seeat.utils.Utils.dp
+import com.pob.seeat.utils.Utils.tagList
 import timber.log.Timber
 
 @AndroidEntryPoint
@@ -55,7 +59,6 @@ class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
-    lateinit var behavior: BottomSheetBehavior<ConstraintLayout>
     private val TAG = "PersistentActivity"
     private val restroomViewModel: RestroomViewModel by viewModels()
 
@@ -88,6 +91,7 @@ class HomeFragment : Fragment() {
         initTagRecyclerView()
         initBottomSheet()
         getFeed()
+        initialSetting()
 
         // 파이어 스토어 테스트
 //        val db = FirebaseFirestore.getInstance()
@@ -110,6 +114,14 @@ class HomeFragment : Fragment() {
 
     }
 
+    private fun initialSetting() {
+        binding.run {
+            ibAddMarker.setOnClickListener {
+                findNavController().navigate(R.id.action_home_to_new_feed)
+            }
+        }
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
@@ -125,16 +137,16 @@ class HomeFragment : Fragment() {
                 .collectLatest { response ->
                     when (response) {
                         is Result.Error -> {
-                            Log.e("HomeFragment", "Error: ${response.message}")
+                            Timber.tag("HomeFragment").e("Error: " + response.message)
                         }
 
                         is Result.Loading -> {
-                            Log.d("HomeFragment", "Loading..")
+                            Timber.tag("HomeFragment").d("Loading..")
                         }
 
                         is Result.Success -> {
                             val feedList = response.data
-                            Log.d("HomeFragment", feedList.toString())
+                            Timber.tag("HomeFragment").d(feedList.toString())
                             updateMarker(feedList)
                         }
                     }
@@ -156,11 +168,15 @@ class HomeFragment : Fragment() {
     }
 
     /**
-    * 모든 feed 도큐먼트를 가져와 해당 좌표값에 마커 생성
+     * 모든 feed 도큐먼트를 가져와 해당 좌표값에 마커 생성
      * 클릭 시 로그로 정보확인 가능
      */
-
     private fun updateMarker(feedList: List<FeedModel>) {
+        if (!::naverMap.isInitialized) {
+            Timber.tag("HomeFragment").e("naverMap is not initialized")
+            return
+        }
+
         var clusterer: Clusterer<ItemKey>? = null
         val listSize = feedList.size
 
@@ -174,8 +190,9 @@ class HomeFragment : Fragment() {
                         // ItemKey의 id를 통해 feedList에서 FeedModel을 가져옴
                         val feedModel = feedList.find { it.feedId == (info.key as ItemKey).id }
                         feedModel?.let { model ->
-                            Log.d("HomeFragment", "Marker Clicked: ${model.title}, ${model.content}")
-                        } ?: Log.e("HomeFragment", "FeedModel not found for marker")
+                            Timber.tag("HomeFragment")
+                                .d("Marker Clicked: " + model.title + ", " + model.content)
+                        } ?: Timber.tag("HomeFragment").e("FeedModel not found for marker")
                         true
                     }
                 }
@@ -186,13 +203,15 @@ class HomeFragment : Fragment() {
                     repeat(listSize) { i ->
                         val latitude = feedList[i].location?.latitude
                         val longitude = feedList[i].location?.longitude
-                        put(
-                            ItemKey(
-                                feedList[i].feedId,  // FeedModel의 feedId를 사용하여 ItemKey 생성
-                                LatLng(latitude!!, longitude!!),
-                            ),
-                            (Math.random() * 5).toInt(),
-                        )
+                        if (latitude != null && longitude != null) {
+                            put(
+                                ItemKey(
+                                    feedList[i].feedId,  // FeedModel의 feedId를 사용하여 ItemKey 생성
+                                    LatLng(latitude, longitude),
+                                ),
+                                (Math.random() * 5).toInt(),
+                            )
+                        }
                     }
                 }
 
@@ -202,11 +221,13 @@ class HomeFragment : Fragment() {
     }
 
 
-
-                            /**
+    /**
      * 네이버 지도 설정하는 코드
+     *
      * TODO 네이버 로고, ScaleBar 의 위치를
      *  BottomSheet 의 halfExpanded 까지 따라올 수 있게 구현
+     *
+     *  TODO GPS 버튼 클릭, 위치 권한 미설정 시 재요청
      * */
     private fun initNaverMap() {
         // 위치 소스 초기화
@@ -235,40 +256,8 @@ class HomeFragment : Fragment() {
             val scaleBarView = binding.naverScaleBar
             scaleBarView.map = naverMap
         }
-    }
-
-    /**
-     * 태그 리스트 Recycler View 설정
-     * */
-    private fun initTagRecyclerView() {
-        // 태그 리스트 데이터 설정
-        val tagList = listOf(
-            Tag("전체", R.drawable.ic_map, Color.parseColor("#2ECC87")),
-            Tag("맛집 추천", R.drawable.ic_soup, Color.parseColor("#FFCF30")),
-            Tag("모임", R.drawable.ic_group, Color.parseColor("#A2FF77")),
-            Tag("술 친구", R.drawable.ic_beer_strok, Color.parseColor("#2ECC87")),
-            Tag("운동 친구", R.drawable.ic_gym, Color.parseColor("#2ECC87")),
-            Tag("스터디", R.drawable.ic_pencil, Color.parseColor("#FF9500")),
-            Tag("분실물", R.drawable.ic_lost_item, Color.parseColor("#FFAA75")),
-            Tag("정보공유", R.drawable.ic_info, Color.parseColor("#5145FF")),
-            Tag("질문", R.drawable.ic_question, Color.parseColor("#717171")),
-            Tag("산책", R.drawable.ic_paw, Color.parseColor("#FF9CE1")),
-            Tag("밥친구", R.drawable.ic_restaurant, Color.parseColor("#FFC300")),
-            Tag("노래방", R.drawable.ic_microphone_line, Color.parseColor("#9A7EFF")),
-            Tag("도움", R.drawable.ic_flag, Color.parseColor("#5196FF")),
-            Tag("긴급", R.drawable.ic_megaphone, Color.parseColor("#FF3939")),
-            Tag("기타", R.drawable.ic_sparkles, Color.parseColor("#FFDF60"))
-        )
 
         binding.apply {
-            val adapter = TagAdapter(tagList)
-            rvTagList.layoutManager =
-                LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-            rvTagList.adapter = adapter
-
-            val marginDecoration = MarginItemDecoration(40) // 마진 설정
-            rvTagList.addItemDecoration(marginDecoration)
-
             ibLocation.setOnClickListener {
                 if (::naverMap.isInitialized) {
                     isLocationTrackingEnabled = !isLocationTrackingEnabled
@@ -297,6 +286,27 @@ class HomeFragment : Fragment() {
         }
     }
 
+    /**
+     * 태그 리스트 Recycler View 설정
+     * */
+    private fun initTagRecyclerView() {
+        // 태그 리스트 데이터 설정
+
+        binding.apply {
+            val adapter = TagAdapter(tagList)
+            rvTagList.layoutManager =
+                LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+            rvTagList.adapter = adapter
+
+            val marginDecoration = MarginItemDecoration(16f.px) // 마진 설정
+            rvTagList.addItemDecoration(marginDecoration)
+        }
+    }
+
+    /**
+     * 바텀시트 기본 설정 및
+     * 상태별 동작 설정
+     */
     private fun initBottomSheet() {
         //BottomSheet 옵션 설정
         bottomSheetBehavior = BottomSheetBehavior.from(binding.persistentBottomSheet)
@@ -381,6 +391,8 @@ class HomeFragment : Fragment() {
                 // BottomSheet의 슬라이드 상태에 따라 호출됨 (0.0f ~ 1.0f)
             }
         })
+
+        // 바텀 시트의 최대 높이를 태그 리스트 하단까지 이동
         binding.rvTagList.viewTreeObserver.addOnGlobalLayoutListener(object :
             ViewTreeObserver.OnGlobalLayoutListener {
             override fun onGlobalLayout() {
