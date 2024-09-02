@@ -10,7 +10,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-class UserInfoRepositoryImpl @Inject constructor(private val source : UserInfoSource) : UserInfoRepository{
+class UserInfoRepositoryImpl @Inject constructor(private val source: UserInfoSource) :
+    UserInfoRepository {
 
     override suspend fun createUserInfo(userInfo: UserInfoModel) {
         source.createUserInfo(userInfo.toUserInfo())
@@ -28,8 +29,12 @@ class UserInfoRepositoryImpl @Inject constructor(private val source : UserInfoSo
         source.updateUserInfo(userInfo.toUserInfo())
     }
 
+    override suspend fun getCurrentUserUid(): Flow<String> {
+        return source.getCurrentUserUid()
+    }
+
     override suspend fun getUserInfoByEmail(email: String): Flow<UserInfoModel?> {
-        return source.getUserInfoByEmail(email).map {it?.toUserInfoModel()}
+        return source.getUserInfoByEmail(email).map { it?.toUserInfoModel() }
 
     }
 }

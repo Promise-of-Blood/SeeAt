@@ -1,10 +1,11 @@
 package com.pob.seeat.di
 
 import com.pob.seeat.data.remote.UserInfoSource
-import com.pob.seeat.data.repository.UserInfoRepositoryImpl
 import com.pob.seeat.data.remote.UserInfoSourceImpl
+import com.pob.seeat.data.repository.UserInfoRepositoryImpl
 import com.pob.seeat.domain.repository.RestroomApiRepository
 import com.pob.seeat.domain.repository.SampleRepository
+import com.pob.seeat.domain.repository.UserHistoryRepository
 import com.pob.seeat.domain.repository.UserInfoRepository
 import com.pob.seeat.domain.usecase.CreateUserInfoUseCase
 import com.pob.seeat.domain.usecase.DeleteUserInfoUseCase
@@ -14,7 +15,11 @@ import com.pob.seeat.domain.usecase.GetUserInfoByEmailUseCase
 import com.pob.seeat.domain.usecase.GetUserInfoUseCase
 import com.pob.seeat.domain.usecase.RestroomApiUseCase
 import com.pob.seeat.domain.usecase.UpdateUserInfoUseCase
+import com.pob.seeat.domain.usecase.UserCommentHistoryUseCase
+import com.pob.seeat.domain.usecase.UserFeedHistoryUseCase
+import com.pob.seeat.domain.usecase.UserHistoryUseCases
 import com.pob.seeat.domain.usecase.UserInfoUseCases
+import com.pob.seeat.domain.usecase.UserLikedHistoryUseCase
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -30,8 +35,9 @@ object UseCaseModule {
     fun provideGetSampleImageListUseCase(repository: SampleRepository): GetSampleImageListUseCase {
         return GetSampleImageListUseCase(repository)
     }
+
     @Provides
-    fun provideGetSampleVideoListUseCase(repository: SampleRepository): GetSampleVideoListUseCase{
+    fun provideGetSampleVideoListUseCase(repository: SampleRepository): GetSampleVideoListUseCase {
         return GetSampleVideoListUseCase(repository)
     }
 }
@@ -40,7 +46,7 @@ object UseCaseModule {
 @InstallIn(ViewModelComponent::class)
 object RestroomUseCaseModule {
     @Provides
-    fun provideRestroomUseCase(restroomApiRepository: RestroomApiRepository) : RestroomApiUseCase {
+    fun provideRestroomUseCase(restroomApiRepository: RestroomApiRepository): RestroomApiUseCase {
         return RestroomApiUseCase(restroomApiRepository)
     }
 }
@@ -84,4 +90,31 @@ abstract class UserInfoSourceModule {
     abstract fun bindUserInfoSource(
         userInfoSourceImpl: UserInfoSourceImpl
     ): UserInfoSource
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+object UserHistoryUseCaseModule {
+
+    @Provides
+    @Singleton
+    fun provideUserInfoUseCases(
+        userInfoRepository: UserInfoRepository,
+        userHistoryRepository: UserHistoryRepository,
+    ): UserHistoryUseCases {
+        return UserHistoryUseCases(
+            userFeedHistoryUseCase = UserFeedHistoryUseCase(
+                userInfoRepository,
+                userHistoryRepository
+            ),
+            userCommentHistoryUseCase = UserCommentHistoryUseCase(
+                userInfoRepository,
+                userHistoryRepository
+            ),
+            userLikedHistoryUseCase = UserLikedHistoryUseCase(
+                userInfoRepository,
+                userHistoryRepository
+            )
+        )
+    }
 }
