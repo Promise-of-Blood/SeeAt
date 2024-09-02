@@ -11,7 +11,9 @@ import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.pob.seeat.R
 import com.pob.seeat.databinding.FragmentHistoryBinding
+import com.pob.seeat.presentation.common.CustomDecoration
 import com.pob.seeat.presentation.view.UiState
 import com.pob.seeat.presentation.viewmodel.UserHistoryViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -60,6 +62,11 @@ class HistoryFragment : Fragment() {
         rvHistory.adapter = historyAdapter
         rvHistory.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        rvHistory.addItemDecoration(
+            CustomDecoration(
+                1f, 48f, resources.getColor(R.color.light_gray, null)
+            )
+        )
         tvHistoryMore.setOnClickListener {
             val action = HistoryFragmentDirections.actionUserHistoryToUserHistoryList(position ?: 0)
             findNavController().navigate(action)
