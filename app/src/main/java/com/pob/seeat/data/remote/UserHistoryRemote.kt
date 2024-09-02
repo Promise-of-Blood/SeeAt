@@ -14,8 +14,7 @@ class UserHistoryRemote @Inject constructor(
         limit: Long?,
         startAfter: String?
     ): List<FeedModel> {
-        val userRef = firestore.collection("user").whereEqualTo("uid", uid).limit(1).get()
-            .await().documents.firstOrNull()?.reference
+        val userRef = firestore.collection("user").document(uid ?: "").get().await().reference
         val feedDocuments = firestore.collection("feed")
             .whereEqualTo("user", userRef)
         if (limit != null) feedDocuments.limit(limit)
@@ -34,16 +33,17 @@ class UserHistoryRemote @Inject constructor(
         limit: Long? = null,
         startAfter: String? = null
     ): List<FeedModel> {
+        val userRef = firestore.collection("user").document(uid ?: "").get().await().reference
         val feedDocuments = firestore.collection("feed").get().await().documents
         var commentedFeedDocuments = feedDocuments.filter { feedDocument ->
             feedDocument.reference.collection("comments")
-                .whereEqualTo("user", uid).get().await().documents.isNotEmpty()
+                .whereEqualTo("user", userRef).get().await().documents.isNotEmpty()
         }
         if (limit != null) commentedFeedDocuments = commentedFeedDocuments.take(limit.toInt())
         return commentedFeedDocuments.mapNotNull { documentSnapshot ->
             val tagList = documentSnapshot.get("tagList") as? List<*>
             val commentsDocuments = documentSnapshot.reference.collection("comments")
-                .whereEqualTo("user", uid).get().await().documents
+                .whereEqualTo("user", userRef).get().await().documents
             documentSnapshot.toObject(FeedModel::class.java)?.copy(
                 feedId = documentSnapshot.id,
                 tags = tagList?.filterIsInstance<String>() ?: emptyList(),
