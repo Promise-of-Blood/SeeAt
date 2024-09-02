@@ -23,10 +23,10 @@ class UserHistoryViewModel @Inject constructor(private val userHistoryUseCases: 
     private val _history = MutableStateFlow<UiState<List<HistoryListItem>>>(UiState.Loading)
     val history: StateFlow<UiState<List<HistoryListItem>>> get() = _history
 
-    fun getUserFeedHistory() {
+    fun getUserFeedHistory(limit: Long? = null, startAfter: String? = null) {
         viewModelScope.launch {
             _history.value = UiState.Loading
-            userHistoryUseCases.userFeedHistoryUseCase()
+            userHistoryUseCases.userFeedHistoryUseCase(limit, startAfter)
                 .flowOn(Dispatchers.IO)
                 .catch { error ->
                     _history.value = UiState.Error(error.message ?: "Unknown Error")
@@ -42,10 +42,10 @@ class UserHistoryViewModel @Inject constructor(private val userHistoryUseCases: 
         }
     }
 
-    fun getUserCommentHistory() {
+    fun getUserCommentHistory(limit: Long? = null, startAfter: String? = null) {
         viewModelScope.launch {
             _history.value = UiState.Loading
-            userHistoryUseCases.userCommentHistoryUseCase()
+            userHistoryUseCases.userCommentHistoryUseCase(limit, startAfter)
                 .flowOn(Dispatchers.IO)
                 .catch { error ->
                     _history.value = UiState.Error(error.message ?: "Unknown Error")
@@ -61,10 +61,10 @@ class UserHistoryViewModel @Inject constructor(private val userHistoryUseCases: 
         }
     }
 
-    fun getUserLikedHistory() {
+    fun getUserLikedHistory(limit: Long? = null, startAfter: String? = null) {
         viewModelScope.launch {
             _history.value = UiState.Loading
-            userHistoryUseCases.userLikedHistoryUseCase()
+            userHistoryUseCases.userLikedHistoryUseCase(limit, startAfter)
                 .flowOn(Dispatchers.IO)
                 .catch { error ->
                     _history.value = UiState.Error(error.message ?: "Unknown Error")
