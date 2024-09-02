@@ -19,7 +19,14 @@
         android:id="@+id/navigation_home"
         android:name="com.pob.seeat.presentation.view.home.HomeFragment"
         android:label="@string/navigation_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_navigation_home_to_navigation_detail"
+            app:destination="@id/navigation_detail" />
+        <argument
+            android:name="feedIdArg"
+            app:argType="string" />
+    </fragment>
     <fragment
         android:id="@+id/navigation_bookmark"
         android:name="com.pob.seeat.presentation.view.home.HomeFragment"
@@ -38,4 +45,15 @@
         android:id="@+id/navigation_terms_of_service"
         android:name="com.pob.seeat.presentation.view.mypage.TermsOfServiceFragment"
         tools:layout="@layout/fragment_terms_of_service" />
+
+    <fragment
+        android:id="@+id/navigation_detail"
+        android:name="com.pob.seeat.presentation.view.detail.DetailFragment"
+        android:label="@string/detail"
+        tools:layout="@layout/fragment_detail">
+        <argument
+            android:name="feedIdArg"
+            app:argType="string" />
+    </fragment>
+
 </navigation>
