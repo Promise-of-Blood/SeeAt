@@ -1,5 +1,6 @@
 package com.pob.seeat.presentation.view.mypage
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -7,13 +8,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.tabs.TabLayoutMediator
+import com.google.firebase.storage.FirebaseStorage
 import com.pob.seeat.BuildConfig
 import com.pob.seeat.R
 import com.pob.seeat.databinding.FragmentMyPageBinding
@@ -30,6 +34,32 @@ class MyPageFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val userViewModel: UserInfoViewModel by viewModels()
+    val uid = getUserUid()
+
+    private val editProfileLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val data = result.data
+            if(data != null){
+                val updatedNickname = data.getStringExtra("updatedNickname")
+                val updatedIntroduce = data.getStringExtra("updatedIntroduce")
+                val updatedProfileUrl = data.getStringExtra("updatedProfileUrl")
+
+                if (updatedNickname != null && updatedIntroduce != null && updatedProfileUrl != null){
+                    userViewModel.getUserInfo(getUserUid()!!)
+                }else{
+                    Log.e("MyPageFragment", "업데이트된 데이터가 없습니다.")
+                }
+            }else{
+                Log.e("MyPageFragment", "결과 데이터가 null입니다.")
+            }
+            refreshUserInfo()
+        }else{
+            Toast.makeText(requireContext(), "프로필 업데이트 실패", Toast.LENGTH_SHORT).show()
+        }
+    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -42,7 +72,15 @@ class MyPageFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initView()
+        observeUserInfo()
     }
+
+    override fun onResume() {
+        super.onResume()
+        // Fragment가 다시 보일 때마다 최신 데이터를 가져옴
+        refreshUserInfo()
+    }
+
 
     override fun onDestroy() {
         super.onDestroy()
@@ -59,25 +97,17 @@ class MyPageFragment : Fragment() {
             }
         }.attach()
 
-        val uid = getUserUid()
+
         if (uid != null) {
             userViewModel.getUserInfo(uid)
-            observeUserInfo()
         } else {
             Log.e("userUid", "uid 조회 실패")
         }
 
-        val profileUri = userViewModel.userInfo.value?.profileUrl?.toUri()
-        ivProfileImage.setImageURI(profileUri)
-
-        val userName = userViewModel.userInfo.value?.nickname
-        tvUserName.text = userName
-
-        tvUserPostNum
-
-        tvUserCommentNum
-
-        tvUserIntroduce.text = userViewModel.userInfo.value?.introduce
+        btnMyPage.setOnClickListener {
+            val intent = Intent(requireContext(), EditProfileActivity::class.java)
+            editProfileLauncher.launch(intent)
+        }
 
         mbMyPageTerms.setOnClickListener {
             findNavController().navigate(R.id.action_my_page_to_terms_of_service)
@@ -112,7 +142,14 @@ class MyPageFragment : Fragment() {
             userViewModel.userInfo.collect() { userInfo ->
                 if (userInfo != null) {
                     binding.apply {
-                        ivProfileImage.setImageURI(userInfo.profileUrl.toUri())
+                        val file =
+                            FirebaseStorage.getInstance().reference.child("profile_images/$uid.jpg")
+
+                        file.downloadUrl.addOnSuccessListener { url ->
+                            displayImage(url.toString())
+                        }.addOnFailureListener { exception ->
+                            Log.e("Image Load Error", "이미지 Url 가져오는데 실패")
+                        }
                         tvUserName.text = userInfo.nickname
                         tvUserIntroduce.text = userInfo.introduce
                     }
@@ -120,6 +157,22 @@ class MyPageFragment : Fragment() {
                     Log.e("MyPageFragment", "UserInfo is null")
                 }
             }
+        }
+    }
+
+    private fun displayImage(imageUrl: String) {
+        Glide.with(this)
+            .load(imageUrl)
+            .into(binding.ivProfileImage)
+    }
+
+    private fun refreshUserInfo() {
+        val uid = getUserUid()
+        if (uid != null) {
+            userViewModel.getUserInfo(uid)
+            observeUserInfo()
+        } else {
+            Log.e("userUid", "uid 조회 실패")
         }
     }
 

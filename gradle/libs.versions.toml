@@ -34,6 +34,7 @@ navigationUiKtx = "2.7.7"
 kotlin-jvm = "2.0.0"
 timber = "5.0.1"
 firebaseMessagingKtxVersion = "24.0.1"
+firebaseStorageKtx = "21.0.0"
 
 [libraries]
 android-image-cropper = { module = "com.vanniktech:android-image-cropper", version.ref = "androidImageCropper" }
@@ -86,6 +87,7 @@ play-services-oss-licenses = { module = "com.google.android.gms:play-services-os
 
 # Timeber Log
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
+firebase-storage-ktx = { group = "com.google.firebase", name = "firebase-storage-ktx", version.ref = "firebaseStorageKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
