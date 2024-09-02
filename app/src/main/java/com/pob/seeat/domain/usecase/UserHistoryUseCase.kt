@@ -30,7 +30,7 @@ class UserCommentHistoryUseCase @Inject constructor(
     private val userInfoRepository: UserInfoRepository,
     private val userHistoryRepository: UserHistoryRepository,
 ) {
-    suspend operator fun invoke(): Flow<Result<List<CommentModel>>> {
+    suspend operator fun invoke(): Flow<Result<List<FeedModel>>> {
         val currentUserId = userInfoRepository.getCurrentUserUid().firstOrNull() ?: ""
         return userHistoryRepository.getCommentList(currentUserId)
     }

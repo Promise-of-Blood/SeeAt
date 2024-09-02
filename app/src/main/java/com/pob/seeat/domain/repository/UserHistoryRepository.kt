@@ -7,6 +7,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface UserHistoryRepository {
     suspend fun getFeedList(uid: String): Flow<Result<List<FeedModel>>>
-    suspend fun getCommentList(uid: String): Flow<Result<List<CommentModel>>>
+    suspend fun getCommentList(uid: String): Flow<Result<List<FeedModel>>>
     suspend fun getLikedList(uid: String): Flow<Result<List<FeedModel>>>
 }

@@ -21,16 +21,24 @@ class UserHistoryRemote @Inject constructor(
         }
     }
 
-    suspend fun getCommentList(uid: String): List<CommentModel> {
+    suspend fun getCommentList(uid: String): List<FeedModel> {
         val feedDocuments = firestore.collection("feed").get().await().documents
-        val commentsDocuments = feedDocuments.flatMap { feedDocument ->
+        val commentedFeedDocuments = feedDocuments.filter { feedDocument ->
             feedDocument.reference.collection("comments")
-                .whereEqualTo("user", uid).get().await().documents
+                .whereEqualTo("user", uid).get().await().documents.isNotEmpty()
         }
-
-        return commentsDocuments.mapNotNull { documentSnapshot ->
-            documentSnapshot.toObject(CommentModel::class.java)
-                ?.copy(commentId = documentSnapshot.id)
+        return commentedFeedDocuments.mapNotNull { documentSnapshot ->
+            val tagList = documentSnapshot.get("tagList") as? List<*>
+            val commentsDocuments = documentSnapshot.reference.collection("comments")
+                .whereEqualTo("user", uid).get().await().documents
+            documentSnapshot.toObject(FeedModel::class.java)?.copy(
+                feedId = documentSnapshot.id,
+                tags = tagList?.filterIsInstance<String>() ?: emptyList(),
+                comments = commentsDocuments.mapNotNull { commentDocument ->
+                    commentDocument.toObject(CommentModel::class.java)
+                        ?.copy(commentId = commentDocument.id)
+                }
+            )
         }
     }
 

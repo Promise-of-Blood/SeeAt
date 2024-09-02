@@ -23,7 +23,7 @@ class UserHistoryRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getCommentList(uid: String): Flow<Result<List<CommentModel>>> = flow {
+    override suspend fun getCommentList(uid: String): Flow<Result<List<FeedModel>>> = flow {
         emit(Result.Loading)
         if (uid.isEmpty()) emit(Result.Error("Invalid user ID"))
         try {
