@@ -9,11 +9,12 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
+import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.firestore.FirebaseFirestore
 import com.pob.seeat.BuildConfig
 import com.pob.seeat.presentation.view.sign.LoginActivity
-
 object GoogleAuthUtil {
     private lateinit var googleSignInClient : GoogleSignInClient
     private lateinit var firebaseAuth : FirebaseAuth
@@ -38,7 +39,14 @@ object GoogleAuthUtil {
     }
 
     fun getUserUid():String?{
-        return firebaseAuth.currentUser?.uid
+        val uid = firebaseAuth.currentUser?.uid
+
+        if(uid!= null){
+            Log.d("UID확인","현재 로그인 된 사용자 UID : $uid")
+        }else{
+            Log.d("UID확인","uid 못가져옴")
+        }
+        return uid
     }
 
     //로그인
@@ -115,22 +123,87 @@ object GoogleAuthUtil {
 
     //회원 탈퇴
     fun googleWithdrawal(activity: Activity) {
-        firebaseAuth.currentUser?.delete()?.addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                googleSignInClient.revokeAccess().addOnCompleteListener(activity) {
-                    Toast.makeText(activity, "구글 계정이 삭제되었습니다.", Toast.LENGTH_SHORT).show()
-                    val intent = Intent(activity, LoginActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    activity.startActivity(intent)
-                    activity.finish()
+        val user = firebaseAuth.currentUser
+        val uid = user?.uid // UID를 계정 삭제 전에 저장합니다.
 
+        if (user != null && uid != null) {
+            user.delete().addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Log.d("GoogleAuthUtil", "User account deleted from Auth")
+                    googleSignInClient.revokeAccess().addOnCompleteListener {
+                        if (it.isSuccessful) {
+                            deleteUser(activity, uid) // 저장된 UID를 사용하여 데이터 삭제
+                        } else {
+                            Log.e("GoogleAuthUtil", "Access revoke failed: ${it.exception?.message}", it.exception)
+                            Toast.makeText(activity, "계정 접근 해제에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                } else {
+                    Log.e("GoogleAuthUtil", "Account deletion failed: ${task.exception?.message}", task.exception)
+                    Toast.makeText(activity, "계정 삭제에 실패했습니다: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
                 }
-            } else {
-                Toast.makeText(activity, "계정 삭제에 실패했습니다.", Toast.LENGTH_SHORT).show()
             }
+        } else {
+            Log.e("GoogleAuthUtil", "No current user found for deletion or UID is null.")
+            Toast.makeText(activity, "현재 로그인된 사용자를 찾을 수 없거나 UID가 없습니다.", Toast.LENGTH_SHORT).show()
         }
     }
 
+    //재인증
+    fun reAuthentification(activity: Activity, launcher: ActivityResultLauncher<Intent>) {
+        val signInIntent = googleSignInClient.signInIntent
+        launcher.launch(signInIntent) // launcher를 통해 재인증 프로세스 시작
+    }
+
+    fun handleReauthResult(data: Intent?, onSuccess: () -> Unit, onFailure: () -> Unit) {
+        val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+        try {
+            val account = task.getResult(ApiException::class.java)!!
+            val credential = GoogleAuthProvider.getCredential(account.idToken, null)
+            firebaseAuth.currentUser?.reauthenticate(credential)
+                ?.addOnCompleteListener { reauthTask ->
+                    if (reauthTask.isSuccessful) {
+                        Log.d("GoogleAuthUtil", "Re-authentication successful")
+                        onSuccess() // 재인증 성공 후 회원탈퇴 함수 호출
+                    } else {
+                        Log.e("GoogleAuthUtil", "Re-authentication failed: ${reauthTask.exception?.message}", reauthTask.exception)
+                        onFailure() // 재인증 실패 시 처리
+                    }
+                }
+        } catch (e: ApiException) {
+            Log.e("GoogleAuthUtil", "Re-authentication failed: ${e.message}", e)
+            onFailure()
+        }
+    }
+
+    //회원탈퇴시 파이어스토어에서 사용자 데이터 삭제
+    // Firestore에서 사용자 데이터 삭제 함수 수정
+
+    fun deleteUser(activity: Activity,uid: String) {
+        Log.d("GoogleAuthUtil", "deleteUser called") // 함수 호출 확인 로그
+        val database = FirebaseFirestore.getInstance()
+        Log.d("GoogleAuthUtil", "Attempting to delete Firestore data for UID: $uid")
+
+        database.collection("user").document(uid)
+            .delete()
+            .addOnSuccessListener {
+                Log.d("GoogleAuthUtil", "Firestore user data deleted successfully.")
+                Toast.makeText(activity, "회원 정보가 성공적으로 삭제되었습니다.", Toast.LENGTH_SHORT).show()
+                navigateToLoginScreen(activity) // 로그인 화면으로 이동
+            }
+            .addOnFailureListener { exception ->
+                Log.e("GoogleAuthUtil", "Failed to delete Firestore user data: ${exception.message}", exception)
+                Toast.makeText(activity, "데이터 삭제에 실패했습니다: ${exception.message}", Toast.LENGTH_LONG).show()
+            }
+    }
+
+    // 로그인 화면으로 이동하는 함수
+    private fun navigateToLoginScreen(activity: Activity) {
+        val intent = Intent(activity, LoginActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        activity.startActivity(intent)
+        activity.finish()
+    }
 
     //로그 찍어보는 용
 //    fun checkCurrentUser(activity: Activity){

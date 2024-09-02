@@ -10,7 +10,10 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.firestore
 import com.pob.seeat.MainActivity
 import com.pob.seeat.R
 import com.pob.seeat.databinding.ActivityLoginBinding
@@ -22,18 +25,17 @@ import dagger.hilt.android.AndroidEntryPoint
 class LoginActivity : AppCompatActivity() {
     private val binding: ActivityLoginBinding by lazy { ActivityLoginBinding.inflate(layoutInflater) }
 
-    private val userViewModel : UserInfoViewModel by viewModels()
+    private val userViewModel: UserInfoViewModel by viewModels()
 
     private val googleSignInLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             GoogleAuthUtil.handleSignInResult(this, result.resultCode, result.data,
-                onSuccess = {uid, email, nickname ->
-
-                    userViewModel.isOurFamily(
+                onSuccess = { uid, email, nickname ->
+                    isOurFamily(
                         email,
                         { navigateToHome() },
                         {
-                            navigateToSignUp(uid,email, nickname)
+                            navigateToSignUp(uid, email, nickname)
                         }
                     )
                 },
@@ -55,7 +57,6 @@ class LoginActivity : AppCompatActivity() {
     }
 
 
-
     private fun initView() = with(binding) {
 
         GoogleAuthUtil.initialize(this@LoginActivity)
@@ -64,36 +65,59 @@ class LoginActivity : AppCompatActivity() {
 
 
         clBtnLogin.setOnClickListener {
-            GoogleAuthUtil.googleLogin(this@LoginActivity,googleSignInLauncher)
+            GoogleAuthUtil.googleLogin(this@LoginActivity, googleSignInLauncher)
         }
 
 
     }
 
-    private fun loginCheck(){
+    private fun loginCheck() {
         val currentUser = FirebaseAuth.getInstance().currentUser
 
-        if (currentUser != null){
-            Log.d("LoginActivity","현재 로그인 유저 : ${currentUser.email}")
+        if (currentUser != null) {
+            Log.d("LoginActivity", "현재 로그인 유저 : ${currentUser.email}")
             navigateToHome()
         }
     }
 
-    private fun navigateToHome(){
-        val intent = Intent(this,MainActivity::class.java)
+    private fun navigateToHome() {
+        val intent = Intent(this, MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
         startActivity(intent)
         finish()
     }
 
-    private fun navigateToSignUp(uid: String, email: String, nickname: String){
-        val intent = Intent(this,SignUpActivity::class.java).apply {
+    private fun navigateToSignUp(uid: String, email: String, nickname: String) {
+        val intent = Intent(this, SignUpActivity::class.java).apply {
             putExtra("uid", uid)
             putExtra("email", email)
             putExtra("nickname", nickname)
         }
         startActivity(intent)
     }
+
+    private fun isOurFamily(email: String, onUserExists: () -> Unit, onUserNotExist: () -> Unit) {
+        val database = FirebaseFirestore.getInstance()
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        val uid = currentUser?.uid
+
+        if (uid != null) {
+            database.collection("user").document(uid).get()
+                .addOnSuccessListener { document ->
+                    if (document.exists()) {
+                        onUserExists()
+                    } else {
+                        onUserNotExist()
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    Log.e("가족", "가족확인 에러, $exception")
+                }
+        }
+    }
+
+
+}
 
 
 //    서버 필요해서 일단 죽임
@@ -216,4 +240,3 @@ class LoginActivity : AppCompatActivity() {
 //        }
 //        NaverIdLoginSDK.authenticate(this, oAuthLoginCallback)
 //    }
-}
