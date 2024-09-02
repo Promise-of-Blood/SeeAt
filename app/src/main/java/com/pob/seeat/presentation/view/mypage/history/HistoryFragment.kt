@@ -9,8 +9,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.pob.seeat.R
 import com.pob.seeat.databinding.FragmentHistoryBinding
+import com.pob.seeat.presentation.common.CustomDecoration
 import com.pob.seeat.presentation.view.UiState
 import com.pob.seeat.presentation.viewmodel.UserHistoryViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -59,6 +62,15 @@ class HistoryFragment : Fragment() {
         rvHistory.adapter = historyAdapter
         rvHistory.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        rvHistory.addItemDecoration(
+            CustomDecoration(
+                1f, 48f, resources.getColor(R.color.light_gray, null)
+            )
+        )
+        tvHistoryMore.setOnClickListener {
+            val action = HistoryFragmentDirections.actionUserHistoryToUserHistoryList(position ?: 0)
+            findNavController().navigate(action)
+        }
     }
 
     private fun initViewModel() = with(userHistoryViewModel) {
@@ -77,7 +89,7 @@ class HistoryFragment : Fragment() {
 
                         is UiState.Success -> {
                             binding.rvHistory.visibility = View.VISIBLE
-                            historyAdapter.submitList(response.data)
+                            historyAdapter.submitList(response.data.take(4))
                         }
                     }
                 }
@@ -85,9 +97,9 @@ class HistoryFragment : Fragment() {
     }
 
     private fun getHistoryList() = when (position) {
-        0 -> userHistoryViewModel.getUserFeedHistory()
-        1 -> userHistoryViewModel.getUserCommentHistory()
-        else -> userHistoryViewModel.getUserLikedHistory()
+        0 -> userHistoryViewModel.getUserFeedHistory(3)
+        1 -> userHistoryViewModel.getUserCommentHistory(4)
+        else -> userHistoryViewModel.getUserLikedHistory(3)
     }
 
     companion object {

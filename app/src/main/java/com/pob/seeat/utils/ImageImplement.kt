@@ -9,6 +9,7 @@ import android.net.Uri
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.canhub.cropper.CropImageContract
 import com.canhub.cropper.CropImageContractOptions
@@ -20,11 +21,31 @@ object ImageImplement {
         }
     }
 
+    fun registerImagePicker(activity:AppCompatActivity, onImagePicked: (Uri?) -> Unit): ActivityResultLauncher<PickVisualMediaRequest>{
+        return activity.registerForActivityResult(ActivityResultContracts.PickVisualMedia()){uri ->
+            onImagePicked(uri)
+        }
+    }
+
     fun registerImageCropper(
         fragment: Fragment,
         onCropCompleted: (Uri?) -> Unit
     ): ActivityResultLauncher<CropImageContractOptions> {
         return fragment.registerForActivityResult(CropImageContract()) { result ->
+            if (result.isSuccessful) {
+                onCropCompleted(result.uriContent)
+            } else {
+                // 에러 처리 로직 추가
+                val exception = result.error
+            }
+        }
+    }
+
+    fun registerImageCropper(
+        activity: AppCompatActivity,
+        onCropCompleted: (Uri?) -> Unit
+    ): ActivityResultLauncher<CropImageContractOptions> {
+        return activity.registerForActivityResult(CropImageContract()) { result ->
             if (result.isSuccessful) {
                 onCropCompleted(result.uriContent)
             } else {

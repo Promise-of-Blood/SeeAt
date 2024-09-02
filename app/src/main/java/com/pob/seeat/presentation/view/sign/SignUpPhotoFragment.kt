@@ -12,24 +12,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.activity.result.PickVisualMediaRequest
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
 import androidx.fragment.app.activityViewModels
-import com.canhub.cropper.CropImageActivity
-import com.pob.seeat.R
-import com.pob.seeat.databinding.FragmentSignUpNameBinding
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import com.pob.seeat.databinding.FragmentSignUpPhotoBinding
-import com.pob.seeat.domain.model.TempUserInfo
-import com.pob.seeat.domain.model.UserInfoModel
 import com.pob.seeat.presentation.viewmodel.UserInfoViewModel
 import com.pob.seeat.utils.ImageImplement.getCropOptions
 import com.pob.seeat.utils.ImageImplement.launchImagePickerAndCrop
 import com.pob.seeat.utils.ImageImplement.registerImageCropper
 import com.pob.seeat.utils.ImageImplement.registerImagePicker
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 
 @AndroidEntryPoint
 class SignUpPhotoFragment : Fragment() {
@@ -40,6 +32,9 @@ class SignUpPhotoFragment : Fragment() {
     private val userViewModel: UserInfoViewModel by activityViewModels()
 
     private var pickImageUri: Uri? = null
+
+    private val storage = FirebaseStorage.getInstance().reference
+    private val firestore = FirebaseFirestore.getInstance()
 
     private val pickImageLauncher = registerImagePicker(this) { uri ->
         if (uri != null) {
@@ -77,15 +72,21 @@ class SignUpPhotoFragment : Fragment() {
     private fun initView() = with(binding) {
         btnSignupNext.setOnClickListener {
             //클릭했을때 다음 페이지로 넘어가기 + 사진 url 저장하기
-            val profileUrl = pickImageUri.toString()
 
-            if (profileUrl.isNotBlank()) {
-                userViewModel.saveTempUserInfo(profileUrl = profileUrl)
+            if (pickImageUri != null) {
+                val uid = userViewModel.tempUserInfo.value?.uid ?: return@setOnClickListener
+                uploadProfileImage(pickImageUri!!,uid){profileUrl ->
+                    if(profileUrl.isNotBlank()){
+                        userViewModel.saveTempUserInfo(profileUrl = profileUrl)
 
-                Log.d("TempUserInfo","tempUserInfo : ${userViewModel.tempUserInfo.value}")
+                        Log.d("TempUserInfo","tempUserInfo : ${userViewModel.tempUserInfo.value}")
 
-                (activity as? SignUpActivity)?.let { activity ->
-                    activity.signUpBinding.vpSignUp.currentItem += 1
+                        (activity as? SignUpActivity)?.let { activity ->
+                            activity.signUpBinding.vpSignUp.currentItem += 1
+                        }
+                    }else{
+                        Toast.makeText(requireContext(), "프로필 사진 업로드에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                    }
                 }
             } else {
                 Toast.makeText(requireContext(), "프로필 사진을 설정해 주세요", Toast.LENGTH_SHORT).show()
@@ -98,6 +99,22 @@ class SignUpPhotoFragment : Fragment() {
             launchImagePickerAndCrop(pickImageLauncher,cropImageLauncher)
         }
     }
+
+    private fun uploadProfileImage(imageUri: Uri, uid: String, callback: (String) -> Unit) {
+        val file = storage.child("profile_images/$uid.jpg")
+        file.putFile(imageUri)
+            .addOnSuccessListener {
+                file.downloadUrl.addOnSuccessListener { uri ->
+                    callback(uri.toString()) // 성공 시 이미지 URL을 반환
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e("Upload Error", "이미지 업로드 실패 : ${e.message}")
+                Toast.makeText(requireContext(), "이미지 업로드에 실패했습니다", Toast.LENGTH_SHORT).show()
+                callback("") // 실패 시 빈 문자열 반환
+            }
+    }
+
 
     private fun setUriAsBackground(uri: Uri) {
         // Uri로부터 InputStream을 가져와 Bitmap으로 변환
