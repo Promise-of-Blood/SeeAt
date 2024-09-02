@@ -1,6 +1,7 @@
 package com.pob.seeat.data.remote
 
 import android.util.Log
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.pob.seeat.domain.model.FeedModel
 import kotlinx.coroutines.tasks.await
@@ -16,12 +17,21 @@ class FeedRemote @Inject constructor(
             .await()
             .documents
 
-        Log.d("FeedRemote", "getFeedList: ${feedDocuments}")
+        Log.d("FeedRemote", "getFeedList: $feedDocuments")
 
-        // 각 DocumentSnapshot을 FeedModel로 변환하며 ID를 포함
-        return feedDocuments.map { documentSnapshot ->
-            documentSnapshot.toObject(FeedModel::class.java)?.copy(feedId = documentSnapshot.id)
-        }.filterNotNull()
+        return feedDocuments.mapNotNull { documentSnapshot ->
+            documentSnapshot.toObject(FeedModel::class.java)?.copy(feedId = documentSnapshot.id)?.run {
+                val nickname = (user as? DocumentReference)?.get()?.await()?.getString("nickname")
+
+                // 로그로 nickname 값을 출력하여 확인
+                Log.d("FeedRemote", "Fetched nickname: $nickname for user: ${user?.id}")
+
+                nickname?.let {
+                    copy(nickname = it)
+                } ?: this
+            }
+        }
+
     }
 
     suspend fun getFeedById(postId: String): FeedModel? {
