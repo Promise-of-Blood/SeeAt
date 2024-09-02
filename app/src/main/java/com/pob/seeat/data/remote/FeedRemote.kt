@@ -20,16 +20,18 @@ class FeedRemote @Inject constructor(
         Log.d("FeedRemote", "getFeedList: $feedDocuments")
 
         return feedDocuments.mapNotNull { documentSnapshot ->
-            documentSnapshot.toObject(FeedModel::class.java)?.copy(feedId = documentSnapshot.id)?.run {
-                val nickname = (user as? DocumentReference)?.get()?.await()?.getString("nickname")
+            documentSnapshot.toObject(FeedModel::class.java)?.copy(feedId = documentSnapshot.id)
+                ?.run {
+                    val nickname =
+                        user?.get()?.await()?.getString("nickname")
 
-                // 로그로 nickname 값을 출력하여 확인
-                Log.d("FeedRemote", "Fetched nickname: $nickname for user: ${user?.id}")
+                    // 로그로 nickname 값을 출력하여 확인
+                    Log.d("FeedRemote", "Fetched nickname: $nickname for user: ${user?.id}")
 
-                nickname?.let {
-                    copy(nickname = it)
-                } ?: this
-            }
+                    nickname?.let {
+                        copy(nickname = it)
+                    } ?: this
+                }
         }
 
     }
