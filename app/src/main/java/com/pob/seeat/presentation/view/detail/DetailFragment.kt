@@ -1,7 +1,6 @@
 package com.pob.seeat.presentation.view.detail
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -12,8 +11,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.pob.seeat.data.model.Result
 import com.pob.seeat.databinding.FragmentDetailBinding
+import com.pob.seeat.domain.model.FeedModel
 import com.pob.seeat.presentation.viewmodel.DetailViewModel
-import com.pob.seeat.presentation.viewmodel.HomeViewModel
 import com.pob.seeat.utils.Utils.toKoreanDiffString
 import com.pob.seeat.utils.Utils.toLocalDateTime
 import dagger.hilt.android.AndroidEntryPoint
@@ -68,20 +67,33 @@ class DetailFragment : Fragment() {
                         is Result.Success -> {
                             val feed = response.data
                             Timber.i("HomeFragment", feed.toString())
-                            binding.run {
-                                tvWriterUsername.text = feed.user
-                                tvFeedTitle.text = feed.title
-                                //todo 게시글과 내거리차이 계산
-                                //todo 이미지 연결
-                                //todo tag생성
-                                tvFeedTimeAgo.text = feed.date?.toLocalDateTime()?.toKoreanDiffString()
-                                tvFeedContent.text = feed.content
-                                tvFeedDetailLikeCount.text = feed.like.toString()
-                                tvCommentCount.text = feed.commentsCount.toString()
-                            }
+                            initView(feed)
                         }
                     }
                 }
+        }
+    }
+
+    private fun initView(feed: FeedModel) {
+        binding.run {
+            tvWriterUsername.text = feed.user
+            tvFeedTitle.text = feed.title
+            //todo 게시글과 내거리차이 계산
+            //todo 이미지 연결
+            //todo tag생성
+            tvFeedTimeAgo.text = feed.date?.toLocalDateTime()?.toKoreanDiffString()
+            tvFeedContent.text = feed.content
+            tvFeedDetailLikeCount.text = feed.like.toString()
+            tvCommentCount.text = feed.commentsCount.toString()
+
+            clLikeBtn.setOnClickListener {
+
+            }
+
+            clBookmarkBtn.setOnClickListener {
+
+            }
+
         }
     }
 
