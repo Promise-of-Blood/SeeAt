@@ -17,10 +17,9 @@ import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import com.google.android.gms.tasks.OnCompleteListener
-//import com.google.firebase.messaging.FirebaseMessaging
 import android.view.ViewTreeObserver
 import androidx.core.content.ContextCompat
+import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -49,8 +48,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import com.pob.seeat.data.model.Result
 import com.pob.seeat.domain.model.FeedModel
-import com.pob.seeat.presentation.view.feed.NewFeedFragment
-import com.pob.seeat.utils.Utils.dp
 import com.pob.seeat.utils.Utils.tagList
 import timber.log.Timber
 
@@ -72,6 +69,8 @@ class HomeFragment : Fragment() {
 
     private val homeViewModel: HomeViewModel by viewModels()
 
+    private val bottomSheetFeedAdapter: BottomSheetFeedAdapter by lazy { BottomSheetFeedAdapter(::handleClickFeed) }
+
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
     }
@@ -92,26 +91,6 @@ class HomeFragment : Fragment() {
         initBottomSheet()
         getFeed()
         initialSetting()
-
-        // 파이어 스토어 테스트
-//        val db = FirebaseFirestore.getInstance()
-//        binding.ivAlarm.setOnClickListener {
-//            db.collection("feed").get().addOnSuccessListener { result ->
-//                for (document in result) {
-//                    println("Document ID: ${document.id}")
-//                    println("Data: ${document.data}")
-//                    // If you have subcollections
-//                    db.collection("feed").document(document.id).collection("comments")
-//                        .get().addOnSuccessListener { subResult ->
-//                            for (subDocument in subResult) {
-//                                println("  SubDocument ID: ${subDocument.id}")
-//                                println("  SubData: ${subDocument.data}")
-//                            }
-//                        }
-//                }
-//            }
-//        }
-
     }
 
     private fun initialSetting() {
@@ -142,16 +121,17 @@ class HomeFragment : Fragment() {
                 .collectLatest { response ->
                     when (response) {
                         is Result.Error -> {
-                            Timber.tag("HomeFragment").e("Error: " + response.message)
+                            Log.e("HomeFragment", "Error: ${response.message}")
                         }
 
                         is Result.Loading -> {
-                            Timber.tag("HomeFragment").d("Loading..")
+                            Log.d("HomeFragment", "Loading..")
                         }
 
                         is Result.Success -> {
                             val feedList = response.data
                             Timber.tag("HomeFragment").d("Result.Success: " + feedList.toString())
+                            bottomSheetFeedAdapter.submitList(feedList)
                             updateMarker(feedList)
                         }
                     }
@@ -319,6 +299,9 @@ class HomeFragment : Fragment() {
         //BottomSheet 옵션 설정
         bottomSheetBehavior = BottomSheetBehavior.from(binding.persistentBottomSheet)
 
+        binding.rvBottomSheetPostList.adapter = bottomSheetFeedAdapter
+        binding.rvBottomSheetPostList.layoutManager = LinearLayoutManager(requireContext())
+
         bottomSheetBehavior.addBottomSheetCallback(object :
             BottomSheetBehavior.BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
@@ -437,6 +420,11 @@ class HomeFragment : Fragment() {
                 Toast.makeText(requireContext(), "위치 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    private fun handleClickFeed(feedModel: FeedModel) {
+        val action = HomeFragmentDirections.actionNavigationHomeToNavigationDetail(feedModel.feedId)
+        view?.let { Navigation.findNavController(it).navigate(action) }
     }
 
     private fun initRestroomViewModel() {
