@@ -1,6 +1,9 @@
 package com.pob.seeat.utils
 
 import android.content.res.Resources.getSystem
+import android.graphics.Color
+import com.pob.seeat.R
+import com.pob.seeat.presentation.view.home.Tag
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -30,4 +33,22 @@ object Utils {
 
     // dp to px
     val Float.px get() = (this * getSystem().displayMetrics.density).toInt()
+
+    val tagList = listOf(
+        Tag("전체", R.drawable.ic_map, Color.parseColor("#2ECC87")),
+        Tag("맛집 추천", R.drawable.ic_soup, Color.parseColor("#FFCF30")),
+        Tag("모임", R.drawable.ic_group, Color.parseColor("#A2FF77")),
+        Tag("술 친구", R.drawable.ic_beer_strok, Color.parseColor("#2ECC87")),
+        Tag("운동 친구", R.drawable.ic_gym, Color.parseColor("#2ECC87")),
+        Tag("스터디", R.drawable.ic_pencil, Color.parseColor("#FF9500")),
+        Tag("분실물", R.drawable.ic_lost_item, Color.parseColor("#FFAA75")),
+        Tag("정보공유", R.drawable.ic_info, Color.parseColor("#5145FF")),
+        Tag("질문", R.drawable.ic_question, Color.parseColor("#717171")),
+        Tag("산책", R.drawable.ic_paw, Color.parseColor("#FF9CE1")),
+        Tag("밥친구", R.drawable.ic_restaurant, Color.parseColor("#FFC300")),
+        Tag("노래방", R.drawable.ic_microphone_line, Color.parseColor("#9A7EFF")),
+        Tag("도움", R.drawable.ic_flag, Color.parseColor("#5196FF")),
+        Tag("긴급", R.drawable.ic_megaphone, Color.parseColor("#FF3939")),
+        Tag("기타", R.drawable.ic_sparkles, Color.parseColor("#FFDF60"))
+    )
 }
