@@ -1,6 +1,7 @@
 package com.pob.seeat.presentation.view.sign
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -9,6 +10,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import com.pob.seeat.MainActivity
 import com.pob.seeat.R
 import com.pob.seeat.databinding.FragmentSignUpIntroduceBinding
@@ -23,6 +26,10 @@ class SignUpIntroduceFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val userViewModel: UserInfoViewModel by activityViewModels()
+
+    private val storage = FirebaseStorage.getInstance().reference
+    private val firestore = FirebaseFirestore.getInstance()
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -69,7 +76,7 @@ class SignUpIntroduceFragment : Fragment() {
                 Toast.makeText(requireContext(), "한줄소개를 입력하세요", Toast.LENGTH_SHORT).show()
             }
         }
-
-
     }
+
+
 }

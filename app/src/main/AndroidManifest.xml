@@ -5,10 +5,9 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
-        android:usesCleartextTraffic="true"
         android:name=".SeeAtApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -18,8 +17,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.SeeAt"
+        android:usesCleartextTraffic="true"
         tools:targetApi="31">
-
+        <activity
+            android:name=".presentation.view.mypage.EditProfileActivity"
+            android:exported="false" />
         <activity
             android:name=".presentation.view.sign.SignUpActivity"
             android:exported="false" />
@@ -34,8 +36,8 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
+
         <service
             android:name=".presentation.service.TestFirebaseMessagingService"
             android:exported="false">
@@ -43,9 +45,11 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+
         <meta-data
             android:name="com.naver.maps.map.CLIENT_ID"
             android:value="${NAVER_CLIENT_ID}" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -56,11 +60,9 @@
         <activity
             android:name="com.google.android.gms.oss.licenses.OssLicensesActivity"
             android:theme="@style/Theme.OssLicense" />
-
         <activity
             android:name="com.canhub.cropper.CropImageActivity"
-            android:theme="@style/Base.Theme.AppCompat"
-            />
+            android:theme="@style/Base.Theme.AppCompat" />
     </application>
 
 </manifest>

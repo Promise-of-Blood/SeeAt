@@ -32,6 +32,23 @@ class UserInfoViewModel @Inject constructor(private val userInfoUseCases: UserIn
         }
     }
 
+    fun editProfile(uid: String, nickname: String, introduce: String, profileUrl: String) {
+        viewModelScope.launch {
+            val currentUserInfo = userInfoUseCases.getUserInfoUseCase.execute(uid)
+            if (currentUserInfo != null) {
+                val updatedProfile = currentUserInfo.copy(
+                    nickname = nickname,
+                    introduce = introduce,
+                    profileUrl = profileUrl
+                )
+                userInfoUseCases.updateUserInfoUseCase.execute(updatedProfile)
+                _userInfo.value = updatedProfile
+            } else {
+                Log.e("editProfile", "유저정보를 찾을 수 없습니다.")
+            }
+        }
+    }
+
 
     fun saveTempUserInfo(uid:String? = null,email: String? = null, name:String? = null, profileUrl: String?= null, introduce: String?= null){
         val currentInfo = _tempUserInfo.value
