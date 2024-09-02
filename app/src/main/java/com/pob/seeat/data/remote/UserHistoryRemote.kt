@@ -8,8 +8,8 @@ import javax.inject.Inject
 
 class UserHistoryRemote @Inject constructor(
     private val firestore: FirebaseFirestore
-) {
-    suspend fun getFeedList(uid: String): List<FeedModel> {
+) : GetFeedList {
+    override suspend fun getFeedList(uid: String?): List<FeedModel> {
         val feedDocuments = firestore.collection("feed")
             .whereEqualTo("user", uid).get().await().documents
         return feedDocuments.mapNotNull { documentSnapshot ->
