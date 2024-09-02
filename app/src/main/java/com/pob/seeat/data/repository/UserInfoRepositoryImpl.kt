@@ -27,4 +27,9 @@ class UserInfoRepositoryImpl @Inject constructor(private val source : UserInfoSo
     override suspend fun updateUserInfo(userInfo: UserInfoModel) {
         source.updateUserInfo(userInfo.toUserInfo())
     }
+
+    override suspend fun getUserInfoByEmail(email: String): Flow<UserInfoModel?> {
+        return source.getUserInfoByEmail(email).map {it?.toUserInfoModel()}
+
+    }
 }

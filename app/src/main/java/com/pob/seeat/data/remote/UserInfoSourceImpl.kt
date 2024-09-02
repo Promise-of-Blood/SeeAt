@@ -37,5 +37,11 @@ class UserInfoSourceImpl @Inject constructor(private val firestore: FirebaseFire
         firestore.collection("user").document(userInfoData.uid).set(userInfoData).await()
     }
 
+    override suspend fun getUserInfoByEmail(email: String): Flow<UserInfoData?> {
+        return flow{
+            val myData = firestore.collection("user").document(email).get().await()
+            emit(myData.toObject<UserInfoData>())
+        }
+    }
 
 }

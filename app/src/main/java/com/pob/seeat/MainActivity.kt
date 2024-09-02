@@ -1,8 +1,12 @@
 package com.pob.seeat
 
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.fragment.NavHostFragment
@@ -11,6 +15,14 @@ import com.pob.seeat.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 import javax.inject.Inject
+import android.Manifest
+import android.content.ContentValues.TAG
+import android.util.Log
+import android.widget.Toast
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.Firebase
+import com.google.firebase.messaging.FirebaseMessaging
+import com.google.firebase.messaging.messaging
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -23,7 +35,23 @@ class MainActivity : AppCompatActivity() {
 
         initBottomNavigation()
 
-        Timber.i("English 한글 테스트 입니다.")
+        FirebaseMessaging.getInstance().token.addOnSuccessListener {
+            Timber.tag("token").d(it)
+        }
+
+        askNotificationPermission()
+
+        // 주제 정해서 보낼 수 있음
+//        Firebase.messaging.subscribeToTopic("weather")
+//            .addOnCompleteListener { task ->
+//                var msg = "Subscribed"
+//                if (!task.isSuccessful) {
+//                    msg = "Subscribe failed"
+//                }
+//                Timber.tag(TAG).d(msg)
+//                Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
+//            }
+
     }
 
     private fun initBottomNavigation() = with(binding) {
@@ -40,4 +68,36 @@ class MainActivity : AppCompatActivity() {
         navMain.visibility = visibility
         navShadow.visibility = visibility
     }
+
+    // Declare the launcher at the top of your Activity/Fragment:
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission(),
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            // FCM SDK (and your app) can post notifications.
+        } else {
+            // TODO: Inform user that that your app will not show notifications.
+        }
+    }
+
+    private fun askNotificationPermission() {
+        // This is only necessary for API level >= 33 (TIRAMISU)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) ==
+                PackageManager.PERMISSION_GRANTED
+            ) {
+                // FCM SDK (and your app) can post notifications.
+            } else if (shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
+                // TODO: display an educational UI explaining to the user the features that will be enabled
+                //       by them granting the POST_NOTIFICATION permission. This UI should provide the user
+                //       "OK" and "No thanks" buttons. If the user selects "OK," directly request the permission.
+                //       If the user selects "No thanks," allow the user to continue without notifications.
+            } else {
+                // Directly ask for the permission
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+    }
+
+
 }

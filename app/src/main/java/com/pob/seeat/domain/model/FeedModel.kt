@@ -1,19 +1,19 @@
 package com.pob.seeat.domain.model
 
-import com.pob.seeat.data.model.FeedResponse
-import java.util.Date
-import java.util.UUID
+import CommentModel
+import com.google.firebase.Timestamp
+import com.google.firebase.firestore.GeoPoint
 
 data class FeedModel(
-    val uId: String,
-    val thumbnailUrl: String,
-    val tagName: String,
-    val title: String,
-    val content: String,
-    val commentCount: Int,
-    val likeCount: Int,
-    val username: String,
-    val dateTime: Date,
+    val feedId: String = "",
+    val title: String = "",
+    val content: String = "",
+    val user: String = "",
+    val like: Int = 0,
+    val commentsCount: Int = 0,
+    val location: GeoPoint? = null,
+    val date: Timestamp? = null,
+    val comments: List<CommentModel> = emptyList()
 )
 
 fun List<FeedResponse>.toFeedModelList() = this.map { item ->

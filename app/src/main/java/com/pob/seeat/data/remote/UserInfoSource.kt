@@ -9,4 +9,5 @@ interface UserInfoSource {
     suspend fun getUserInfo(uid : String) : Flow<UserInfoData?>
     suspend fun deleteUserInfo(userInfo: UserInfoData)
     suspend fun updateUserInfo(userInfo: UserInfoData)
+    suspend fun getUserInfoByEmail(email :String) : Flow<UserInfoData?>
 }
