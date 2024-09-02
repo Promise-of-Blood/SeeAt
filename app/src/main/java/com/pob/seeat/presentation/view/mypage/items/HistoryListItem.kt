@@ -1,13 +1,12 @@
 package com.pob.seeat.presentation.view.mypage.items
 
-import com.pob.seeat.domain.model.CommentModel
 import com.pob.seeat.domain.model.FeedModel
 import com.pob.seeat.utils.Utils.toKoreanDiffString
 import com.pob.seeat.utils.Utils.toLocalDateTime
 
 sealed class HistoryListItem {
     data class FeedItem(
-        val uId: String,
+        val feedId: String,
         val tagList: List<String>,
         val title: String,
         val content: String,
@@ -15,21 +14,24 @@ sealed class HistoryListItem {
         val likeCount: Int,
         val time: String,
         val image: String,
-        val viewType: HistoryEnum
+        val viewType: HistoryEnum = HistoryEnum.FEED,
     ) : HistoryListItem()
 
     data class CommentItem(
-        val uId: String,
+        val feedId: String,
+        val feedTitle: String,
+        val commentId: String,
         val comment: String,
         val likeCount: Int,
-        val time: String
+        val time: String,
+        val viewType: HistoryEnum = HistoryEnum.COMMENT,
     ) : HistoryListItem()
 }
 
-fun List<FeedModel>.toHistoryListItemList(): List<HistoryListItem> {
+fun List<FeedModel>.toHistoryListFeedItemList(): List<HistoryListItem> {
     return this.map {
         HistoryListItem.FeedItem(
-            uId = it.feedId,
+            feedId = it.feedId,
             tagList = it.tags.orEmpty(),
             title = it.title,
             content = it.content,
@@ -37,18 +39,21 @@ fun List<FeedModel>.toHistoryListItemList(): List<HistoryListItem> {
             likeCount = it.like,
             time = it.date?.toLocalDateTime()?.toKoreanDiffString() ?: "",
             image = "https://picsum.photos/200",
-            viewType = HistoryEnum.FEED
         )
     }
 }
 
-fun List<CommentModel>.toHistoryListIemList(): List<HistoryListItem> {
-    return this.map {
-        HistoryListItem.CommentItem(
-            uId = it.commentId,
-            comment = it.comment,
-            likeCount = it.likeCount,
-            time = it.timeStamp.toLocalDateTime().toKoreanDiffString(),
-        )
+fun List<FeedModel>.toHistoryListCommentItemList(): List<HistoryListItem> {
+    return this.flatMap { feed ->
+        feed.comments.map { comment ->
+            HistoryListItem.CommentItem(
+                feedId = feed.feedId,
+                feedTitle = feed.title,
+                commentId = comment.commentId,
+                comment = comment.comment,
+                likeCount = comment.likeCount,
+                time = comment.timeStamp?.toLocalDateTime()?.toKoreanDiffString() ?: "",
+            )
+        }
     }
 }

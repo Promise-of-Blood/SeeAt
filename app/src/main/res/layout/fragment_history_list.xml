@@ -4,34 +4,26 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".presentation.view.mypage.history.HistoryFragment">
+    tools:context=".presentation.view.mypage.history.HistoryListFragment">
+
+    <Toolbar
+        android:id="@+id/tb_history"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:paddingTop="40dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:title="작성글" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_history"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:minHeight="350dp"
-        app:layout_constraintBottom_toTopOf="@id/tv_history_more"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_chainStyle="spread"
-        tools:listitem="@layout/item_feed_history" />
-
-    <TextView
-        android:id="@+id/tv_history_more"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:paddingHorizontal="24dp"
-        android:paddingVertical="12dp"
-        android:text="@string/history_more"
-        android:textAlignment="viewEnd"
-        android:textColor="@color/black"
+        android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/rv_history" />
+        app:layout_constraintTop_toBottomOf="@id/tb_history"
+        tools:listitem="@layout/item_feed_history" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

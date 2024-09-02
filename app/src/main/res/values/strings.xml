@@ -47,6 +47,13 @@
     <string name="history_feed">작성글</string>
     <string name="history_comment">작성 댓글</string>
     <string name="history_liked_feed">좋아요한 글</string>
+    <string name="history_more">더보기</string>
+    <string name="history_feed_title">제목</string>
+    <string-array name="history_title">
+        <item>작성글</item>
+        <item>작성 댓글</item>
+        <item>좋아요한 글</item>
+    </string-array>
 
     <!-- my page -->
     <string name="settings_account">계정 설정</string>

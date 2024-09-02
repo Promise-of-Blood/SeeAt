@@ -6,43 +6,34 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.pob.seeat.MainActivity
 import com.pob.seeat.R
-import com.pob.seeat.databinding.FragmentHistoryBinding
-import com.pob.seeat.presentation.common.CustomDecoration
+import com.pob.seeat.databinding.FragmentHistoryListBinding
 import com.pob.seeat.presentation.view.UiState
 import com.pob.seeat.presentation.viewmodel.UserHistoryViewModel
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-private const val ARG_POSITION = "position"
-
-@AndroidEntryPoint
-class HistoryFragment : Fragment() {
-    private var _binding: FragmentHistoryBinding? = null
+class HistoryListFragment : Fragment() {
+    private var _binding: FragmentHistoryListBinding? = null
     private val binding get() = _binding!!
 
-    private val historyAdapter by lazy { HistoryAdapter() }
-    private val userHistoryViewModel by viewModels<UserHistoryViewModel>()
-    private var position: Int? = 0
+    private val args: HistoryListFragmentArgs by navArgs()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            position = it.getInt(ARG_POSITION)
-        }
-    }
+    private val historyAdapter by lazy { HistoryAdapter() }
+    private val userHistoryViewModel by activityViewModels<UserHistoryViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentHistoryBinding.inflate(inflater, container, false)
+        _binding = FragmentHistoryListBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -55,22 +46,28 @@ class HistoryFragment : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
+        (activity as MainActivity).setBottomNavigationVisibility(View.VISIBLE)
         _binding = null
     }
 
     private fun initView() = with(binding) {
+        (activity as MainActivity).setBottomNavigationVisibility(View.GONE)
+        tbHistory.apply {
+            title = resources.getStringArray(R.array.history_title)[args.position]
+            setNavigationIcon(R.drawable.ic_arrow_left)
+            setNavigationOnClickListener {
+                findNavController().popBackStack()
+            }
+        }
         rvHistory.adapter = historyAdapter
         rvHistory.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        rvHistory.addItemDecoration(
-            CustomDecoration(
-                1f, 48f, resources.getColor(R.color.light_gray, null)
-            )
-        )
-        tvHistoryMore.setOnClickListener {
-            val action = HistoryFragmentDirections.actionUserHistoryToUserHistoryList(position ?: 0)
-            findNavController().navigate(action)
-        }
+    }
+
+    private fun getHistoryList() = when (args.position) {
+        0 -> userHistoryViewModel.getUserFeedHistory()
+        1 -> userHistoryViewModel.getUserCommentHistory()
+        else -> userHistoryViewModel.getUserLikedHistory()
     }
 
     private fun initViewModel() = with(userHistoryViewModel) {
@@ -89,27 +86,10 @@ class HistoryFragment : Fragment() {
 
                         is UiState.Success -> {
                             binding.rvHistory.visibility = View.VISIBLE
-                            historyAdapter.submitList(response.data.take(4))
+                            historyAdapter.submitList(response.data)
                         }
                     }
                 }
         }
-    }
-
-    private fun getHistoryList() = when (position) {
-        0 -> userHistoryViewModel.getUserFeedHistory(3)
-        1 -> userHistoryViewModel.getUserCommentHistory(4)
-        else -> userHistoryViewModel.getUserLikedHistory(3)
-    }
-
-    companion object {
-
-        @JvmStatic
-        fun newInstance(position: Int) =
-            HistoryFragment().apply {
-                arguments = Bundle().apply {
-                    putInt(ARG_POSITION, position)
-                }
-            }
     }
 }

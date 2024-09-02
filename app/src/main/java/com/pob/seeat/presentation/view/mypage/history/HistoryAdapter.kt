@@ -20,14 +20,15 @@ class HistoryAdapter : ListAdapter<HistoryListItem, ViewHolder<HistoryListItem>>
     DiffUtil.ItemCallback<HistoryListItem>() {
     override fun areItemsTheSame(oldItem: HistoryListItem, newItem: HistoryListItem) =
         when {
-            oldItem is HistoryListItem.FeedItem && newItem is HistoryListItem.FeedItem -> oldItem.uId == newItem.uId
+            oldItem is HistoryListItem.FeedItem && newItem is HistoryListItem.FeedItem -> oldItem.feedId == newItem.feedId
+            oldItem is HistoryListItem.CommentItem && newItem is HistoryListItem.CommentItem -> oldItem.commentId == newItem.commentId
             else -> false
         }
 
     override fun areContentsTheSame(oldItem: HistoryListItem, newItem: HistoryListItem) =
         oldItem == newItem
 }) {
-    override fun getItemViewType(position: Int) = when (getItem(position)) {
+    override fun getItemViewType(position: Int) = when (val item = getItem(position)) {
         is HistoryListItem.FeedItem -> HistoryEnum.FEED.viewType
         is HistoryListItem.CommentItem -> HistoryEnum.COMMENT.viewType
     }
@@ -102,16 +103,17 @@ class HistoryAdapter : ListAdapter<HistoryListItem, ViewHolder<HistoryListItem>>
 
     class CommentViewHolder(binding: ItemCommentHistoryBinding) :
         ViewHolder<HistoryListItem>(binding.root) {
+        private val feedTitle = binding.tvCommentPostTitle
         private val comment = binding.tvCommentContent
-        private val likeCount = binding.tvCommentLikeCount
         private val time = binding.tvCommentTime
 
         override fun bind(item: HistoryListItem, onClick: (HistoryListItem) -> Unit) {
             (item as HistoryListItem.CommentItem).let {
                 comment.text = it.comment
-                likeCount.text = it.likeCount.toString()
                 time.text = it.time
+                feedTitle.text = it.feedTitle
             }
+            itemView.setOnClickListener { onClick(item) }
         }
     }
 }

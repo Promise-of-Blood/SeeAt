@@ -11,7 +11,11 @@ class FeedRemote @Inject constructor(
     private val firestore: FirebaseFirestore
 ) : GetFeedList {
 
-    override suspend fun getFeedList(uid: String?): List<FeedModel> {
+    override suspend fun getFeedList(
+        uid: String?,
+        limit: Long?,
+        startAfter: String?
+    ): List<FeedModel> {
         val feedDocuments = firestore.collection("feed")
             .get()
             .await()

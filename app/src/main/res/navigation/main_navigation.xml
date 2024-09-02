@@ -20,11 +20,9 @@
         android:name="com.pob.seeat.presentation.view.home.HomeFragment"
         android:label="@string/navigation_home"
         tools:layout="@layout/fragment_home">
-
         <action
             android:id="@+id/action_home_to_new_feed"
             app:destination="@id/navigation_new_feed" />
-
         <action
             android:id="@+id/action_navigation_home_to_navigation_detail"
             app:destination="@id/navigation_detail">
@@ -45,13 +43,39 @@
         tools:layout="@layout/fragment_my_page">
         <action
             android:id="@+id/action_my_page_to_terms_of_service"
-            app:destination="@id/navigation_terms_of_service" />
+            app:destination="@id/terms_of_service" />
+        <action
+            android:id="@+id/action_user_history_to_user_history_list"
+            app:destination="@id/user_history_list">
+            <argument
+                android:name="position"
+                app:argType="integer" />
+        </action>
     </fragment>
     <fragment
-        android:id="@+id/navigation_terms_of_service"
+        android:id="@+id/terms_of_service"
         android:name="com.pob.seeat.presentation.view.mypage.TermsOfServiceFragment"
         tools:layout="@layout/fragment_terms_of_service" />
-
+    <fragment
+        android:id="@+id/user_history"
+        android:name="com.pob.seeat.presentation.view.mypage.history.HistoryFragment"
+        tools:layout="@layout/fragment_history">
+        <action
+            android:id="@+id/action_user_history_to_user_history_list"
+            app:destination="@id/user_history_list">
+            <argument
+                android:name="position"
+                app:argType="integer" />
+        </action>
+    </fragment>
+    <fragment
+        android:id="@+id/user_history_list"
+        android:name="com.pob.seeat.presentation.view.mypage.history.HistoryListFragment"
+        tools:layout="@layout/fragment_history_list">
+        <argument
+            android:name="position"
+            app:argType="integer" />
+    </fragment>
     <fragment
         android:id="@+id/navigation_detail"
         android:name="com.pob.seeat.presentation.view.detail.DetailFragment"
