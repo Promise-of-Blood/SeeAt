@@ -22,9 +22,13 @@ class UserHistoryRemote @Inject constructor(
     }
 
     suspend fun getCommentList(uid: String): List<CommentModel> {
-        val feedDocuments = firestore.collection("comment")
-            .whereEqualTo("user", uid).get().await().documents
-        return feedDocuments.mapNotNull { documentSnapshot ->
+        val feedDocuments = firestore.collection("feed").get().await().documents
+        val commentsDocuments = feedDocuments.flatMap { feedDocument ->
+            feedDocument.reference.collection("comments")
+                .whereEqualTo("user", uid).get().await().documents
+        }
+
+        return commentsDocuments.mapNotNull { documentSnapshot ->
             documentSnapshot.toObject(CommentModel::class.java)
                 ?.copy(commentId = documentSnapshot.id)
         }

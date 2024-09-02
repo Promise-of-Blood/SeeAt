@@ -48,7 +48,7 @@ fun List<CommentModel>.toHistoryListIemList(): List<HistoryListItem> {
             uId = it.commentId,
             comment = it.comment,
             likeCount = it.likeCount,
-            time = it.timeStamp.toLocalDateTime().toKoreanDiffString(),
+            time = it.timeStamp?.toLocalDateTime()?.toKoreanDiffString() ?: "",
         )
     }
 }
