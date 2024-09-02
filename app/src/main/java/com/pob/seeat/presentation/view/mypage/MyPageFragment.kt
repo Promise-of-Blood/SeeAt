@@ -2,10 +2,15 @@ package com.pob.seeat.presentation.view.mypage
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.tabs.TabLayoutMediator
@@ -13,33 +18,18 @@ import com.pob.seeat.BuildConfig
 import com.pob.seeat.R
 import com.pob.seeat.databinding.FragmentMyPageBinding
 import com.pob.seeat.presentation.view.mypage.settings.SettingsActivity
+import com.pob.seeat.presentation.viewmodel.UserInfoViewModel
 import com.pob.seeat.utils.GoogleAuthUtil
+import com.pob.seeat.utils.GoogleAuthUtil.getUserUid
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [MyPageFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
+@AndroidEntryPoint
 class MyPageFragment : Fragment() {
     private var _binding: FragmentMyPageBinding? = null
     private val binding get() = _binding!!
 
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private val userViewModel: UserInfoViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -69,6 +59,26 @@ class MyPageFragment : Fragment() {
             }
         }.attach()
 
+        val uid = getUserUid()
+        if (uid != null) {
+            userViewModel.getUserInfo(uid)
+            observeUserInfo()
+        } else {
+            Log.e("userUid", "uid 조회 실패")
+        }
+
+        val profileUri = userViewModel.userInfo.value?.profileUrl?.toUri()
+        ivProfileImage.setImageURI(profileUri)
+
+        val userName = userViewModel.userInfo.value?.nickname
+        tvUserName.text = userName
+
+        tvUserPostNum
+
+        tvUserCommentNum
+
+        tvUserIntroduce.text = userViewModel.userInfo.value?.introduce
+
         mbMyPageTerms.setOnClickListener {
             findNavController().navigate(R.id.action_my_page_to_terms_of_service)
         }
@@ -76,6 +86,7 @@ class MyPageFragment : Fragment() {
             startActivity(Intent(requireContext(), OssLicensesMenuActivity::class.java))
             OssLicensesMenuActivity.setActivityTitle(getString(R.string.my_page_oss_license))
         }
+
         tvMyPageVersion.text = getString(R.string.my_page_version, BuildConfig.VERSION_NAME)
 
         mbMyPageSettings.setOnClickListener {
@@ -85,25 +96,39 @@ class MyPageFragment : Fragment() {
         mbMyPageLogout.setOnClickListener {
             GoogleAuthUtil.googleLogout(requireActivity())
         }
+
+        tvMyPageVersion.setOnClickListener {
+            when ((easterEgg) % 3) {
+                0 -> toast("IDKOS : 난 너무 잘생겼어")
+                1 -> toast("IDKOS : 날 보면 볼수록 너무 좋아")
+                2 -> toast("IDKOS : 거울이 나의 삶의 낙이야")
+            }
+            _easterEgg++
+        }
+    }
+
+    private fun observeUserInfo() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            userViewModel.userInfo.collect() { userInfo ->
+                if (userInfo != null) {
+                    binding.apply {
+                        ivProfileImage.setImageURI(userInfo.profileUrl.toUri())
+                        tvUserName.text = userInfo.nickname
+                        tvUserIntroduce.text = userInfo.introduce
+                    }
+                } else {
+                    Log.e("MyPageFragment", "UserInfo is null")
+                }
+            }
+        }
     }
 
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment MyPageFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            MyPageFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+        var _easterEgg = 0
+        val easterEgg get() = _easterEgg
+    }
+
+    fun toast(bread: String) {
+        Toast.makeText(requireContext(), bread, Toast.LENGTH_SHORT).show()
     }
 }

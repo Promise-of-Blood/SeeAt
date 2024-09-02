@@ -4,9 +4,7 @@ import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
-import com.pob.seeat.data.model.Result
 import com.pob.seeat.data.model.UserInfoData
-import com.pob.seeat.domain.model.toAlarmModelList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
@@ -44,5 +42,12 @@ class UserInfoSourceImpl @Inject constructor(
 
     override suspend fun getCurrentUserUid(): Flow<String> {
         return flow { emit(firebaseAuth.currentUser?.uid ?: "") }
+    }
+
+    override suspend fun getUserInfoByEmail(email: String): Flow<UserInfoData?> {
+        return flow {
+            val myData = firestore.collection("user").document(email).get().await()
+            emit(myData.toObject<UserInfoData>())
+        }
     }
 }

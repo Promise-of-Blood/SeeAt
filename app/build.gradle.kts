@@ -110,6 +110,7 @@ dependencies {
 
     // glide
     implementation(libs.glide)
+    annotationProcessor(libs.glide.compiler)
 
     // kakao
     implementation(libs.kakao.maps)
@@ -128,4 +129,7 @@ dependencies {
 
     // timber
     implementation(libs.timber)
+
+    //image implement
+    implementation(libs.android.image.cropper)
 }

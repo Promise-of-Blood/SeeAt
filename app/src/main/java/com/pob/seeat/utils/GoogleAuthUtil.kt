@@ -1,7 +1,6 @@
 package com.pob.seeat.utils
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.util.Log
 import android.widget.Toast
@@ -13,7 +12,7 @@ import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.pob.seeat.BuildConfig
-import com.pob.seeat.presentation.view.LoginActivity
+import com.pob.seeat.presentation.view.sign.LoginActivity
 
 object GoogleAuthUtil {
     private lateinit var googleSignInClient : GoogleSignInClient
@@ -32,6 +31,14 @@ object GoogleAuthUtil {
 
         googleSignInClient = GoogleSignIn.getClient(activity, gso)
         Log.d("GoogleAuthUtil", "GoogleSignInClient initialized")
+    }
+
+    fun getUserEmail():String{
+        return firebaseAuth.currentUser?.email ?: ""
+    }
+
+    fun getUserUid():String?{
+        return firebaseAuth.currentUser?.uid
     }
 
     //로그인
@@ -92,7 +99,7 @@ object GoogleAuthUtil {
         googleSignInClient.signOut().addOnCompleteListener(activity) {
             if(FirebaseAuth.getInstance().currentUser == null){
                 Toast.makeText(activity, "구글 로그아웃 되었습니다.", Toast.LENGTH_SHORT).show()
-                val intent = Intent(activity,LoginActivity::class.java)
+                val intent = Intent(activity, LoginActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 activity.startActivity(intent)
                 activity.finish()
@@ -112,7 +119,7 @@ object GoogleAuthUtil {
             if (task.isSuccessful) {
                 googleSignInClient.revokeAccess().addOnCompleteListener(activity) {
                     Toast.makeText(activity, "구글 계정이 삭제되었습니다.", Toast.LENGTH_SHORT).show()
-                    val intent = Intent(activity,LoginActivity::class.java)
+                    val intent = Intent(activity, LoginActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     activity.startActivity(intent)
                     activity.finish()
