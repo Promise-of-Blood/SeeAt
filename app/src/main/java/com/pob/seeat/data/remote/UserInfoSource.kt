@@ -6,8 +6,9 @@ import kotlinx.coroutines.flow.Flow
 
 interface UserInfoSource {
     suspend fun createUserInfo(userInfo: UserInfoData)
-    suspend fun getUserInfo(uid : String) : Flow<UserInfoData?>
+    suspend fun getUserInfo(uid: String): Flow<UserInfoData?>
     suspend fun deleteUserInfo(userInfo: UserInfoData)
     suspend fun updateUserInfo(userInfo: UserInfoData)
-    suspend fun getUserInfoByEmail(email :String) : Flow<UserInfoData?>
+    suspend fun getCurrentUserUid(): Flow<String>
+    suspend fun getUserInfoByEmail(email: String): Flow<UserInfoData?>
 }
