@@ -122,6 +122,11 @@ class HomeFragment : Fragment() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        getFeed()
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
@@ -146,7 +151,7 @@ class HomeFragment : Fragment() {
 
                         is Result.Success -> {
                             val feedList = response.data
-                            Timber.tag("HomeFragment").d(feedList.toString())
+                            Timber.tag("HomeFragment").d("Result.Success: " + feedList.toString())
                             updateMarker(feedList)
                         }
                     }
@@ -172,6 +177,7 @@ class HomeFragment : Fragment() {
      * 클릭 시 로그로 정보확인 가능
      */
     private fun updateMarker(feedList: List<FeedModel>) {
+        Timber.tag("HomeFragment").d("Enter UpdateMarker..")
         if (!::naverMap.isInitialized) {
             Timber.tag("HomeFragment").e("naverMap is not initialized")
             return
@@ -191,7 +197,7 @@ class HomeFragment : Fragment() {
                         val feedModel = feedList.find { it.feedId == (info.key as ItemKey).id }
                         feedModel?.let { model ->
                             Timber.tag("HomeFragment")
-                                .d("Marker Clicked: " + model.title + ", " + model.content)
+                                .d("Marker Clicked: " + model.feedId + ", " + model.title + ", " + model.content)
                         } ?: Timber.tag("HomeFragment").e("FeedModel not found for marker")
                         true
                     }
@@ -201,8 +207,10 @@ class HomeFragment : Fragment() {
             .apply {
                 val keyTagMap = buildMap(listSize) {
                     repeat(listSize) { i ->
+                        Timber.tag("HomeFragment").d("FeedModel: ${feedList[i]}")
                         val latitude = feedList[i].location?.latitude
                         val longitude = feedList[i].location?.longitude
+                        Timber.tag("HomeFragment").d("Latitude: $latitude, Longitude: $longitude")
                         if (latitude != null && longitude != null) {
                             put(
                                 ItemKey(
