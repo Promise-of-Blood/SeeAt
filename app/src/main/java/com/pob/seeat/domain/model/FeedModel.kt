@@ -16,17 +16,3 @@ data class FeedModel(
     val tags: List<String> = emptyList()
 )
 
-fun List<FeedResponse>.toFeedModelList() = this.map { item ->
-    FeedModel(
-        uId = item.uId ?: "",
-        thumbnailUrl = item.thumbnailUrl ?: "",
-        tagName = item.tagName ?: "",
-        title = item.title ?: "",
-        content = item.content ?: "",
-        commentCount = item.commentCount ?: 0,
-        likeCount = item.likeCount ?: 0,
-        username = item.username ?: "",
-        dateTime = item.dateTime ?: Date()
-    )
-}
-

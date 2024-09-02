@@ -17,11 +17,9 @@ import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import com.google.android.gms.tasks.OnCompleteListener
-//import com.google.firebase.messaging.FirebaseMessaging
 import android.view.ViewTreeObserver
 import androidx.core.content.ContextCompat
-import androidx.core.view.isVisible
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -31,17 +29,15 @@ import com.naver.maps.map.NaverMap
 import com.naver.maps.map.util.FusedLocationSource
 import com.pob.seeat.R
 import com.pob.seeat.databinding.FragmentHomeBinding
-import com.pob.seeat.domain.model.FeedModel
 import com.pob.seeat.presentation.view.UiState
 import com.pob.seeat.presentation.viewmodel.HomeViewModel
-import com.pob.seeat.presentation.viewmodel.AlarmViewModel
-import com.pob.seeat.presentation.viewmodel.FeedListViewModel
 import com.pob.seeat.presentation.viewmodel.RestroomViewModel
 import com.pob.seeat.utils.Utils.px
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import com.pob.seeat.data.model.Result
+import com.pob.seeat.domain.model.FeedModel
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
@@ -84,6 +80,7 @@ class HomeFragment : Fragment() {
         initBottomSheet()
         getFeed()
 
+
         // 파이어 스토어 테스트
 //        val db = FirebaseFirestore.getInstance()
 //        binding.ivAlarm.setOnClickListener {
@@ -103,30 +100,8 @@ class HomeFragment : Fragment() {
 //            }
 //        }
 
-        initFeedListViewModel()
+//        initFeedListViewModel()
 
-    }
-
-    private fun initFeedListViewModel() = with(feedListViewModel) {
-        viewLifecycleOwner.lifecycleScope.launch {
-            feedListUiState.flowWithLifecycle(viewLifecycleOwner.lifecycle)
-                .collectLatest { response ->
-                    when(response){
-                        is UiState.Error ->{
-                            Toast.makeText(requireContext(), response.message, Toast.LENGTH_SHORT).show()
-                        }
-
-                        is UiState.Loading -> {
-                            binding.rvBottomSheetPostList.isVisible = false
-                        }
-
-                        is UiState.Success -> {
-                            binding.rvBottomSheetPostList.isVisible = true
-                            bottomSheetFeedAdapter.submitList(response.data)
-                        }
-                    }
-                }
-        }
     }
 
     private fun getFeed() = with(homeViewModel) {
@@ -148,6 +123,7 @@ class HomeFragment : Fragment() {
                         is Result.Success -> {
                             val feedList = response.data
                             Log.d("HomeFragment", feedList.toString())
+                            bottomSheetFeedAdapter.submitList(feedList)
                         }
                     }
                 }
@@ -252,6 +228,9 @@ class HomeFragment : Fragment() {
     private fun initBottomSheet() {
         //BottomSheet 옵션 설정
         bottomSheetBehavior = BottomSheetBehavior.from(binding.persistentBottomSheet)
+
+        binding.rvBottomSheetPostList.adapter = bottomSheetFeedAdapter
+        binding.rvBottomSheetPostList.layoutManager = LinearLayoutManager(requireContext())
 
         bottomSheetBehavior.addBottomSheetCallback(object :
             BottomSheetBehavior.BottomSheetCallback() {
@@ -371,13 +350,9 @@ class HomeFragment : Fragment() {
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
-    private fun handleClickFeed(feed: FeedModel) {
-        feedListViewModel.getFeedListUiState("feed")
+    private fun handleClickFeed(feedModel: FeedModel) {
+        val action = HomeFragmentDirections.actionNavigationHomeToNavigationDetail(feedModel.feedId)
+        view?.let { Navigation.findNavController(it).navigate(action) }
     }
 
     private fun initRestroomViewModel() {
@@ -400,6 +375,11 @@ class HomeFragment : Fragment() {
                     }
                 }
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }
 

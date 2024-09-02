@@ -7,11 +7,13 @@ import androidx.recyclerview.widget.ListAdapter
 import com.pob.seeat.databinding.PostItemBinding
 import com.pob.seeat.domain.model.FeedModel
 import com.pob.seeat.presentation.view.common.ViewHolder
+import com.pob.seeat.utils.Utils.toKoreanDiffString
+import com.pob.seeat.utils.Utils.toLocalDateTime
 
 class BottomSheetFeedAdapter(private val onClick: (FeedModel) -> Unit) :
     ListAdapter<FeedModel, ViewHolder<FeedModel>>(object : DiffUtil.ItemCallback<FeedModel>() {
         override fun areItemsTheSame(oldItem: FeedModel, newItem: FeedModel): Boolean {
-            return oldItem.uId == newItem.uId
+            return oldItem.feedId == newItem.feedId
         }
 
         override fun areContentsTheSame(oldItem: FeedModel, newItem: FeedModel): Boolean {
@@ -25,7 +27,11 @@ class BottomSheetFeedAdapter(private val onClick: (FeedModel) -> Unit) :
         override fun onBind(item: FeedModel) = with(binding) {
 
             tvPostTitle.text = item.title
-
+            tvPostContent.text = item.content
+            tvPostCommentCount.text = item.commentsCount.toString()
+            tvPostLikeCount.text = item.like.toString()
+            tvPostTimeAgo.text = item.date?.toLocalDateTime()?.toKoreanDiffString()
+            tvPostUsername.text = item.user
             clFeedLayout.setOnClickListener {
                 onClick(item)
             }

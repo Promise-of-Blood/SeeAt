@@ -23,56 +23,56 @@
             android:background="@color/transparent"
             app:layout_constraintTop_toTopOf="parent">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/et_search"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="8dp"
-            android:background="@drawable/background_corners_radius_8dp"
-            android:drawableStart="@drawable/ic_search"
-            android:drawablePadding="16dp"
-            android:elevation="16dp"
-            android:hint="@string/search_hint"
-            android:inputType="text"
-            android:maxLines="1"
-            android:paddingHorizontal="16dp"
-            android:scrollHorizontally="true"
-            app:layout_constraintBottom_toBottomOf="@id/iv_alarm"
-            app:layout_constraintEnd_toStartOf="@id/iv_alarm"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/iv_alarm" />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_search"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/background_corners_radius_8dp"
+                android:drawableStart="@drawable/ic_search"
+                android:drawablePadding="16dp"
+                android:elevation="16dp"
+                android:hint="@string/search_hint"
+                android:inputType="text"
+                android:maxLines="1"
+                android:paddingHorizontal="16dp"
+                android:scrollHorizontally="true"
+                app:layout_constraintBottom_toBottomOf="@id/iv_alarm"
+                app:layout_constraintEnd_toStartOf="@id/iv_alarm"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/iv_alarm" />
 
-        <ImageView
-            android:id="@+id/iv_alarm"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginTop="48dp"
-            android:layout_marginEnd="16dp"
-            android:background="@drawable/background_corners_radius_8dp"
-            android:elevation="16dp"
-            android:padding="12dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/ic_bell"
-            app:layout_constraintDimensionRatio="1.2:1"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHeight_percent="0.3"
-            app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/light_gray" />
+            <ImageView
+                android:id="@+id/iv_alarm"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginTop="48dp"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/background_corners_radius_8dp"
+                android:elevation="16dp"
+                android:padding="12dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_bell"
+                app:layout_constraintDimensionRatio="1.2:1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHeight_percent="0.3"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="@color/light_gray" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_tag_list"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:clipToPadding="false"
-            android:orientation="horizontal"
-            android:scrollbars="none"
-            tools:listitem="@layout/item_tag"
-            tools:itemCount="1"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/iv_alarm" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_tag_list"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:clipToPadding="false"
+                android:orientation="horizontal"
+                android:scrollbars="none"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/iv_alarm"
+                tools:itemCount="1"
+                tools:listitem="@layout/item_tag" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -127,7 +127,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/white_round_top_border_20"
-        android:padding="16dp"
+        android:paddingHorizontal="16dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="140dp"
         android:translationY="30dp"
         app:behavior_draggable="true"
         app:behavior_expandedOffset="0dp"
@@ -152,9 +154,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
+            app:layout_constrainedHeight="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/view_top_bar" />
+            app:layout_constraintTop_toBottomOf="@+id/view_top_bar"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -12,10 +12,10 @@
         android:id="@+id/iv_post_main_image"
         android:layout_width="match_parent"
         android:layout_height="150dp"
+        android:src="@drawable/ic_beer"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:src="@drawable/ic_beer" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_post_tag_layout"
@@ -34,10 +34,10 @@
             android:id="@+id/iv_post_tag_icon"
             android:layout_width="12dp"
             android:layout_height="12dp"
+            android:src="@drawable/ic_beer"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:src="@drawable/ic_beer" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/tv_post_tag_name"
@@ -46,11 +46,11 @@
             android:layout_marginStart="5dp"
             android:textSize="12sp"
             android:textStyle="bold"
+            android:text="태그 1"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/iv_post_tag_icon"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="티컵 명선" />
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -93,16 +93,16 @@
             android:id="@+id/iv_post_comment_icon"
             android:layout_width="16dp"
             android:layout_height="16dp"
+            android:src="@drawable/ic_comment_24"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:src="@drawable/ic_beer" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/tv_post_comment_count"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
+            android:layout_marginStart="10dp"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/iv_post_comment_icon"
@@ -113,7 +113,7 @@
             android:id="@+id/view_post_comment_divider"
             android:layout_width="1dp"
             android:layout_height="20dp"
-            android:layout_marginStart="20dp"
+            android:layout_marginStart="10dp"
             android:background="@color/gray"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/tv_post_comment_count"
@@ -121,19 +121,19 @@
 
         <ImageView
             android:id="@+id/iv_post_like_icon"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
-            android:layout_marginStart="15dp"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginStart="10dp"
+            android:src="@drawable/ic_thumb_up_off_alt_24"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/view_post_comment_divider"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:src="@drawable/ic_heart" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/tv_post_like_count"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
+            android:layout_marginStart="10dp"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/iv_post_like_icon"
@@ -144,7 +144,7 @@
             android:id="@+id/view_post_time_divider"
             android:layout_width="1dp"
             android:layout_height="20dp"
-            android:layout_marginStart="20dp"
+            android:layout_marginStart="10dp"
             android:background="@color/gray"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/tv_post_like_count"
@@ -154,7 +154,7 @@
             android:id="@+id/tv_post_time_ago"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
+            android:layout_marginStart="10dp"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/view_post_time_divider"
@@ -164,8 +164,8 @@
         <View
             android:id="@+id/view_post_name_divider"
             android:layout_width="1dp"
-            android:layout_height="20dp"
-            android:layout_marginStart="20dp"
+            android:layout_height="15dp"
+            android:layout_marginStart="10dp"
             android:background="@color/gray"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/tv_post_time_ago"
@@ -175,7 +175,7 @@
             android:id="@+id/tv_post_username"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
+            android:layout_marginStart="10dp"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/view_post_name_divider"
