@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cv_comment_item_user_image_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="15dp"
+        app:cardElevation="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/iv_comment_item_user_image"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            tools:src="@drawable/ic_home" />
+
+    </androidx.cardview.widget.CardView>
+
+    <TextView
+        android:id="@+id/tv_comment_item_username"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:maxLines="1"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@id/cv_comment_item_user_image_layout"
+        app:layout_constraintTop_toTopOf="@id/cv_comment_item_user_image_layout"
+        tools:text="이강진" />
+
+    <TextView
+        android:id="@+id/tv_comment_item_content"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="5dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/cv_comment_item_user_image_layout"
+        app:layout_constraintTop_toBottomOf="@id/tv_comment_item_username"
+        tools:text="나 공명선인데 140 맞다 나 공명선인데 140 맞다 나 공명선인데 140 맞다 나 공명선인데 140 맞다" />
+
+    <TextView
+        android:id="@+id/tv_report"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:text="@string/report"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
