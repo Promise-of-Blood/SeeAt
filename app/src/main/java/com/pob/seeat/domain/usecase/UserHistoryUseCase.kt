@@ -45,12 +45,11 @@ class UserLikedHistoryUseCase @Inject constructor(
     private val userInfoRepository: UserInfoRepository,
     private val userHistoryRepository: UserHistoryRepository,
 ) {
-    // TODO 좋아요 한 글 가져오기
     suspend operator fun invoke(
         limit: Long? = null,
         startAfter: String? = null
     ): Flow<Result<List<FeedModel>>> {
         val currentUserId = userInfoRepository.getCurrentUserUid().firstOrNull() ?: ""
-        return userHistoryRepository.getFeedList(currentUserId, limit, startAfter)
+        return userHistoryRepository.getLikedList(currentUserId, limit, startAfter)
     }
 }

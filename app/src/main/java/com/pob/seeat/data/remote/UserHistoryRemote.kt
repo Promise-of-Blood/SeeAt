@@ -60,13 +60,16 @@ class UserHistoryRemote @Inject constructor(
         limit: Long? = null,
         startAfter: String? = null
     ): List<FeedModel> {
-        // TODO 좋아요 한 글 가져오기
-        val feedDocuments = firestore.collection("feed")
-            .whereEqualTo("user", uid).get().await().documents
-        return feedDocuments.mapNotNull { documentSnapshot ->
+        val userRef = firestore.collection("user").document(uid ?: "").get().await().reference
+        val feedRefs = firestore.collection("like").whereEqualTo("user", userRef)
+        if (limit != null) feedRefs.limit(limit)
+        if (startAfter != null) feedRefs.startAfter(startAfter)
+        return feedRefs.get().await().documents.mapNotNull { documentSnapshot ->
+            val feedDocument =
+                firestore.collection("feed").document(documentSnapshot.id).get().await()
             val tagList = documentSnapshot.get("tagList") as? List<*>
-            documentSnapshot.toObject(FeedModel::class.java)?.copy(
-                feedId = documentSnapshot.id,
+            feedDocument.toObject(FeedModel::class.java)?.copy(
+                feedId = feedDocument.id,
                 tags = tagList?.filterIsInstance<String>() ?: emptyList()
             )
         }

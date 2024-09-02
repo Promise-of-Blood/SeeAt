@@ -46,11 +46,10 @@ class UserHistoryRepositoryImpl @Inject constructor(
         limit: Long?,
         startAfter: String?
     ): Flow<Result<List<FeedModel>>> = flow {
-        // TODO 좋아요 한 글 가져오기
         emit(Result.Loading)
         if (uid.isEmpty()) emit(Result.Error("Invalid user ID"))
         try {
-            val data = userHistoryRemote.getFeedList(uid, limit, startAfter)
+            val data = userHistoryRemote.getLikedList(uid, limit, startAfter)
             emit(Result.Success(data))
         } catch (e: Exception) {
             emit(Result.Error(e.message ?: "An unknown error occurred"))
