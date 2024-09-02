@@ -12,6 +12,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -44,24 +45,6 @@ class UserInfoViewModel @Inject constructor(private val userInfoUseCases: UserIn
         )
 
         _tempUserInfo.value = updatedInfo
-    }
-
-
-
-    fun isOurFamily(email: String, onUserExists : () -> Unit, onUserNotExist : () -> Unit){
-        viewModelScope.launch {
-            try {
-                val user = userInfoUseCases.getUserInfoByEmailUseCase.execute(email)
-                if(user != null){
-                    _userInfo.value = user
-                    onUserExists()
-                }else{
-                    onUserNotExist()
-                }
-            }catch (e: Exception){
-                Log.e("회원확인","오류 $e")
-            }
-        }
     }
 
 
