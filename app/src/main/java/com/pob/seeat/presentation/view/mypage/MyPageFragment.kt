@@ -14,8 +14,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.tabs.TabLayoutMediator
+import com.google.firebase.storage.FirebaseStorage
 import com.pob.seeat.BuildConfig
 import com.pob.seeat.R
 import com.pob.seeat.databinding.FragmentMyPageBinding
@@ -35,22 +37,28 @@ class MyPageFragment : Fragment() {
     val uid = getUserUid()
 
     private val editProfileLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()){
-            result ->
-            if(result.resultCode == Activity.RESULT_OK){
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val data = result.data
+            if(data != null){
+                val updatedNickname = data.getStringExtra("updatedNickname")
+                val updatedIntroduce = data.getStringExtra("updatedIntroduce")
+                val updatedProfileUrl = data.getStringExtra("updatedProfileUrl")
 
-
-                val updatedNickname = result.data?.getStringExtra("updatedNickname")
-                val updatedIntroduce = result.data?.getStringExtra("updatedIntroduce")
-                val updatedProfileUrl = result.data?.getStringExtra("updatedProfileUrl")
-
-                userViewModel.editProfile(uid!!, updatedNickname!!, updatedIntroduce!!, updatedProfileUrl!!)
-
-                updatedNickname?.let { binding.tvUserName.text = it }
-                updatedIntroduce?.let { binding.tvUserIntroduce.text = it }
-                updatedProfileUrl?.let { binding.ivProfileImage.setImageURI(it.toUri()) }
+                if (updatedNickname != null && updatedIntroduce != null && updatedProfileUrl != null){
+                    userViewModel.getUserInfo(getUserUid()!!)
+                }else{
+                    Log.e("MyPageFragment", "업데이트된 데이터가 없습니다.")
+                }
+            }else{
+                Log.e("MyPageFragment", "결과 데이터가 null입니다.")
             }
+            refreshUserInfo()
+        }else{
+            Toast.makeText(requireContext(), "프로필 업데이트 실패", Toast.LENGTH_SHORT).show()
         }
+    }
 
 
     override fun onCreateView(
@@ -97,7 +105,7 @@ class MyPageFragment : Fragment() {
         }
 
         btnMyPage.setOnClickListener {
-            val intent = Intent(requireContext(),EditProfileActivity::class.java)
+            val intent = Intent(requireContext(), EditProfileActivity::class.java)
             editProfileLauncher.launch(intent)
         }
 
@@ -134,7 +142,14 @@ class MyPageFragment : Fragment() {
             userViewModel.userInfo.collect() { userInfo ->
                 if (userInfo != null) {
                     binding.apply {
-                        ivProfileImage.setImageURI(userInfo.profileUrl.toUri())
+                        val file =
+                            FirebaseStorage.getInstance().reference.child("profile_images/$uid.jpg")
+
+                        file.downloadUrl.addOnSuccessListener { url ->
+                            displayImage(url.toString())
+                        }.addOnFailureListener { exception ->
+                            Log.e("Image Load Error", "이미지 Url 가져오는데 실패")
+                        }
                         tvUserName.text = userInfo.nickname
                         tvUserIntroduce.text = userInfo.introduce
                     }
@@ -143,6 +158,12 @@ class MyPageFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun displayImage(imageUrl: String) {
+        Glide.with(this)
+            .load(imageUrl)
+            .into(binding.ivProfileImage)
     }
 
     private fun refreshUserInfo() {
