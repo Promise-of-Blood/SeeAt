@@ -1,9 +1,6 @@
 package com.pob.seeat.utils
 
 import android.content.res.Resources.getSystem
-import android.graphics.Color
-import com.pob.seeat.R
-import com.pob.seeat.presentation.view.home.Tag
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -33,6 +30,10 @@ object Utils {
 
     // dp to px
     val Float.px get() = (this * getSystem().displayMetrics.density).toInt()
+
+    fun Timestamp.toLocalDateTime(): LocalDateTime {
+        return LocalDateTime.ofInstant(this.toDate().toInstant(), ZoneId.systemDefault())
+    }
 
     val tagList = listOf(
         Tag("전체", R.drawable.ic_map, Color.parseColor("#2ECC87")),
