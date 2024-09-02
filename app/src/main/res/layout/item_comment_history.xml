@@ -13,26 +13,25 @@
         android:id="@+id/tv_comment_content"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="8dp"
         android:ellipsize="end"
         android:maxLines="2"
         android:textColor="@color/black"
-        android:textSize="18sp"
+        android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_comment_post_title_label"
         tools:text="나한테 왜 140이라고 하는고야.\n나 키 짱큰데" />
 
     <TextView
         android:id="@+id/tv_comment_time"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:textColor="@color/gray"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_comment_content"
+        app:layout_constraintTop_toTopOf="parent"
         tools:text="20 분전" />
 
     <TextView
@@ -47,9 +46,9 @@
         android:paddingVertical="2dp"
         android:text="@string/history_feed_title"
         android:textColor="@color/white"
-        android:textSize="12sp"
+        android:textSize="14sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_comment_time"
+        app:layout_constraintTop_toTopOf="parent"
         tools:text="제목" />
 
     <TextView
@@ -58,12 +57,15 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="4dp"
+        android:ellipsize="end"
+        android:maxLines="1"
         android:textColor="@color/black"
-        android:textSize="14sp"
+        android:textSize="18sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@id/tv_comment_post_title_label"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/tv_comment_time"
         app:layout_constraintStart_toEndOf="@id/tv_comment_post_title_label"
-        app:layout_constraintTop_toBottomOf="@id/tv_comment_time"
+        app:layout_constraintTop_toTopOf="parent"
         tools:text="게시물 제목쓰" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
