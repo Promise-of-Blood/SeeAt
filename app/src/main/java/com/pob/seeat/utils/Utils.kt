@@ -1,8 +1,10 @@
 package com.pob.seeat.utils
 
 import android.content.res.Resources.getSystem
+import com.google.firebase.Timestamp
 import java.time.Duration
 import java.time.LocalDateTime
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 object Utils {
@@ -30,4 +32,8 @@ object Utils {
 
     // dp to px
     val Float.px get() = (this * getSystem().displayMetrics.density).toInt()
+
+    fun Timestamp.toLocalDateTime(): LocalDateTime {
+        return LocalDateTime.ofInstant(this.toDate().toInstant(), ZoneId.systemDefault())
+    }
 }
