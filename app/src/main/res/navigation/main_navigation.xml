@@ -6,10 +6,10 @@
     app:startDestination="@+id/navigation_home">
 
     <fragment
-        android:id="@+id/navigation_add_marker"
-        android:name="com.pob.seeat.presentation.view.home.HomeFragment"
+        android:id="@+id/navigation_new_feed"
+        android:name="com.pob.seeat.presentation.view.feed.NewFeedFragment"
         android:label="@string/navigation_add_marker"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_new_feed" />
     <fragment
         android:id="@+id/navigation_message"
         android:name="com.pob.seeat.presentation.view.chat.ChatListFragment"
@@ -20,12 +20,18 @@
         android:name="com.pob.seeat.presentation.view.home.HomeFragment"
         android:label="@string/navigation_home"
         tools:layout="@layout/fragment_home">
+
+        <action
+            android:id="@+id/action_home_to_new_feed"
+            app:destination="@id/navigation_new_feed" />
+
         <action
             android:id="@+id/action_navigation_home_to_navigation_detail"
-            app:destination="@id/navigation_detail" />
-        <argument
-            android:name="feedIdArg"
-            app:argType="string" />
+            app:destination="@id/navigation_detail">
+            <argument
+                android:name="feedIdArg"
+                app:argType="string" />
+        </action>
     </fragment>
     <fragment
         android:id="@+id/navigation_bookmark"
