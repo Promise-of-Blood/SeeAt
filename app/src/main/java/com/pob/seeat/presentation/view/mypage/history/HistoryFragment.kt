@@ -89,7 +89,7 @@ class HistoryFragment : Fragment() {
 
                         is UiState.Success -> {
                             binding.rvHistory.visibility = View.VISIBLE
-                            historyAdapter.submitList(response.data.take(5))
+                            historyAdapter.submitList(response.data.take(4))
                         }
                     }
                 }
@@ -98,7 +98,7 @@ class HistoryFragment : Fragment() {
 
     private fun getHistoryList() = when (position) {
         0 -> userHistoryViewModel.getUserFeedHistory(3)
-        1 -> userHistoryViewModel.getUserCommentHistory(5)
+        1 -> userHistoryViewModel.getUserCommentHistory(4)
         else -> userHistoryViewModel.getUserLikedHistory(3)
     }
 
