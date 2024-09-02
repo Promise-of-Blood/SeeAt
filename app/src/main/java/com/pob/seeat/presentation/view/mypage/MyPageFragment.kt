@@ -1,5 +1,6 @@
 package com.pob.seeat.presentation.view.mypage
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -7,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -30,6 +32,26 @@ class MyPageFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val userViewModel: UserInfoViewModel by viewModels()
+    val uid = getUserUid()
+
+    private val editProfileLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()){
+            result ->
+            if(result.resultCode == Activity.RESULT_OK){
+
+
+                val updatedNickname = result.data?.getStringExtra("updatedNickname")
+                val updatedIntroduce = result.data?.getStringExtra("updatedIntroduce")
+                val updatedProfileUrl = result.data?.getStringExtra("updatedProfileUrl")
+
+                userViewModel.editProfile(uid!!, updatedNickname!!, updatedIntroduce!!, updatedProfileUrl!!)
+
+                updatedNickname?.let { binding.tvUserName.text = it }
+                updatedIntroduce?.let { binding.tvUserIntroduce.text = it }
+                updatedProfileUrl?.let { binding.ivProfileImage.setImageURI(it.toUri()) }
+            }
+        }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -42,7 +64,15 @@ class MyPageFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initView()
+        observeUserInfo()
     }
+
+    override fun onResume() {
+        super.onResume()
+        // Fragment가 다시 보일 때마다 최신 데이터를 가져옴
+        refreshUserInfo()
+    }
+
 
     override fun onDestroy() {
         super.onDestroy()
@@ -59,25 +89,17 @@ class MyPageFragment : Fragment() {
             }
         }.attach()
 
-        val uid = getUserUid()
+
         if (uid != null) {
             userViewModel.getUserInfo(uid)
-            observeUserInfo()
         } else {
             Log.e("userUid", "uid 조회 실패")
         }
 
-        val profileUri = userViewModel.userInfo.value?.profileUrl?.toUri()
-        ivProfileImage.setImageURI(profileUri)
-
-        val userName = userViewModel.userInfo.value?.nickname
-        tvUserName.text = userName
-
-        tvUserPostNum
-
-        tvUserCommentNum
-
-        tvUserIntroduce.text = userViewModel.userInfo.value?.introduce
+        btnMyPage.setOnClickListener {
+            val intent = Intent(requireContext(),EditProfileActivity::class.java)
+            editProfileLauncher.launch(intent)
+        }
 
         mbMyPageTerms.setOnClickListener {
             findNavController().navigate(R.id.action_my_page_to_terms_of_service)
@@ -120,6 +142,16 @@ class MyPageFragment : Fragment() {
                     Log.e("MyPageFragment", "UserInfo is null")
                 }
             }
+        }
+    }
+
+    private fun refreshUserInfo() {
+        val uid = getUserUid()
+        if (uid != null) {
+            userViewModel.getUserInfo(uid)
+            observeUserInfo()
+        } else {
+            Log.e("userUid", "uid 조회 실패")
         }
     }
 
