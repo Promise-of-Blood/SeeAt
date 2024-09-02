@@ -95,6 +95,7 @@ class HomeFragment : Fragment() {
 
     private fun initialSetting() {
         binding.run {
+            ivAlarm.setOnClickListener { findNavController().navigate(R.id.action_home_to_alarm) }
             ibAddMarker.setOnClickListener {
                 findNavController().navigate(R.id.action_home_to_new_feed)
             }
