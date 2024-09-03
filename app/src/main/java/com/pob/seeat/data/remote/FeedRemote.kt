@@ -23,7 +23,7 @@ class FeedRemote @Inject constructor(
             documentSnapshot.toObject(FeedModel::class.java)?.copy(feedId = documentSnapshot.id)
                 ?.run {
                     val nickname =
-                        user?.get()?.await()?.getString("nickname")
+                        (user as? DocumentReference)?.get()?.await()?.getString("nickname")
 
                     // 로그로 nickname 값을 출력하여 확인
                     Log.d("FeedRemote", "Fetched nickname: $nickname for user: ${user?.id}")
@@ -32,6 +32,7 @@ class FeedRemote @Inject constructor(
                         copy(nickname = it)
                     } ?: this
                 }
+
         }
 
     }
