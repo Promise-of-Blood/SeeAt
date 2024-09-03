@@ -1,25 +1,28 @@
 package com.pob.seeat.presentation.view.detail
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.firestore.GeoPoint
+import com.pob.seeat.MainActivity
 import com.pob.seeat.R
 import com.pob.seeat.data.model.Result
 import com.pob.seeat.databinding.FragmentDetailBinding
 import com.pob.seeat.domain.model.CommentModel
 import com.pob.seeat.domain.model.FeedModel
-import com.pob.seeat.presentation.view.chat.ChatListFragment
-import com.pob.seeat.presentation.view.chat.ChattingFragment
+import com.pob.seeat.presentation.view.chat.ChattingActivity
 import com.pob.seeat.presentation.view.home.MarginItemDecoration
 import com.pob.seeat.presentation.view.home.TagAdapter
 import com.pob.seeat.presentation.viewmodel.DetailViewModel
@@ -50,9 +53,17 @@ class DetailFragment : Fragment() {
 
     private val feedCommentAdapter: FeedCommentAdapter by lazy { FeedCommentAdapter(::handleClickFeed) }
 
+    private lateinit var chattingResultLauncher: ActivityResultLauncher<Intent>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        chattingResultLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                if (result.resultCode == Activity.RESULT_OK) {
+                    findNavController().navigate(R.id.navigation_home)
+                    (activity as MainActivity).setBottomNavigationSelectedItem(R.id.navigation_message)
+                }
+            }
     }
 
     override fun onCreateView(
@@ -136,9 +147,9 @@ class DetailFragment : Fragment() {
             }
 
             tvChatButton.setOnClickListener {
-                val feedBundle = Bundle().apply { putParcelable("feed", feed) }
-                findNavController().navigate(R.id.action_detail_through_message, feedBundle)
-                findNavController().navigate(R.id.action_message_through_chatting, feedBundle)
+                val intent = Intent(requireContext(), ChattingActivity::class.java)
+                intent.putExtra("feed", feed)
+                chattingResultLauncher.launch(intent)
             }
 
             feedCommentAdapter.submitList(feed.comments)

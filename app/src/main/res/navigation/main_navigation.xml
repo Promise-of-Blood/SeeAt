@@ -14,15 +14,7 @@
         android:id="@+id/navigation_message"
         android:name="com.pob.seeat.presentation.view.chat.ChatListFragment"
         android:label="@string/navigation_message"
-        tools:layout="@layout/fragment_chat_list">
-        <action
-            android:id="@+id/action_message_through_chatting"
-            app:destination="@id/chatting">
-            <argument
-                android:name="feed"
-                app:argType="com.pob.seeat.domain.model.FeedModel" />
-        </action>
-    </fragment>
+        tools:layout="@layout/fragment_chat_list" />
     <fragment
         android:id="@+id/navigation_home"
         android:name="com.pob.seeat.presentation.view.home.HomeFragment"
@@ -99,21 +91,6 @@
         <argument
             android:name="feedIdArg"
             app:argType="string" />
-        <action
-            android:id="@+id/action_detail_through_message"
-            app:destination="@id/navigation_message">
-            <argument
-                android:name="feed"
-                app:argType="com.pob.seeat.domain.model.FeedModel" />
-        </action>
-    </fragment>
-    <fragment
-        android:id="@+id/chatting"
-        android:name="com.pob.seeat.presentation.view.chat.ChattingFragment"
-        tools:layout="@layout/fragment_chatting">
-        <argument
-            android:name="feed"
-            app:argType="com.pob.seeat.domain.model.FeedModel" />
     </fragment>
 
 </navigation>
