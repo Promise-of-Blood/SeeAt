@@ -20,6 +20,8 @@ import com.pob.seeat.R
 import com.pob.seeat.databinding.ActivityLoginBinding
 import com.pob.seeat.presentation.viewmodel.UserInfoViewModel
 import com.pob.seeat.utils.GoogleAuthUtil
+import com.pob.seeat.utils.NotificationTokenUtils.getNotificationToken
+import com.pob.seeat.utils.NotificationTokenUtils.initNotificationToken
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -56,6 +58,7 @@ class LoginActivity : AppCompatActivity() {
             insets
         }
         initView()
+        initNotificationToken()
     }
 
 
