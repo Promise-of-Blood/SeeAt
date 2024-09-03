@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".presentation.view.chat.MessageFragment"
+    tools:context=".presentation.view.chat.ChattingFragment"
     android:background="@color/background_gray"
     >
 
@@ -93,6 +93,92 @@
                 android:textColor="@color/light_gray"
                 android:maxLines="2"
                 android:maxEms="15"
+                />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_message"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toBottomOf="@id/cl_feed_info"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:paddingHorizontal="16dp"
+            android:layout_marginTop="8dp"
+            android:background="@color/white"
+            tools:itemCount="100"
+            tools:listitem="@layout/item_chatting_message_me"
+            />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_chatting_input"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_margin="16dp"
+            android:background="@drawable/background_chatting_input"
+            >
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline_chatting_input"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.75"
+                />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:background="@drawable/background_chatting_input"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="@id/guideline_chatting_input"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:elevation="5dp"
+                android:layout_margin="4dp"
+                android:outlineProvider="paddedBounds"
+                >
+
+                <ImageView
+                    android:id="@+id/iv_chatting_add"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:src="@drawable/ic_add_24"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_marginStart="8dp"
+                    app:tint="@color/primary"
+                    />
+
+                <EditText
+                    android:id="@+id/et_chatting_input"
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/iv_chatting_add"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:hint="@string/input_message"
+                    android:textColor="@color/black"
+                    android:background="@null"
+                    android:paddingHorizontal="4dp"
+                    />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_chatting_send"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@id/guideline_chatting_input"
+                android:text="@string/send"
+                android:textColor="@color/white"
+                android:background="@drawable/background_chatting_send"
+                android:elevation="10dp"
+                android:layout_margin="6dp"
                 />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

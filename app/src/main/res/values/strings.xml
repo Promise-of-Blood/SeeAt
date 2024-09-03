@@ -97,5 +97,7 @@
     <string name="input_comment">댓글을 입력해주세요</string>
     <string name="send">전송</string>
     <string name="detail">디테일</string>
+    <string name="input_message">메시지 보내기</string>
+    <string name="chatting">채팅 메시지예요 채팅 메시지예요 채팅 메시지예요 채팅 메시지예요 채팅 메시지예요 채팅 메시지예요 채팅 메시지예요</string>
 
 </resources>
