@@ -13,6 +13,7 @@ import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import com.pob.seeat.BuildConfig
 import com.pob.seeat.presentation.view.sign.LoginActivity
 object GoogleAuthUtil {
@@ -132,7 +133,14 @@ object GoogleAuthUtil {
                     Log.d("GoogleAuthUtil", "User account deleted from Auth")
                     googleSignInClient.revokeAccess().addOnCompleteListener {
                         if (it.isSuccessful) {
-                            deleteUser(activity, uid) // 저장된 UID를 사용하여 데이터 삭제
+                            deleteProfileImage(uid){imageDeleteSuccess ->
+                                if(imageDeleteSuccess){
+                                    deleteUser(activity,uid)
+                                }else{
+                                    Log.e("GoogleAuthUtil","프로필 사진 삭제 실패")
+                                    Toast.makeText(activity, "프로필이미지 삭제에 실패했습니다", Toast.LENGTH_SHORT).show()
+                                }
+                            }
                         } else {
                             Log.e("GoogleAuthUtil", "Access revoke failed: ${it.exception?.message}", it.exception)
                             Toast.makeText(activity, "계정 접근 해제에 실패했습니다.", Toast.LENGTH_SHORT).show()
@@ -176,6 +184,22 @@ object GoogleAuthUtil {
         }
     }
 
+    //회원가입도중 취소시 Authentication 삭제
+    fun cancelSignUp(activity: Activity) {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        if (currentUser != null) {
+            currentUser.delete().addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Log.d("SignUp", "Authentication 계정 삭제 성공")
+                    Toast.makeText(activity, "회원가입을 취소했습니다.", Toast.LENGTH_SHORT).show()
+                } else {
+                    Log.e("SignUp", "Authentication 계정 삭제 실패: ${task.exception?.message}")
+                    // 실패 처리 로직 (예: 사용자에게 실패 알림 표시)
+                }
+            }
+        }
+    }
+
     //회원탈퇴시 파이어스토어에서 사용자 데이터 삭제
     // Firestore에서 사용자 데이터 삭제 함수 수정
 
@@ -196,6 +220,23 @@ object GoogleAuthUtil {
                 Toast.makeText(activity, "데이터 삭제에 실패했습니다: ${exception.message}", Toast.LENGTH_LONG).show()
             }
     }
+
+    private fun deleteProfileImage(uid: String, onComplete: (Boolean) -> Unit) {
+        val storageRef = FirebaseStorage.getInstance().getReference("profile_images/$uid.jpg")
+        if (storageRef!= null){
+            storageRef.delete()
+                .addOnSuccessListener {
+                    Log.d("GoogleAuthUtil", "프로필 이미지가 성공적으로 삭제되었습니다.")
+                    onComplete(true)
+                }
+                .addOnFailureListener { exception ->
+                    Log.e("GoogleAuthUtil", "프로필 이미지 삭제 실패: ${exception.message}", exception)
+                    onComplete(false)
+                }
+        }
+
+    }
+
 
     // 로그인 화면으로 이동하는 함수
     private fun navigateToLoginScreen(activity: Activity) {

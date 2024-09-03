@@ -81,20 +81,27 @@ class SignUpPhotoFragment : Fragment() {
     }
 
     private fun initView() = with(binding) {
+
+
         btnSignupNext.setOnClickListener {
 
-            userViewModel.saveTempUserInfo(profileUrl =userViewModel.profileUploadResult.value)
-
-            if(userViewModel.profileUploadResult.value?.isNotBlank() == true){
-                (activity as? SignUpActivity)?.let { activity ->
-                    activity.signUpBinding.vpSignUp.currentItem += 1
+            when (userViewModel.profileUploadResult.value) {
+                "LOADING" -> {
+                    Toast.makeText(requireContext(), "이미지 업로드 완료까지 기다려주세요", Toast.LENGTH_SHORT)
+                        .show()
                 }
-            }else {
-                Toast.makeText(requireContext(), "이미지 업로드 완료까지 기다려주세요", Toast.LENGTH_SHORT).show()
 
+                null -> {
+                    //dialog 띄우기~?말기?
+                }
+                else -> {
+                    userViewModel.saveTempUserInfo(profileUrl = userViewModel.profileUploadResult.value)
+                    (activity as? SignUpActivity)?.let { activity ->
+                        activity.signUpBinding.vpSignUp.currentItem += 1
+                    }
+                }
             }
         }
-
 
         flImageInput.setOnClickListener {
             launchImagePickerAndCrop(pickImageLauncher, cropImageLauncher)
@@ -111,25 +118,31 @@ class SignUpPhotoFragment : Fragment() {
                         // 업로드 중에는 아무 메시지도 표시하지 않음
                         binding.clPb.visibility = View.VISIBLE
                     }
+
                     imageUrl.isNullOrBlank() -> {
                         if (imageUrl == null) {
                             // 초기 상태이므로 아무것도 하지 않음
                             return@collect
                         } else {
                             // 업로드 실패 처리
-                            Toast.makeText(requireContext(), "프로필 사진 업로드에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                requireContext(),
+                                "프로필 사진 업로드에 실패했습니다.",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     }
+
                     else -> {
                         // 업로드 성공 처리
                         Log.d("ImageUpload", "이미지 업로드 성공: $imageUrl")
-                        Toast.makeText(requireContext(), "프로필 사진 업로드를 완료했습니다.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), "프로필 사진 업로드를 완료했습니다.", Toast.LENGTH_SHORT)
+                            .show()
                     }
                 }
             }
         }
     }
-
 
 
     private fun uploadImageImmediately(uri: Uri) {
@@ -139,14 +152,13 @@ class SignUpPhotoFragment : Fragment() {
         val uid = userViewModel.tempUserInfo.value?.uid ?: return
 
         // 이미지 리사이즈 및 압축
-        val resizedBitmap = resizeImage(requireContext(),uri)
-        val compressedUri = compressBitmapToUri(requireContext(),resizedBitmap)
+        val resizedBitmap = resizeImage(requireContext(), uri)
+        val compressedUri = compressBitmapToUri(requireContext(), resizedBitmap)
 
         // ViewModel을 통해 이미지 업로드
         userViewModel.uploadProfileImage(compressedUri, uid)
 
     }
-
 
 
 }
