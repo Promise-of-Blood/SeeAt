@@ -8,7 +8,8 @@ data class UserInfoModel(
     val email : String = "",
     val nickname : String = "",
     val profileUrl : String = "",
-    val introduce : String = ""
+    val introduce : String = "",
+    val token : String = ""
 )
 
 
@@ -19,6 +20,7 @@ fun UserInfoModel.toUserInfo(): UserInfoData{
         email = this.email,
         nickname = this.nickname,
         profileUrl = this.profileUrl,
-        introduce = this.introduce
+        introduce = this.introduce,
+        token = this.token
     )
 }

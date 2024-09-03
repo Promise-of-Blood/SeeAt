@@ -28,7 +28,7 @@ class FeedCommentAdapter(private val onClick: (CommentModel) -> Unit) :
         override fun onBind(item: CommentModel) = with(binding) {
             // Todo 유저이미지 연결
 //            ivCommentItemUserImage.setImageResource(item.user)
-            tvCommentItemUsername.text = item.user
+//            tvCommentItemUsername.text = item.comment
             tvCommentItemContent.text = item.comment
             clCommentLayout.setOnClickListener {
                 onClick(item)
