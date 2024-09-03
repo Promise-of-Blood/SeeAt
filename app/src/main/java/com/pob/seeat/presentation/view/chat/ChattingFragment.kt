@@ -5,26 +5,16 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.flowWithLifecycle
-import androidx.lifecycle.lifecycleScope
-import com.pob.seeat.R
-import com.pob.seeat.databinding.FragmentMessageBinding
-import com.pob.seeat.databinding.FragmentSampleBinding
-import com.pob.seeat.presentation.viewmodel.SampleViewModel
+import com.pob.seeat.databinding.FragmentChattingBinding
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
-import timber.log.Timber
 
 @AndroidEntryPoint
-class MessageFragment : Fragment() {
+class ChattingFragment : Fragment() {
     companion object {
-        fun newInstance() = MessageFragment
+        fun newInstance() = ChattingFragment
     }
 
-    private var _binding: FragmentMessageBinding? = null
+    private var _binding: FragmentChattingBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,7 +26,7 @@ class MessageFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentMessageBinding.inflate(inflater, container, false)
+        _binding = FragmentChattingBinding.inflate(inflater, container, false)
         return binding.root
 
     }

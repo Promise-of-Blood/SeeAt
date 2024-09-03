@@ -5,27 +5,16 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.flowWithLifecycle
-import androidx.lifecycle.lifecycleScope
 import com.pob.seeat.databinding.FragmentChatListBinding
-import com.pob.seeat.databinding.FragmentSampleBinding
-import com.pob.seeat.presentation.view.UiState
 import com.pob.seeat.presentation.view.chat.adapter.ChatListAdapter
-import com.pob.seeat.presentation.view.chat.items.ChatListUiItem
-import com.pob.seeat.presentation.viewmodel.SampleViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
-import timber.log.Timber
 
 @AndroidEntryPoint
 class ChatListFragment : Fragment() {
     private val chatListAdapter = ChatListAdapter()
 
     companion object {
-        fun newInstance() = MessageFragment
+        fun newInstance() = ChattingFragment
     }
 
     private var _binding: FragmentChatListBinding? = null
