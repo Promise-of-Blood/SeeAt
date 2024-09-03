@@ -9,4 +9,6 @@ data class CommentModel(
     val comment: String = "",
     val likeCount: Int = 0,
     val timeStamp: Timestamp? = null,
+    val userImage: String = "",
+    val userNickname: String = ""
 )

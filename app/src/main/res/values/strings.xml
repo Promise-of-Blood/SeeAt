@@ -15,7 +15,7 @@
     <string name="btn_google_login">구글 아이디로 로그인</string>
 
     <!-- SignUp Activity -->
-    <string name="signup_title_tb">회원가입</string>
+    <string name="signup_title_tb">프로필 설정</string>
     <string name="signup_page1">1/3</string>
     <string name="signup_page2">2/3</string>
     <string name="signup_page3">3/3</string>

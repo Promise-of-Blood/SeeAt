@@ -15,6 +15,8 @@ data class FeedModel(
     val location: GeoPoint? = null,
     val date: Timestamp? = null,
     val comments: List<CommentModel> = emptyList(),
-    val tags: List<String> = emptyList()
+    val tags: List<String> = emptyList(),
+    val userImage: String = "",
+    val contentImage: List<String> = emptyList()
 )
 
