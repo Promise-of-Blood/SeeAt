@@ -17,7 +17,7 @@ import com.pob.seeat.R
 import com.pob.seeat.databinding.FragmentSignUpIntroduceBinding
 import com.pob.seeat.databinding.FragmentSignUpNameBinding
 import com.pob.seeat.presentation.viewmodel.UserInfoViewModel
-import com.pob.seeat.utils.getNotificationToken
+import com.pob.seeat.utils.NotificationTokenUtils.getNotificationToken
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -67,7 +67,6 @@ class SignUpIntroduceFragment : Fragment() {
                 val introduce = userViewModel.tempUserInfo.value?.introduce ?: ""
                 val token = getNotificationToken()
                 Log.d("토큰","토큰이지롱  : $token")
-
 
                 userViewModel.signUp(uid, email,name,profile,introduce,token)
 
