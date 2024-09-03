@@ -1,22 +1,25 @@
 package com.pob.seeat.presentation.view.detail
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.Navigation
+import androidx.navigation.NavOptions
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.firestore.GeoPoint
+import com.pob.seeat.R
 import com.pob.seeat.data.model.Result
 import com.pob.seeat.databinding.FragmentDetailBinding
 import com.pob.seeat.domain.model.CommentModel
 import com.pob.seeat.domain.model.FeedModel
-import com.pob.seeat.presentation.view.home.BottomSheetFeedAdapter
+import com.pob.seeat.presentation.view.chat.ChatListFragment
+import com.pob.seeat.presentation.view.chat.ChattingFragment
 import com.pob.seeat.presentation.view.home.MarginItemDecoration
 import com.pob.seeat.presentation.view.home.TagAdapter
 import com.pob.seeat.presentation.viewmodel.DetailViewModel
@@ -132,6 +135,12 @@ class DetailFragment : Fragment() {
                 // Todo 댓글 작성
             }
 
+            tvChatButton.setOnClickListener {
+                val feedBundle = Bundle().apply { putParcelable("feed", feed) }
+                findNavController().navigate(R.id.action_detail_through_message, feedBundle)
+                findNavController().navigate(R.id.action_message_through_chatting, feedBundle)
+            }
+
             feedCommentAdapter.submitList(feed.comments)
 
 
@@ -153,11 +162,11 @@ class DetailFragment : Fragment() {
     }
 
     /**
-    * 두 GeoPoint간의 거리 계산
-    * @param myGeoPoint 현재 좌표 GeoPoint
-    * @param feedGeoPoint 계산하려는 좌표 GeoPoint
-    * @return 두 좌표간 거리가 미터단위로 Int로 반환됨
-    */
+     * 두 GeoPoint간의 거리 계산
+     * @param myGeoPoint 현재 좌표 GeoPoint
+     * @param feedGeoPoint 계산하려는 좌표 GeoPoint
+     * @return 두 좌표간 거리가 미터단위로 Int로 반환됨
+     */
     private fun calculateDistance(myGeoPoint: GeoPoint, feedGeoPoint: GeoPoint): Int {
 
         val RR = 6372.8 * 1000

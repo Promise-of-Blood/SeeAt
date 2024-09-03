@@ -46,6 +46,12 @@ class FeedRemote @Inject constructor(
             .document(postId)
             .get()
             .await()
-        return documentSnapshot.toObject(FeedModel::class.java)
+        val tagList = documentSnapshot.get("tagList") as? List<*>
+        val userRef = documentSnapshot.getDocumentReference("user")
+        return documentSnapshot.toObject(FeedModel::class.java)?.copy(
+            feedId = documentSnapshot.id,
+            tags = tagList?.filterIsInstance<String>() ?: emptyList(),
+            nickname = userRef?.get()?.await()?.getString("nickname") ?: "",
+        )
     }
 }
