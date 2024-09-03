@@ -8,12 +8,15 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.firestore.GeoPoint
 import com.pob.seeat.data.model.Result
 import com.pob.seeat.databinding.FragmentDetailBinding
+import com.pob.seeat.domain.model.CommentModel
 import com.pob.seeat.domain.model.FeedModel
+import com.pob.seeat.presentation.view.home.BottomSheetFeedAdapter
 import com.pob.seeat.presentation.view.home.MarginItemDecoration
 import com.pob.seeat.presentation.view.home.TagAdapter
 import com.pob.seeat.presentation.viewmodel.DetailViewModel
@@ -42,6 +45,8 @@ class DetailFragment : Fragment() {
 
     private val detailViewModel: DetailViewModel by viewModels()
 
+    private val feedCommentAdapter: FeedCommentAdapter by lazy { FeedCommentAdapter(::handleClickFeed) }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,7 +65,13 @@ class DetailFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         getFeed()
         initTagRecyclerView()
+        initCommentRecyclerView()
         Timber.i(args.feedIdArg)
+    }
+
+    private fun initCommentRecyclerView() {
+        binding.rvFeedTagList.adapter = feedCommentAdapter
+        binding.rvFeedTagList.layoutManager = LinearLayoutManager(requireContext())
     }
 
     private fun getFeed() = with(detailViewModel) {
@@ -93,7 +104,6 @@ class DetailFragment : Fragment() {
             tvWriterUsername.text = feed.nickname
             tvFeedTitle.text = feed.title
             //todo 이미지 연결
-            //todo tag생성
             tvFeedTimeAgo.text = feed.date?.toLocalDateTime()?.toKoreanDiffString()
             tvFeedContent.text = feed.content
             tvFeedDetailLikeCount.text = feed.like.toString()
@@ -107,16 +117,23 @@ class DetailFragment : Fragment() {
                 tvMyDistance.text = formatDistanceToString(distance)
             }
             clLikeBtn.setOnClickListener {
-                // 좋아요 누를때
+                // Todo 좋아요 누를때
             }
 
             clBookmarkBtn.setOnClickListener {
-                //북마크 누를 때
+                // Todo 북마크 누를 때
             }
 
             tvFeedGetPositionButton.setOnClickListener {
-                // 위치보기
+                // Todo 위치보기
             }
+
+            tvAddCommentButton.setOnClickListener {
+                // Todo 댓글 작성
+            }
+
+            feedCommentAdapter.submitList(feed.comments)
+
 
         }
     }
@@ -165,6 +182,10 @@ class DetailFragment : Fragment() {
             meter > 1000 -> String.format(Locale.KOREA, "%dkm", meter / 1000)
             else -> "Invalid distance"
         }
+    }
+
+    private fun handleClickFeed(feedModel: CommentModel) {
+        // Todo 댓글 클릭시
     }
 
     override fun onDestroyView() {
