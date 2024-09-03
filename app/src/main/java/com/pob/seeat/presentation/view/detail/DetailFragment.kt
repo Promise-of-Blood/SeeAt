@@ -98,6 +98,7 @@ class DetailFragment : Fragment() {
             tvFeedContent.text = feed.content
             tvFeedDetailLikeCount.text = feed.like.toString()
             tvCommentCount.text = feed.commentsCount.toString()
+            // Todo 나의 위치 가져오기
             val myLatitude = 37.570201
             val myLongitude = 126.976879
             val geoPoint = GeoPoint(myLatitude, myLongitude)
@@ -134,6 +135,12 @@ class DetailFragment : Fragment() {
         }
     }
 
+    /**
+    * 두 GeoPoint간의 거리 계산
+    * @param myGeoPoint 현재 좌표 GeoPoint
+    * @param feedGeoPoint 계산하려는 좌표 GeoPoint
+    * @return 두 좌표간 거리가 미터단위로 Int로 반환됨
+    */
     private fun calculateDistance(myGeoPoint: GeoPoint, feedGeoPoint: GeoPoint): Int {
 
         val RR = 6372.8 * 1000
