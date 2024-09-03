@@ -2,6 +2,7 @@ package com.pob.seeat.presentation.view.sign
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
@@ -13,6 +14,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.pob.seeat.databinding.FragmentSignUpPhotoBinding
@@ -21,7 +23,16 @@ import com.pob.seeat.utils.ImageImplement.getCropOptions
 import com.pob.seeat.utils.ImageImplement.launchImagePickerAndCrop
 import com.pob.seeat.utils.ImageImplement.registerImageCropper
 import com.pob.seeat.utils.ImageImplement.registerImagePicker
+import com.pob.seeat.utils.Utils.compressBitmapToUri
+import com.pob.seeat.utils.Utils.resizeImage
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
+import java.io.File
+import java.io.FileOutputStream
 
 @AndroidEntryPoint
 class SignUpPhotoFragment : Fragment() {
@@ -33,9 +44,6 @@ class SignUpPhotoFragment : Fragment() {
 
     private var pickImageUri: Uri? = null
 
-    private val storage = FirebaseStorage.getInstance().reference
-    private val firestore = FirebaseFirestore.getInstance()
-
     private val pickImageLauncher = registerImagePicker(this) { uri ->
         if (uri != null) {
             cropImageLauncher.launch(getCropOptions(uri))
@@ -44,9 +52,11 @@ class SignUpPhotoFragment : Fragment() {
 
     private val cropImageLauncher = registerImageCropper(this) { uri ->
         pickImageUri = uri
+        pickImageUri?.let {
+            uploadImageImmediately(it)
+        }
         binding.icCamera.setImageURI(pickImageUri)
     }
-
 
 
     override fun onCreateView(
@@ -62,6 +72,7 @@ class SignUpPhotoFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         initView()
+        observeViewModel()
     }
 
     override fun onDestroyView() {
@@ -70,65 +81,83 @@ class SignUpPhotoFragment : Fragment() {
     }
 
     private fun initView() = with(binding) {
+
+
         btnSignupNext.setOnClickListener {
-            //클릭했을때 다음 페이지로 넘어가기 + 사진 url 저장하기
 
-            if (pickImageUri != null) {
-                val uid = userViewModel.tempUserInfo.value?.uid ?: return@setOnClickListener
-                uploadProfileImage(pickImageUri!!,uid){profileUrl ->
-                    if(profileUrl.isNotBlank()){
-                        userViewModel.saveTempUserInfo(profileUrl = profileUrl)
+            when (userViewModel.profileUploadResult.value) {
+                "LOADING" -> {
+                    Toast.makeText(requireContext(), "이미지 업로드 완료까지 기다려주세요", Toast.LENGTH_SHORT)
+                        .show()
+                }
 
-                        Log.d("TempUserInfo","tempUserInfo : ${userViewModel.tempUserInfo.value}")
-
-                        (activity as? SignUpActivity)?.let { activity ->
-                            activity.signUpBinding.vpSignUp.currentItem += 1
-                        }
-                    }else{
-                        Toast.makeText(requireContext(), "프로필 사진 업로드에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                null -> {
+                    //dialog 띄우기~?말기?
+                }
+                else -> {
+                    userViewModel.saveTempUserInfo(profileUrl = userViewModel.profileUploadResult.value)
+                    (activity as? SignUpActivity)?.let { activity ->
+                        activity.signUpBinding.vpSignUp.currentItem += 1
                     }
                 }
-            } else {
-                Toast.makeText(requireContext(), "프로필 사진을 설정해 주세요", Toast.LENGTH_SHORT).show()
             }
-
-            //사진 설정안되어있으면 다이얼로그 띄우기
         }
 
         flImageInput.setOnClickListener {
-            launchImagePickerAndCrop(pickImageLauncher,cropImageLauncher)
+            launchImagePickerAndCrop(pickImageLauncher, cropImageLauncher)
         }
     }
 
-    private fun uploadProfileImage(imageUri: Uri, uid: String, callback: (String) -> Unit) {
-        val file = storage.child("profile_images/$uid.jpg")
-        file.putFile(imageUri)
-            .addOnSuccessListener {
-                file.downloadUrl.addOnSuccessListener { uri ->
-                    callback(uri.toString()) // 성공 시 이미지 URL을 반환
+    private fun observeViewModel() {
+        lifecycleScope.launch {
+            userViewModel.profileUploadResult.collect { imageUrl ->
+                binding.clPb.visibility = View.GONE // 업로드가 완료되면 프로그래스 바 숨김
+
+                when {
+                    imageUrl == "LOADING" -> {
+                        // 업로드 중에는 아무 메시지도 표시하지 않음
+                        binding.clPb.visibility = View.VISIBLE
+                    }
+
+                    imageUrl.isNullOrBlank() -> {
+                        if (imageUrl == null) {
+                            // 초기 상태이므로 아무것도 하지 않음
+                            return@collect
+                        } else {
+                            // 업로드 실패 처리
+                            Toast.makeText(
+                                requireContext(),
+                                "프로필 사진 업로드에 실패했습니다.",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+
+                    else -> {
+                        // 업로드 성공 처리
+                        Log.d("ImageUpload", "이미지 업로드 성공: $imageUrl")
+                        Toast.makeText(requireContext(), "프로필 사진 업로드를 완료했습니다.", Toast.LENGTH_SHORT)
+                            .show()
+                    }
                 }
             }
-            .addOnFailureListener { e ->
-                Log.e("Upload Error", "이미지 업로드 실패 : ${e.message}")
-                Toast.makeText(requireContext(), "이미지 업로드에 실패했습니다", Toast.LENGTH_SHORT).show()
-                callback("") // 실패 시 빈 문자열 반환
-            }
+        }
     }
 
 
-    private fun setUriAsBackground(uri: Uri) {
-        // Uri로부터 InputStream을 가져와 Bitmap으로 변환
-        val inputStream = requireContext().contentResolver.openInputStream(uri)
-        val bitmap = BitmapFactory.decodeStream(inputStream)
+    private fun uploadImageImmediately(uri: Uri) {
+        // 프로그래스 바 표시
+        binding.clPb.visibility = View.VISIBLE
 
-        // Bitmap을 Drawable로 변환
-        val drawable = BitmapDrawable(resources, bitmap)
+        val uid = userViewModel.tempUserInfo.value?.uid ?: return
 
-        // Drawable을 View의 배경으로 설정
-        binding.flImageInput.background = drawable
+        // 이미지 리사이즈 및 압축
+        val resizedBitmap = resizeImage(requireContext(), uri)
+        val compressedUri = compressBitmapToUri(requireContext(), resizedBitmap)
 
-        // InputStream 닫기
-        inputStream?.close()
+        // ViewModel을 통해 이미지 업로드
+        userViewModel.uploadProfileImage(compressedUri, uid)
+
     }
 
 

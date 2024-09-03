@@ -10,6 +10,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -19,7 +20,10 @@ import com.pob.seeat.R
 import com.pob.seeat.databinding.ActivityLoginBinding
 import com.pob.seeat.presentation.viewmodel.UserInfoViewModel
 import com.pob.seeat.utils.GoogleAuthUtil
+import com.pob.seeat.utils.NotificationTokenUtils.getNotificationToken
+import com.pob.seeat.utils.NotificationTokenUtils.initNotificationToken
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class LoginActivity : AppCompatActivity() {
@@ -54,6 +58,7 @@ class LoginActivity : AppCompatActivity() {
             insets
         }
         initView()
+        initNotificationToken()
     }
 
 
@@ -73,10 +78,19 @@ class LoginActivity : AppCompatActivity() {
 
     private fun loginCheck() {
         val currentUser = FirebaseAuth.getInstance().currentUser
+        val uid = currentUser?.uid
 
-        if (currentUser != null) {
-            Log.d("LoginActivity", "현재 로그인 유저 : ${currentUser.email}")
-            navigateToHome()
+        if (currentUser != null && uid != null) {
+            userViewModel.getUserInfo(uid)
+
+            // 비동기로 StateFlow를 감지하여 홈 화면으로 이동
+            lifecycleScope.launch {
+                userViewModel.userInfo.collect { userInfo ->
+                    if (userInfo != null) {
+                        navigateToHome()
+                    }
+                }
+            }
         }
     }
 
@@ -88,6 +102,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun navigateToSignUp(uid: String, email: String, nickname: String) {
+        userViewModel.signUp(uid,email,nickname, profileUrl ="" , introduce ="",token="")
         val intent = Intent(this, SignUpActivity::class.java).apply {
             putExtra("uid", uid)
             putExtra("email", email)
@@ -101,8 +116,8 @@ class LoginActivity : AppCompatActivity() {
         val currentUser = FirebaseAuth.getInstance().currentUser
         val uid = currentUser?.uid
 
-        if (uid != null) {
-            database.collection("user").document(uid).get()
+        if (email != null) {
+            database.collection("user").document(email).get()
                 .addOnSuccessListener { document ->
                     if (document.exists()) {
                         onUserExists()

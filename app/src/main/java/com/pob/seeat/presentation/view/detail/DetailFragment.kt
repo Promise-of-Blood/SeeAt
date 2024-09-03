@@ -84,8 +84,8 @@ class DetailFragment : Fragment() {
     }
 
     private fun initCommentRecyclerView() {
-        binding.rvFeedTagList.adapter = feedCommentAdapter
-        binding.rvFeedTagList.layoutManager = LinearLayoutManager(requireContext())
+        binding.rvCommentList.adapter = feedCommentAdapter
+        binding.rvCommentList.layoutManager = LinearLayoutManager(requireContext())
     }
 
     private fun getFeed() = with(detailViewModel) {

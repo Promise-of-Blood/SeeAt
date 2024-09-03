@@ -45,6 +45,7 @@ class FirebaseMessagingService : FirebaseMessagingService() {
 
     override fun onNewToken(token: String) {
         super.onNewToken(token)
+//        NotificationTokenUtils.setNotificationToken(token)
         Timber.tag("onNewToken").d("Refreshed token: " + token)
     }
 

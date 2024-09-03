@@ -1,10 +1,16 @@
 package com.pob.seeat.utils
 
+import android.content.Context
 import android.content.res.Resources.getSystem
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.net.Uri
 import com.google.firebase.Timestamp
 import com.pob.seeat.R
 import com.pob.seeat.presentation.view.home.Tag
+import java.io.File
+import java.io.FileOutputStream
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -57,4 +63,28 @@ object Utils {
         Tag("긴급", R.drawable.ic_megaphone, Color.parseColor("#FF3939")),
         Tag("기타", R.drawable.ic_sparkles, Color.parseColor("#FFDF60"))
     )
+
+
+    fun compressBitmapToUri(context : Context, bitmap: Bitmap): Uri {
+        val file = File(context.cacheDir, "compressed_image.jpg")
+        val outputStream = FileOutputStream(file)
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 80, outputStream) // 품질 80으로 압축
+        outputStream.flush()
+        outputStream.close()
+        return Uri.fromFile(file)
+    }
+
+
+
+
+    fun resizeImage(context: Context ,imageUri: Uri): Bitmap {
+        val inputStream = context.contentResolver.openInputStream(imageUri)
+        val originalBitmap = BitmapFactory.decodeStream(inputStream)
+        inputStream?.close()
+
+        // 이미지 크기를 조정합니다. (예: 800x800 픽셀로 조정)
+        return Bitmap.createScaledBitmap(originalBitmap, 800, 800, true)
+    }
+
+
 }

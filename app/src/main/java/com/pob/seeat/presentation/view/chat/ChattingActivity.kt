@@ -13,9 +13,10 @@ import com.bumptech.glide.Glide
 import com.pob.seeat.databinding.ActivityChattingBinding
 import com.pob.seeat.domain.model.FeedModel
 import com.pob.seeat.presentation.view.home.MarginItemDecoration
+import com.pob.seeat.presentation.view.home.Tag
 import com.pob.seeat.presentation.view.home.TagAdapter
+import com.pob.seeat.utils.Utils
 import com.pob.seeat.utils.Utils.px
-import com.pob.seeat.utils.Utils.tagList
 
 class ChattingActivity : AppCompatActivity() {
     private val binding by lazy { ActivityChattingBinding.inflate(layoutInflater) }
@@ -37,10 +38,9 @@ class ChattingActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun initView() = with(binding) {
         val feed = intent.getParcelableExtra("feed", FeedModel::class.java) ?: FeedModel()
-        val tags = tagList.shuffled().take(2)
 
         rvMessageFeedTag.apply {
-            adapter = TagAdapter(tags)
+            adapter = TagAdapter(feed.tags.toTagList())
             layoutManager =
                 LinearLayoutManager(this@ChattingActivity, LinearLayoutManager.HORIZONTAL, false)
             addItemDecoration(MarginItemDecoration(16f.px))
@@ -57,5 +57,12 @@ class ChattingActivity : AppCompatActivity() {
         Glide.with(this@ChattingActivity)
             .load(feed.location)
             .into(ivMessageFeed)
+    }
+}
+
+fun List<String>.toTagList(): List<Tag> {
+    val tagList = Utils.tagList
+    return this.mapNotNull { tagName ->
+        tagList.find { it.tagName == tagName }
     }
 }

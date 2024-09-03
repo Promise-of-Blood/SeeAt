@@ -20,7 +20,9 @@ data class FeedModel(
     val location: @RawValue GeoPoint? = null,
     val date: Timestamp? = null,
     val comments: List<CommentModel> = emptyList(),
-    val tags: List<String> = emptyList()
+    val tags: List<String> = emptyList(),
+    val userImage: String = "",
+    val contentImage: List<String> = emptyList()
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         feedId = parcel.readString() ?: "",
@@ -38,10 +40,10 @@ data class FeedModel(
             if (latitude != 0.0 && longitude != 0.0) GeoPoint(latitude, longitude) else null
         },
         date = parcel.readParcelable(Timestamp::class.java.classLoader),
-        comments = listOf<CommentModel>().apply {
-            parcel.readList(this, CommentModel::class.java.classLoader)
-        },
+        comments = parcel.createTypedArrayList(CommentModel.CREATOR) ?: emptyList(),
         tags = parcel.createStringArrayList().orEmpty(),
+        userImage = parcel.readString() ?: "",
+        contentImage = parcel.createStringArrayList().orEmpty(),
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -62,6 +64,8 @@ data class FeedModel(
         parcel.writeParcelable(date, flags)
         parcel.writeTypedList(comments)
         parcel.writeStringList(tags)
+        parcel.writeString(userImage)
+        parcel.writeStringList(contentImage)
     }
 
     override fun describeContents(): Int {
