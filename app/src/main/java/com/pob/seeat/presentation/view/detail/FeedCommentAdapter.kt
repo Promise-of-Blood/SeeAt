@@ -4,6 +4,9 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.request.RequestOptions
 import com.pob.seeat.databinding.ItemCommentBinding
 import com.pob.seeat.databinding.PostItemBinding
 import com.pob.seeat.domain.model.CommentModel
@@ -26,9 +29,11 @@ class FeedCommentAdapter(private val onClick: (CommentModel) -> Unit) :
     class PostViewHolder(val binding: ItemCommentBinding, private val onClick: (CommentModel) -> Unit) :
         ViewHolder<CommentModel>(binding.root) {
         override fun onBind(item: CommentModel) = with(binding) {
-            // Todo 유저이미지 연결
+            Glide.with(itemView.context)
+                .load(item.userImage)
+                .into(ivCommentItemUserImage)
 //            ivCommentItemUserImage.setImageResource(item.user)
-//            tvCommentItemUsername.text = item.comment
+            tvCommentItemUsername.text = item.userNickname
             tvCommentItemContent.text = item.comment
             clCommentLayout.setOnClickListener {
                 onClick(item)
