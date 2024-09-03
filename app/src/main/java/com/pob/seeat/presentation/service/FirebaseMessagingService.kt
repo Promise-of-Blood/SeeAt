@@ -16,6 +16,7 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.pob.seeat.MainActivity
 import com.pob.seeat.R
+import com.pob.seeat.utils.NotificationTokenUtils
 import timber.log.Timber
 import java.io.InputStream
 import java.net.HttpURLConnection
@@ -45,6 +46,7 @@ class FirebaseMessagingService : FirebaseMessagingService() {
 
     override fun onNewToken(token: String) {
         super.onNewToken(token)
+//        NotificationTokenUtils.setNotificationToken(token)
         Timber.tag("onNewToken").d("Refreshed token: " + token)
     }
 

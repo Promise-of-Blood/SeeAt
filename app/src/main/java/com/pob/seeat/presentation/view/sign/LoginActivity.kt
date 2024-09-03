@@ -19,6 +19,7 @@ import com.pob.seeat.R
 import com.pob.seeat.databinding.ActivityLoginBinding
 import com.pob.seeat.presentation.viewmodel.UserInfoViewModel
 import com.pob.seeat.utils.GoogleAuthUtil
+import com.pob.seeat.utils.NotificationTokenUtils
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -54,6 +55,7 @@ class LoginActivity : AppCompatActivity() {
             insets
         }
         initView()
+        NotificationTokenUtils.getNotificationToken()
     }
 
 
