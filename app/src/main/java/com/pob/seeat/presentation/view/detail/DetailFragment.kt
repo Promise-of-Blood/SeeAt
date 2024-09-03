@@ -9,11 +9,16 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.firestore.GeoPoint
 import com.pob.seeat.data.model.Result
 import com.pob.seeat.databinding.FragmentDetailBinding
 import com.pob.seeat.domain.model.FeedModel
+import com.pob.seeat.presentation.view.home.MarginItemDecoration
+import com.pob.seeat.presentation.view.home.TagAdapter
 import com.pob.seeat.presentation.viewmodel.DetailViewModel
+import com.pob.seeat.utils.Utils.px
+import com.pob.seeat.utils.Utils.tagList
 import com.pob.seeat.utils.Utils.toKoreanDiffString
 import com.pob.seeat.utils.Utils.toLocalDateTime
 import dagger.hilt.android.AndroidEntryPoint
@@ -54,6 +59,7 @@ class DetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         getFeed()
+        initTagRecyclerView()
         Timber.i(args.feedIdArg)
     }
 
@@ -82,10 +88,10 @@ class DetailFragment : Fragment() {
     }
 
     private fun initView(feed: FeedModel) {
+        Timber.i(feed.toString())
         binding.run {
             tvWriterUsername.text = feed.nickname
             tvFeedTitle.text = feed.title
-            //todo 게시글과 내거리차이 계산
             //todo 이미지 연결
             //todo tag생성
             tvFeedTimeAgo.text = feed.date?.toLocalDateTime()?.toKoreanDiffString()
@@ -104,9 +110,27 @@ class DetailFragment : Fragment() {
             }
 
             clBookmarkBtn.setOnClickListener {
-                //북마크누를때
+                //북마크 누를 때
             }
 
+            tvFeedGetPositionButton.setOnClickListener {
+                // 위치보기
+            }
+
+        }
+    }
+
+    private fun initTagRecyclerView() {
+        // 태그 리스트 데이터 설정
+        binding.apply {
+            // Todo tag데이터 연결 필요
+            val adapter = TagAdapter(tagList)
+            rvFeedTagList.layoutManager =
+                LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+            rvFeedTagList.adapter = adapter
+
+            val marginDecoration = MarginItemDecoration(2f.px) // 마진 설정
+            rvFeedTagList.addItemDecoration(marginDecoration)
         }
     }
 
