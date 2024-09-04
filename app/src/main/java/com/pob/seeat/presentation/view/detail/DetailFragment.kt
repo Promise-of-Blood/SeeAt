@@ -1,22 +1,28 @@
 package com.pob.seeat.presentation.view.detail
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.firestore.GeoPoint
+import com.pob.seeat.MainActivity
+import com.pob.seeat.R
 import com.pob.seeat.data.model.Result
 import com.pob.seeat.databinding.FragmentDetailBinding
 import com.pob.seeat.domain.model.CommentModel
 import com.pob.seeat.domain.model.FeedModel
-import com.pob.seeat.presentation.view.home.BottomSheetFeedAdapter
+import com.pob.seeat.presentation.view.chat.ChattingActivity
 import com.pob.seeat.presentation.view.home.MarginItemDecoration
 import com.pob.seeat.presentation.view.home.TagAdapter
 import com.pob.seeat.presentation.viewmodel.DetailViewModel
@@ -47,9 +53,17 @@ class DetailFragment : Fragment() {
 
     private val feedCommentAdapter: FeedCommentAdapter by lazy { FeedCommentAdapter(::handleClickFeed) }
 
+    private lateinit var chattingResultLauncher: ActivityResultLauncher<Intent>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        chattingResultLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                if (result.resultCode == Activity.RESULT_OK) {
+                    findNavController().navigate(R.id.navigation_home)
+                    (activity as MainActivity).setBottomNavigationSelectedItem(R.id.navigation_message)
+                }
+            }
     }
 
     override fun onCreateView(
@@ -132,6 +146,12 @@ class DetailFragment : Fragment() {
                 // Todo 댓글 작성
             }
 
+            tvChatButton.setOnClickListener {
+                val intent = Intent(requireContext(), ChattingActivity::class.java)
+                intent.putExtra("feedId", feed.feedId)
+                chattingResultLauncher.launch(intent)
+            }
+
             feedCommentAdapter.submitList(feed.comments)
 
 
@@ -153,11 +173,11 @@ class DetailFragment : Fragment() {
     }
 
     /**
-    * 두 GeoPoint간의 거리 계산
-    * @param myGeoPoint 현재 좌표 GeoPoint
-    * @param feedGeoPoint 계산하려는 좌표 GeoPoint
-    * @return 두 좌표간 거리가 미터단위로 Int로 반환됨
-    */
+     * 두 GeoPoint간의 거리 계산
+     * @param myGeoPoint 현재 좌표 GeoPoint
+     * @param feedGeoPoint 계산하려는 좌표 GeoPoint
+     * @return 두 좌표간 거리가 미터단위로 Int로 반환됨
+     */
     private fun calculateDistance(myGeoPoint: GeoPoint, feedGeoPoint: GeoPoint): Int {
 
         val RR = 6372.8 * 1000
