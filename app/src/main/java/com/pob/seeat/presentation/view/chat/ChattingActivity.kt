@@ -9,13 +9,13 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
+import com.pob.seeat.R
 import com.pob.seeat.data.model.Result
 import com.pob.seeat.databinding.ActivityChattingBinding
 import com.pob.seeat.domain.model.FeedModel
-import com.pob.seeat.presentation.view.home.MarginItemDecoration
-import com.pob.seeat.presentation.view.home.TagAdapter
 import com.pob.seeat.presentation.viewmodel.DetailViewModel
 import com.pob.seeat.utils.Utils.px
 import com.pob.seeat.utils.Utils.toTagList
@@ -61,12 +61,7 @@ class ChattingActivity : AppCompatActivity() {
     }
 
     private fun initView(feed: FeedModel) = with(binding) {
-        rvMessageFeedTag.apply {
-            adapter = TagAdapter(feed.tags.toTagList())
-            layoutManager =
-                LinearLayoutManager(this@ChattingActivity, LinearLayoutManager.HORIZONTAL, false)
-            addItemDecoration(MarginItemDecoration(16f.px))
-        }
+        cgMessageFeedTag.addFeedTags(feed.tags)
         toolbarMessage.apply {
             title = feed.nickname
             setNavigationOnClickListener {
@@ -81,6 +76,28 @@ class ChattingActivity : AppCompatActivity() {
             Glide.with(this@ChattingActivity)
                 .load(thumbnail)
                 .into(ivMessageFeed)
+        }
+    }
+
+    private fun ChipGroup.addFeedTags(tags: List<String>) {
+        for (tag in tags.toTagList()) {
+            val chip = Chip(this@ChattingActivity).apply {
+                text = tag.tagName
+                textSize = 14f
+                setChipIconResource(tag.tagImage)
+
+                chipBackgroundColor = getColorStateList(R.color.white)
+                chipStrokeWidth = 0f
+                chipIconSize = 10f.px.toFloat()
+                chipCornerRadius = 32f.px.toFloat()
+                chipStartPadding = 10f.px.toFloat()
+
+                elevation = 1f.px.toFloat()
+
+                isCheckable = false
+                isClickable = false
+            }
+            this.addView(chip)
         }
     }
 }
