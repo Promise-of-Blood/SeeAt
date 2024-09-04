@@ -108,6 +108,7 @@
             android:background="@color/white"
             tools:itemCount="100"
             tools:listitem="@layout/item_chatting_message_me"
+            android:orientation="vertical"
             />
 
         <androidx.constraintlayout.widget.ConstraintLayout
