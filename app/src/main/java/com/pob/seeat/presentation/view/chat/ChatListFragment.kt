@@ -20,7 +20,7 @@ class ChatListFragment : Fragment() {
     private val chatListAdapter = ChatListAdapter()
 
     companion object {
-        fun newInstance() = ChattingFragment
+        fun newInstance() = ChatListFragment
     }
 
     private var _binding: FragmentChatListBinding? = null

@@ -3,7 +3,6 @@ package com.pob.seeat.data.remote
 import android.util.Log
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.toObject
 import com.pob.seeat.domain.model.CommentModel
 import com.pob.seeat.domain.model.FeedModel
 import kotlinx.coroutines.tasks.await
@@ -31,10 +30,8 @@ class FeedRemote @Inject constructor(
             documentSnapshot.toObject(FeedModel::class.java)?.copy(
                 feedId = documentSnapshot.id,
                 tags = tagList?.filterIsInstance<String>() ?: emptyList()
-            )
-                ?.run {
-                    val nickname =
-                        (user as? DocumentReference)?.get()?.await()?.getString("nickname")
+            )?.run {
+                    val nickname = (user as? DocumentReference)?.get()?.await()?.getString("nickname")
 
                     // 로그로 nickname 값을 출력하여 확인
                     Log.d("FeedRemote", "Fetched nickname: $nickname for user: ${user?.id}")
@@ -45,7 +42,6 @@ class FeedRemote @Inject constructor(
                 }
 
         }
-
     }
 
     suspend fun getFeedById(postId: String): FeedModel? {
@@ -59,25 +55,24 @@ class FeedRemote @Inject constructor(
             commentsSnapshot.documents.mapNotNull { it.toObject(CommentModel::class.java) }
 
         val tagList = documentSnapshot.get("tagList") as? List<*>
+        val userRef = documentSnapshot.getDocumentReference("user")
 
         return documentSnapshot.toObject(FeedModel::class.java)?.copy(
+            user = userRef,
             feedId = documentSnapshot.id,
             tags = tagList?.filterIsInstance<String>() ?: emptyList(),
             comments = comments
-        )
-            ?.run {
+        )?.run {
                 val userDocument = (user as? DocumentReference)?.get()?.await()
                 val userData = userDocument?.data
                 val nickname = userData?.get("nickname") as? String
                 val userImage = userData?.get("profileUrl") as? String
                 // 로그로 nickname 값을 출력하여 확인
                 Log.d("FeedRemote", "Fetched nickname: $nickname for user: ${user?.id}")
-
                 copy(
                     nickname = nickname.toString(),
                     userImage = userImage.toString(),
-
-                )
+                    )
 
             }
     }

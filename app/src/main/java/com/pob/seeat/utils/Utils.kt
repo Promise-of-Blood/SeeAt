@@ -64,8 +64,17 @@ object Utils {
         Tag("기타", R.drawable.ic_sparkles, Color.parseColor("#FFDF60"))
     )
 
+    /**
+     * 문자열 배열을 미리 정의된 Tag 리스트로 변환합니다.
+     * */
+    fun List<String>.toTagList(): List<Tag> {
+        val tagList = Utils.tagList
+        return this.mapNotNull { tagName ->
+            tagList.find { it.tagName == tagName }
+        }
+    }
 
-    fun compressBitmapToUri(context : Context, bitmap: Bitmap): Uri {
+    fun compressBitmapToUri(context: Context, bitmap: Bitmap): Uri {
         val file = File(context.cacheDir, "compressed_image.jpg")
         val outputStream = FileOutputStream(file)
         bitmap.compress(Bitmap.CompressFormat.JPEG, 80, outputStream) // 품질 80으로 압축
@@ -75,9 +84,7 @@ object Utils {
     }
 
 
-
-
-    fun resizeImage(context: Context ,imageUri: Uri): Bitmap {
+    fun resizeImage(context: Context, imageUri: Uri): Bitmap {
         val inputStream = context.contentResolver.openInputStream(imageUri)
         val originalBitmap = BitmapFactory.decodeStream(inputStream)
         inputStream?.close()

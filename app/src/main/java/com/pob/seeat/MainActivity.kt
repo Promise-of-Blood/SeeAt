@@ -1,5 +1,6 @@
 package com.pob.seeat
 
+import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -7,22 +8,12 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
+import com.google.firebase.messaging.FirebaseMessaging
 import com.pob.seeat.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
-import javax.inject.Inject
-import android.Manifest
-import android.content.ContentValues.TAG
-import android.util.Log
-import android.widget.Toast
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.firebase.Firebase
-import com.google.firebase.messaging.FirebaseMessaging
-import com.google.firebase.messaging.messaging
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -55,7 +46,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initBottomNavigation() = with(binding) {
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHostFragment.navController
         navMain.setupWithNavController(navController)
     }
@@ -67,6 +59,14 @@ class MainActivity : AppCompatActivity() {
     fun setBottomNavigationVisibility(visibility: Int) = with(binding) {
         navMain.visibility = visibility
         navShadow.visibility = visibility
+    }
+
+    /**
+     * Bottom Navigation의 Selected Item을 설정합니다.
+     * @param itemId Bottom Navigation의 Selected Item ex. R.id.navigation_home
+     * */
+    fun setBottomNavigationSelectedItem(itemId: Int) = with(binding) {
+        navMain.selectedItemId = itemId
     }
 
     // Declare the launcher at the top of your Activity/Fragment:
@@ -83,7 +83,10 @@ class MainActivity : AppCompatActivity() {
     private fun askNotificationPermission() {
         // This is only necessary for API level >= 33 (TIRAMISU)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) ==
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) ==
                 PackageManager.PERMISSION_GRANTED
             ) {
                 // FCM SDK (and your app) can post notifications.
