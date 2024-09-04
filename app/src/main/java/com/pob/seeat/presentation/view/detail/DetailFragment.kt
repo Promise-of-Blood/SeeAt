@@ -16,6 +16,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.google.android.material.chip.Chip
 import com.google.firebase.firestore.GeoPoint
@@ -25,11 +26,9 @@ import com.pob.seeat.data.model.Result
 import com.pob.seeat.databinding.FragmentDetailBinding
 import com.pob.seeat.domain.model.CommentModel
 import com.pob.seeat.domain.model.FeedModel
-import com.pob.seeat.domain.model.TagModel
 import com.pob.seeat.presentation.view.chat.ChattingActivity
 import com.pob.seeat.presentation.viewmodel.DetailViewModel
 import com.pob.seeat.utils.Utils.px
-import com.pob.seeat.utils.Utils.tagList
 import com.pob.seeat.utils.Utils.toKoreanDiffString
 import com.pob.seeat.utils.Utils.toLocalDateTime
 import com.pob.seeat.utils.Utils.toTagList
@@ -167,11 +166,34 @@ class DetailFragment : Fragment() {
 
             feedCommentAdapter.submitList(feed.comments)
 
-            Timber.i(feed.tags.toString())
             initTag(feed.tags)
+
+            Timber.i(feed.contentImage.toString())
+            if (feed.contentImage.isEmpty()) {
+                vpDetailImages.visibility = View.GONE
+                detailImageIndicator.visibility = View.GONE
+            } else {
+                initImageViewPager(feed.contentImage)
+            }
 
 
         }
+    }
+
+    private fun initImageViewPager(contentImage: List<String>) {
+        val imageViewPager = binding.vpDetailImages
+        imageViewPager.adapter = ImagesPagerAdapter(contentImage)
+        imageViewPager.orientation = ViewPager2.ORIENTATION_HORIZONTAL
+        binding.detailImageIndicator.setViewPager(imageViewPager)
+    }
+
+    private fun getImageList(): ArrayList<Int> {
+        return arrayListOf<Int>(
+            R.drawable.ic_gym,
+            R.drawable.ic_paw,
+            R.drawable.ic_info,
+            R.drawable.ic_soup
+        )
     }
 
     private fun initTag(tags: List<String>) {
@@ -179,6 +201,7 @@ class DetailFragment : Fragment() {
         val tagLists = tags.toTagList()
         // tagList를 이용해 Chip을 동적으로 생성
         // tagLists:List<tag>
+
         for (tag in tagLists) {
             val chip = Chip(context).apply {
                 text = tag.tagName
