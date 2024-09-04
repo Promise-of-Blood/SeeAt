@@ -31,7 +31,7 @@ class FeedRemote @Inject constructor(
                 feedId = documentSnapshot.id,
                 tags = tagList?.filterIsInstance<String>() ?: emptyList()
             )?.run {
-                    val nickname = (user as? DocumentReference)?.get()?.await()?.getString("nickname")
+                    val nickname = (user as? DocumentReference)?.get()?.await()?.getString("nickname") ?: "탈퇴한 사용자"
 
                     // 로그로 nickname 값을 출력하여 확인
                     Log.d("FeedRemote", "Fetched nickname: $nickname for user: ${user?.id}")
@@ -65,8 +65,9 @@ class FeedRemote @Inject constructor(
         )?.run {
                 val userDocument = (user as? DocumentReference)?.get()?.await()
                 val userData = userDocument?.data
-                val nickname = userData?.get("nickname") as? String
-                val userImage = userData?.get("profileUrl") as? String
+                val nickname = userData?.get("nickname") as? String ?: "탈퇴한 사용자"
+                val userImage = userData?.get("profileUrl") as? String ?: "https://firebasestorage.googleapis.com/v0/b/see-at.appspot.com/o/profile_images%2Fiv_main_icon.png?alt=media&token=33eb6196-76b4-419d-8bc3-f986219b290b"
+
                 // 로그로 nickname 값을 출력하여 확인
                 Log.d("FeedRemote", "Fetched nickname: $nickname for user: ${user?.id}")
                 copy(

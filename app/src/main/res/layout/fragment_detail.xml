@@ -57,7 +57,7 @@
                 android:id="@+id/iv_writer_image"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                android:src="@drawable/ic_beer" />
+                tools:src="@drawable/ic_beer"/>
 
         </androidx.cardview.widget.CardView>
 
@@ -66,11 +66,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
-            android:text="갸륵명선"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/cv_writer_layout"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="갸륵명선"/>
 
         <TextView
             android:id="@+id/tv_chat_button"
@@ -170,19 +170,28 @@
                 app:layout_constraintStart_toEndOf="@+id/view_time_divider"
                 app:layout_constraintTop_toBottomOf="@+id/tv_feed_title" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_feed_tag_list"
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chips_group_detail"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:clipToPadding="false"
-                android:orientation="horizontal"
-                android:scrollbars="none"
+                android:layout_height="40dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tv_feed_get_position_button"
-                tools:itemCount="1"
-                tools:listitem="@layout/item_tag" />
+                app:selectionRequired="false" />
+
+            <!--            <androidx.recyclerview.widget.RecyclerView-->
+            <!--                android:id="@+id/rv_feed_tag_list"-->
+            <!--                android:layout_width="match_parent"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:layout_marginTop="6dp"-->
+            <!--                android:clipToPadding="false"-->
+            <!--                android:orientation="horizontal"-->
+            <!--                android:scrollbars="none"-->
+            <!--                app:layout_constraintEnd_toEndOf="parent"-->
+            <!--                app:layout_constraintStart_toStartOf="parent"-->
+            <!--                app:layout_constraintTop_toBottomOf="@+id/tv_feed_get_position_button"-->
+            <!--                tools:itemCount="1"-->
+            <!--                tools:listitem="@layout/item_tag" />-->
 
             <ImageView
                 android:id="@+id/iv_feed_main_image"
@@ -192,7 +201,7 @@
                 android:scaleType="centerCrop"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/rv_feed_tag_list"
+                app:layout_constraintTop_toBottomOf="@+id/chips_group"
                 tools:src="@drawable/ic_bell" />
 
             <TextView

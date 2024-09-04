@@ -32,7 +32,6 @@ class FeedCommentAdapter(private val onClick: (CommentModel) -> Unit) :
             Glide.with(itemView.context)
                 .load(item.userImage)
                 .into(ivCommentItemUserImage)
-//            ivCommentItemUserImage.setImageResource(item.user)
             tvCommentItemUsername.text = item.userNickname
             tvCommentItemContent.text = item.comment
             clCommentLayout.setOnClickListener {
