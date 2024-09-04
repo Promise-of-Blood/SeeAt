@@ -57,7 +57,7 @@
                 android:id="@+id/iv_writer_image"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                tools:src="@drawable/ic_beer"/>
+                tools:src="@drawable/ic_beer" />
 
         </androidx.cardview.widget.CardView>
 
@@ -70,7 +70,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/cv_writer_layout"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="갸륵명선"/>
+            tools:text="갸륵명선" />
 
         <TextView
             android:id="@+id/tv_chat_button"
@@ -179,30 +179,17 @@
                 app:layout_constraintTop_toBottomOf="@+id/tv_feed_get_position_button"
                 app:selectionRequired="false" />
 
-            <!--            <androidx.recyclerview.widget.RecyclerView-->
-            <!--                android:id="@+id/rv_feed_tag_list"-->
-            <!--                android:layout_width="match_parent"-->
-            <!--                android:layout_height="wrap_content"-->
-            <!--                android:layout_marginTop="6dp"-->
-            <!--                android:clipToPadding="false"-->
-            <!--                android:orientation="horizontal"-->
-            <!--                android:scrollbars="none"-->
-            <!--                app:layout_constraintEnd_toEndOf="parent"-->
-            <!--                app:layout_constraintStart_toStartOf="parent"-->
-            <!--                app:layout_constraintTop_toBottomOf="@+id/tv_feed_get_position_button"-->
-            <!--                tools:itemCount="1"-->
-            <!--                tools:listitem="@layout/item_tag" />-->
 
-            <ImageView
-                android:id="@+id/iv_feed_main_image"
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/vp_detail_images"
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
-                android:adjustViewBounds="true"
-                android:scaleType="centerCrop"
+                android:layout_height="0dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/chips_group"
-                tools:src="@drawable/ic_bell" />
+                app:layout_constraintTop_toBottomOf="@+id/chips_group_detail"
+                app:layout_constraintDimensionRatio="1:1"/>
+
+
 
             <TextView
                 android:id="@+id/tv_feed_content"
@@ -212,7 +199,7 @@
                 android:textSize="16sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/iv_feed_main_image"
+                app:layout_constraintTop_toBottomOf="@id/vp_detail_images"
                 tools:text="나한테 왜 140이라고 하는고야. \n나키짱큰데" />
 
             <ImageView
