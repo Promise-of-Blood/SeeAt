@@ -1,12 +1,25 @@
 package com.pob.seeat.presentation.view.detail
 
+import android.graphics.Color
+import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
+import androidx.transition.Visibility
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
+import com.kakao.vectormap.Const
+import com.pob.seeat.R
 import com.pob.seeat.databinding.ItemCommentBinding
 import com.pob.seeat.databinding.PostItemBinding
 import com.pob.seeat.domain.model.CommentModel
@@ -32,14 +45,21 @@ class FeedCommentAdapter(private val onClick: (CommentModel) -> Unit) :
             Glide.with(itemView.context)
                 .load(item.userImage)
                 .into(ivCommentItemUserImage)
-//            ivCommentItemUserImage.setImageResource(item.user)
             tvCommentItemUsername.text = item.userNickname
+            tvCommentItemTimeStamp.text = item.timeStamp?.toLocalDateTime()?.toKoreanDiffString()
             tvCommentItemContent.text = item.comment
+
+            val userId = item.user?.id.toString()
+            val feedId = item.feedId
+
+            isMyComment(clCommentLayout,userId)
+//            isOwnerComment(tvCommentFeedOner,userId,feedId)
+            isOwnerComment(feedId)
+
             clCommentLayout.setOnClickListener {
                 onClick(item)
             }
         }
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder<CommentModel> {
@@ -57,4 +77,70 @@ class FeedCommentAdapter(private val onClick: (CommentModel) -> Unit) :
         holder.onBind(getItem(position))
     }
 
+
+}
+
+fun isMyComment(layout : ConstraintLayout, commentUserUid : String){
+    layout.apply {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        val userUid = currentUser?.uid
+
+        if(userUid == commentUserUid){
+            setBackgroundColor(ContextCompat.getColor(context, R.color.background_gray))
+        }else{
+            setBackgroundColor(ContextCompat.getColor(context, R.color.white))
+        }
+    }
+}
+
+
+fun isOwnerComment(feedId: String) {
+    val firestore = FirebaseFirestore.getInstance()
+
+    // 'feed' 컬렉션의 특정 문서를 가져오기
+    val feedDocRef = firestore.collection("feed").document(feedId)
+
+    feedDocRef.get()
+        .addOnSuccessListener { documentSnapshot ->
+            if (documentSnapshot.exists()) {
+                // 'user' 필드에서 DocumentReference 가져오기
+                val userReference = documentSnapshot.get("user")
+
+                when (userReference) {
+                    is DocumentReference -> {
+                        // user 필드가 DocumentReference인 경우
+                        Log.d("Firestore", "DocumentReference: ${userReference.path}")
+                        // DocumentReference를 통해 해당 문서 접근하기
+                        userReference.get()
+                            .addOnSuccessListener { userSnapshot ->
+                                if (userSnapshot.exists()) {
+                                    // uid 필드를 가져오기
+                                    val ownerUid = userSnapshot.getString("uid")
+                                    Log.d("Firestore", "Fetched owner UID: $ownerUid")
+                                } else {
+                                    Log.e("Firestore", "유저 문서를 찾을 수 없습니다: ${userReference.path}")
+                                }
+                            }
+                            .addOnFailureListener { exception ->
+                                Log.e("Firestore", "유저 문서 가져오기 실패: ${exception.message}")
+                            }
+                    }
+                    is String -> {
+                        // user 필드가 단순히 UID를 나타내는 String인 경우
+                        val ownerUid = userReference
+                        Log.d("Firestore", "Fetched owner UID from String: $ownerUid")
+                        // 필요한 추가 작업 수행
+                    }
+                    else -> {
+                        // user 필드가 기대하지 않은 타입인 경우 처리
+                        Log.e("Firestore", "'user' 필드가 예상한 타입이 아닙니다: $userReference")
+                    }
+                }
+            } else {
+                Log.e("Firestore", "게시물을 찾을 수 없습니다: feedId = $feedId")
+            }
+        }
+        .addOnFailureListener { exception ->
+            Log.e("Firestore", "데이터 가져오기 실패: ${exception.message}")
+        }
 }

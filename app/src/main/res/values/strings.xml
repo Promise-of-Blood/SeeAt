@@ -61,6 +61,9 @@
     <string name="settings_logout">로그아웃</string>
     <string name="settings_delete_account">회원 탈퇴</string>
 
+    <!-- comment -->
+    <string name="feed_oner"> - 작성자</string>
+
 
     <!-- alarm -->
     <string name="alarm_title">알림</string>

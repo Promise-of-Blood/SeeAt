@@ -117,7 +117,7 @@ class LoginActivity : AppCompatActivity() {
         val uid = currentUser?.uid
 
         if (email != null) {
-            database.collection("user").document(email).get()
+            database.collection("user").document(uid.toString()).get()
                 .addOnSuccessListener { document ->
                     if (document.exists()) {
                         onUserExists()
