@@ -1,9 +1,11 @@
 package com.pob.seeat.presentation.view.home
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
+import com.bumptech.glide.Glide
 import com.pob.seeat.databinding.PostItemBinding
 import com.pob.seeat.domain.model.FeedModel
 import com.pob.seeat.presentation.view.common.ViewHolder
@@ -25,6 +27,12 @@ class BottomSheetFeedAdapter(private val onClick: (FeedModel) -> Unit) :
     class PostViewHolder(val binding: PostItemBinding, private val onClick: (FeedModel) -> Unit) :
         ViewHolder<FeedModel>(binding.root) {
         override fun onBind(item: FeedModel) = with(binding) {
+
+            if (item.contentImage.isNotEmpty()) {
+                Glide.with(itemView.context)
+                    .load(item.contentImage[0])
+                    .into(ivPostMainImage)
+            }
 
             tvPostTitle.text = item.title
             tvPostContent.text = item.content

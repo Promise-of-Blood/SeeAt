@@ -1,5 +1,6 @@
 package com.pob.seeat.presentation.view.mypage.items
 
+import com.pob.seeat.domain.model.CommentHistoryModel
 import com.pob.seeat.domain.model.FeedModel
 import com.pob.seeat.utils.Utils.toKoreanDiffString
 import com.pob.seeat.utils.Utils.toLocalDateTime
@@ -43,17 +44,15 @@ fun List<FeedModel>.toHistoryListFeedItemList(): List<HistoryListItem> {
     }
 }
 
-fun List<FeedModel>.toHistoryListCommentItemList(): List<HistoryListItem> {
-    return this.flatMap { feed ->
-        feed.comments.map { comment ->
-            HistoryListItem.CommentItem(
-                feedId = feed.feedId,
-                feedTitle = feed.title,
-                commentId = comment.commentId,
-                comment = comment.comment,
-                likeCount = comment.likeCount,
-                time = comment.timeStamp?.toLocalDateTime()?.toKoreanDiffString() ?: "",
-            )
-        }
+fun List<CommentHistoryModel>.toHistoryListCommentItemList(): List<HistoryListItem> {
+    return this.map { comment ->
+        HistoryListItem.CommentItem(
+            feedId = comment.feedId,
+            feedTitle = comment.feedTitle,
+            commentId = comment.commentId,
+            comment = comment.comment,
+            likeCount = comment.likeCount,
+            time = comment.timeStamp?.toLocalDateTime()?.toKoreanDiffString() ?: "",
+        )
     }
 }

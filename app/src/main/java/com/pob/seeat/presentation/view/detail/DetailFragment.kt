@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.flowWithLifecycle
@@ -15,6 +16,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.viewpager2.widget.ViewPager2
+import com.bumptech.glide.Glide
+import com.google.android.material.chip.Chip
 import com.google.firebase.firestore.GeoPoint
 import com.pob.seeat.MainActivity
 import com.pob.seeat.R
@@ -23,13 +27,11 @@ import com.pob.seeat.databinding.FragmentDetailBinding
 import com.pob.seeat.domain.model.CommentModel
 import com.pob.seeat.domain.model.FeedModel
 import com.pob.seeat.presentation.view.chat.ChattingActivity
-import com.pob.seeat.presentation.view.home.MarginItemDecoration
-import com.pob.seeat.presentation.view.home.TagAdapter
 import com.pob.seeat.presentation.viewmodel.DetailViewModel
 import com.pob.seeat.utils.Utils.px
-import com.pob.seeat.utils.Utils.tagList
 import com.pob.seeat.utils.Utils.toKoreanDiffString
 import com.pob.seeat.utils.Utils.toLocalDateTime
+import com.pob.seeat.utils.Utils.toTagList
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -78,9 +80,11 @@ class DetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         getFeed()
-        initTagRecyclerView()
+//        initTagRecyclerView()
         initCommentRecyclerView()
         Timber.i(args.feedIdArg)
+
+
     }
 
     private fun initCommentRecyclerView() {
@@ -106,6 +110,7 @@ class DetailFragment : Fragment() {
                             val feed = response.data
                             Timber.i("HomeFragment", feed.toString())
                             initView(feed)
+
                         }
                     }
                 }
@@ -115,7 +120,13 @@ class DetailFragment : Fragment() {
     private fun initView(feed: FeedModel) {
         Timber.i(feed.toString())
         binding.run {
+
             tvWriterUsername.text = feed.nickname
+
+            Glide.with(requireContext())
+                .load(feed.userImage)
+                .into(ivWriterImage)
+
             tvFeedTitle.text = feed.title
             //todo 이미지 연결
             tvFeedTimeAgo.text = feed.date?.toLocalDateTime()?.toKoreanDiffString()
@@ -144,6 +155,7 @@ class DetailFragment : Fragment() {
 
             tvAddCommentButton.setOnClickListener {
                 // Todo 댓글 작성
+
             }
 
             tvChatButton.setOnClickListener {
@@ -154,21 +166,52 @@ class DetailFragment : Fragment() {
 
             feedCommentAdapter.submitList(feed.comments)
 
+            initTag(feed.tags)
+
+            Timber.i(feed.contentImage.toString())
+            if (feed.contentImage.isEmpty()) {
+                vpDetailImages.visibility = View.GONE
+                detailImageIndicator.visibility = View.GONE
+            } else {
+                initImageViewPager(feed.contentImage)
+            }
 
         }
     }
 
-    private fun initTagRecyclerView() {
-        // 태그 리스트 데이터 설정
-        binding.apply {
-            // Todo tag데이터 연결 필요
-            val adapter = TagAdapter(tagList)
-            rvFeedTagList.layoutManager =
-                LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-            rvFeedTagList.adapter = adapter
+    private fun initImageViewPager(contentImage: List<String>) {
+        val imageViewPager = binding.vpDetailImages
+        imageViewPager.adapter = ImagesPagerAdapter(contentImage)
+        imageViewPager.orientation = ViewPager2.ORIENTATION_HORIZONTAL
+        binding.detailImageIndicator.setViewPager(imageViewPager)
+    }
 
-            val marginDecoration = MarginItemDecoration(2f.px) // 마진 설정
-            rvFeedTagList.addItemDecoration(marginDecoration)
+    private fun initTag(tags: List<String>) {
+        val chipGroup = binding.chipsGroupDetail
+        val tagLists = tags.toTagList()
+        // tagList를 이용해 Chip을 동적으로 생성
+        // tagLists:List<tag>
+
+        for (tag in tagLists) {
+            val chip = Chip(context).apply {
+                text = tag.tagName
+                setChipIconResource(tag.tagImage)
+
+                chipBackgroundColor =
+                    ContextCompat.getColorStateList(context, R.color.background_gray)
+                chipStrokeWidth = 0f
+                chipIconSize = 16f.px.toFloat()
+                chipCornerRadius = 32f.px.toFloat()
+                chipStartPadding = 10f.px.toFloat()
+
+                elevation = 2f.px.toFloat()
+
+                isCheckable = false
+                isClickable = false
+            }
+
+            // ChipGroup에 동적으로 Chip 추가
+            chipGroup.addView(chip)
         }
     }
 
@@ -193,7 +236,6 @@ class DetailFragment : Fragment() {
         val c = 2 * asin(sqrt(a))
 
         return (RR * c).toInt()
-
     }
 
     private fun formatDistanceToString(meter: Int): String {
