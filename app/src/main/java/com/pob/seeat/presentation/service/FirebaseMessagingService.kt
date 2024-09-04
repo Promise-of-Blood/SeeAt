@@ -67,19 +67,19 @@ class FirebaseMessagingService : FirebaseMessagingService() {
         // 알림 소리
         val soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
 
-        val bitmapFromUrl = getBitmapFromURL(remoteMessage.notification?.imageUrl.toString())
-        val bigPictureStyle : BigPictureStyle =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
-                BigPictureStyle().bigPicture(bitmapFromUrl).showBigPictureWhenCollapsed(true)
-            else
-                BigPictureStyle().bigPicture(bitmapFromUrl)
+//        val bitmapFromUrl = getBitmapFromURL(remoteMessage.notification?.imageUrl.toString())
+//        val bigPictureStyle : BigPictureStyle =
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+//                BigPictureStyle().bigPicture(bitmapFromUrl).showBigPictureWhenCollapsed(true)
+//            else
+//                BigPictureStyle().bigPicture(bitmapFromUrl)
 
         // 알림에 대한 UI 정보와 작업을 지정한다.
         val notificationBuilder = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(R.mipmap.ic_launcher) // 아이콘 설정
             .setContentTitle(remoteMessage.notification?.title.toString() ?: "(알 수 없음)") // 제목
             .setContentText(remoteMessage.notification?.body.toString() ?: "(알 수 없음)") // 메시지 내용
-            .setStyle(bigPictureStyle) // 큰 사진을 위한 스타일 적용
+//            .setStyle(bigPictureStyle) // 큰 사진을 위한 스타일 적용
             .setAutoCancel(true)
             .setSound(soundUri) // 알림 소리
             .setPriority(PRIORITY_HIGH)
