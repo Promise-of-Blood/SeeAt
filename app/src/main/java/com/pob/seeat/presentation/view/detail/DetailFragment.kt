@@ -148,7 +148,7 @@ class DetailFragment : Fragment() {
 
             tvChatButton.setOnClickListener {
                 val intent = Intent(requireContext(), ChattingActivity::class.java)
-                intent.putExtra("feed", feed)
+                intent.putExtra("feedId", feed.feedId)
                 chattingResultLauncher.launch(intent)
             }
 
