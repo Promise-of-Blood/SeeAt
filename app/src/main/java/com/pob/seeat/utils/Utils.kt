@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.res.Resources.getSystem
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Color
 import android.net.Uri
 import com.google.firebase.Timestamp
 import com.pob.seeat.R
@@ -15,6 +14,7 @@ import java.time.Duration
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 object Utils {
     /**
@@ -24,7 +24,7 @@ object Utils {
      * - 60~3599초: n분 전
      * - 3600~86399초: n시간 전
      * - 86400~604799초: n일 전
-     * - 이외에는 "yyyy년 MM월 dd일" 형식의 문자열을 반환합니다.
+     * - 이외에는 "yyyy.MM.dd" 형식의 문자열을 반환합니다.
      * */
     fun LocalDateTime.toKoreanDiffString(): String {
         return when (val diffSec = Duration.between(this, LocalDateTime.now()).seconds) {
@@ -32,8 +32,18 @@ object Utils {
             in 60..3599 -> "${diffSec / 60}분 전"
             in 3600..86399 -> "${diffSec / 3600}시간 전"
             in 86400..604799 -> "${diffSec / 86400}일 전"
-            else -> this.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일"))
+            else -> this.format(DateTimeFormatter.ofPattern("yyyy.MM.dd"))
         }
+    }
+
+    /**
+     * 천(k), 백만(M) 단위로 표시된 문자열을 반환합니다.
+     * */
+    fun Int.toFormatShortenedString() = when (this) {
+        in 0..999 -> this.toString()
+        in 1000..999999 -> String.format(Locale.getDefault(), "%.1fk", this / 1000f)
+        in 1000000..999999999 -> "${this / 1000000}M"
+        else -> "999M+"
     }
 
     // px to dp

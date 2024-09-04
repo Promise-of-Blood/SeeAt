@@ -9,10 +9,9 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
-import com.google.firebase.firestore.model.Values
 import com.google.firebase.ktx.Firebase
 import com.pob.seeat.databinding.FragmentChatListBinding
-import com.pob.seeat.presentation.view.chat.adapter.ChatListAdapter
+import com.pob.seeat.presentation.view.chat.chatlist.adapter.ChatListAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 
@@ -35,10 +34,21 @@ class ChatListFragment : Fragment() {
         // 값 설정
         //        ref.child("base").child("person").setValue("상대방 이름(string)")
         val ref = db.getReference("chats")
-        val dataRef = ref.push()
         val newData = mapOf(
-            "person" to "상대방 이름",
+            "test" to "테스트용",
         )
+
+        // 임의의 고정키 이름으로 자식 생성
+//        val newChild = ref.push()
+
+        // 이름 지정한 자식 생성
+        val newChild = ref.child("mytest")
+
+        newChild.setValue(newData).addOnSuccessListener {
+            Timber.d("rtdb success")
+        }.addOnFailureListener {
+            Timber.d("rtdb fail")
+        }
 
         ref.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {

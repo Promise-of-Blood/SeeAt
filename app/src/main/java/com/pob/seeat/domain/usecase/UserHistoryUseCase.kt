@@ -1,6 +1,7 @@
 package com.pob.seeat.domain.usecase
 
 import com.pob.seeat.data.model.Result
+import com.pob.seeat.domain.model.CommentHistoryModel
 import com.pob.seeat.domain.model.FeedModel
 import com.pob.seeat.domain.repository.UserHistoryRepository
 import com.pob.seeat.domain.repository.UserInfoRepository
@@ -35,7 +36,7 @@ class UserCommentHistoryUseCase @Inject constructor(
     suspend operator fun invoke(
         limit: Long? = null,
         startAfter: String? = null
-    ): Flow<Result<List<FeedModel>>> {
+    ): Flow<Result<List<CommentHistoryModel>>> {
         val currentUserId = userInfoRepository.getCurrentUserUid().firstOrNull() ?: ""
         return userHistoryRepository.getCommentList(currentUserId, limit, startAfter)
     }

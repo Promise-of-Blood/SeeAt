@@ -1,7 +1,6 @@
-package com.pob.seeat.presentation.view.chat.adapter
+package com.pob.seeat.presentation.view.chat.chatlist.viewholder
 
 import android.util.Log
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.pob.seeat.databinding.ItemChatListBinding
 import com.pob.seeat.presentation.view.chat.items.ChatListUiItem

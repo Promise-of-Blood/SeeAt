@@ -53,6 +53,11 @@ class HistoryFragment : Fragment() {
         getHistoryList()
     }
 
+    override fun onResume() {
+        super.onResume()
+        getHistoryList()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
@@ -89,7 +94,7 @@ class HistoryFragment : Fragment() {
 
                         is UiState.Success -> {
                             binding.rvHistory.visibility = View.VISIBLE
-                            historyAdapter.submitList(response.data.take(4))
+                            historyAdapter.submitList(response.data)
                         }
                     }
                 }
