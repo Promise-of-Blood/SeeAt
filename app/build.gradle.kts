@@ -134,4 +134,7 @@ dependencies {
 
     //image implement
     implementation(libs.android.image.cropper)
+
+    // ViewPager2 Indicator
+    implementation(libs.circleindicator)
 }

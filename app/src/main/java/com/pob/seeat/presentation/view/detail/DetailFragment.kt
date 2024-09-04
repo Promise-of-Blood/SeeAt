@@ -179,6 +179,7 @@ class DetailFragment : Fragment() {
         val imageViewPager = binding.vpDetailImages
         imageViewPager.adapter = ImagesPagerAdapter(contentImage)
         imageViewPager.orientation = ViewPager2.ORIENTATION_HORIZONTAL
+        binding.detailImageIndicator.setViewPager(imageViewPager)
     }
 
     private fun getImageList(): ArrayList<Int> {
