@@ -1,4 +1,4 @@
-package com.pob.seeat.presentation.view.chat.adapter
+package com.pob.seeat.presentation.view.chat.chatlist.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.pob.seeat.databinding.ItemChatListBinding
 import com.pob.seeat.presentation.view.UiState
 import com.pob.seeat.presentation.view.chat.items.ChatListUiItem
+import com.pob.seeat.presentation.view.chat.chatlist.viewholder.SuccessViewHolder
 
 class ChatListAdapter : ListAdapter<UiState<ChatListUiItem>, RecyclerView.ViewHolder>(
     ChatListDiffUtil()

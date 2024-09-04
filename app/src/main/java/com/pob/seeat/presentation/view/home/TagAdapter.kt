@@ -10,8 +10,9 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.pob.seeat.R
+import com.pob.seeat.domain.model.TagModel
 
-class TagAdapter(private val tagList: List<Tag>) : RecyclerView.Adapter<TagAdapter.TagViewHolder>() {
+class TagAdapter(private val tagList: List<TagModel>) : RecyclerView.Adapter<TagAdapter.TagViewHolder>() {
     interface OnItemClickListener {
         fun onItemClick(view: View, position: Int)
     }
@@ -69,15 +70,11 @@ class TagAdapter(private val tagList: List<Tag>) : RecyclerView.Adapter<TagAdapt
         private val tagImage: ImageView = itemView.findViewById(R.id.iv_tag_icon)
         private val tagName: TextView = itemView.findViewById(R.id.tv_tag_name)
 
-        fun bind(tag: Tag) {
+        fun bind(tag: TagModel) {
             tagImage.setImageResource(tag.tagImage)
             tagName.text = tag.tagName
         }
     }
 }
 
-class Tag (
-    val tagName: String,
-    val tagImage: Int,
-    val tagColor: Int
-)
+

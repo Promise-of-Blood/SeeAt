@@ -2,6 +2,7 @@ package com.pob.seeat.data.repository
 
 import com.pob.seeat.data.model.Result
 import com.pob.seeat.data.remote.UserHistoryRemote
+import com.pob.seeat.domain.model.CommentHistoryModel
 import com.pob.seeat.domain.model.FeedModel
 import com.pob.seeat.domain.repository.UserHistoryRepository
 import kotlinx.coroutines.flow.Flow
@@ -30,7 +31,7 @@ class UserHistoryRepositoryImpl @Inject constructor(
         uid: String,
         limit: Long?,
         startAfter: String?
-    ): Flow<Result<List<FeedModel>>> = flow {
+    ): Flow<Result<List<CommentHistoryModel>>> = flow {
         emit(Result.Loading)
         if (uid.isEmpty()) emit(Result.Error("Invalid user ID"))
         try {

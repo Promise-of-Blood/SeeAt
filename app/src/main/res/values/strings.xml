@@ -102,5 +102,7 @@
     <string name="detail">디테일</string>
     <string name="input_message">메시지 보내기</string>
     <string name="chatting">채팅 메시지예요 채팅 메시지예요 채팅 메시지예요 채팅 메시지예요 채팅 메시지예요 채팅 메시지예요 채팅 메시지예요</string>
+    <string name="only_time">2024년 9월 4일</string>
+    <string name="exit_user">탈퇴한 사용자</string>
 
 </resources>
