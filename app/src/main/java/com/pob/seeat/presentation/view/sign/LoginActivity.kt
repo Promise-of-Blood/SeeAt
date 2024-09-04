@@ -113,14 +113,15 @@ class LoginActivity : AppCompatActivity() {
 
     private fun isOurFamily(email: String, onUserExists: () -> Unit, onUserNotExist: () -> Unit) {
         val database = FirebaseFirestore.getInstance()
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        val uid = currentUser?.uid
 
-        if (email != null) {
-            database.collection("user").document(email).get()
-                .addOnSuccessListener { document ->
-                    if (document.exists()) {
-                        onUserExists()
+        if (email.isNotEmpty()) {
+            // 이메일 필드가 email과 일치하는 문서 찾기
+            database.collection("user")
+                .whereEqualTo("email", email)
+                .get()
+                .addOnSuccessListener { documents ->
+                    if (documents.isEmpty) {
+                        onUserNotExist() // 일치하는 문서가 없는 경우
                     } else {
                         onUserNotExist()
                     }
@@ -128,6 +129,8 @@ class LoginActivity : AppCompatActivity() {
                 .addOnFailureListener { exception ->
                     Log.e("가족", "가족확인 에러, $exception")
                 }
+        } else {
+            onUserNotExist()
         }
     }
 
