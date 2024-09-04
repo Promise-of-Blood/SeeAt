@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.flowWithLifecycle
@@ -54,13 +55,13 @@ class ChattingActivity : AppCompatActivity() {
                 when (response) {
                     is Result.Error -> Timber.e("Error: ${response.message}")
                     is Result.Loading -> Timber.i("Loading..")
-                    is Result.Success -> initView(response.data)
+                    is Result.Success -> initFeedData(response.data)
                 }
             }
         }
     }
 
-    private fun initView(feed: FeedModel) = with(binding) {
+    private fun initFeedData(feed: FeedModel) = with(binding) {
         cgMessageFeedTag.addFeedTags(feed.tags)
         toolbarMessage.apply {
             title = feed.nickname
@@ -71,32 +72,37 @@ class ChattingActivity : AppCompatActivity() {
         }
         tvMessageFeedTitle.text = feed.title
         tvMessageFeedContent.text = feed.content
-        val thumbnail = feed.contentImage.getOrNull(0)
-        thumbnail?.let {
+        feed.contentImage.getOrNull(0)?.let {
             Glide.with(this@ChattingActivity)
-                .load(thumbnail)
+                .load(it)
                 .into(ivMessageFeed)
         }
     }
 
     private fun ChipGroup.addFeedTags(tags: List<String>) {
+        val containerWidth = this.width
+        var totalWidth = 0
         for (tag in tags.toTagList()) {
-            val chip = Chip(this@ChattingActivity).apply {
+            val chip = Chip(context).apply {
                 text = tag.tagName
-                textSize = 14f
+                textSize = 12f
+                textEndPadding = 4f.px.toFloat()
+
                 setChipIconResource(tag.tagImage)
-
-                chipBackgroundColor = getColorStateList(R.color.white)
+                chipBackgroundColor = AppCompatResources.getColorStateList(context, R.color.white)
                 chipStrokeWidth = 0f
-                chipIconSize = 14f.px.toFloat()
+                chipIconSize = 12f.px.toFloat()
+                chipMinHeight = 24f.px.toFloat()
                 chipCornerRadius = 32f.px.toFloat()
-                chipStartPadding = 10f.px.toFloat()
+                iconStartPadding = 4f.px.toFloat()
 
-                elevation = 1f.px.toFloat()
-
+                elevation = 3f.px.toFloat()
                 isCheckable = false
                 isClickable = false
             }
+            chip.measure(0, 0)
+            totalWidth += chip.measuredWidth
+            if (totalWidth > containerWidth) break
             this.addView(chip)
         }
     }
