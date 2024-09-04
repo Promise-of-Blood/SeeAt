@@ -169,7 +169,12 @@ class DetailFragment : Fragment() {
             initTag(feed.tags)
 
             Timber.i(feed.contentImage.toString())
-            initImageViewPager(feed.contentImage)
+            if (feed.contentImage.isEmpty()) {
+                vpDetailImages.visibility = View.GONE
+                detailImageIndicator.visibility = View.GONE
+            } else {
+                initImageViewPager(feed.contentImage)
+            }
 
 
         }
@@ -187,7 +192,8 @@ class DetailFragment : Fragment() {
             R.drawable.ic_gym,
             R.drawable.ic_paw,
             R.drawable.ic_info,
-            R.drawable.ic_soup)
+            R.drawable.ic_soup
+        )
     }
 
     private fun initTag(tags: List<String>) {
