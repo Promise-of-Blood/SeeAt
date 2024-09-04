@@ -71,8 +71,7 @@ class NewFeedFragment : Fragment() {
                     )
                 val db = Firebase.firestore
                 val ran = (0..10000).random()
-                db
-                    .collection("feed")
+                db.collection("feed")
                     .document("test_feed$ran")
                     .set(feedData)
                     .addOnSuccessListener { documentReference ->

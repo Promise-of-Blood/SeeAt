@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginHorizontal="20dp"
     android:layout_marginTop="20dp"
     tools:context=".presentation.view.detail.DetailFragment">
 
@@ -15,6 +14,7 @@
         android:text="@string/feed"
         android:textSize="30sp"
         android:textStyle="bold"
+        android:layout_marginHorizontal="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -24,6 +24,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
+        android:layout_marginStart="20dp"
         android:text="@string/writer_info"
         android:textSize="16sp"
         android:textStyle="bold"
@@ -34,12 +35,12 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_writer_layout"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         android:clickable="true"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/tv_feed"
+        app:layout_constraintStart_toStartOf="@id/tv_feed"
         app:layout_constraintTop_toBottomOf="@id/tv_writer">
 
         <androidx.cardview.widget.CardView
@@ -93,7 +94,7 @@
 
     <ScrollView
         android:id="@+id/scrollView2"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="20dp"
         app:layout_constraintBottom_toTopOf="@id/cl_comment_layout"
@@ -111,6 +112,8 @@
                 android:layout_height="wrap_content"
                 android:textSize="25sp"
                 android:textStyle="bold"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -120,6 +123,7 @@
                 android:id="@+id/tv_my_distance"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
                 android:layout_marginTop="10dp"
                 android:text="800m"
                 android:textColor="@color/gray"
@@ -207,6 +211,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
                 android:textSize="16sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -217,6 +223,7 @@
                 android:id="@+id/iv_like_icon"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
+                android:layout_marginStart="20dp"
                 android:layout_marginTop="30dp"
                 android:src="@drawable/ic_thumb_up_off_alt_24"
                 app:layout_constraintStart_toStartOf="parent"
@@ -259,6 +266,7 @@
                 android:layout_width="80dp"
                 android:layout_height="30dp"
                 android:layout_marginTop="10dp"
+                android:layout_marginStart="20dp"
                 android:background="@drawable/selector_btn_white_border"
                 android:clickable="true"
                 app:layout_constraintStart_toStartOf="parent"
@@ -336,6 +344,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
                 android:text="@string/detail_comment"
                 android:textSize="25sp"
                 android:textStyle="bold"
