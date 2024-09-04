@@ -3,6 +3,7 @@ package com.pob.seeat.presentation.view.detail
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,11 +11,17 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.firebase.Firebase
+import com.google.firebase.Timestamp
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.GeoPoint
 import com.pob.seeat.MainActivity
 import com.pob.seeat.R
@@ -25,6 +32,7 @@ import com.pob.seeat.domain.model.FeedModel
 import com.pob.seeat.presentation.view.chat.ChattingActivity
 import com.pob.seeat.presentation.view.home.MarginItemDecoration
 import com.pob.seeat.presentation.view.home.TagAdapter
+import com.pob.seeat.presentation.viewmodel.CommentViewModel
 import com.pob.seeat.presentation.viewmodel.DetailViewModel
 import com.pob.seeat.utils.Utils.px
 import com.pob.seeat.utils.Utils.tagList
@@ -50,6 +58,7 @@ class DetailFragment : Fragment() {
     val args: DetailFragmentArgs by navArgs()
 
     private val detailViewModel: DetailViewModel by viewModels()
+    private val commentViewModel : CommentViewModel by viewModels()
 
     private val feedCommentAdapter: FeedCommentAdapter by lazy { FeedCommentAdapter(::handleClickFeed) }
 
@@ -81,6 +90,7 @@ class DetailFragment : Fragment() {
         initTagRecyclerView()
         initCommentRecyclerView()
         Timber.i(args.feedIdArg)
+        initViewModel()
     }
 
     private fun initCommentRecyclerView() {
@@ -143,7 +153,9 @@ class DetailFragment : Fragment() {
             }
 
             tvAddCommentButton.setOnClickListener {
-                // Todo 댓글 작성
+                val comment = binding.etAddComment.text.toString()
+                Log.d("댓글달기","etAddComment.text : ${etAddComment.text.toString()}")
+                sendCommentToServer(comment)
             }
 
             tvChatButton.setOnClickListener {
@@ -152,10 +164,22 @@ class DetailFragment : Fragment() {
                 chattingResultLauncher.launch(intent)
             }
 
-            feedCommentAdapter.submitList(feed.comments)
+
 
 
         }
+    }
+
+    private fun initViewModel(){
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                commentViewModel.comments.collect { comments ->
+                    feedCommentAdapter.submitList(comments)
+                }
+            }
+        }
+
+        commentViewModel.fetchComments(args.feedIdArg)
     }
 
     private fun initTagRecyclerView() {
@@ -206,6 +230,52 @@ class DetailFragment : Fragment() {
 
     private fun handleClickFeed(feedModel: CommentModel) {
         // Todo 댓글 클릭시
+    }
+
+    private fun sendCommentToServer(comment: String){
+        val feedId = args.feedIdArg
+        val timeStamp = Timestamp.now()
+
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        if (currentUser != null){
+            val userReference = FirebaseFirestore.getInstance().collection("user").document(currentUser.uid)
+            userReference.get().addOnSuccessListener { snapShot ->
+                if(snapShot.exists()){
+                    val userImage = snapShot.getString("profileUrl")?: ""
+                    val userNickname = snapShot.getString("nickname")?: ""
+
+                    commentViewModel.addComment(
+                        feedId = feedId,
+                        commentId = "",
+                        comment = comment,
+                        user = userReference,
+                        likeCount = 0,
+                        timeStamp = timeStamp,
+                        userImage = userImage.toString(),
+                        userNickname = userNickname
+                    )
+                    commentViewModel.fetchComments(feedId)
+                    binding.etAddComment.setText("")
+                }else{
+                    Log.e("댓글 달기","댓글달기 실패! 사용자 문서 X")
+                }
+
+            }.addOnFailureListener { e ->
+                Log.e("댓글 달기","프로필 가져오기 실패! ${e.message} ")
+            }
+
+
+
+
+        }else{
+            Log.e("댓글달기","댓글 달기 실패! 다시시도하라!")
+
+        }
+
+
+
+
+
     }
 
     override fun onDestroyView() {

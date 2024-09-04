@@ -123,7 +123,7 @@ class LoginActivity : AppCompatActivity() {
                     if (documents.isEmpty) {
                         onUserNotExist() // 일치하는 문서가 없는 경우
                     } else {
-                        onUserExists() // 일치하는 문서가 있는 경우
+                        onUserNotExist()
                     }
                 }
                 .addOnFailureListener { exception ->
