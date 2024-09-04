@@ -54,7 +54,7 @@ class FeedCommentAdapter(private val onClick: (CommentModel) -> Unit) :
 
             isMyComment(clCommentLayout,userId)
 //            isOwnerComment(tvCommentFeedOner,userId,feedId)
-            isOwnerComment(feedId)
+            isOwnerComment(tvCommentFeedOner,userId,feedId)
 
             clCommentLayout.setOnClickListener {
                 onClick(item)
@@ -94,7 +94,7 @@ fun isMyComment(layout : ConstraintLayout, commentUserUid : String){
 }
 
 
-fun isOwnerComment(feedId: String) {
+fun isOwnerComment(textView: TextView, commentUserUid: String,feedId: String) {
     val firestore = FirebaseFirestore.getInstance()
 
     // 'feed' 컬렉션의 특정 문서를 가져오기
@@ -108,15 +108,18 @@ fun isOwnerComment(feedId: String) {
 
                 when (userReference) {
                     is DocumentReference -> {
-                        // user 필드가 DocumentReference인 경우
                         Log.d("Firestore", "DocumentReference: ${userReference.path}")
-                        // DocumentReference를 통해 해당 문서 접근하기
                         userReference.get()
                             .addOnSuccessListener { userSnapshot ->
                                 if (userSnapshot.exists()) {
                                     // uid 필드를 가져오기
                                     val ownerUid = userSnapshot.getString("uid")
                                     Log.d("Firestore", "Fetched owner UID: $ownerUid")
+                                    if(commentUserUid ==ownerUid){
+                                        textView.visibility = View.VISIBLE
+                                    }else{
+                                        textView.visibility = View.GONE
+                                    }
                                 } else {
                                     Log.e("Firestore", "유저 문서를 찾을 수 없습니다: ${userReference.path}")
                                 }
@@ -129,7 +132,7 @@ fun isOwnerComment(feedId: String) {
                         // user 필드가 단순히 UID를 나타내는 String인 경우
                         val ownerUid = userReference
                         Log.d("Firestore", "Fetched owner UID from String: $ownerUid")
-                        // 필요한 추가 작업 수행
+
                     }
                     else -> {
                         // user 필드가 기대하지 않은 타입인 경우 처리
