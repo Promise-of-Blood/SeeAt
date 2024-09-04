@@ -9,15 +9,6 @@
     android:paddingHorizontal="24dp"
     android:paddingVertical="16dp">
 
-    <com.google.android.material.chip.ChipGroup
-        android:id="@+id/cg_feed_tag_container"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toStartOf="@id/iv_feed_image"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:singleLine="true" />
-
     <TextView
         android:id="@+id/tv_feed_title"
         android:layout_width="0dp"
@@ -26,11 +17,11 @@
         android:ellipsize="end"
         android:maxLines="1"
         android:textColor="@color/black"
-        android:textSize="20sp"
+        android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@id/iv_feed_image"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cg_feed_tag_container"
+        app:layout_constraintTop_toTopOf="parent"
         tools:text="으아 어이없어" />
 
     <TextView
@@ -41,7 +32,9 @@
         android:layout_marginEnd="8dp"
         android:ellipsize="end"
         android:maxLines="2"
+        android:minLines="2"
         android:textColor="@color/gray"
+        android:textSize="14sp"
         app:layout_constraintEnd_toStartOf="@id/iv_feed_image"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_feed_title"
@@ -130,6 +123,6 @@
         android:src="@drawable/ic_launcher_background"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/tv_feed_title" />
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
