@@ -176,7 +176,6 @@ class DetailFragment : Fragment() {
                 initImageViewPager(feed.contentImage)
             }
 
-
         }
     }
 
@@ -185,15 +184,6 @@ class DetailFragment : Fragment() {
         imageViewPager.adapter = ImagesPagerAdapter(contentImage)
         imageViewPager.orientation = ViewPager2.ORIENTATION_HORIZONTAL
         binding.detailImageIndicator.setViewPager(imageViewPager)
-    }
-
-    private fun getImageList(): ArrayList<Int> {
-        return arrayListOf<Int>(
-            R.drawable.ic_gym,
-            R.drawable.ic_paw,
-            R.drawable.ic_info,
-            R.drawable.ic_soup
-        )
     }
 
     private fun initTag(tags: List<String>) {
@@ -225,21 +215,6 @@ class DetailFragment : Fragment() {
         }
     }
 
-//    private fun initTagRecyclerView() {
-//        // 태그 리스트 데이터 설정
-//        binding.apply {
-//            // Todo tag데이터 연결 필요
-//            val adapter = TagAdapter(tagList)
-//            rvFeedTagList.layoutManager =
-//                LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-//            rvFeedTagList.adapter = adapter
-//
-//            val marginDecoration = MarginItemDecoration(2f.px) // 마진 설정
-//            rvFeedTagList.addItemDecoration(marginDecoration)
-//        }
-//    }
-
-
     /**
      * 두 GeoPoint간의 거리 계산
      * @param myGeoPoint 현재 좌표 GeoPoint
@@ -261,7 +236,6 @@ class DetailFragment : Fragment() {
         val c = 2 * asin(sqrt(a))
 
         return (RR * c).toInt()
-
     }
 
     private fun formatDistanceToString(meter: Int): String {
