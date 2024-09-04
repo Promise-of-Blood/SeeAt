@@ -88,7 +88,7 @@ class ChattingActivity : AppCompatActivity() {
 
                 chipBackgroundColor = getColorStateList(R.color.white)
                 chipStrokeWidth = 0f
-                chipIconSize = 10f.px.toFloat()
+                chipIconSize = 14f.px.toFloat()
                 chipCornerRadius = 32f.px.toFloat()
                 chipStartPadding = 10f.px.toFloat()
 
