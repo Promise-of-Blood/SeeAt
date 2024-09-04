@@ -63,7 +63,7 @@ class DetailFragment : Fragment() {
     val args: DetailFragmentArgs by navArgs()
 
     private val detailViewModel: DetailViewModel by viewModels()
-    private val commentViewModel : CommentViewModel by viewModels()
+    private val commentViewModel: CommentViewModel by viewModels()
 
     private val feedCommentAdapter: FeedCommentAdapter by lazy { FeedCommentAdapter(::handleClickFeed) }
 
@@ -164,7 +164,7 @@ class DetailFragment : Fragment() {
 
             tvAddCommentButton.setOnClickListener {
                 val comment = binding.etAddComment.text.toString()
-                Log.d("댓글달기","etAddComment.text : ${etAddComment.text.toString()}")
+                Log.d("댓글달기", "etAddComment.text : ${etAddComment.text.toString()}")
                 sendCommentToServer(comment)
             }
 
@@ -173,8 +173,6 @@ class DetailFragment : Fragment() {
                 intent.putExtra("feedId", feed.feedId)
                 chattingResultLauncher.launch(intent)
             }
-
-
 
 
             initTag(feed.tags)
@@ -186,139 +184,138 @@ class DetailFragment : Fragment() {
             } else {
                 initImageViewPager(feed.contentImage)
             }
-
-    private fun initViewModel(){
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                commentViewModel.comments.collect { comments ->
-                    feedCommentAdapter.submitList(comments)
-                }
-            }
-        }
-
-        commentViewModel.fetchComments(args.feedIdArg)
-    }
-
-    private fun initImageViewPager(contentImage: List<String>) {
-        val imageViewPager = binding.vpDetailImages
-        imageViewPager.adapter = ImagesPagerAdapter(contentImage)
-        imageViewPager.orientation = ViewPager2.ORIENTATION_HORIZONTAL
-        binding.detailImageIndicator.setViewPager(imageViewPager)
-    }
-
-    private fun initTag(tags: List<String>) {
-        val chipGroup = binding.chipsGroupDetail
-        val tagLists = tags.toTagList()
-        // tagList를 이용해 Chip을 동적으로 생성
-        // tagLists:List<tag>
-
-        for (tag in tagLists) {
-            val chip = Chip(context).apply {
-                text = tag.tagName
-                setChipIconResource(tag.tagImage)
-
-                chipBackgroundColor =
-                    ContextCompat.getColorStateList(context, R.color.background_gray)
-                chipStrokeWidth = 0f
-                chipIconSize = 16f.px.toFloat()
-                chipCornerRadius = 32f.px.toFloat()
-                chipStartPadding = 10f.px.toFloat()
-
-                elevation = 2f.px.toFloat()
-
-                isCheckable = false
-                isClickable = false
-            }
-
-            // ChipGroup에 동적으로 Chip 추가
-            chipGroup.addView(chip)
         }
     }
 
-    /**
-     * 두 GeoPoint간의 거리 계산
-     * @param myGeoPoint 현재 좌표 GeoPoint
-     * @param feedGeoPoint 계산하려는 좌표 GeoPoint
-     * @return 두 좌표간 거리가 미터단위로 Int로 반환됨
-     */
-    private fun calculateDistance(myGeoPoint: GeoPoint, feedGeoPoint: GeoPoint): Int {
-
-        val RR = 6372.8 * 1000
-
-        val myLatitude = myGeoPoint.latitude
-        val myLongitude = myGeoPoint.longitude
-        val feedLatitude = feedGeoPoint.latitude
-        val feedLongitude = feedGeoPoint.longitude
-
-        val dLat = Math.toRadians(feedLatitude - myLatitude)
-        val dLon = Math.toRadians(feedLongitude - myLongitude)
-        val a = sin(dLat / 2).pow(2.0) + sin(dLon / 2).pow(2.0) * cos(Math.toRadians(myLatitude))
-        val c = 2 * asin(sqrt(a))
-
-        return (RR * c).toInt()
-
-    }
-
-    private fun formatDistanceToString(meter: Int): String {
-        return when {
-            meter in 0..999 -> "${meter}m"
-            meter > 1000 -> String.format(Locale.KOREA, "%dkm", meter / 1000)
-            else -> "Invalid distance"
-        }
-    }
-
-    private fun handleClickFeed(feedModel: CommentModel) {
-        // Todo 댓글 클릭시
-    }
-
-    private fun sendCommentToServer(comment: String){
-        val feedId = args.feedIdArg
-        val timeStamp = Timestamp.now()
-
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        if (currentUser != null){
-            val userReference = FirebaseFirestore.getInstance().collection("user").document(currentUser.uid)
-            userReference.get().addOnSuccessListener { snapShot ->
-                if(snapShot.exists()){
-                    val userImage = snapShot.getString("profileUrl")?: ""
-                    val userNickname = snapShot.getString("nickname")?: ""
-
-                    commentViewModel.addComment(
-                        feedId = feedId,
-                        commentId = "",
-                        comment = comment,
-                        user = userReference,
-                        likeCount = 0,
-                        timeStamp = timeStamp,
-                        userImage = userImage.toString(),
-                        userNickname = userNickname
-                    )
-                    commentViewModel.fetchComments(feedId)
-                    binding.etAddComment.setText("")
-                }else{
-                    Log.e("댓글 달기","댓글달기 실패! 사용자 문서 X")
+            private fun initViewModel() {
+                viewLifecycleOwner.lifecycleScope.launch {
+                    viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                        commentViewModel.comments.collect { comments ->
+                            feedCommentAdapter.submitList(comments)
+                        }
+                    }
                 }
 
-            }.addOnFailureListener { e ->
-                Log.e("댓글 달기","프로필 가져오기 실패! ${e.message} ")
+                commentViewModel.fetchComments(args.feedIdArg)
             }
 
+            private fun initImageViewPager(contentImage: List<String>) {
+                val imageViewPager = binding.vpDetailImages
+                imageViewPager.adapter = ImagesPagerAdapter(contentImage)
+                imageViewPager.orientation = ViewPager2.ORIENTATION_HORIZONTAL
+                binding.detailImageIndicator.setViewPager(imageViewPager)
+            }
+
+            private fun initTag(tags: List<String>) {
+                val chipGroup = binding.chipsGroupDetail
+                val tagLists = tags.toTagList()
+                // tagList를 이용해 Chip을 동적으로 생성
+                // tagLists:List<tag>
+
+                for (tag in tagLists) {
+                    val chip = Chip(context).apply {
+                        text = tag.tagName
+                        setChipIconResource(tag.tagImage)
+
+                        chipBackgroundColor =
+                            ContextCompat.getColorStateList(context, R.color.background_gray)
+                        chipStrokeWidth = 0f
+                        chipIconSize = 16f.px.toFloat()
+                        chipCornerRadius = 32f.px.toFloat()
+                        chipStartPadding = 10f.px.toFloat()
+
+                        elevation = 2f.px.toFloat()
+
+                        isCheckable = false
+                        isClickable = false
+                    }
+
+                    // ChipGroup에 동적으로 Chip 추가
+                    chipGroup.addView(chip)
+                }
+            }
+
+            /**
+             * 두 GeoPoint간의 거리 계산
+             * @param myGeoPoint 현재 좌표 GeoPoint
+             * @param feedGeoPoint 계산하려는 좌표 GeoPoint
+             * @return 두 좌표간 거리가 미터단위로 Int로 반환됨
+             */
+            private fun calculateDistance(myGeoPoint: GeoPoint, feedGeoPoint: GeoPoint): Int {
+
+                val RR = 6372.8 * 1000
+
+                val myLatitude = myGeoPoint.latitude
+                val myLongitude = myGeoPoint.longitude
+                val feedLatitude = feedGeoPoint.latitude
+                val feedLongitude = feedGeoPoint.longitude
+
+                val dLat = Math.toRadians(feedLatitude - myLatitude)
+                val dLon = Math.toRadians(feedLongitude - myLongitude)
+                val a =
+                    sin(dLat / 2).pow(2.0) + sin(dLon / 2).pow(2.0) * cos(Math.toRadians(myLatitude))
+                val c = 2 * asin(sqrt(a))
+
+                return (RR * c).toInt()
+
+            }
+
+            private fun formatDistanceToString(meter: Int): String {
+                return when {
+                    meter in 0..999 -> "${meter}m"
+                    meter > 1000 -> String.format(Locale.KOREA, "%dkm", meter / 1000)
+                    else -> "Invalid distance"
+                }
+            }
+
+            private fun handleClickFeed(feedModel: CommentModel) {
+                // Todo 댓글 클릭시
+            }
+
+            private fun sendCommentToServer(comment: String) {
+                val feedId = args.feedIdArg
+                val timeStamp = Timestamp.now()
+
+                val currentUser = FirebaseAuth.getInstance().currentUser
+                if (currentUser != null) {
+                    val userReference =
+                        FirebaseFirestore.getInstance().collection("user").document(currentUser.uid)
+                    userReference.get().addOnSuccessListener { snapShot ->
+                        if (snapShot.exists()) {
+                            val userImage = snapShot.getString("profileUrl") ?: ""
+                            val userNickname = snapShot.getString("nickname") ?: ""
+
+                            commentViewModel.addComment(
+                                feedId = feedId,
+                                commentId = "",
+                                comment = comment,
+                                user = userReference,
+                                likeCount = 0,
+                                timeStamp = timeStamp,
+                                userImage = userImage.toString(),
+                                userNickname = userNickname
+                            )
+                            commentViewModel.fetchComments(feedId)
+                            binding.etAddComment.setText("")
+                        } else {
+                            Log.e("댓글 달기", "댓글달기 실패! 사용자 문서 X")
+                        }
+
+                    }.addOnFailureListener { e ->
+                        Log.e("댓글 달기", "프로필 가져오기 실패! ${e.message} ")
+                    }
 
 
+                } else {
+                    Log.e("댓글달기", "댓글 달기 실패! 다시시도하라!")
 
-        }else{
-            Log.e("댓글달기","댓글 달기 실패! 다시시도하라!")
+                }
 
+
+            }
+
+            override fun onDestroyView() {
+                super.onDestroyView()
+                _binding = null
+            }
         }
-
-
-
-
-
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-}
