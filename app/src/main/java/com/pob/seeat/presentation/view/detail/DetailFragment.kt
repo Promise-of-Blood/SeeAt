@@ -92,7 +92,6 @@ class DetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         getFeed()
-//        initTagRecyclerView()
         initCommentRecyclerView()
         Timber.i(args.feedIdArg)
         initViewModel()
@@ -137,7 +136,6 @@ class DetailFragment : Fragment() {
                 .into(ivWriterImage)
 
             tvFeedTitle.text = feed.title
-            //todo 이미지 연결
             tvFeedTimeAgo.text = feed.date?.toLocalDateTime()?.toKoreanDiffString()
             tvFeedContent.text = feed.content
             tvFeedDetailLikeCount.text = feed.like.toString()
