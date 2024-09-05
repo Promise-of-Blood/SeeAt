@@ -46,6 +46,16 @@ object Utils {
         else -> "999M+"
     }
 
+    /**
+     * 천(k), 백만(M) 단위로 표시된 문자열을 반환합니다.
+     * */
+    fun Long.toFormatShortenedString() = when (this) {
+        in 0..999 -> this.toString()
+        in 1000..999999 -> String.format(Locale.getDefault(), "%.1fk", this / 1000f)
+        in 1000000..999999999 -> "${this / 1000000}M"
+        else -> "999M+"
+    }
+
     // px to dp
     val Int.dp get() = (this / getSystem().displayMetrics.density).toInt()
 

@@ -14,18 +14,19 @@ import com.pob.seeat.presentation.view.mypage.items.HistoryEnum
 import com.pob.seeat.presentation.view.mypage.items.HistoryListItem
 import com.pob.seeat.utils.Utils.toFormatShortenedString
 
-class HistoryAdapter : ListAdapter<HistoryListItem, ViewHolder<HistoryListItem>>(object :
-    DiffUtil.ItemCallback<HistoryListItem>() {
-    override fun areItemsTheSame(oldItem: HistoryListItem, newItem: HistoryListItem) =
-        when {
-            oldItem is HistoryListItem.FeedItem && newItem is HistoryListItem.FeedItem -> oldItem.feedId == newItem.feedId
-            oldItem is HistoryListItem.CommentItem && newItem is HistoryListItem.CommentItem -> oldItem.commentId == newItem.commentId
-            else -> false
-        }
+class HistoryAdapter(private val onClick: (HistoryListItem) -> Unit = {}) :
+    ListAdapter<HistoryListItem, ViewHolder<HistoryListItem>>(object :
+        DiffUtil.ItemCallback<HistoryListItem>() {
+        override fun areItemsTheSame(oldItem: HistoryListItem, newItem: HistoryListItem) =
+            when {
+                oldItem is HistoryListItem.FeedItem && newItem is HistoryListItem.FeedItem -> oldItem.feedId == newItem.feedId
+                oldItem is HistoryListItem.CommentItem && newItem is HistoryListItem.CommentItem -> oldItem.commentId == newItem.commentId
+                else -> false
+            }
 
-    override fun areContentsTheSame(oldItem: HistoryListItem, newItem: HistoryListItem) =
-        oldItem == newItem
-}) {
+        override fun areContentsTheSame(oldItem: HistoryListItem, newItem: HistoryListItem) =
+            oldItem == newItem
+    }) {
     override fun getItemViewType(position: Int) = when (val item = getItem(position)) {
         is HistoryListItem.FeedItem -> HistoryEnum.FEED.viewType
         is HistoryListItem.CommentItem -> HistoryEnum.COMMENT.viewType
@@ -53,7 +54,7 @@ class HistoryAdapter : ListAdapter<HistoryListItem, ViewHolder<HistoryListItem>>
     }
 
     override fun onBindViewHolder(holder: ViewHolder<HistoryListItem>, position: Int) {
-        holder.bind(getItem(position))
+        holder.bind(getItem(position), onClick)
     }
 
     class FeedViewHolder(binding: ItemFeedHistoryBinding) :
@@ -77,6 +78,7 @@ class HistoryAdapter : ListAdapter<HistoryListItem, ViewHolder<HistoryListItem>>
                     .apply(RequestOptions.bitmapTransform(RoundedCorners(10)))
                     .into(image)
             }
+            itemView.setOnClickListener { onClick(item) }
         }
     }
 

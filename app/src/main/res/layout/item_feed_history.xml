@@ -17,7 +17,7 @@
         android:ellipsize="end"
         android:maxLines="1"
         android:textColor="@color/black"
-        android:textSize="18sp"
+        android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@id/iv_feed_image"
         app:layout_constraintStart_toStartOf="parent"
@@ -54,8 +54,8 @@
 
         <ImageView
             android:id="@+id/iv_feed_comment_icon"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
             android:layout_marginEnd="4dp"
             android:contentDescription="@string/feed_comment"
             android:src="@drawable/ic_comment_24"
@@ -66,7 +66,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/gray"
-            android:textSize="14sp"
+            android:textSize="12sp"
             tools:text="999.9M" />
 
         <View
@@ -80,8 +80,8 @@
 
         <ImageView
             android:id="@+id/iv_feed_like_icon"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
             android:layout_marginEnd="4dp"
             android:contentDescription="@string/feed_like"
             android:src="@drawable/ic_thumb_up_off_alt_24"
@@ -92,7 +92,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/gray"
-            android:textSize="14sp"
+            android:textSize="12sp"
             tools:text="999.9M" />
 
         <View
@@ -109,19 +109,20 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/gray"
-            android:textSize="14sp"
+            android:textSize="12sp"
             tools:text="2024.12.25" />
 
     </LinearLayout>
 
     <ImageView
         android:id="@+id/iv_feed_image"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:contentDescription="@string/feed_image"
         android:scaleType="centerCrop"
         android:src="@drawable/ic_launcher_background"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

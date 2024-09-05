@@ -16,6 +16,7 @@ import com.pob.seeat.MainActivity
 import com.pob.seeat.R
 import com.pob.seeat.databinding.FragmentHistoryListBinding
 import com.pob.seeat.presentation.view.UiState
+import com.pob.seeat.presentation.view.mypage.items.HistoryListItem
 import com.pob.seeat.presentation.viewmodel.UserHistoryViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -26,7 +27,7 @@ class HistoryListFragment : Fragment() {
 
     private val args: HistoryListFragmentArgs by navArgs()
 
-    private val historyAdapter by lazy { HistoryAdapter() }
+    private val historyAdapter by lazy { HistoryAdapter(::onClickListItem) }
     private val userHistoryViewModel by activityViewModels<UserHistoryViewModel>()
 
     override fun onCreateView(
@@ -72,24 +73,32 @@ class HistoryListFragment : Fragment() {
 
     private fun initViewModel() = with(userHistoryViewModel) {
         viewLifecycleOwner.lifecycleScope.launch {
-            history.flowWithLifecycle(viewLifecycleOwner.lifecycle)
-                .collectLatest { response ->
-                    when (response) {
-                        is UiState.Error -> {
-                            Toast.makeText(requireContext(), response.message, Toast.LENGTH_SHORT)
-                                .show()
-                        }
+            history.flowWithLifecycle(viewLifecycleOwner.lifecycle).collectLatest { response ->
+                when (response) {
+                    is UiState.Error -> {
+                        Toast.makeText(requireContext(), response.message, Toast.LENGTH_SHORT)
+                            .show()
+                    }
 
-                        is UiState.Loading -> {
-                            binding.rvHistory.visibility = View.INVISIBLE
-                        }
+                    is UiState.Loading -> {
+                        binding.rvHistory.visibility = View.INVISIBLE
+                    }
 
-                        is UiState.Success -> {
-                            binding.rvHistory.visibility = View.VISIBLE
-                            historyAdapter.submitList(response.data)
-                        }
+                    is UiState.Success -> {
+                        binding.rvHistory.visibility = View.VISIBLE
+                        historyAdapter.submitList(response.data)
                     }
                 }
+            }
         }
+    }
+
+    private fun onClickListItem(item: HistoryListItem) {
+        val feedId = when (item) {
+            is HistoryListItem.FeedItem -> item.feedId
+            is HistoryListItem.CommentItem -> item.feedId
+        }
+        val action = HistoryListFragmentDirections.actionUserHistoryListToFeedDetail(feedId)
+        findNavController().navigate(action)
     }
 }
