@@ -11,4 +11,6 @@ interface UserInfoRepository {
     suspend fun updateUserInfo(userInfo: UserInfoModel)
     suspend fun getUserInfoByEmail(email:String): Flow<UserInfoModel?>
     suspend fun getCurrentUserUid(): Flow<String>
+    suspend fun createLikedFeed(uid: String, feedUid: String)
+    suspend fun removeLikedFeed(uid: String, feedUid: String)
 }

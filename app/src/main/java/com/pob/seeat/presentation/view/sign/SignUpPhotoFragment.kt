@@ -94,6 +94,7 @@ class SignUpPhotoFragment : Fragment() {
                 null -> {
                     //dialog 띄우기~?말기?
                 }
+
                 else -> {
                     userViewModel.saveTempUserInfo(profileUrl = userViewModel.profileUploadResult.value)
                     (activity as? SignUpActivity)?.let { activity ->

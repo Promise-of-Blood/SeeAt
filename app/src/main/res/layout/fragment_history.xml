@@ -11,7 +11,7 @@
         android:id="@+id/rv_history"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:minHeight="350dp"
+        android:minHeight="320dp"
         app:layout_constraintBottom_toTopOf="@id/tv_history_more"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
