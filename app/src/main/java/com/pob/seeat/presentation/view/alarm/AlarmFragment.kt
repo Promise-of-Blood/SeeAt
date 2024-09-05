@@ -91,9 +91,10 @@ class AlarmFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             alarmResponse.flowWithLifecycle(viewLifecycleOwner.lifecycle)
                 .collectLatest { response ->
-                    when(response){
-                        is Result.Error ->{
-                            Toast.makeText(requireContext(), response.message, Toast.LENGTH_SHORT).show()
+                    when (response) {
+                        is Result.Error -> {
+                            Toast.makeText(requireContext(), response.message, Toast.LENGTH_SHORT)
+                                .show()
                         }
 
                         is Result.Loading -> {
@@ -110,8 +111,9 @@ class AlarmFragment : Fragment() {
     }
 
     private fun handleClickAlarm(alarm: AlarmModel) {
-        // TODO: 클릭한 알림에 해당하는 게시물 상세 페이지로 이동
-        alarmViewModel.readAlarm(alarm.uId)
+        val action = AlarmFragmentDirections.actionAlarmToDetail(alarm.feedId)
+        findNavController().navigate(action)
+        alarmViewModel.readAlarm(alarm.alarmId)
     }
 
     companion object {

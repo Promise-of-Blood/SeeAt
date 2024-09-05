@@ -17,7 +17,7 @@ import com.pob.seeat.utils.Utils.toKoreanDiffString
 class AlarmAdapter(private val onClick: (AlarmModel) -> Unit) :
     ListAdapter<AlarmModel, ViewHolder<AlarmModel>>(object : DiffUtil.ItemCallback<AlarmModel>() {
         override fun areItemsTheSame(oldItem: AlarmModel, newItem: AlarmModel) =
-            oldItem.uId == newItem.uId
+            oldItem.alarmId == newItem.alarmId
 
         override fun areContentsTheSame(oldItem: AlarmModel, newItem: AlarmModel) =
             oldItem == newItem
@@ -32,11 +32,11 @@ class AlarmAdapter(private val onClick: (AlarmModel) -> Unit) :
         override fun bind(item: AlarmModel, onClick: (AlarmModel) -> Unit) {
             content.visibility = View.VISIBLE
             description.text = itemView.context.getString(R.string.alarm_description_comment)
-            title.text = itemView.context.getString(R.string.alarm_post_title, item.postTitle)
+            title.text = itemView.context.getString(R.string.alarm_post_title, item.feedTitle)
             content.text = item.content
-            time.text = item.createdAt.toKoreanDiffString()
+            time.text = item.createdAt?.toKoreanDiffString() ?: ""
             Glide.with(image.context)
-                .load(item.postImage)
+                .load(item.feedImage)
                 .apply(RequestOptions.bitmapTransform(RoundedCorners(10)))
                 .into(image)
             itemView.apply {
