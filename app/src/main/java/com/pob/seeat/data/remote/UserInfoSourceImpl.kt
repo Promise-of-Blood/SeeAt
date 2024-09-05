@@ -9,6 +9,7 @@ import com.pob.seeat.data.model.UserInfoData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
+import timber.log.Timber
 import javax.inject.Inject
 
 class UserInfoSourceImpl @Inject constructor(
@@ -28,6 +29,9 @@ class UserInfoSourceImpl @Inject constructor(
 
     override suspend fun getUserInfo(uid: String): Flow<UserInfoData?> {
         return flow {
+            val likedFeedSnapshot =
+                firestore.collection("user").document(uid).collection("likedFeed").get().await()
+            val likedFeedList = likedFeedSnapshot.documents.map { it.id }
             val userRef = firestore.collection("user").document(uid)
             val feedCount = firestore.collection("feed").whereEqualTo("user", userRef).count()
                 .get(AggregateSource.SERVER).await().count // 작성 글 수
@@ -37,7 +41,11 @@ class UserInfoSourceImpl @Inject constructor(
             val myData = userRef.get().await() // 유저 정보
             emit(
                 myData.toObject<UserInfoData>()
-                    ?.copy(feedCount = feedCount, commentCount = commentCount)
+                    ?.copy(
+                        feedCount = feedCount,
+                        commentCount = commentCount,
+                        likedFeedList = likedFeedList
+                    )
             )
         }
     }
@@ -58,6 +66,36 @@ class UserInfoSourceImpl @Inject constructor(
         return flow {
             val myData = firestore.collection("user").document(email).get().await()
             emit(myData.toObject<UserInfoData>())
+        }
+    }
+
+    override suspend fun createLikedFeed(userUid: String, feedUid: String) {
+        try {
+            firestore.collection("user")
+                .document(userUid)
+                .collection("likedFeed")
+                .document(feedUid)
+                .set(mapOf("feed" to "/feed/$feedUid"))
+                .await()
+            Timber.tag("likedFeed 생성").i("성공)")
+        } catch (e: Exception) {
+            Timber.tag("likedFeed 생성").i("실패 ( 에러: $e)")
+        }
+    }
+
+    override suspend fun removeLikedFeed(userUid: String, feedUid: String) {
+        try {
+            firestore.collection("user")
+                .document(userUid)
+                .collection("likedFeed")
+                .document(feedUid)
+                .delete()
+                .await()
+
+            Timber.tag("likedFeed 제거").i("제거 성공 $feedUid")
+
+        } catch (e: Exception) {
+            Timber.tag("likedFeed 제거").i("실패 ( 에러: $e)")
         }
     }
 }
