@@ -2,6 +2,7 @@ package com.pob.seeat.data.remote
 
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.AggregateSource
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
 import com.pob.seeat.data.model.UserInfoData
@@ -27,8 +28,17 @@ class UserInfoSourceImpl @Inject constructor(
 
     override suspend fun getUserInfo(uid: String): Flow<UserInfoData?> {
         return flow {
-            val myData = firestore.collection("user").document(uid).get().await()
-            emit(myData.toObject<UserInfoData>())
+            val userRef = firestore.collection("user").document(uid)
+            val feedCount = firestore.collection("feed").whereEqualTo("user", userRef).count()
+                .get(AggregateSource.SERVER).await().count // 작성 글 수
+            val commentCount =
+                firestore.collectionGroup("comments").whereEqualTo("user", userRef).count()
+                    .get(AggregateSource.SERVER).await().count // 작성 댓글 수
+            val myData = userRef.get().await() // 유저 정보
+            emit(
+                myData.toObject<UserInfoData>()
+                    ?.copy(feedCount = feedCount, commentCount = commentCount)
+            )
         }
     }
 
