@@ -17,6 +17,7 @@ import com.pob.seeat.R
 import com.pob.seeat.data.model.Result
 import com.pob.seeat.databinding.ActivityChattingBinding
 import com.pob.seeat.domain.model.FeedModel
+import com.pob.seeat.presentation.viewmodel.ChatViewModel
 import com.pob.seeat.presentation.viewmodel.DetailViewModel
 import com.pob.seeat.utils.Utils.px
 import com.pob.seeat.utils.Utils.toTagList
@@ -29,6 +30,8 @@ import timber.log.Timber
 class ChattingActivity : AppCompatActivity() {
     private val binding by lazy { ActivityChattingBinding.inflate(layoutInflater) }
     private val detailViewModel by viewModels<DetailViewModel>()
+    private val chatViewModel by viewModels<ChatViewModel>()
+    var targetId : String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,8 +43,20 @@ class ChattingActivity : AppCompatActivity() {
             insets
         }
 
+        val feedId = intent.getStringExtra("feedId") ?: ""
+
         initViewModel()
+        initChatViewModel()
         getFeedData()
+        receiveMessage(intent.getStringExtra("feedId") ?: "")
+        binding.btnChattingSend.setOnClickListener {
+            lifecycleScope.launch {
+                Timber.tag("ChattingLOG").d("btnChattingSend Clicked : $targetId !")
+                chatViewModel.sendMessage(feedId, targetId, binding.etChattingInput.text.toString())
+                receiveMessage(feedId)
+            }
+            binding.etChattingInput.setText("")
+        }
     }
 
     private fun getFeedData() {
@@ -61,7 +76,22 @@ class ChattingActivity : AppCompatActivity() {
         }
     }
 
+    private fun initChatViewModel() = with(chatViewModel) {
+        lifecycleScope.launch {
+            initMessage(intent.getStringExtra("feedId") ?: "")
+            Timber.tag("InitChattingLOG").d("chatResult : ${chatResult.value}")
+        }
+    }
+
+    private fun receiveMessage(feedId: String) {
+        lifecycleScope.launch {
+            chatViewModel.receiveMessage(feedId)
+            Timber.tag("ChattingLOG").d("receiveMessage : ${chatViewModel.chatResult.value}")
+        }
+    }
+
     private fun initFeedData(feed: FeedModel) = with(binding) {
+        println("feed data : $feed")
         cgMessageFeedTag.addFeedTags(feed.tags)
         toolbarMessage.apply {
             title = feed.nickname
@@ -77,6 +107,7 @@ class ChattingActivity : AppCompatActivity() {
                 .load(it)
                 .into(ivMessageFeed)
         }
+        targetId = feed.user?.id.toString()
     }
 
     private fun ChipGroup.addFeedTags(tags: List<String>) {

@@ -10,6 +10,7 @@ import com.google.firebase.database.Query
 import com.google.firebase.database.ServerValue
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
+import com.google.firebase.database.snapshots
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import com.pob.seeat.data.model.ChatListModel
@@ -25,13 +26,19 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 import com.pob.seeat.data.model.Result
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.suspendCancellableCoroutine
+import java.util.Date
+import kotlin.coroutines.resume
 
 class ChatRemote @Inject constructor(
     val firebase: Firebase,
 ) {
     // TODO 필요한 거 Hilt로 넘겨버려도 될 듯
     private val firebaseDb = firebase.database
-    val uid = GoogleAuthUtil.getUserUid()
+    val uid = FirebaseAuth.getInstance().currentUser?.uid
     private val chatRef = firebaseDb.getReference("chats")
     private val messageRef = firebaseDb.getReference("messages")
     private val memberRef = firebaseDb.getReference("members")
@@ -39,8 +46,8 @@ class ChatRemote @Inject constructor(
 
     // TODO model은 레포지토리로 바꾸고, 여기서는 response로 받아오는 게 나을 듯 - 리팩토링 1순위
     suspend fun getMyChatList(): Result<List<ChatListModel>> {
-        var result : Result<List<ChatListModel>> = Result.Loading
-        val userChatList : ArrayList<String> = arrayListOf()
+        var result: Result<List<ChatListModel>> = Result.Loading
+        val userChatList: ArrayList<String> = arrayListOf()
         val chatList: ArrayList<ChatListModel> = arrayListOf()
 //        chatRef.addValueEventListener(object : ValueEventListener {
 //            override fun onDataChange(snapshot: DataSnapshot) {
@@ -84,6 +91,7 @@ class ChatRemote @Inject constructor(
                                     )
                                 )
                             }
+
                             override fun onCancelled(error: DatabaseError) {
                                 result = Result.Error(error.message)
                             }
@@ -102,7 +110,7 @@ class ChatRemote @Inject constructor(
     }
 
     suspend fun getChatPartner(feedId: String): Result<ChatMemberModel> {
-        var result : Result<ChatMemberModel> = Result.Loading
+        var result: Result<ChatMemberModel> = Result.Loading
         memberRef.child(feedId).get().addOnSuccessListener {
             val uid = it.child("uid").value.toString()
             val nickname = it.child("nickname").value.toString()
@@ -114,7 +122,7 @@ class ChatRemote @Inject constructor(
         return result
     }
 
-    suspend fun sendMessage(targetUid: String, feedId: String, message: String) {
+    suspend fun sendMessage(feedId: String, targetUid: String, message: String) {
         val feedMessage = messageRef.child(feedId)
         val newMessage = feedMessage.push()
         val messageMap = hashMapOf(
@@ -130,48 +138,140 @@ class ChatRemote @Inject constructor(
         }
     }
 
-    suspend fun receiveMessage(feedId: String): Result<ChatModel> {
-        var result: Result<ChatModel> = Result.Loading
-        messageRef.child(feedId).addChildEventListener(object : ChildEventListener {
-            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                val message = snapshot.child("message").value.toString()
-                val receiver = snapshot.child("receiver").value.toString()
-                val sender = snapshot.child("sender").value.toString()
-                val timestamp = snapshot.child("timestamp").value as Timestamp
-                val job = SupervisorJob()
-                val scope = CoroutineScope(Dispatchers.IO + job)
-                if (snapshot.childrenCount == 1L) {
-                    scope.launch {
-                        createMembers(receiver, sender)
-                        createChats(chatRef, ChatListModel(feedFrom = feedId, lastMessage = message, whenLast = timestamp), receiver, sender)
+    suspend fun initMessage(feedId: String): List<Result<ChatModel>> {
+        val list: ArrayList<Result<ChatModel>> = arrayListOf()
+        return suspendCancellableCoroutine<List<Result<ChatModel>>> { continuation ->
+            messageRef.child(feedId).orderByChild("timestamp")
+                .addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        for(messageSnapshot in snapshot.children) {
+                            val message = messageSnapshot.child("message").value.toString()
+                            val receiver = messageSnapshot.child("receiver").value.toString()
+                            val sender = messageSnapshot.child("sender").value.toString()
+                            val timestamp = Timestamp(Date(messageSnapshot.child("timestamp").value as Long))
+                            list.add(Result.Success(ChatModel(
+                                    message = message,
+                                    receiver = receiver,
+                                    sender = sender,
+                                    timestamp = timestamp
+                                )))
+                        }
                     }
-                } else {
+
+                    override fun onCancelled(error: DatabaseError) {
+                        list.add(Result.Error(error.message))
+                    }
+                })
+            if(continuation.isActive) {
+                continuation.resume(list)
+            }
+        }
+    }
+
+
+    suspend fun receiveMessage(feedId: String): Result<ChatModel> {
+        var isResumed = false
+        val job = SupervisorJob()
+        val scope = CoroutineScope(Dispatchers.IO + job)
+        return suspendCancellableCoroutine<Result<ChatModel>> { continuation ->
+            messageRef.child(feedId).addChildEventListener(object : ChildEventListener {
+                override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                    if (isResumed) return
+                    val message = snapshot.child("message").value.toString()
+                    val receiver = snapshot.child("receiver").value.toString()
+                    val sender = snapshot.child("sender").value.toString()
+                    val timestamp = Timestamp(Date(snapshot.child("timestamp").value as Long))
+                    if (snapshot.childrenCount == 1L) {
+                        scope.launch {
+                            createMembers(receiver, sender)
+                            createChats(
+                                chatRef,
+                                ChatListModel(
+                                    feedFrom = feedId,
+                                    lastMessage = message,
+                                    whenLast = timestamp
+                                ),
+                                receiver,
+                                sender
+                            )
+                        }
+                    } else {
+                        scope.launch {
+                            setChats(
+                                chatRef,
+                                ChatListModel(
+                                    feedFrom = feedId,
+                                    lastMessage = message,
+                                    whenLast = timestamp
+                                )
+                            )
+                        }
+                    }
+                    continuation.resume(
+                        Result.Success(
+                            ChatModel(
+                                message = message,
+                                receiver = receiver,
+                                sender = sender,
+                                timestamp = timestamp
+                            )
+                        )
+                    )
+                    isResumed = true
+                }
+
+                override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                    if (isResumed) return
+                    val message = snapshot.child("message").value.toString()
+                    val receiver = snapshot.child("receiver").value.toString()
+                    val sender = snapshot.child("sender").value.toString()
+                    val timestamp = Timestamp(Date(snapshot.child("timestamp").value as Long))
                     scope.launch {
-                        setChats(chatRef, ChatListModel(feedFrom = feedId, lastMessage = message, whenLast = timestamp))
+                        setChats(
+                            chatRef,
+                            ChatListModel(
+                                feedFrom = feedId,
+                                lastMessage = message,
+                                whenLast = timestamp
+                            )
+                        )
+                    }
+                    continuation.resume(
+                        Result.Success(
+                            ChatModel(
+                                message = message,
+                                receiver = receiver,
+                                sender = sender,
+                                timestamp = timestamp
+                            )
+                        )
+                    )
+                    isResumed = true
+                }
+
+                override fun onChildRemoved(snapshot: DataSnapshot) {
+                    if (!isResumed) {
+                        continuation.resume(Result.Error("removed"))
+                        isResumed = true
                     }
                 }
-                result = Result.Success(ChatModel(message, receiver, sender, timestamp))
-            }
 
-            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-                TODO("Not yet implemented")
-            }
+                override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                    if (!isResumed) {
+                        continuation.resume(Result.Error("moved"))
+                        isResumed = true
+                    }
+                }
 
-            override fun onChildRemoved(snapshot: DataSnapshot) {
-                TODO("Not yet implemented")
-            }
+                override fun onCancelled(error: DatabaseError) {
+                    if (!isResumed) {
+                        continuation.resume(Result.Error(error.message))
+                        isResumed = true
+                    }
+                }
 
-            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-                TODO("Not yet implemented")
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                result = Result.Error(error.message)
-            }
-
-        })
-
-        return result
+            })
+        }
     }
 
     suspend fun createMembers(receiverUid: String, senderUid: String) {
@@ -179,7 +279,12 @@ class ChatRemote @Inject constructor(
         memberRef.child(senderUid).setValue(true)
     }
 
-    suspend fun createChats(chatRef: DatabaseReference, chatListModel: ChatListModel, receiverUid: String, senderUid: String) {
+    suspend fun createChats(
+        chatRef: DatabaseReference,
+        chatListModel: ChatListModel,
+        receiverUid: String,
+        senderUid: String
+    ) {
         chatRef.child(chatListModel.feedFrom.toString()).apply {
             child(receiverUid).setValue(true)
             child(senderUid).setValue(true)

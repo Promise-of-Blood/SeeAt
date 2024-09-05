@@ -113,5 +113,4 @@ object Utils {
         return Bitmap.createScaledBitmap(originalBitmap, 800, 800, true)
     }
 
-
 }
