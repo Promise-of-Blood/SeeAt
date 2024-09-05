@@ -1,6 +1,5 @@
 package com.pob.seeat.presentation.view.detail
 
-import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View

@@ -28,6 +28,9 @@ class UserInfoSourceImpl @Inject constructor(
 
     override suspend fun getUserInfo(uid: String): Flow<UserInfoData?> {
         return flow {
+            val likedFeedSnapshot =
+                firestore.collection("user").document(uid).collection("likedFeed").get().await()
+            val likedFeedList = likedFeedSnapshot.documents.map { it.id }
             val userRef = firestore.collection("user").document(uid)
             val feedCount = firestore.collection("feed").whereEqualTo("user", userRef).count()
                 .get(AggregateSource.SERVER).await().count // 작성 글 수
@@ -37,7 +40,11 @@ class UserInfoSourceImpl @Inject constructor(
             val myData = userRef.get().await() // 유저 정보
             emit(
                 myData.toObject<UserInfoData>()
-                    ?.copy(feedCount = feedCount, commentCount = commentCount)
+                    ?.copy(
+                        feedCount = feedCount,
+                        commentCount = commentCount,
+                        likedFeedList = likedFeedList
+                    )
             )
         }
     }
