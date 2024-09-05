@@ -6,11 +6,13 @@ import com.pob.seeat.data.remote.UserInfoSource
 import com.pob.seeat.data.remote.UserInfoSourceImpl
 import com.pob.seeat.data.repository.CommentRepositoryImpl
 import com.pob.seeat.data.repository.UserInfoRepositoryImpl
+import com.pob.seeat.domain.repository.AlarmRepository
 import com.pob.seeat.domain.repository.CommentRepository
 import com.pob.seeat.domain.repository.RestroomApiRepository
 import com.pob.seeat.domain.repository.SampleRepository
 import com.pob.seeat.domain.repository.UserHistoryRepository
 import com.pob.seeat.domain.repository.UserInfoRepository
+import com.pob.seeat.domain.usecase.AlarmUseCase
 import com.pob.seeat.domain.usecase.CommentUseCases
 import com.pob.seeat.domain.usecase.CreateCommentUseCases
 import com.pob.seeat.domain.usecase.CreateLikedFeed
@@ -165,3 +167,14 @@ abstract class CommentModule {
     }
 }
 
+@Module
+@InstallIn(ViewModelComponent::class)
+object AlarmUseCaseModule {
+    @Provides
+    fun provideAlarmUseCase(
+        userInfoRepository: UserInfoRepository,
+        alarmRepository: AlarmRepository
+    ): AlarmUseCase {
+        return AlarmUseCase(userInfoRepository, alarmRepository)
+    }
+}

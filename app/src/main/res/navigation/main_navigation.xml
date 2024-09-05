@@ -65,7 +65,15 @@
     <fragment
         android:id="@+id/alarm"
         android:name="com.pob.seeat.presentation.view.alarm.AlarmFragment"
-        tools:layout="@layout/fragment_alarm" />
+        tools:layout="@layout/fragment_alarm">
+        <action
+            android:id="@+id/action_alarm_to_detail"
+            app:destination="@id/navigation_detail">
+            <argument
+                android:name="feedIdArg"
+                app:argType="string" />
+        </action>
+    </fragment>
     <fragment
         android:id="@+id/terms_of_service"
         android:name="com.pob.seeat.presentation.view.mypage.TermsOfServiceFragment"
