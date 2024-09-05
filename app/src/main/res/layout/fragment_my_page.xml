@@ -45,6 +45,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
+                    android:textColor="@color/black"
                     android:textSize="28sp"
                     android:textStyle="bold"
                     app:layout_constraintStart_toEndOf="@id/iv_profile_image"
@@ -70,6 +71,7 @@
                     android:textColor="@color/gray"
                     android:textSize="14sp"
                     android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@id/tv_user_post"
                     app:layout_constraintStart_toEndOf="@id/tv_user_post"
                     app:layout_constraintTop_toTopOf="@id/tv_user_post"
                     tools:text="1" />
@@ -93,6 +95,7 @@
                     android:textColor="@color/gray"
                     android:textSize="14sp"
                     android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@id/tv_user_post"
                     app:layout_constraintStart_toEndOf="@id/tv_user_comment"
                     app:layout_constraintTop_toTopOf="@id/tv_user_post"
                     tools:text="5" />
