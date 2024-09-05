@@ -1,16 +1,25 @@
 package com.pob.seeat.presentation.view.detail
 
 import android.app.Activity
+import android.content.Context
+import android.content.Context.INPUT_METHOD_SERVICE
 import android.content.Intent
+import android.graphics.Rect
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet.Motion
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getSystemService
+import androidx.core.content.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -68,7 +77,6 @@ class DetailFragment : Fragment() {
 
     private lateinit var chattingResultLauncher: ActivityResultLauncher<Intent>
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         chattingResultLauncher =
@@ -92,6 +100,9 @@ class DetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         getFeed()
+//        initTagRecyclerView()
+
+        setupUI(view,binding.tvAddCommentButton)
         initCommentRecyclerView()
         Timber.i(args.feedIdArg)
         initCommentViewModel()
@@ -198,7 +209,11 @@ class DetailFragment : Fragment() {
                 val comment = binding.etAddComment.text.toString()
                 Log.d("댓글달기", "etAddComment.text : ${etAddComment.text.toString()}")
                 sendCommentToServer(comment)
+                hideKeyboard()
             }
+
+
+
 
             tvChatButton.setOnClickListener {
                 val intent = Intent(requireContext(), ChattingActivity::class.java)
@@ -381,6 +396,35 @@ class DetailFragment : Fragment() {
 
 
     }
+
+    private fun hideKeyboard() {
+        val inputMethodManager = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        val currentFocusView = requireActivity().currentFocus
+        currentFocusView?.let {
+            inputMethodManager.hideSoftInputFromWindow(it.windowToken, 0)
+        }
+    }
+
+
+    private fun setupUI(view: View,vararg exView:View) {
+        // ViewGroup인 경우 자식들에게도 적용
+        if (view !is EditText && !exView.contains(view)) {
+            view.setOnTouchListener { _, _ ->
+                hideKeyboard()
+                view.clearFocus()
+                false
+            }
+        }
+
+        // ViewGroup일 경우 자식들에게도 setupUI 적용
+        if (view is ViewGroup) {
+            for (i in 0 until view.childCount) {
+                val innerView = view.getChildAt(i)
+                setupUI(innerView, *exView)
+            }
+        }
+    }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

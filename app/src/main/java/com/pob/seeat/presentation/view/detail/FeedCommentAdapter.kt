@@ -50,7 +50,6 @@ class FeedCommentAdapter(private val onClick: (CommentModel) -> Unit) :
             val feedId = item.feedId
 
             isMyComment(clCommentLayout, userId)
-//            isOwnerComment(tvCommentFeedOner,userId,feedId)
             isOwnerComment(tvCommentFeedOner, userId, feedId)
 
             clCommentLayout.setOnClickListener {

@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -45,10 +44,13 @@ class MyPageFragment : Fragment() {
             if(data != null){
                 val updatedNickname = data.getStringExtra("updatedNickname")
                 val updatedIntroduce = data.getStringExtra("updatedIntroduce")
-                val updatedProfileUrl = data.getStringExtra("updatedProfileUrl")
 
-                if (updatedNickname != null && updatedIntroduce != null && updatedProfileUrl != null){
-                    userViewModel.getUserInfo(getUserUid()!!)
+                if (updatedNickname != null && updatedIntroduce != null){
+
+                    binding.tvUserName.text = updatedNickname
+                    binding.tvUserIntroduce.text = updatedIntroduce
+
+                    userViewModel.getUserInfo(uid!!)
                 }else{
                     Log.e("MyPageFragment", "업데이트된 데이터가 없습니다.")
                 }
@@ -140,7 +142,7 @@ class MyPageFragment : Fragment() {
 
     private fun observeUserInfo() {
         viewLifecycleOwner.lifecycleScope.launch {
-            userViewModel.userInfo.collect() { userInfo ->
+            userViewModel.userInfo.collect { userInfo ->
                 if (userInfo != null) {
                     binding.apply {
                         val file =
@@ -148,7 +150,7 @@ class MyPageFragment : Fragment() {
 
                         file.downloadUrl.addOnSuccessListener { url ->
                             displayImage(url.toString())
-                        }.addOnFailureListener { exception ->
+                        }.addOnFailureListener { _ ->
                             Log.e("Image Load Error", "이미지 Url 가져오는데 실패")
                         }
                         tvUserName.text = userInfo.nickname
@@ -170,11 +172,9 @@ class MyPageFragment : Fragment() {
     }
 
     private fun refreshUserInfo() {
-        val uid = getUserUid()
-        if (uid != null) {
-            userViewModel.getUserInfo(uid)
-            observeUserInfo()
-        } else {
+        uid?.let {
+            userViewModel.getUserInfo(it) // 최신 데이터를 불러오기만 함
+        } ?: run {
             Log.e("userUid", "uid 조회 실패")
         }
     }
