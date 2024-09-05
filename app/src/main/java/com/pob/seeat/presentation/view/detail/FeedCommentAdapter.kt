@@ -1,6 +1,6 @@
 package com.pob.seeat.presentation.view.detail
 
-import android.graphics.Color
+
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -10,18 +10,12 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
-import androidx.transition.Visibility
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.bumptech.glide.request.RequestOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.storage.FirebaseStorage
-import com.kakao.vectormap.Const
 import com.pob.seeat.R
 import com.pob.seeat.databinding.ItemCommentBinding
-import com.pob.seeat.databinding.PostItemBinding
 import com.pob.seeat.domain.model.CommentModel
 import com.pob.seeat.presentation.view.common.ViewHolder
 import com.pob.seeat.utils.Utils.toKoreanDiffString
