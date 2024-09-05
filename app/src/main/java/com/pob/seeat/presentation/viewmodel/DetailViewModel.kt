@@ -64,8 +64,6 @@ class DetailViewModel @Inject constructor(
 
     fun isLikedToggle(feedUid: String) {
         viewModelScope.launch {
-            // Todo true면 숫자 -1하고 likedFeed에서 해당 게시글 id 삭제
-            // Todo false면 숫자 +1하고 likedFedd에 해당 게시글 id 문서 추가
             when (isLiked.value) {
                 true -> {
                     if (uid != null) {

@@ -42,6 +42,7 @@ import com.pob.seeat.utils.Utils.toKoreanDiffString
 import com.pob.seeat.utils.Utils.toLocalDateTime
 import com.pob.seeat.utils.Utils.toTagList
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -167,6 +168,7 @@ class DetailFragment : Fragment() {
             tvFeedContent.text = feed.content
             tvFeedDetailLikeCount.text = feed.like.toString()
             tvCommentCount.text = feed.commentsCount.toString()
+
             // Todo 나의 위치 가져오기
             val myLatitude = 37.570201
             val myLongitude = 126.976879
@@ -175,9 +177,14 @@ class DetailFragment : Fragment() {
                 val distance = calculateDistance(geoPoint, it)
                 tvMyDistance.text = formatDistanceToString(distance)
             }
+
+            setFeedLikeButton(clLikeBtn)
+
             clLikeBtn.setOnClickListener {
                 detailViewModel.isLikedToggle(args.feedIdArg)
+                setLikeCount()
             }
+
 
             clBookmarkBtn.setOnClickListener {
                 // Todo 북마크 누를 때
@@ -199,7 +206,6 @@ class DetailFragment : Fragment() {
                 chattingResultLauncher.launch(intent)
             }
 
-            setFeedLikeButton(clLikeBtn)
 
             initTag(feed.tags)
 
@@ -209,6 +215,24 @@ class DetailFragment : Fragment() {
                 detailImageIndicator.visibility = View.GONE
             } else {
                 initImageViewPager(feed.contentImage)
+            }
+        }
+    }
+
+    private fun setLikeCount() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            detailViewModel.isLiked.collect { isLiked ->
+                val currentLikeCount =
+                    binding.tvFeedDetailLikeCount.text.toString().toIntOrNull() ?: 0
+
+                val newCount = if (isLiked) {
+                    currentLikeCount + 1
+                } else {
+                    currentLikeCount - 1
+                }
+
+                binding.tvFeedDetailLikeCount.text = newCount.toString()
+
             }
         }
     }
