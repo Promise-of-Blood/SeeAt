@@ -1,6 +1,7 @@
 package com.pob.seeat.presentation.view.mypage.history
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -77,6 +78,7 @@ class HistoryAdapter(private val onClick: (HistoryListItem) -> Unit = {}) :
                     .load(feed.image)
                     .apply(RequestOptions.bitmapTransform(RoundedCorners(10)))
                     .into(image)
+                image.visibility = if (feed.image.isBlank()) View.GONE else View.VISIBLE
             }
             itemView.setOnClickListener { onClick(item) }
         }

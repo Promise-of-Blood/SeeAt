@@ -39,7 +39,7 @@ fun List<FeedModel>.toHistoryListFeedItemList(): List<HistoryListItem> {
             commentCount = it.commentsCount,
             likeCount = it.like,
             time = it.date?.toLocalDateTime()?.toKoreanDiffString() ?: "",
-            image = "https://picsum.photos/200",
+            image = it.contentImage.firstOrNull() ?: "",
         )
     }
 }
