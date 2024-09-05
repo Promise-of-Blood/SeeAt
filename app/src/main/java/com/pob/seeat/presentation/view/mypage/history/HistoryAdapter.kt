@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.ListAdapter
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
+import com.pob.seeat.R
 import com.pob.seeat.databinding.ItemCommentHistoryBinding
 import com.pob.seeat.databinding.ItemFeedHistoryBinding
 import com.pob.seeat.presentation.common.ViewHolder
@@ -18,12 +19,11 @@ import com.pob.seeat.utils.Utils.toFormatShortenedString
 class HistoryAdapter(private val onClick: (HistoryListItem) -> Unit = {}) :
     ListAdapter<HistoryListItem, ViewHolder<HistoryListItem>>(object :
         DiffUtil.ItemCallback<HistoryListItem>() {
-        override fun areItemsTheSame(oldItem: HistoryListItem, newItem: HistoryListItem) =
-            when {
-                oldItem is HistoryListItem.FeedItem && newItem is HistoryListItem.FeedItem -> oldItem.feedId == newItem.feedId
-                oldItem is HistoryListItem.CommentItem && newItem is HistoryListItem.CommentItem -> oldItem.commentId == newItem.commentId
-                else -> false
-            }
+        override fun areItemsTheSame(oldItem: HistoryListItem, newItem: HistoryListItem) = when {
+            oldItem is HistoryListItem.FeedItem && newItem is HistoryListItem.FeedItem -> oldItem.feedId == newItem.feedId
+            oldItem is HistoryListItem.CommentItem && newItem is HistoryListItem.CommentItem -> oldItem.commentId == newItem.commentId
+            else -> false
+        }
 
         override fun areContentsTheSame(oldItem: HistoryListItem, newItem: HistoryListItem) =
             oldItem == newItem
@@ -64,6 +64,7 @@ class HistoryAdapter(private val onClick: (HistoryListItem) -> Unit = {}) :
         private val content = binding.tvFeedContent
         private val commentCount = binding.tvFeedCommentCount
         private val likeCount = binding.tvFeedLikeCount
+        private val likeIcon = binding.ivFeedLikeIcon
         private val time = binding.tvFeedTime
         private val image = binding.ivFeedImage
 
@@ -74,11 +75,12 @@ class HistoryAdapter(private val onClick: (HistoryListItem) -> Unit = {}) :
                 commentCount.text = feed.commentCount.toFormatShortenedString()
                 likeCount.text = feed.likeCount.toFormatShortenedString()
                 time.text = feed.time
-                Glide.with(itemView.context)
-                    .load(feed.image)
-                    .apply(RequestOptions.bitmapTransform(RoundedCorners(10)))
-                    .into(image)
                 image.visibility = if (feed.image.isBlank()) View.GONE else View.VISIBLE
+                likeIcon.setImageResource(
+                    if (feed.viewType == HistoryEnum.LIKED_FEED) R.drawable.ic_thumb_up_filled else R.drawable.ic_thumb_up_off_alt_24
+                )
+                Glide.with(itemView.context).load(feed.image)
+                    .apply(RequestOptions.bitmapTransform(RoundedCorners(10))).into(image)
             }
             itemView.setOnClickListener { onClick(item) }
         }
