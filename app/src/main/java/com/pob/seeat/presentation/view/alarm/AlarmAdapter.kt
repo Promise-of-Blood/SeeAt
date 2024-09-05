@@ -23,38 +23,39 @@ class AlarmAdapter(private val onClick: (AlarmModel) -> Unit) :
             oldItem == newItem
     }) {
     class Holder(binding: ItemAlarmBinding) : ViewHolder<AlarmModel>(binding.root) {
+        private val container = binding.clAlarmContainer
         private val title = binding.tvAlarmTitle
         private val description = binding.tvAlarmDescription
         private val content = binding.tvAlarmContent
         private val time = binding.tvAlarmTime
         private val image = binding.ivAlarmImage
 
-        override fun bind(item: AlarmModel, onClick: (AlarmModel) -> Unit) {
+        override fun bind(
+            item: AlarmModel, onClick: (AlarmModel) -> Unit
+        ) {
             content.visibility = View.VISIBLE
             description.text = itemView.context.getString(R.string.alarm_description_comment)
             title.text = itemView.context.getString(R.string.alarm_post_title, item.feedTitle)
             content.text = item.content
             time.text = item.createdAt?.toKoreanDiffString() ?: ""
-            Glide.with(image.context)
-                .load(item.feedImage)
-                .apply(RequestOptions.bitmapTransform(RoundedCorners(10)))
-                .into(image)
-            itemView.apply {
+            container.apply {
                 val bgColor =
-                    itemView.context.getColor(if (item.isRead) R.color.white else R.color.tertiary)
+                    itemView.context.getColor(if (item.isRead) R.color.white else R.color.light_tertiary)
                 setBackgroundColor(bgColor)
-                background.alpha = if (item.isRead) 255 else 100
                 setOnClickListener { onClick(item) }
             }
+            if (item.feedImage.isEmpty()) image.visibility = View.GONE
+            else Glide.with(image.context).load(item.feedImage)
+                .apply(RequestOptions.bitmapTransform(RoundedCorners(10))).into(image)
         }
+
+        fun getView() = container
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder<AlarmModel> {
         return Holder(
             ItemAlarmBinding.inflate(
-                LayoutInflater.from(parent.context),
-                parent,
-                false
+                LayoutInflater.from(parent.context), parent, false
             )
         )
     }
@@ -62,4 +63,6 @@ class AlarmAdapter(private val onClick: (AlarmModel) -> Unit) :
     override fun onBindViewHolder(holder: ViewHolder<AlarmModel>, position: Int) {
         holder.bind(getItem(position), onClick)
     }
+
+    fun getAlarmId(position: Int) = getItem(position).alarmId
 }

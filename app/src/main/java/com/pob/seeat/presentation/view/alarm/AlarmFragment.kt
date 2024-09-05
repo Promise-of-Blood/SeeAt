@@ -1,5 +1,6 @@
 package com.pob.seeat.presentation.view.alarm
 
+import android.graphics.Canvas
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,7 +12,9 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.pob.seeat.MainActivity
 import com.pob.seeat.R
 import com.pob.seeat.data.model.Result
@@ -22,16 +25,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [AlarmFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 @AndroidEntryPoint
 class AlarmFragment : Fragment() {
     private var _binding: FragmentAlarmBinding? = null
@@ -39,18 +32,6 @@ class AlarmFragment : Fragment() {
 
     private val alarmAdapter by lazy { AlarmAdapter(::handleClickAlarm) }
     private val alarmViewModel by viewModels<AlarmViewModel>()
-
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -64,6 +45,7 @@ class AlarmFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initView()
         initViewModel()
+        handleSwipeAlarm()
         alarmViewModel.getAlarmList()
     }
 
@@ -116,23 +98,64 @@ class AlarmFragment : Fragment() {
         alarmViewModel.readAlarm(alarm.alarmId)
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment AlarmFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            AlarmFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+    private fun handleSwipeAlarm() {
+        val itemTouchCallback = getItemTouchCallback()
+        ItemTouchHelper(itemTouchCallback).attachToRecyclerView(binding.rvAlarm)
+    }
+
+    private fun getItemTouchCallback() = object : ItemTouchHelper.SimpleCallback(
+        ItemTouchHelper.UP, ItemTouchHelper.LEFT
+    ) {
+        override fun onMove(
+            recyclerView: RecyclerView,
+            viewHolder: RecyclerView.ViewHolder,
+            target: RecyclerView.ViewHolder
+        ): Boolean {
+            return false
+        }
+
+        override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+            val alarmId = alarmAdapter.getAlarmId(viewHolder.layoutPosition)
+            alarmViewModel.deleteAlarm(alarmId)
+        }
+
+        override fun getSwipeThreshold(viewHolder: RecyclerView.ViewHolder): Float {
+            return 2.5f // 반 이상 스와이프 시 자동으로 아이템뷰 삭제
+        }
+
+        override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
+            val view = (viewHolder as AlarmAdapter.Holder).getView()
+            getDefaultUIUtil().clearView(view)
+        }
+
+        override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
+            val view = (viewHolder as? AlarmAdapter.Holder)?.getView()
+            viewHolder?.let {
+                getDefaultUIUtil().onSelected(view)
             }
+        }
+
+        override fun onChildDraw(
+            c: Canvas,
+            recyclerView: RecyclerView,
+            viewHolder: RecyclerView.ViewHolder,
+            dX: Float,
+            dY: Float,
+            actionState: Int,
+            isCurrentlyActive: Boolean
+        ) {
+            if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
+                val view = (viewHolder as AlarmAdapter.Holder).getView()
+                getDefaultUIUtil().onDraw(
+                    c,
+                    recyclerView,
+                    view,
+                    dX,
+                    dY,
+                    actionState,
+                    isCurrentlyActive
+                )
+            }
+        }
     }
 }
