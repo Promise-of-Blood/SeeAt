@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -16,14 +17,12 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.google.android.material.chip.Chip
-import com.google.firebase.Firebase
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -35,18 +34,14 @@ import com.pob.seeat.databinding.FragmentDetailBinding
 import com.pob.seeat.domain.model.CommentModel
 import com.pob.seeat.domain.model.FeedModel
 import com.pob.seeat.presentation.view.chat.ChattingActivity
-import com.pob.seeat.presentation.view.home.MarginItemDecoration
-import com.pob.seeat.presentation.view.home.TagAdapter
 import com.pob.seeat.presentation.viewmodel.CommentViewModel
 import com.pob.seeat.presentation.viewmodel.DetailViewModel
 import com.pob.seeat.utils.GoogleAuthUtil.getUserUid
 import com.pob.seeat.utils.Utils.px
-import com.pob.seeat.utils.Utils.tagList
 import com.pob.seeat.utils.Utils.toKoreanDiffString
 import com.pob.seeat.utils.Utils.toLocalDateTime
 import com.pob.seeat.utils.Utils.toTagList
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -72,7 +67,6 @@ class DetailFragment : Fragment() {
 
     private lateinit var chattingResultLauncher: ActivityResultLauncher<Intent>
 
-    val uid = getUserUid()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -103,31 +97,31 @@ class DetailFragment : Fragment() {
     }
 
     private fun initDetailViewmodel() {
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        val userUid = currentUser?.uid
-//        detailViewModel.getUserUid()?.let { userUid }
         detailViewModel.getFeedById(args.feedIdArg)
+
+        initFeedLiked()
+
+
+    }
+
+    private fun initFeedLiked() {
+        val uid = detailViewModel.uid
         if (uid != null) {
             detailViewModel.getUserInfo(uid)
         } else {
-            Log.e("userUid", "uid 조회 실패")
+            Timber.e("userUid", "uid 조회 실패")
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
             detailViewModel.userInfo.collect { userInfo ->
                 if (userInfo != null) {
                     Timber.i(userInfo.likedFeedList.toString())
-                    if (args.feedIdArg in userInfo.likedFeedList) {
-                        Timber.e("true")
-                    } else {
-                        Timber.e("false")
-                    }
+                    detailViewModel.setIsLiked(args.feedIdArg in userInfo.likedFeedList)
                 } else {
                     Timber.e("userInfo is null")
                 }
             }
         }
-
     }
 
     private fun initCommentRecyclerView() {
@@ -182,7 +176,7 @@ class DetailFragment : Fragment() {
                 tvMyDistance.text = formatDistanceToString(distance)
             }
             clLikeBtn.setOnClickListener {
-                // Todo 좋아요 누를때
+                detailViewModel.isLikedToggle(args.feedIdArg)
             }
 
             clBookmarkBtn.setOnClickListener {
@@ -205,6 +199,7 @@ class DetailFragment : Fragment() {
                 chattingResultLauncher.launch(intent)
             }
 
+            setFeedLikeButton(clLikeBtn)
 
             initTag(feed.tags)
 
@@ -214,6 +209,24 @@ class DetailFragment : Fragment() {
                 detailImageIndicator.visibility = View.GONE
             } else {
                 initImageViewPager(feed.contentImage)
+            }
+        }
+    }
+
+    private fun setFeedLikeButton(clLikeBtn: ConstraintLayout) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            detailViewModel.isLiked.collect { isLiked ->
+                when (isLiked) {
+                    true -> {
+                        clLikeBtn.background =
+                            ContextCompat.getDrawable(requireContext(), R.drawable.round_r4_primary)
+                    }
+
+                    false -> {
+                        clLikeBtn.background =
+                            ContextCompat.getDrawable(requireContext(), R.drawable.round_r4_border)
+                    }
+                }
             }
         }
     }

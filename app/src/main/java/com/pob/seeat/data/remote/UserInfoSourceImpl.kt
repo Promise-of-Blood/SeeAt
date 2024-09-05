@@ -9,6 +9,7 @@ import com.pob.seeat.data.model.UserInfoData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
+import timber.log.Timber
 import javax.inject.Inject
 
 class UserInfoSourceImpl @Inject constructor(
@@ -65,6 +66,20 @@ class UserInfoSourceImpl @Inject constructor(
         return flow {
             val myData = firestore.collection("user").document(email).get().await()
             emit(myData.toObject<UserInfoData>())
+        }
+    }
+
+    override suspend fun createLikedFeed(userUid: String, feedUid: String) {
+        try {
+            firestore.collection("user")
+                .document(userUid)
+                .collection("likedFeed")
+                .document(feedUid)
+                .set(mapOf("feed" to "/feed/$feedUid"))
+                .await()
+            Timber.tag("likedFeed 생성").i("성공)")
+        } catch (e: Exception) {
+            Timber.tag("likedFeed 생성").i("실패 ( 에러: $e)")
         }
     }
 }

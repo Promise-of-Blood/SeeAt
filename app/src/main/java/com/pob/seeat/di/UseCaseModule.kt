@@ -13,6 +13,7 @@ import com.pob.seeat.domain.repository.UserHistoryRepository
 import com.pob.seeat.domain.repository.UserInfoRepository
 import com.pob.seeat.domain.usecase.CommentUseCases
 import com.pob.seeat.domain.usecase.CreateCommentUseCases
+import com.pob.seeat.domain.usecase.CreateLikedFeed
 import com.pob.seeat.domain.usecase.CreateUserInfoUseCase
 import com.pob.seeat.domain.usecase.DeleteCommentUseCases
 import com.pob.seeat.domain.usecase.DeleteUserInfoUseCase
@@ -73,7 +74,8 @@ object UserUseCaseModule {
             updateUserInfoUseCase = UpdateUserInfoUseCase(repository),
             deleteUserInfoUseCase = DeleteUserInfoUseCase(repository),
             getUserInfoUseCase = GetUserInfoUseCase(repository),
-            getUserInfoByEmailUseCase = GetUserInfoByEmailUseCase(repository)
+            getUserInfoByEmailUseCase = GetUserInfoByEmailUseCase(repository),
+            createLikedFeed = CreateLikedFeed(repository)
         )
     }
 }

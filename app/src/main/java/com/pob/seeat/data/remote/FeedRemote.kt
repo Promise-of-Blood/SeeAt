@@ -44,7 +44,7 @@ class FeedRemote @Inject constructor(
         }
     }
 
-    suspend fun getFeedById(postId: String): FeedModel? {
+    override suspend fun getFeedById(postId: String): FeedModel? {
         val documentSnapshot = firestore.collection("feed")
             .document(postId)
             .get()

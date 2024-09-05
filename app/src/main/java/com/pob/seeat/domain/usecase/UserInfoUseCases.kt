@@ -11,7 +11,8 @@ data class UserInfoUseCases(
     val updateUserInfoUseCase : UpdateUserInfoUseCase,
     val deleteUserInfoUseCase : DeleteUserInfoUseCase,
     val getUserInfoUseCase : GetUserInfoUseCase,
-    val getUserInfoByEmailUseCase : GetUserInfoByEmailUseCase
+    val getUserInfoByEmailUseCase : GetUserInfoByEmailUseCase,
+    val createLikedFeed: CreateLikedFeed
 )
 
 class CreateUserInfoUseCase(private val repository: UserInfoRepository){
@@ -41,5 +42,11 @@ class GetUserInfoUseCase(private val repository: UserInfoRepository){
 class GetUserInfoByEmailUseCase(private val repository : UserInfoRepository){
     suspend fun execute(email:String):UserInfoModel?{
         return repository.getUserInfoByEmail(email).firstOrNull()
+    }
+}
+
+class CreateLikedFeed(private val repository: UserInfoRepository){
+    suspend fun execute(uid: String, feedUid: String){
+        repository.createLikedFeed(uid, feedUid)
     }
 }

@@ -35,6 +35,9 @@ class UserInfoRepositoryImpl @Inject constructor(private val source: UserInfoSou
 
     override suspend fun getUserInfoByEmail(email: String): Flow<UserInfoModel?> {
         return source.getUserInfoByEmail(email).map { it?.toUserInfoModel() }
+    }
 
+    override suspend fun createLikedFeed(uid: String, feedUid: String) {
+        return source.createLikedFeed(uid, feedUid)
     }
 }
