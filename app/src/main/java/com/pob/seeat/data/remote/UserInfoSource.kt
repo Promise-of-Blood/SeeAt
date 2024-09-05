@@ -12,4 +12,5 @@ interface UserInfoSource {
     suspend fun getCurrentUserUid(): Flow<String>
     suspend fun getUserInfoByEmail(email: String): Flow<UserInfoData?>
     suspend fun createLikedFeed(uid: String, feedUid: String)
+    suspend fun removeLikedFeed(uid: String, feedUid: String)
 }

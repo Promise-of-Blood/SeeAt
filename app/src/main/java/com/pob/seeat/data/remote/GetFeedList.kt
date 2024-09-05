@@ -8,6 +8,4 @@ interface GetFeedList {
         limit: Long? = null,
         startAfter: String? = null
     ): List<FeedModel>
-
-    suspend fun getFeedById(postId: String): FeedModel?
 }

@@ -69,13 +69,21 @@ class DetailViewModel @Inject constructor(
             when (isLiked.value) {
                 true -> {
                     if (uid != null) {
-                        userInfoUseCases.createLikedFeed.execute(uid, feedUid)
+                        userInfoUseCases.removeLikedFeed.execute(uid, feedUid)
+                        feedRepository.setLikeMinus(feedUid)
                     } else {
                         Timber.e("uid가 null입니다.")
                     }
                 }
 
-                false -> {}
+                false -> {
+                    if (uid != null) {
+                        userInfoUseCases.createLikedFeed.execute(uid, feedUid)
+                        feedRepository.setLikePlus(feedUid)
+                    } else {
+                        Timber.e("uid가 null입니다.")
+                    }
+                }
             }
             _isLiked.value = !isLiked.value
         }

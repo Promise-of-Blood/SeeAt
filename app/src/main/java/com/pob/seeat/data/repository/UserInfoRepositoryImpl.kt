@@ -40,4 +40,8 @@ class UserInfoRepositoryImpl @Inject constructor(private val source: UserInfoSou
     override suspend fun createLikedFeed(uid: String, feedUid: String) {
         return source.createLikedFeed(uid, feedUid)
     }
+
+    override suspend fun removeLikedFeed(uid: String, feedUid: String) {
+        return source.removeLikedFeed(uid, feedUid)
+    }
 }

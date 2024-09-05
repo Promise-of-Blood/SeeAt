@@ -23,6 +23,7 @@ import com.pob.seeat.domain.usecase.GetSampleImageListUseCase
 import com.pob.seeat.domain.usecase.GetSampleVideoListUseCase
 import com.pob.seeat.domain.usecase.GetUserInfoByEmailUseCase
 import com.pob.seeat.domain.usecase.GetUserInfoUseCase
+import com.pob.seeat.domain.usecase.RemoveLikedFeed
 import com.pob.seeat.domain.usecase.RestroomApiUseCase
 import com.pob.seeat.domain.usecase.UpdateUserInfoUseCase
 import com.pob.seeat.domain.usecase.UserCommentHistoryUseCase
@@ -75,7 +76,8 @@ object UserUseCaseModule {
             deleteUserInfoUseCase = DeleteUserInfoUseCase(repository),
             getUserInfoUseCase = GetUserInfoUseCase(repository),
             getUserInfoByEmailUseCase = GetUserInfoByEmailUseCase(repository),
-            createLikedFeed = CreateLikedFeed(repository)
+            createLikedFeed = CreateLikedFeed(repository),
+            removeLikedFeed = RemoveLikedFeed(repository)
         )
     }
 }

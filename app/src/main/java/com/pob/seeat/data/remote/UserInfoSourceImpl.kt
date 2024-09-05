@@ -82,4 +82,20 @@ class UserInfoSourceImpl @Inject constructor(
             Timber.tag("likedFeed 생성").i("실패 ( 에러: $e)")
         }
     }
+
+    override suspend fun removeLikedFeed(userUid: String, feedUid: String) {
+        try {
+            firestore.collection("user")
+                .document(userUid)
+                .collection("likedFeed")
+                .document(feedUid)
+                .delete()
+                .await()
+
+            Timber.tag("likedFeed 제거").i("제거 성공 $feedUid")
+
+        } catch (e: Exception) {
+            Timber.tag("likedFeed 제거").i("실패 ( 에러: $e)")
+        }
+    }
 }
