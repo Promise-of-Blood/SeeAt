@@ -193,8 +193,8 @@ class DetailFragment : Fragment() {
 
             clLikeBtn.setOnClickListener {
                 detailViewModel.isLikedToggle(args.feedIdArg)
-                setLikeCount()
             }
+            setLikeCount()
 
 
             clBookmarkBtn.setOnClickListener {
