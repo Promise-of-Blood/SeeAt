@@ -104,7 +104,7 @@ class DetailFragment : Fragment() {
         getFeed()
 //        initTagRecyclerView()
 
-        setupUI(view)
+        setupUI(view,binding.tvAddCommentButton)
         initCommentRecyclerView()
         Timber.i(args.feedIdArg)
         initViewModel()
@@ -178,6 +178,7 @@ class DetailFragment : Fragment() {
                 val comment = binding.etAddComment.text.toString()
                 Log.d("댓글달기", "etAddComment.text : ${etAddComment.text.toString()}")
                 sendCommentToServer(comment)
+                hideKeyboard()
             }
 
 
@@ -338,9 +339,9 @@ class DetailFragment : Fragment() {
     }
 
 
-    private fun setupUI(view: View) {
+    private fun setupUI(view: View,vararg exView:View) {
         // ViewGroup인 경우 자식들에게도 적용
-        if (view !is EditText) {
+        if (view !is EditText && !exView.contains(view)) {
             view.setOnTouchListener { _, _ ->
                 hideKeyboard()
                 view.clearFocus()
@@ -352,7 +353,7 @@ class DetailFragment : Fragment() {
         if (view is ViewGroup) {
             for (i in 0 until view.childCount) {
                 val innerView = view.getChildAt(i)
-                setupUI(innerView)
+                setupUI(innerView, *exView)
             }
         }
     }
