@@ -91,4 +91,8 @@
     <string name="send">전송</string>
     <string name="detail">디테일</string>
 
+    <!-- new feed -->
+    <string name="navigation_select_locate">마커 선택 화면</string>
+    <string name="navigation_new_feed">피드 추가 화면</string>
+
 </resources>
