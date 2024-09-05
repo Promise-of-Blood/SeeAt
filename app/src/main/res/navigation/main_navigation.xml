@@ -9,7 +9,11 @@
         android:id="@+id/navigation_new_feed"
         android:name="com.pob.seeat.presentation.view.feed.NewFeedFragment"
         android:label="@string/navigation_add_marker"
-        tools:layout="@layout/fragment_new_feed" />
+        tools:layout="@layout/fragment_new_feed">
+        <action
+            android:id="@+id/action_new_feed_to_select_locate"
+            app:destination="@id/navigation_select_locate" />
+    </fragment>
     <fragment
         android:id="@+id/navigation_message"
         android:name="com.pob.seeat.presentation.view.chat.ChatListFragment"
@@ -26,6 +30,10 @@
             app:destination="@id/navigation_new_feed" />
 
         <action
+            android:id="@+id/action_new_feed_to_select_locate"
+            app:destination="@id/navigation_select_locate" />
+
+        <action
             android:id="@+id/action_navigation_home_to_navigation_detail"
             app:destination="@id/navigation_detail">
             <argument
@@ -33,6 +41,12 @@
                 app:argType="string" />
         </action>
     </fragment>
+
+    <fragment
+        android:id="@+id/navigation_select_locate"
+        android:name="com.pob.seeat.presentation.view.feed.SelectLocateFragment"
+        android:label="@string/navigation_home"
+        tools:layout="@layout/fragment_select_locate" />
     <fragment
         android:id="@+id/navigation_bookmark"
         android:name="com.pob.seeat.presentation.view.home.HomeFragment"
@@ -47,6 +61,11 @@
             android:id="@+id/action_my_page_to_terms_of_service"
             app:destination="@id/navigation_terms_of_service" />
     </fragment>
+    <fragment
+        android:id="@+id/navigation_select_locate"
+        android:name="com.pob.seeat.presentation.view.feed.SelectLocateFragment"
+        android:label="@string/navigation_select_locate"
+        tools:layout="@layout/fragment_select_locate" />
     <fragment
         android:id="@+id/navigation_terms_of_service"
         android:name="com.pob.seeat.presentation.view.mypage.TermsOfServiceFragment"
