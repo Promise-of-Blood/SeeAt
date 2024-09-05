@@ -31,6 +31,7 @@ class SignUpActivity : AppCompatActivity() {
         initView()
     }
 
+
     private fun initView() = with(signUpBinding){
 
         val uid = intent.getStringExtra("uid") ?: ""

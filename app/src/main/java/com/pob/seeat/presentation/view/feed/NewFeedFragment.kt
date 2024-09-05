@@ -35,7 +35,7 @@ import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
 import com.pob.seeat.MainActivity
 import com.pob.seeat.data.repository.NaverMapWrapper
-import com.pob.seeat.presentation.view.home.Tag
+import com.pob.seeat.domain.model.TagModel
 import com.pob.seeat.presentation.viewmodel.NewFeedViewModel
 import com.pob.seeat.utils.Utils.px
 import kotlinx.coroutines.CoroutineScope
@@ -58,7 +58,7 @@ class NewFeedFragment : Fragment() {
     @Inject
     lateinit var naverMapWrapper: NaverMapWrapper
 
-    private var selectedTagList = emptyList<Tag>()
+    private var selectedTagList = emptyList<TagModel>()
     private var selectLocation: LatLng? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {

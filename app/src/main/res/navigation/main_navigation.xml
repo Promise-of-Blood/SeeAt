@@ -24,15 +24,9 @@
         android:name="com.pob.seeat.presentation.view.home.HomeFragment"
         android:label="@string/navigation_home"
         tools:layout="@layout/fragment_home">
-
         <action
             android:id="@+id/action_home_to_new_feed"
             app:destination="@id/navigation_new_feed" />
-
-        <action
-            android:id="@+id/action_new_feed_to_select_locate"
-            app:destination="@id/navigation_select_locate" />
-
         <action
             android:id="@+id/action_navigation_home_to_navigation_detail"
             app:destination="@id/navigation_detail">
@@ -40,6 +34,9 @@
                 android:name="feedIdArg"
                 app:argType="string" />
         </action>
+        <action
+            android:id="@+id/action_home_to_alarm"
+            app:destination="@id/alarm" />
     </fragment>
 
     <fragment
@@ -59,7 +56,21 @@
         tools:layout="@layout/fragment_my_page">
         <action
             android:id="@+id/action_my_page_to_terms_of_service"
-            app:destination="@id/navigation_terms_of_service" />
+            app:destination="@id/terms_of_service" />
+        <action
+            android:id="@+id/action_user_history_to_user_history_list"
+            app:destination="@id/user_history_list">
+            <argument
+                android:name="position"
+                app:argType="integer" />
+        </action>
+        <action
+            android:id="@+id/action_user_history_to_feed_detail"
+            app:destination="@id/navigation_detail">
+            <argument
+                android:name="feedIdArg"
+                app:argType="string" />
+        </action>
     </fragment>
     <fragment
         android:id="@+id/navigation_select_locate"
@@ -67,10 +78,47 @@
         android:label="@string/navigation_select_locate"
         tools:layout="@layout/fragment_select_locate" />
     <fragment
-        android:id="@+id/navigation_terms_of_service"
+        android:id="@+id/alarm"
+        android:name="com.pob.seeat.presentation.view.alarm.AlarmFragment"
+        tools:layout="@layout/fragment_alarm" />
+    <fragment
+        android:id="@+id/terms_of_service"
         android:name="com.pob.seeat.presentation.view.mypage.TermsOfServiceFragment"
         tools:layout="@layout/fragment_terms_of_service" />
-
+    <fragment
+        android:id="@+id/user_history"
+        android:name="com.pob.seeat.presentation.view.mypage.history.HistoryFragment"
+        tools:layout="@layout/fragment_history">
+        <action
+            android:id="@+id/action_user_history_to_user_history_list"
+            app:destination="@id/user_history_list">
+            <argument
+                android:name="position"
+                app:argType="integer" />
+        </action>
+        <action
+            android:id="@+id/action_user_history_to_feed_detail"
+            app:destination="@id/navigation_detail">
+            <argument
+                android:name="feedIdArg"
+                app:argType="string" />
+        </action>
+    </fragment>
+    <fragment
+        android:id="@+id/user_history_list"
+        android:name="com.pob.seeat.presentation.view.mypage.history.HistoryListFragment"
+        tools:layout="@layout/fragment_history_list">
+        <argument
+            android:name="position"
+            app:argType="integer" />
+        <action
+            android:id="@+id/action_user_history_list_to_feed_detail"
+            app:destination="@id/navigation_detail">
+            <argument
+                android:name="feedIdArg"
+                app:argType="string" />
+        </action>
+    </fragment>
     <fragment
         android:id="@+id/navigation_detail"
         android:name="com.pob.seeat.presentation.view.detail.DetailFragment"

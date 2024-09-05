@@ -9,7 +9,7 @@ plugins {
     alias(libs.plugins.ksp)
     id("com.google.dagger.hilt.android")
     id("com.google.android.gms.oss-licenses-plugin")
-    id("androidx.navigation.safeargs")
+    id("androidx.navigation.safeargs.kotlin")
 }
 
 val properties = Properties().apply {
@@ -134,4 +134,7 @@ dependencies {
 
     //image implement
     implementation(libs.android.image.cropper)
+
+    // ViewPager2 Indicator
+    implementation(libs.circleindicator)
 }

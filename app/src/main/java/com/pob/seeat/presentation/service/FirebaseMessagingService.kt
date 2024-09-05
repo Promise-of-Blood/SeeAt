@@ -1,6 +1,5 @@
 package com.pob.seeat.presentation.service
 
-import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -8,19 +7,11 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
 import android.media.RingtoneManager
-import android.net.Uri
 import android.os.Build
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationCompat.BigPictureStyle
 import androidx.core.app.NotificationCompat.PRIORITY_HIGH
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.target.SimpleTarget
-import com.bumptech.glide.request.transition.Transition
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.pob.seeat.MainActivity
@@ -30,7 +21,7 @@ import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.URL
 
-class TestFirebaseMessagingService : FirebaseMessagingService() {
+class FirebaseMessagingService : FirebaseMessagingService() {
 
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
@@ -54,6 +45,7 @@ class TestFirebaseMessagingService : FirebaseMessagingService() {
 
     override fun onNewToken(token: String) {
         super.onNewToken(token)
+//        NotificationTokenUtils.setNotificationToken(token)
         Timber.tag("onNewToken").d("Refreshed token: " + token)
     }
 
@@ -75,19 +67,19 @@ class TestFirebaseMessagingService : FirebaseMessagingService() {
         // 알림 소리
         val soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
 
-        val bitmapFromUrl = getBitmapFromURL(remoteMessage.notification?.imageUrl.toString())
-        val bigPictureStyle : BigPictureStyle =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
-                BigPictureStyle().bigPicture(bitmapFromUrl).showBigPictureWhenCollapsed(true)
-            else
-                BigPictureStyle().bigPicture(bitmapFromUrl)
+//        val bitmapFromUrl = getBitmapFromURL(remoteMessage.notification?.imageUrl.toString())
+//        val bigPictureStyle : BigPictureStyle =
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+//                BigPictureStyle().bigPicture(bitmapFromUrl).showBigPictureWhenCollapsed(true)
+//            else
+//                BigPictureStyle().bigPicture(bitmapFromUrl)
 
         // 알림에 대한 UI 정보와 작업을 지정한다.
         val notificationBuilder = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(R.mipmap.ic_launcher) // 아이콘 설정
             .setContentTitle(remoteMessage.notification?.title.toString() ?: "(알 수 없음)") // 제목
             .setContentText(remoteMessage.notification?.body.toString() ?: "(알 수 없음)") // 메시지 내용
-            .setStyle(bigPictureStyle) // 큰 사진을 위한 스타일 적용
+//            .setStyle(bigPictureStyle) // 큰 사진을 위한 스타일 적용
             .setAutoCancel(true)
             .setSound(soundUri) // 알림 소리
             .setPriority(PRIORITY_HIGH)

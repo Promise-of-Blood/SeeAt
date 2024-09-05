@@ -12,7 +12,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.pob.seeat.R
-import com.pob.seeat.presentation.view.home.Tag
+import com.pob.seeat.domain.model.TagModel
 import com.pob.seeat.presentation.viewmodel.NewFeedViewModel
 import com.pob.seeat.utils.Utils.px
 import com.pob.seeat.utils.Utils.tagList
@@ -27,7 +27,7 @@ class NewFeedModalBottomSheet : BottomSheetDialogFragment() {
 
     private val viewModel: NewFeedViewModel by activityViewModels()
 
-    private lateinit var selectedTags: MutableList<Tag>
+    private lateinit var selectedTags: MutableList<TagModel>
 
     override fun onCreateView(
         inflater: LayoutInflater,

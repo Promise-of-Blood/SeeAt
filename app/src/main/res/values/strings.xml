@@ -15,7 +15,7 @@
     <string name="btn_google_login">구글 아이디로 로그인</string>
 
     <!-- SignUp Activity -->
-    <string name="signup_title_tb">회원가입</string>
+    <string name="signup_title_tb">프로필 설정</string>
     <string name="signup_page1">1/3</string>
     <string name="signup_page2">2/3</string>
     <string name="signup_page3">3/3</string>
@@ -47,12 +47,22 @@
     <string name="history_feed">작성글</string>
     <string name="history_comment">작성 댓글</string>
     <string name="history_liked_feed">좋아요한 글</string>
+    <string name="history_more">더보기</string>
+    <string name="history_feed_title">제목</string>
+    <string-array name="history_title">
+        <item>작성글</item>
+        <item>작성 댓글</item>
+        <item>좋아요한 글</item>
+    </string-array>
 
     <!-- my page -->
     <string name="settings_account">계정 설정</string>
     <string name="settings_user_account">현재 로그인 계정</string>
     <string name="settings_logout">로그아웃</string>
     <string name="settings_delete_account">회원 탈퇴</string>
+
+    <!-- comment -->
+    <string name="feed_oner"> - 작성자</string>
 
 
     <!-- alarm -->
@@ -90,6 +100,10 @@
     <string name="input_comment">댓글을 입력해주세요</string>
     <string name="send">전송</string>
     <string name="detail">디테일</string>
+    <string name="input_message">메시지 보내기</string>
+    <string name="chatting">채팅 메시지예요 채팅 메시지예요 채팅 메시지예요 채팅 메시지예요 채팅 메시지예요 채팅 메시지예요 채팅 메시지예요</string>
+    <string name="only_time">2024년 9월 4일</string>
+    <string name="exit_user">탈퇴한 사용자</string>
 
     <!-- new feed -->
     <string name="navigation_select_locate">마커 선택 화면</string>

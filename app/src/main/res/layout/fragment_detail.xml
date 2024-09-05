@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="20dp"
+    android:layout_marginTop="20dp"
     tools:context=".presentation.view.detail.DetailFragment">
 
     <TextView
@@ -14,6 +14,7 @@
         android:text="@string/feed"
         android:textSize="30sp"
         android:textStyle="bold"
+        android:layout_marginHorizontal="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -23,6 +24,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
+        android:layout_marginStart="20dp"
         android:text="@string/writer_info"
         android:textSize="16sp"
         android:textStyle="bold"
@@ -33,12 +35,12 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_writer_layout"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         android:clickable="true"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/tv_feed"
+        app:layout_constraintStart_toStartOf="@id/tv_feed"
         app:layout_constraintTop_toBottomOf="@id/tv_writer">
 
         <androidx.cardview.widget.CardView
@@ -56,7 +58,7 @@
                 android:id="@+id/iv_writer_image"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                android:src="@drawable/ic_beer"/>
+                tools:src="@drawable/ic_beer" />
 
         </androidx.cardview.widget.CardView>
 
@@ -64,12 +66,12 @@
             android:id="@+id/tv_writer_username"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="갸륵명선"
-            android:textStyle="bold"
             android:layout_marginStart="20dp"
+            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/cv_writer_layout"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toEndOf="@id/cv_writer_layout"/>
+            tools:text="갸륵명선" />
 
         <TextView
             android:id="@+id/tv_chat_button"
@@ -92,7 +94,7 @@
 
     <ScrollView
         android:id="@+id/scrollView2"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="20dp"
         app:layout_constraintBottom_toTopOf="@id/cl_comment_layout"
@@ -110,6 +112,8 @@
                 android:layout_height="wrap_content"
                 android:textSize="25sp"
                 android:textStyle="bold"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -119,11 +123,12 @@
                 android:id="@+id/tv_my_distance"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
                 android:layout_marginTop="10dp"
+                android:text="800m"
                 android:textColor="@color/gray"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_feed_title"
-                tools:text="800m" />
+                app:layout_constraintTop_toBottomOf="@id/tv_feed_title" />
 
             <View
                 android:id="@+id/view_distance_divider"
@@ -157,57 +162,68 @@
                 app:layout_constraintTop_toBottomOf="@id/tv_feed_title" />
 
             <TextView
-                android:id="@+id/tv_feed_get_position"
+                android:id="@+id/tv_feed_get_position_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
                 android:layout_marginTop="10dp"
                 android:clickable="true"
+                android:focusable="true"
                 android:text="@string/get_position"
                 android:textColor="@color/gray"
                 app:layout_constraintStart_toEndOf="@+id/view_time_divider"
                 app:layout_constraintTop_toBottomOf="@+id/tv_feed_title" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_feed_tag_list"
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chips_group_detail"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:clipToPadding="false"
-                android:orientation="horizontal"
-                android:scrollbars="none"
+                android:layout_height="40dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tv_feed_get_position"
-                tools:itemCount="1"
-                tools:listitem="@layout/item_tag" />
+                app:layout_constraintTop_toBottomOf="@+id/tv_feed_get_position_button"
+                app:selectionRequired="false" />
 
-            <ImageView
-                android:id="@+id/iv_feed_main_image"
+
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/vp_detail_images"
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
-                android:adjustViewBounds="true"
-                android:scaleType="centerCrop"
+                android:layout_height="0dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/rv_feed_tag_list"
-                tools:src="@drawable/ic_bell" />
+                app:layout_constraintTop_toBottomOf="@+id/chips_group_detail"
+                app:layout_constraintDimensionRatio="1:1"/>
+
+            <me.relex.circleindicator.CircleIndicator3
+                android:id="@+id/detail_image_indicator"
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                app:ci_drawable_unselected="@drawable/gray_radius"
+                app:ci_drawable="@drawable/blue_radius"
+                app:ci_animator="@animator/scale_with_alpha"
+                app:layout_constraintTop_toBottomOf="@id/vp_detail_images"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
+
+
 
             <TextView
                 android:id="@+id/tv_feed_content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="25dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
                 android:textSize="16sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/iv_feed_main_image"
+                app:layout_constraintTop_toBottomOf="@id/detail_image_indicator"
                 tools:text="나한테 왜 140이라고 하는고야. \n나키짱큰데" />
 
             <ImageView
                 android:id="@+id/iv_like_icon"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
+                android:layout_marginStart="20dp"
                 android:layout_marginTop="30dp"
                 android:src="@drawable/ic_thumb_up_off_alt_24"
                 app:layout_constraintStart_toStartOf="parent"
@@ -250,6 +266,7 @@
                 android:layout_width="80dp"
                 android:layout_height="30dp"
                 android:layout_marginTop="10dp"
+                android:layout_marginStart="20dp"
                 android:background="@drawable/selector_btn_white_border"
                 android:clickable="true"
                 app:layout_constraintStart_toStartOf="parent"
@@ -327,6 +344,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
                 android:text="@string/detail_comment"
                 android:textSize="25sp"
                 android:textStyle="bold"
@@ -335,11 +354,11 @@
                 app:layout_constraintTop_toBottomOf="@id/cl_like_btn" />
 
             <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_comment_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tv_comment"
                 tools:itemCount="10"

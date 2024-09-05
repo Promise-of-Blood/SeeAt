@@ -2,7 +2,6 @@ package com.pob.seeat.presentation.view.mypage.history
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.bumptech.glide.Glide
@@ -10,24 +9,25 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.pob.seeat.databinding.ItemCommentHistoryBinding
 import com.pob.seeat.databinding.ItemFeedHistoryBinding
-import com.pob.seeat.databinding.ItemMessageTagBinding
 import com.pob.seeat.presentation.common.ViewHolder
 import com.pob.seeat.presentation.view.mypage.items.HistoryEnum
 import com.pob.seeat.presentation.view.mypage.items.HistoryListItem
-import com.pob.seeat.utils.Utils.px
+import com.pob.seeat.utils.Utils.toFormatShortenedString
 
-class HistoryAdapter : ListAdapter<HistoryListItem, ViewHolder<HistoryListItem>>(object :
-    DiffUtil.ItemCallback<HistoryListItem>() {
-    override fun areItemsTheSame(oldItem: HistoryListItem, newItem: HistoryListItem) =
-        when {
-            oldItem is HistoryListItem.FeedItem && newItem is HistoryListItem.FeedItem -> oldItem.uId == newItem.uId
-            else -> false
-        }
+class HistoryAdapter(private val onClick: (HistoryListItem) -> Unit = {}) :
+    ListAdapter<HistoryListItem, ViewHolder<HistoryListItem>>(object :
+        DiffUtil.ItemCallback<HistoryListItem>() {
+        override fun areItemsTheSame(oldItem: HistoryListItem, newItem: HistoryListItem) =
+            when {
+                oldItem is HistoryListItem.FeedItem && newItem is HistoryListItem.FeedItem -> oldItem.feedId == newItem.feedId
+                oldItem is HistoryListItem.CommentItem && newItem is HistoryListItem.CommentItem -> oldItem.commentId == newItem.commentId
+                else -> false
+            }
 
-    override fun areContentsTheSame(oldItem: HistoryListItem, newItem: HistoryListItem) =
-        oldItem == newItem
-}) {
-    override fun getItemViewType(position: Int) = when (getItem(position)) {
+        override fun areContentsTheSame(oldItem: HistoryListItem, newItem: HistoryListItem) =
+            oldItem == newItem
+    }) {
+    override fun getItemViewType(position: Int) = when (val item = getItem(position)) {
         is HistoryListItem.FeedItem -> HistoryEnum.FEED.viewType
         is HistoryListItem.CommentItem -> HistoryEnum.COMMENT.viewType
     }
@@ -54,12 +54,11 @@ class HistoryAdapter : ListAdapter<HistoryListItem, ViewHolder<HistoryListItem>>
     }
 
     override fun onBindViewHolder(holder: ViewHolder<HistoryListItem>, position: Int) {
-        holder.bind(getItem(position))
+        holder.bind(getItem(position), onClick)
     }
 
     class FeedViewHolder(binding: ItemFeedHistoryBinding) :
         ViewHolder<HistoryListItem>(binding.root) {
-        private val tagContainer = binding.llFeedTagContainer
         private val title = binding.tvFeedTitle
         private val content = binding.tvFeedContent
         private val commentCount = binding.tvFeedCommentCount
@@ -71,47 +70,31 @@ class HistoryAdapter : ListAdapter<HistoryListItem, ViewHolder<HistoryListItem>>
             (item as HistoryListItem.FeedItem).let { feed ->
                 title.text = feed.title
                 content.text = feed.content
-                commentCount.text = feed.commentCount.toString()
-                likeCount.text = feed.likeCount.toString()
+                commentCount.text = feed.commentCount.toFormatShortenedString()
+                likeCount.text = feed.likeCount.toFormatShortenedString()
                 time.text = feed.time
-
                 Glide.with(itemView.context)
                     .load(feed.image)
                     .apply(RequestOptions.bitmapTransform(RoundedCorners(10)))
                     .into(image)
-
-                feed.tagList.forEach { tagName ->
-                    tagContainer.addView(
-                        ItemMessageTagBinding
-                            .inflate(LayoutInflater.from(itemView.context))
-                            .apply {
-                                tvTagName.text = tagName
-                                root.layoutParams = LinearLayout.LayoutParams(
-                                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                                    LinearLayout.LayoutParams.WRAP_CONTENT
-                                ).apply {
-                                    setMargins(0, 0, 8f.px, 0)
-                                }
-                            }
-                            .root
-                    )
-                }
             }
+            itemView.setOnClickListener { onClick(item) }
         }
     }
 
     class CommentViewHolder(binding: ItemCommentHistoryBinding) :
         ViewHolder<HistoryListItem>(binding.root) {
+        private val feedTitle = binding.tvCommentPostTitle
         private val comment = binding.tvCommentContent
-        private val likeCount = binding.tvCommentLikeCount
         private val time = binding.tvCommentTime
 
         override fun bind(item: HistoryListItem, onClick: (HistoryListItem) -> Unit) {
             (item as HistoryListItem.CommentItem).let {
                 comment.text = it.comment
-                likeCount.text = it.likeCount.toString()
                 time.text = it.time
+                feedTitle.text = it.feedTitle
             }
+            itemView.setOnClickListener { onClick(item) }
         }
     }
 }

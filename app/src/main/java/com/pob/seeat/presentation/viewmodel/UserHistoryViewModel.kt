@@ -6,8 +6,8 @@ import com.pob.seeat.data.model.Result
 import com.pob.seeat.domain.usecase.UserHistoryUseCases
 import com.pob.seeat.presentation.view.UiState
 import com.pob.seeat.presentation.view.mypage.items.HistoryListItem
-import com.pob.seeat.presentation.view.mypage.items.toHistoryListIemList
-import com.pob.seeat.presentation.view.mypage.items.toHistoryListItemList
+import com.pob.seeat.presentation.view.mypage.items.toHistoryListCommentItemList
+import com.pob.seeat.presentation.view.mypage.items.toHistoryListFeedItemList
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,10 +23,10 @@ class UserHistoryViewModel @Inject constructor(private val userHistoryUseCases: 
     private val _history = MutableStateFlow<UiState<List<HistoryListItem>>>(UiState.Loading)
     val history: StateFlow<UiState<List<HistoryListItem>>> get() = _history
 
-    fun getUserFeedHistory() {
+    fun getUserFeedHistory(limit: Long? = null, startAfter: String? = null) {
         viewModelScope.launch {
             _history.value = UiState.Loading
-            userHistoryUseCases.userFeedHistoryUseCase()
+            userHistoryUseCases.userFeedHistoryUseCase(limit, startAfter)
                 .flowOn(Dispatchers.IO)
                 .catch { error ->
                     _history.value = UiState.Error(error.message ?: "Unknown Error")
@@ -36,16 +36,16 @@ class UserHistoryViewModel @Inject constructor(private val userHistoryUseCases: 
                         is Result.Loading -> _history.value = UiState.Loading
                         is Result.Error -> _history.value = UiState.Error(it.message)
                         is Result.Success -> _history.value =
-                            UiState.Success(it.data.toHistoryListItemList())
+                            UiState.Success(it.data.toHistoryListFeedItemList())
                     }
                 }
         }
     }
 
-    fun getUserCommentHistory() {
+    fun getUserCommentHistory(limit: Long? = null, startAfter: String? = null) {
         viewModelScope.launch {
             _history.value = UiState.Loading
-            userHistoryUseCases.userCommentHistoryUseCase()
+            userHistoryUseCases.userCommentHistoryUseCase(limit, startAfter)
                 .flowOn(Dispatchers.IO)
                 .catch { error ->
                     _history.value = UiState.Error(error.message ?: "Unknown Error")
@@ -55,16 +55,16 @@ class UserHistoryViewModel @Inject constructor(private val userHistoryUseCases: 
                         is Result.Loading -> _history.value = UiState.Loading
                         is Result.Error -> _history.value = UiState.Error(it.message)
                         is Result.Success -> _history.value =
-                            UiState.Success(it.data.toHistoryListIemList())
+                            UiState.Success(it.data.toHistoryListCommentItemList())
                     }
                 }
         }
     }
 
-    fun getUserLikedHistory() {
+    fun getUserLikedHistory(limit: Long? = null, startAfter: String? = null) {
         viewModelScope.launch {
             _history.value = UiState.Loading
-            userHistoryUseCases.userLikedHistoryUseCase()
+            userHistoryUseCases.userLikedHistoryUseCase(limit, startAfter)
                 .flowOn(Dispatchers.IO)
                 .catch { error ->
                     _history.value = UiState.Error(error.message ?: "Unknown Error")
@@ -74,7 +74,7 @@ class UserHistoryViewModel @Inject constructor(private val userHistoryUseCases: 
                         is Result.Loading -> _history.value = UiState.Loading
                         is Result.Error -> _history.value = UiState.Error(it.message)
                         is Result.Success -> _history.value =
-                            UiState.Success(it.data.toHistoryListItemList())
+                            UiState.Success(it.data.toHistoryListFeedItemList())
                     }
                 }
         }

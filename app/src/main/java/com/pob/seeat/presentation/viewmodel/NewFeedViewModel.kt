@@ -3,7 +3,7 @@ package com.pob.seeat.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.naver.maps.geometry.LatLng
-import com.pob.seeat.presentation.view.home.Tag
+import com.pob.seeat.domain.model.TagModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -12,13 +12,13 @@ import timber.log.Timber
 
 class NewFeedViewModel : ViewModel() {
     // MutableStateFlow를 사용하여 상태 관리
-    private val _selectTagList = MutableStateFlow<List<Tag>>(emptyList())
-    val selectTagList: StateFlow<List<Tag>> = _selectTagList.asStateFlow()
+    private val _selectTagList = MutableStateFlow<List<TagModel>>(emptyList())
+    val selectTagList: StateFlow<List<TagModel>> = _selectTagList.asStateFlow()
 
     var selectLocation: LatLng? = null
 
 
-    fun updateSelectTagList(newList: List<Tag>) {
+    fun updateSelectTagList(newList: List<TagModel>) {
         viewModelScope.launch {
             _selectTagList.value = newList
         }

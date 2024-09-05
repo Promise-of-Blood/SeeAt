@@ -24,6 +24,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.chip.Chip
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapFragment
@@ -50,6 +51,7 @@ import com.pob.seeat.data.model.Result
 import com.pob.seeat.data.repository.NaverMapWrapper
 import com.pob.seeat.domain.model.FeedModel
 import com.pob.seeat.utils.Utils.tagList
+import com.pob.seeat.utils.Utils.toTagList
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -100,6 +102,7 @@ class HomeFragment : Fragment() {
 
     private fun initialSetting() {
         binding.run {
+            ivAlarm.setOnClickListener { findNavController().navigate(R.id.action_home_to_alarm) }
             ibAddMarker.setOnClickListener {
                 findNavController().navigate(R.id.action_home_to_new_feed)
             }
