@@ -6,18 +6,26 @@ import android.os.Build
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.flowWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.google.firebase.messaging.FirebaseMessaging
+import com.pob.seeat.data.model.Result
 import com.pob.seeat.databinding.ActivityMainBinding
+import com.pob.seeat.presentation.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
+    private val mainViewModel by viewModels<MainViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,6 +33,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         initBottomNavigation()
+        initViewModel()
 
         FirebaseMessaging.getInstance().token.addOnSuccessListener {
             Timber.tag("token").d(it)
@@ -50,6 +59,26 @@ class MainActivity : AppCompatActivity() {
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHostFragment.navController
         navMain.setupWithNavController(navController)
+    }
+
+    private fun initViewModel() = with(mainViewModel) {
+        getUnReadAlarmCount()
+        lifecycleScope.launch {
+            unreadAlarmCount.flowWithLifecycle(lifecycle).collectLatest { response ->
+                when (response) {
+                    is Result.Error -> Timber.e("Error: ${response.message}")
+                    is Result.Loading -> {}
+                    is Result.Success -> setUpBadge(response.data)
+                }
+            }
+        }
+    }
+
+    private fun setUpBadge(count: Long) = with(binding) {
+        val badge = navMain.getOrCreateBadge(R.id.navigation_alarm)
+        badge.backgroundColor = ContextCompat.getColor(this@MainActivity, R.color.tertiary)
+        badge.isVisible = count != 0L
+        badge.text = if (count <= 9) count.toString() else "9+"
     }
 
     /**
@@ -84,10 +113,8 @@ class MainActivity : AppCompatActivity() {
         // This is only necessary for API level >= 33 (TIRAMISU)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.POST_NOTIFICATIONS
-                ) ==
-                PackageManager.PERMISSION_GRANTED
+                    this, Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED
             ) {
                 // FCM SDK (and your app) can post notifications.
             } else if (shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
