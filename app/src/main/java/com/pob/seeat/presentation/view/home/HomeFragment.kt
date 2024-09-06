@@ -4,32 +4,28 @@ import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
-import android.graphics.Color
 import android.graphics.Rect
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.constraintlayout.widget.ConstraintLayout
+import android.view.ViewTreeObserver
 import android.widget.Toast
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import android.view.ViewTreeObserver
-import androidx.core.content.ContextCompat
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.chip.Chip
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
-import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.clustering.Clusterer
 import com.naver.maps.map.clustering.ClusteringKey
 import com.naver.maps.map.clustering.DefaultLeafMarkerUpdater
@@ -37,21 +33,21 @@ import com.naver.maps.map.clustering.LeafMarkerInfo
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.Overlay
 import com.naver.maps.map.util.FusedLocationSource
-import com.naver.maps.map.util.MapConstants
 import com.pob.seeat.R
+import com.pob.seeat.data.model.Result
+import com.pob.seeat.data.repository.NaverMapWrapper
 import com.pob.seeat.databinding.FragmentHomeBinding
+import com.pob.seeat.domain.model.FeedModel
 import com.pob.seeat.presentation.view.UiState
 import com.pob.seeat.presentation.viewmodel.HomeViewModel
 import com.pob.seeat.presentation.viewmodel.RestroomViewModel
 import com.pob.seeat.utils.Utils.px
+import com.pob.seeat.utils.Utils.tagList
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import com.pob.seeat.data.model.Result
-import com.pob.seeat.domain.model.FeedModel
-import com.pob.seeat.utils.Utils.tagList
-import com.pob.seeat.utils.Utils.toTagList
 import timber.log.Timber
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
@@ -60,6 +56,9 @@ class HomeFragment : Fragment() {
 
     private val TAG = "PersistentActivity"
     private val restroomViewModel: RestroomViewModel by viewModels()
+
+    @Inject
+    lateinit var naverMapWrapper: NaverMapWrapper
 
     private lateinit var naverMap: NaverMap
     private lateinit var locationSource: FusedLocationSource
@@ -92,6 +91,7 @@ class HomeFragment : Fragment() {
         initTagRecyclerView()
         initBottomSheet()
         getFeed()
+        getUnReadAlarmCount()
         initialSetting()
     }
 
@@ -114,6 +114,32 @@ class HomeFragment : Fragment() {
         _binding = null
     }
 
+    private fun getUnReadAlarmCount() = with(homeViewModel) {
+        getUnReadAlarmCount()
+        viewLifecycleOwner.lifecycleScope.launch {
+            unreadAlarmCount.flowWithLifecycle(viewLifecycleOwner.lifecycle)
+                .collectLatest { response ->
+                    when (response) {
+                        is Result.Error -> Timber.e("Error: ${response.message}")
+                        is Result.Loading -> {}
+                        is Result.Success -> bindUnreadAlarmCount(response.data)
+                    }
+                }
+        }
+    }
+
+    private fun bindUnreadAlarmCount(count: Long) = with(binding) {
+        if (count == 0L) {
+            ivAlarm.imageTintList =
+                ColorStateList.valueOf(resources.getColor(R.color.light_gray, null))
+            tvAlarmCount.visibility = View.GONE
+        } else {
+            ivAlarm.imageTintList =
+                ColorStateList.valueOf(resources.getColor(R.color.tertiary, null))
+            tvAlarmCount.visibility = View.VISIBLE
+            tvAlarmCount.text = if (count <= 9) count.toString() else "9+"
+        }
+    }
 
     private fun getFeed() = with(homeViewModel) {
 
@@ -124,11 +150,11 @@ class HomeFragment : Fragment() {
                 .collectLatest { response ->
                     when (response) {
                         is Result.Error -> {
-                            Log.e("HomeFragment", "Error: ${response.message}")
+                            Timber.tag("HomeFragment").e("Error: %s", response.message)
                         }
 
                         is Result.Loading -> {
-                            Log.d("HomeFragment", "Loading..")
+                            Timber.tag("HomeFragment").d("Loading..")
                         }
 
                         is Result.Success -> {
@@ -136,7 +162,7 @@ class HomeFragment : Fragment() {
                             Timber.tag("HomeFragment").d("Result.Success: " + feedList.toString())
                             bottomSheetFeedAdapter.submitList(feedList)
                             updateMarker(feedList)
-                            Log.d("HomeFragment", feedList.toString())
+                            Timber.tag("HomeFragment").d(feedList.toString())
                         }
                     }
                 }
@@ -181,7 +207,11 @@ class HomeFragment : Fragment() {
                         val feedModel = feedList.find { it.feedId == (info.key as ItemKey).id }
                         feedModel?.let { model ->
                             Timber.tag("HomeFragment")
-                                .d("Marker Clicked: " + model.feedId + ", " + model.title + ", " + model.content)
+                                .d(
+                                    "%s%s",
+                                    "Marker Clicked: " + model.feedId + ", " + model.title + ", ",
+                                    model.content
+                                )
                         } ?: Timber.tag("HomeFragment").e("FeedModel not found for marker")
                         true
                     }
@@ -225,35 +255,24 @@ class HomeFragment : Fragment() {
         // 위치 소스 초기화
         locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
 
-        val mapFragment = MapFragment.newInstance()
-        childFragmentManager.beginTransaction()
-            .replace(R.id.map, mapFragment)
-            .commit()
+        val mapFragment = childFragmentManager.findFragmentById(R.id.map) as MapFragment
+        naverMapWrapper.initialize(mapFragment)
 
-        // NaverMap 객체를 얻기 위해 비동기로 콜백 설정
-        mapFragment.getMapAsync { naverMap ->
-            this.naverMap = naverMap
-            naverMap.isIndoorEnabled = true
-            naverMap.locationSource = locationSource
-
-            val uiSettings = naverMap.uiSettings
-            uiSettings.apply {
-                isLocationButtonEnabled = false
-                isCompassEnabled = false
-                isZoomControlEnabled = true
-                isTiltGesturesEnabled = false
-                isScaleBarEnabled = false
+        // StateFlow로 naverMap 객체를 구독하여 값이 설정되면 작업 처리
+        lifecycleScope.launchWhenStarted {
+            naverMapWrapper.getNaverMap().collect { naverMap ->
+                naverMap?.let {
+                    setupNaverMap(it)
+                }
             }
-
-            val scaleBarView = binding.naverScaleBar
-            scaleBarView.map = naverMap
         }
 
         binding.apply {
             ibLocation.setOnClickListener {
-                if (::naverMap.isInitialized) {
+                if (naverMap != null) {
                     isLocationTrackingEnabled = !isLocationTrackingEnabled
-                    Log.d("HomeFragment", "isLocationTrackingEnabled: $isLocationTrackingEnabled")
+                    Timber.tag("HomeFragment")
+                        .d("isLocationTrackingEnabled: " + isLocationTrackingEnabled)
                     if (isLocationTrackingEnabled) {
                         // 위치 추적 모드로 전환
                         naverMap.locationTrackingMode = LocationTrackingMode.Follow
@@ -276,6 +295,35 @@ class HomeFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun setupNaverMap(naverMap: NaverMap) {
+        this.naverMap = naverMap
+        naverMap.isIndoorEnabled = true
+        naverMap.locationSource = locationSource
+
+        val uiSettings = naverMap.uiSettings
+        uiSettings.apply {
+            isLocationButtonEnabled = false
+            isCompassEnabled = false
+            isZoomControlEnabled = false
+            isTiltGesturesEnabled = false
+            isScaleBarEnabled = false
+        }
+
+        val scaleBarView = binding.naverScaleBar
+        scaleBarView.map = naverMap
+
+        naverMap.addOnCameraChangeListener { reason, animated ->
+            Timber.tag("HomeFragment")
+                .d("카메라가 움직이고 있습니다. Reason: " + reason + ", Animated: " + animated)
+        }
+
+        // 카메라 움직임이 멈췄을 때 콜백을 받는 리스너 설정
+        naverMap.addOnCameraIdleListener {
+            Timber.tag("HomeFragment").d("카메라 움직임이 멈췄습니다.")
+        }
+
     }
 
     /**

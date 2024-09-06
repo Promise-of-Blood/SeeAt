@@ -9,7 +9,11 @@
         android:id="@+id/navigation_new_feed"
         android:name="com.pob.seeat.presentation.view.feed.NewFeedFragment"
         android:label="@string/navigation_add_marker"
-        tools:layout="@layout/fragment_new_feed" />
+        tools:layout="@layout/fragment_new_feed">
+        <action
+            android:id="@+id/action_new_feed_to_select_locate"
+            app:destination="@id/navigation_select_locate" />
+    </fragment>
     <fragment
         android:id="@+id/navigation_message"
         android:name="com.pob.seeat.presentation.view.chat.ChatListFragment"
@@ -32,8 +36,13 @@
         </action>
         <action
             android:id="@+id/action_home_to_alarm"
-            app:destination="@id/alarm" />
+            app:destination="@id/navigation_alarm" />
     </fragment>
+    <fragment
+        android:id="@+id/navigation_select_locate"
+        android:name="com.pob.seeat.presentation.view.feed.SelectLocateFragment"
+        android:label="@string/navigation_home"
+        tools:layout="@layout/fragment_select_locate" />
     <fragment
         android:id="@+id/navigation_bookmark"
         android:name="com.pob.seeat.presentation.view.home.HomeFragment"
@@ -63,9 +72,23 @@
         </action>
     </fragment>
     <fragment
-        android:id="@+id/alarm"
+        android:id="@+id/navigation_select_locate"
+        android:name="com.pob.seeat.presentation.view.feed.SelectLocateFragment"
+        android:label="@string/navigation_select_locate"
+        tools:layout="@layout/fragment_select_locate" />
+    <fragment
+        android:id="@+id/navigation_alarm"
         android:name="com.pob.seeat.presentation.view.alarm.AlarmFragment"
-        tools:layout="@layout/fragment_alarm" />
+        android:label="@string/navigation_alarm"
+        tools:layout="@layout/fragment_alarm">
+        <action
+            android:id="@+id/action_alarm_to_detail"
+            app:destination="@id/navigation_detail">
+            <argument
+                android:name="feedIdArg"
+                app:argType="string" />
+        </action>
+    </fragment>
     <fragment
         android:id="@+id/terms_of_service"
         android:name="com.pob.seeat.presentation.view.mypage.TermsOfServiceFragment"

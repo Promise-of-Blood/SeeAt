@@ -2,6 +2,7 @@ package com.pob.seeat.data.remote
 
 import android.util.Log
 import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.pob.seeat.domain.model.CommentModel
 import com.pob.seeat.domain.model.FeedModel
@@ -9,8 +10,13 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class FeedRemote @Inject constructor(
+<<<<<<< HEAD
     val firestore: FirebaseFirestore
 ) : GetFeedList {
+=======
+    private val firestore: FirebaseFirestore
+) : GetFeedList, DetailFeed {
+>>>>>>> a0608a3b11fd688292fc72645d3ded32258675a2
 
     override suspend fun getFeedList(
         uid: String?,
@@ -44,7 +50,7 @@ class FeedRemote @Inject constructor(
         }
     }
 
-    suspend fun getFeedById(postId: String): FeedModel? {
+    override suspend fun getFeedById(postId: String): FeedModel? {
         val documentSnapshot = firestore.collection("feed")
             .document(postId)
             .get()
@@ -76,5 +82,19 @@ class FeedRemote @Inject constructor(
                     )
 
             }
+    }
+
+    override suspend fun updateLikePlus(postId: String) {
+        firestore.collection("feed")
+            .document(postId)
+            .update("like", FieldValue.increment(1))
+            .await()
+    }
+
+    override suspend fun updateLikeMinus(postId: String) {
+        firestore.collection("feed")
+            .document(postId)
+            .update("like", FieldValue.increment(-1))
+            .await()
     }
 }

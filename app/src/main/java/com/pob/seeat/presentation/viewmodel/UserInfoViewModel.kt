@@ -71,14 +71,13 @@ class UserInfoViewModel @Inject constructor(private val userInfoUseCases: UserIn
     }
 
 
-    fun editProfile(uid: String, nickname: String, introduce: String, profileUrl: String) {
+    fun editProfile(uid: String, nickname: String, introduce: String) {
         viewModelScope.launch {
             val currentUserInfo = userInfoUseCases.getUserInfoUseCase.execute(uid)
             if (currentUserInfo != null) {
                 val updatedProfile = currentUserInfo.copy(
                     nickname = nickname,
-                    introduce = introduce,
-                    profileUrl = profileUrl
+                    introduce = introduce
                 )
                 userInfoUseCases.updateUserInfoUseCase.execute(updatedProfile)
                 _userInfo.value = updatedProfile

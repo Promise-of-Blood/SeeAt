@@ -6,6 +6,7 @@
 
     <!-- bottom navigation -->
     <string name="navigation_add_marker">마커 추가</string>
+    <string name="navigation_alarm">알림</string>
     <string name="navigation_message">메세지</string>
     <string name="navigation_home">홈화면</string>
     <string name="navigation_bookmark">북마크</string>
@@ -104,5 +105,9 @@
     <string name="chatting">채팅 메시지예요 채팅 메시지예요 채팅 메시지예요 채팅 메시지예요 채팅 메시지예요 채팅 메시지예요 채팅 메시지예요</string>
     <string name="only_time">2024년 9월 4일</string>
     <string name="exit_user">탈퇴한 사용자</string>
+
+    <!-- new feed -->
+    <string name="navigation_select_locate">마커 선택 화면</string>
+    <string name="navigation_new_feed">피드 추가 화면</string>
 
 </resources>

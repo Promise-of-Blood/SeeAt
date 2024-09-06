@@ -60,6 +60,26 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:tint="@color/light_gray" />
 
+            <TextView
+                android:id="@+id/tv_alarm_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="28dp"
+                android:layout_marginBottom="24dp"
+                android:background="@drawable/background_corners_radius_32dp"
+                android:backgroundTint="@color/tertiary"
+                android:gravity="center|center_vertical"
+                android:includeFontPadding="false"
+                android:outlineProvider="none"
+                android:paddingHorizontal="3dp"
+                android:textColor="@color/black"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:translationZ="17dp"
+                app:layout_constraintBottom_toBottomOf="@id/iv_alarm"
+                app:layout_constraintStart_toStartOf="@id/iv_alarm"
+                tools:text="9+" />
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_tag_list"
                 android:layout_width="wrap_content"
@@ -155,10 +175,10 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             app:layout_constrainedHeight="true"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/view_top_bar"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintTop_toBottomOf="@+id/view_top_bar" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

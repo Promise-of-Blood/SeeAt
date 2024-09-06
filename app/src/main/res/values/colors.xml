@@ -8,6 +8,7 @@
     <color name="primary">#FF2ECC87</color>
     <color name="secondary">#FF16B200</color>
     <color name="tertiary">#FF99FFCC</color>
+    <color name="light_tertiary">#E7FFF3</color>
     <color name="quaternary">#FF4Bff00</color>
     <color name="transparent">#00FFFFFF</color>
 </resources>
