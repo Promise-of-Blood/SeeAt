@@ -46,6 +46,7 @@ import com.pob.seeat.domain.model.FeedModel
 import com.pob.seeat.presentation.view.chat.ChattingActivity
 import com.pob.seeat.presentation.viewmodel.CommentViewModel
 import com.pob.seeat.presentation.viewmodel.DetailViewModel
+import com.pob.seeat.utils.EventBus
 import com.pob.seeat.utils.GoogleAuthUtil.getUserUid
 import com.pob.seeat.utils.Utils.px
 import com.pob.seeat.utils.Utils.toKoreanDiffString
@@ -204,8 +205,14 @@ class DetailFragment : Fragment() {
 
             clLikeBtn.setOnClickListener {
                 detailViewModel.isLikedToggle(args.feedIdArg)
+                detailViewModel.modifyIsLiked(tvFeedDetailLikeCount.text.toString().toInt())
             }
-            setLikeCount()
+
+            viewLifecycleOwner.lifecycleScope.launch {
+                EventBus.subscribe().collect { value ->
+                    tvFeedDetailLikeCount.text = value.toString()
+                }
+            }
 
 
             clBookmarkBtn.setOnClickListener {
@@ -241,24 +248,6 @@ class DetailFragment : Fragment() {
                 detailImageIndicator.visibility = View.GONE
             } else {
                 initImageViewPager(feed.contentImage)
-            }
-        }
-    }
-
-    private fun setLikeCount() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            detailViewModel.isLiked.collect { isLiked ->
-                val currentLikeCount =
-                    binding.tvFeedDetailLikeCount.text.toString().toIntOrNull() ?: 0
-
-                val newCount = if (isLiked) {
-                    currentLikeCount + 1
-                } else {
-                    currentLikeCount - 1
-                }
-
-                binding.tvFeedDetailLikeCount.text = newCount.toString()
-
             }
         }
     }

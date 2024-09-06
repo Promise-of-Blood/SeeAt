@@ -8,6 +8,7 @@ import com.pob.seeat.domain.model.FeedModel
 import com.pob.seeat.domain.model.UserInfoModel
 import com.pob.seeat.domain.repository.FeedRepository
 import com.pob.seeat.domain.usecase.UserInfoUseCases
+import com.pob.seeat.utils.EventBus
 import com.pob.seeat.utils.GoogleAuthUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,7 +26,7 @@ class DetailViewModel @Inject constructor(
     private val _userInfo = MutableStateFlow<UserInfoModel?>(null)
     val userInfo: StateFlow<UserInfoModel?> get() = _userInfo
 
-    private val _isLiked = MutableStateFlow<Boolean>(false)
+    private val _isLiked = MutableStateFlow(false)
     val isLiked: MutableStateFlow<Boolean> get() = _isLiked
 
     private val _singleFeedResponse = MutableStateFlow<Result<FeedModel>>(Result.Loading)
@@ -33,18 +34,23 @@ class DetailViewModel @Inject constructor(
 
     val uid = GoogleAuthUtil.getUserUid()
 
+    fun modifyIsLiked(count: Int) {
+        viewModelScope.launch {
+            if (isLiked.value) {
+                EventBus.post(count - 1)
+            } else {
+                EventBus.post(count + 1)
+            }
+
+        }
+    }
+
     fun getFeedById(feedId: String) {
         viewModelScope.launch {
             feedRepository.getFeed(feedId).collect { uiState ->
                 _singleFeedResponse.value = uiState
             }
         }
-    }
-
-    fun getUserUid(): String? {
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        val userUid = currentUser?.uid
-        return userUid
     }
 
     fun getUserInfo(uid: String) {
