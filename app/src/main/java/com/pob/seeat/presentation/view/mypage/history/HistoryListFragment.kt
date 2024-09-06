@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.pob.seeat.MainActivity
 import com.pob.seeat.R
 import com.pob.seeat.databinding.FragmentHistoryListBinding
+import com.pob.seeat.presentation.common.CustomDecoration
 import com.pob.seeat.presentation.view.UiState
 import com.pob.seeat.presentation.view.mypage.items.HistoryListItem
 import com.pob.seeat.presentation.viewmodel.UserHistoryViewModel
@@ -60,9 +61,18 @@ class HistoryListFragment : Fragment() {
                 findNavController().popBackStack()
             }
         }
-        rvHistory.adapter = historyAdapter
-        rvHistory.layoutManager =
-            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        rvHistory.apply {
+            adapter = historyAdapter
+            layoutManager =
+                LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+            addItemDecoration(
+                CustomDecoration(
+                    1f,
+                    48f,
+                    resources.getColor(R.color.light_gray, null)
+                )
+            )
+        }
     }
 
     private fun getHistoryList() = when (args.position) {
