@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_gray"
+    android:fitsSystemWindows="true"
     tools:context=".presentation.view.feed.NewFeedFragment">
 
     <androidx.appcompat.widget.Toolbar
@@ -63,8 +64,8 @@
                 android:layout_marginTop="8dp"
                 android:background="@color/white"
                 android:padding="16dp"
-                android:textColor="@color/light_gray"
                 android:text="태그를 선택해 주세요"
+                android:textColor="@color/light_gray"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/et_title" />
 
@@ -111,15 +112,15 @@
                 <androidx.fragment.app.FragmentContainerView
                     android:id="@+id/map"
                     android:name="com.naver.maps.map.MapFragment"
-                    android:visibility="invisible"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:background="@drawable/background_select_locate"
                     android:clipToOutline="true"
-                    app:layout_constraintTop_toTopOf="@id/tv_map"
+                    android:visibility="invisible"
                     app:layout_constraintBottom_toBottomOf="@id/tv_map"
+                    app:layout_constraintEnd_toEndOf="@id/tv_map"
                     app:layout_constraintStart_toStartOf="@id/tv_map"
-                    app:layout_constraintEnd_toEndOf="@id/tv_map"/>
+                    app:layout_constraintTop_toTopOf="@id/tv_map" />
 
                 <ImageView
                     android:id="@+id/iv_marker_shadow"
@@ -146,10 +147,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_marginTop="8dp"
-                    android:gravity="center"
-                    android:text="씨앗 위치를 정해주세요!"
                     android:background="@drawable/background_select_locate"
                     android:clipToOutline="true"
+                    android:gravity="center"
+                    android:text="씨앗 위치를 정해주세요!"
                     app:layout_constraintDimensionRatio="3:2"
                     app:layout_constraintTop_toBottomOf="@id/tv_select_locate" />
 
