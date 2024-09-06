@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.pob.seeat.data.model.Result
 import com.pob.seeat.domain.usecase.UserHistoryUseCases
 import com.pob.seeat.presentation.view.UiState
+import com.pob.seeat.presentation.view.mypage.items.HistoryEnum
 import com.pob.seeat.presentation.view.mypage.items.HistoryListItem
 import com.pob.seeat.presentation.view.mypage.items.toHistoryListCommentItemList
 import com.pob.seeat.presentation.view.mypage.items.toHistoryListFeedItemList
@@ -74,7 +75,7 @@ class UserHistoryViewModel @Inject constructor(private val userHistoryUseCases: 
                         is Result.Loading -> _history.value = UiState.Loading
                         is Result.Error -> _history.value = UiState.Error(it.message)
                         is Result.Success -> _history.value =
-                            UiState.Success(it.data.toHistoryListFeedItemList())
+                            UiState.Success(it.data.toHistoryListFeedItemList(HistoryEnum.LIKED_FEED))
                     }
                 }
         }
