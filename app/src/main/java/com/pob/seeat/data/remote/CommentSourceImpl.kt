@@ -45,6 +45,7 @@ class CommentSourceImpl @Inject constructor(
                 val snapshot = firestore.collection("feed")
                     .document(feedId)
                     .collection("comments")
+                    .orderBy("timeStamp",com.google.firebase.firestore.Query.Direction.ASCENDING)
                     .get()
                     .await() // 비동기 작업 대기
 
