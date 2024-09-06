@@ -45,6 +45,7 @@ import com.pob.seeat.domain.model.FeedModel
 import com.pob.seeat.presentation.view.chat.ChattingActivity
 import com.pob.seeat.presentation.viewmodel.CommentViewModel
 import com.pob.seeat.presentation.viewmodel.DetailViewModel
+import com.pob.seeat.utils.EventBus
 import com.pob.seeat.utils.GoogleAuthUtil.getUserUid
 import com.pob.seeat.utils.Utils.px
 import com.pob.seeat.utils.Utils.toKoreanDiffString
@@ -53,7 +54,6 @@ import com.pob.seeat.utils.Utils.toTagList
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.Locale
@@ -180,7 +180,6 @@ class DetailFragment : Fragment() {
             tvFeedContent.text = feed.content
             tvFeedDetailLikeCount.text = feed.like.toString()
             tvCommentCount.text = feed.commentsCount.toString()
-            Timber.i(feed.like.toString())
 
             // Todo 나의 위치 가져오기
             val myLatitude = 37.570201
@@ -192,11 +191,18 @@ class DetailFragment : Fragment() {
             }
 
             setFeedLikeButton(clLikeBtn)
-            setLikeCount()
 
             clLikeBtn.setOnClickListener {
                 detailViewModel.isLikedToggle(args.feedIdArg)
+                detailViewModel.modifyIsLiked(tvFeedDetailLikeCount.text.toString().toInt())
             }
+
+            viewLifecycleOwner.lifecycleScope.launch {
+                EventBus.subscribe().collect { value ->
+                    tvFeedDetailLikeCount.text = value.toString()
+                }
+            }
+
 
             clBookmarkBtn.setOnClickListener {
                 // Todo 북마크 누를 때
@@ -213,11 +219,15 @@ class DetailFragment : Fragment() {
                 hideKeyboard()
             }
 
+
+
+
             tvChatButton.setOnClickListener {
                 val intent = Intent(requireContext(), ChattingActivity::class.java)
                 intent.putExtra("feedId", feed.feedId)
                 chattingResultLauncher.launch(intent)
             }
+
 
             initTag(feed.tags)
 
@@ -227,27 +237,6 @@ class DetailFragment : Fragment() {
                 detailImageIndicator.visibility = View.GONE
             } else {
                 initImageViewPager(feed.contentImage)
-            }
-            Timber.i(feed.like.toString())
-        }
-    }
-
-    private fun setLikeCount() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            detailViewModel.isLiked.drop(1).collect { isLiked ->
-                val currentLikeCount =
-                    binding.tvFeedDetailLikeCount.text.toString().toIntOrNull() ?: 0
-
-                val newCount = if (isLiked) {
-                    currentLikeCount + 1
-                } else {
-                    currentLikeCount - 1
-                }
-
-                Timber.i(currentLikeCount.toString())
-
-                binding.tvFeedDetailLikeCount.text = newCount.toString()
-
             }
         }
     }

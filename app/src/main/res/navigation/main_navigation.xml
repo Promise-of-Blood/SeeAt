@@ -36,9 +36,8 @@
         </action>
         <action
             android:id="@+id/action_home_to_alarm"
-            app:destination="@id/alarm" />
+            app:destination="@id/navigation_alarm" />
     </fragment>
-
     <fragment
         android:id="@+id/navigation_select_locate"
         android:name="com.pob.seeat.presentation.view.feed.SelectLocateFragment"
@@ -78,8 +77,9 @@
         android:label="@string/navigation_select_locate"
         tools:layout="@layout/fragment_select_locate" />
     <fragment
-        android:id="@+id/alarm"
+        android:id="@+id/navigation_alarm"
         android:name="com.pob.seeat.presentation.view.alarm.AlarmFragment"
+        android:label="@string/navigation_alarm"
         tools:layout="@layout/fragment_alarm">
         <action
             android:id="@+id/action_alarm_to_detail"

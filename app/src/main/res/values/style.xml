@@ -46,4 +46,8 @@
         <item name="android:background">@drawable/background_bottom_sheet</item>
     </style>
 
+    <style name="NavigationTextStyle">
+        <item name="android:textSize">11sp</item>
+    </style>
+
 </resources>

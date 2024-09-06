@@ -10,6 +10,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
@@ -17,11 +18,15 @@ import com.pob.seeat.R
 import com.pob.seeat.data.model.Result
 import com.pob.seeat.databinding.ActivityChattingBinding
 import com.pob.seeat.domain.model.FeedModel
+import com.pob.seeat.presentation.view.chat.adapter.ChattingAdapter
+import com.pob.seeat.presentation.viewmodel.ChatViewModel
 import com.pob.seeat.presentation.viewmodel.DetailViewModel
 import com.pob.seeat.utils.Utils.px
 import com.pob.seeat.utils.Utils.toTagList
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -29,6 +34,9 @@ import timber.log.Timber
 class ChattingActivity : AppCompatActivity() {
     private val binding by lazy { ActivityChattingBinding.inflate(layoutInflater) }
     private val detailViewModel by viewModels<DetailViewModel>()
+    private val chatViewModel by viewModels<ChatViewModel>()
+    private val chattingAdapter by lazy { ChattingAdapter() }
+    var targetId : String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,8 +48,29 @@ class ChattingActivity : AppCompatActivity() {
             insets
         }
 
+        val feedId = intent.getStringExtra("feedId") ?: ""
+
         initViewModel()
+        initChatViewModel()
         getFeedData()
+//        chatViewModel.subscribeMessage(intent.getStringExtra("feedId") ?: "")
+        binding.btnChattingSend.setOnClickListener {
+            lifecycleScope.launch {
+                Timber.tag("ChattingLOG").d("btnChattingSend Clicked : $targetId !")
+                chatViewModel.sendMessage(feedId, targetId, binding.etChattingInput.text.toString())
+            }
+            binding.etChattingInput.setText("")
+        }
+        binding.rvMessage.adapter = chattingAdapter
+        binding.rvMessage.itemAnimator = null
+        val messageLayoutManager = LinearLayoutManager(this)
+        binding.rvMessage.layoutManager = messageLayoutManager
+        lifecycleScope.launch {
+            chatViewModel.chatResult.collect {
+                Timber.tag("ChattingAddLog").d("chatResult : $it")
+                chattingAdapter.submitList(chatViewModel.chatResult.value)
+            }
+        }
     }
 
     private fun getFeedData() {
@@ -61,7 +90,16 @@ class ChattingActivity : AppCompatActivity() {
         }
     }
 
+    private fun initChatViewModel() = with(chatViewModel) {
+        lifecycleScope.launch {
+            initMessage(intent.getStringExtra("feedId") ?: "")
+            subscribeMessage(intent.getStringExtra("feedId") ?: "")
+            Timber.tag("InitChattingLOG").d("chatResult : ${chatResult.value}")
+        }
+    }
+
     private fun initFeedData(feed: FeedModel) = with(binding) {
+        println("feed data : $feed")
         cgMessageFeedTag.addFeedTags(feed.tags)
         toolbarMessage.apply {
             title = feed.nickname
@@ -77,6 +115,7 @@ class ChattingActivity : AppCompatActivity() {
                 .load(it)
                 .into(ivMessageFeed)
         }
+        targetId = feed.user?.id.toString()
     }
 
     private fun ChipGroup.addFeedTags(tags: List<String>) {

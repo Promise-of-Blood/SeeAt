@@ -8,6 +8,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Qualifier
 import javax.inject.Singleton
 
 @Module
@@ -23,5 +24,11 @@ object FirebaseModule {
     @Singleton
     fun provideFireStore(): FirebaseFirestore{
         return Firebase.firestore
+    }
+
+    @Provides
+    @Singleton
+    fun provideFirebase(): Firebase{
+        return Firebase
     }
 }

@@ -6,6 +6,7 @@
 
     <!-- bottom navigation -->
     <string name="navigation_add_marker">마커 추가</string>
+    <string name="navigation_alarm">알림</string>
     <string name="navigation_message">메세지</string>
     <string name="navigation_home">홈화면</string>
     <string name="navigation_bookmark">북마크</string>
