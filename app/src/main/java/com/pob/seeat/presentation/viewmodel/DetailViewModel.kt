@@ -55,12 +55,6 @@ class DetailViewModel @Inject constructor(
         }
     }
 
-    fun getUserUid(): String? {
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        val userUid = currentUser?.uid
-        return userUid
-    }
-
     fun getUserInfo(uid: String) {
         viewModelScope.launch {
             val result = userInfoUseCases.getUserInfoUseCase.execute(uid)
