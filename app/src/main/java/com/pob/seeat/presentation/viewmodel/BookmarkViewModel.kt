@@ -2,10 +2,13 @@ package com.pob.seeat.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.pob.seeat.data.model.BookmarkEntity
 import com.pob.seeat.data.model.Result
 import com.pob.seeat.domain.model.BookmarkModel
+import com.pob.seeat.domain.model.toBookmarkEntity
 import com.pob.seeat.domain.usecase.DeleteBookmarkUseCase
 import com.pob.seeat.domain.usecase.GetBookmarkListUseCase
+import com.pob.seeat.domain.usecase.SaveBookmarkListUseCase
 import com.pob.seeat.domain.usecase.SaveBookmarkUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,6 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class BookmarkViewModel @Inject constructor(
     private val getBookmarkListUseCase: GetBookmarkListUseCase,
+    private val saveBookmarkListUseCase: SaveBookmarkListUseCase,
     private val saveBookmarkUseCase: SaveBookmarkUseCase,
     private val deleteBookmarkUseCase: DeleteBookmarkUseCase,
 ) : ViewModel() {
@@ -28,19 +32,9 @@ class BookmarkViewModel @Inject constructor(
         }
     }
 
-    fun saveBookmark(feed: BookmarkModel) {
+    fun saveBookmarkList(list: List<BookmarkModel>) {
         viewModelScope.launch {
-            saveBookmarkUseCase(feed)
+            saveBookmarkListUseCase(list)
         }
-    }
-
-    fun deleteBookmark(feedId: String) {
-        viewModelScope.launch {
-            deleteBookmarkUseCase(feedId)
-        }
-    }
-
-    init {
-        getBookmarkList()
     }
 }

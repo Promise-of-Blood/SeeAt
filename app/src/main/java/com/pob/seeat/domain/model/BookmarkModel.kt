@@ -1,7 +1,8 @@
 package com.pob.seeat.domain.model
 
+import com.google.firebase.Timestamp
 import com.pob.seeat.data.model.BookmarkEntity
-import java.time.LocalDateTime
+import java.util.Date
 
 data class BookmarkModel(
     val feedId: String,
@@ -10,10 +11,9 @@ data class BookmarkModel(
     val content: String,
     val like: Int,
     val commentsCount: Int,
-    val date: LocalDateTime,
+    val date: Timestamp,
     val tags: List<String>,
     val contentImage: String,
-    val isLiked: Boolean,
 )
 
 fun List<BookmarkEntity>.toBookmarkList() = this.map {
@@ -24,10 +24,9 @@ fun List<BookmarkEntity>.toBookmarkList() = this.map {
         content = it.content,
         like = it.like,
         commentsCount = it.commentsCount,
-        date = it.date,
+        date = Timestamp(it.date),
         tags = it.tags,
         contentImage = it.contentImage,
-        isLiked = it.isLiked,
     )
 }
 
@@ -38,8 +37,19 @@ fun BookmarkModel.toBookmarkEntity() = BookmarkEntity(
     content = this.content,
     like = this.like,
     commentsCount = this.commentsCount,
-    date = this.date,
+    date = this.date.toDate(),
     tags = this.tags,
     contentImage = this.contentImage,
-    isLiked = this.isLiked,
+)
+
+fun FeedModel.toBookmarkEntity() = BookmarkEntity(
+    feedId = this.feedId,
+    nickname = this.nickname,
+    title = this.title,
+    content = this.content,
+    like = this.like,
+    commentsCount = this.commentsCount,
+    date = this.date?.toDate() ?: Date(),
+    tags = this.tags,
+    contentImage = this.contentImage.firstOrNull() ?: "",
 )

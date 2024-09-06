@@ -10,7 +10,7 @@ import com.pob.seeat.data.model.BookmarkEntity
 private const val DATABASE_NAME = "bookmark_database"
 
 @Database(entities = [BookmarkEntity::class], version = 1)
-@TypeConverters(LocalDateTimeConverter::class, ListConverter::class)
+@TypeConverters(TimestampConverter::class, ListConverter::class)
 abstract class BookmarkDatabase : RoomDatabase() {
     abstract fun bookmarkDao(): BookmarkDao
 

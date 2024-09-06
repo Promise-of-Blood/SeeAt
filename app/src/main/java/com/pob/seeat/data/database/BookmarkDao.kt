@@ -12,9 +12,15 @@ interface BookmarkDao {
     @Query("SELECT * FROM bookmark_table")
     fun getBookmarkList(): Flow<List<BookmarkEntity>>
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insetBookmarkList(bookmarkList: List<BookmarkEntity>)
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertBookmark(feed: BookmarkEntity)
 
     @Query("DELETE FROM bookmark_table WHERE feedId = :feedId")
     suspend fun deleteBookmark(feedId: String)
+
+    @Query("SELECT EXISTS(SELECT 1 FROM bookmark_table WHERE feedId = :feedId)")
+    suspend fun isBookmarkExists(feedId: String): Boolean
 }

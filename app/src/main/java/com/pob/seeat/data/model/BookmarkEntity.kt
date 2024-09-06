@@ -2,7 +2,7 @@ package com.pob.seeat.data.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import java.time.LocalDateTime
+import java.util.Date
 
 @Entity(tableName = "bookmark_table")
 data class BookmarkEntity(
@@ -13,8 +13,7 @@ data class BookmarkEntity(
     val content: String,
     val like: Int,
     val commentsCount: Int,
-    val date: LocalDateTime,
+    val date: Date,
     val tags: List<String>,
     val contentImage: String,
-    val isLiked: Boolean,
 )
