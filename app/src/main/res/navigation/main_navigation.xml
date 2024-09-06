@@ -32,7 +32,7 @@
         </action>
         <action
             android:id="@+id/action_home_to_alarm"
-            app:destination="@id/alarm" />
+            app:destination="@id/navigation_alarm" />
     </fragment>
     <fragment
         android:id="@+id/navigation_bookmark"
@@ -63,8 +63,9 @@
         </action>
     </fragment>
     <fragment
-        android:id="@+id/alarm"
+        android:id="@+id/navigation_alarm"
         android:name="com.pob.seeat.presentation.view.alarm.AlarmFragment"
+        android:label="알림"
         tools:layout="@layout/fragment_alarm">
         <action
             android:id="@+id/action_alarm_to_detail"
