@@ -10,13 +10,8 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class FeedRemote @Inject constructor(
-<<<<<<< HEAD
-    val firestore: FirebaseFirestore
-) : GetFeedList {
-=======
     private val firestore: FirebaseFirestore
 ) : GetFeedList, DetailFeed {
->>>>>>> a0608a3b11fd688292fc72645d3ded32258675a2
 
     override suspend fun getFeedList(
         uid: String?,
