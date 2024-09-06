@@ -29,6 +29,9 @@ import com.pob.seeat.data.model.Result
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.util.Date
 import kotlin.coroutines.resume
@@ -141,49 +144,84 @@ class ChatRemote @Inject constructor(
     suspend fun initMessage(feedId: String): List<Result<ChatModel>> {
         val list: ArrayList<Result<ChatModel>> = arrayListOf()
         return suspendCancellableCoroutine<List<Result<ChatModel>>> { continuation ->
-            messageRef.child(feedId).orderByChild("timestamp")
+            messageRef.child(feedId)
+//                .orderByChild("timestamp")
                 .addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
-                        for(messageSnapshot in snapshot.children) {
+                        for (messageSnapshot in snapshot.children) {
                             val message = messageSnapshot.child("message").value.toString()
                             val receiver = messageSnapshot.child("receiver").value.toString()
                             val sender = messageSnapshot.child("sender").value.toString()
-                            val timestamp = Timestamp(Date(messageSnapshot.child("timestamp").value as Long))
-                            list.add(Result.Success(ChatModel(
-                                    message = message,
-                                    receiver = receiver,
-                                    sender = sender,
-                                    timestamp = timestamp
-                                )))
+                            val timestamp =
+                                Timestamp(Date(messageSnapshot.child("timestamp").value as Long))
+                            list.add(
+                                Result.Success(
+                                    ChatModel(
+                                        message = message,
+                                        receiver = receiver,
+                                        sender = sender,
+                                        timestamp = timestamp
+                                    )
+                                )
+                            )
+                            Timber.d(
+                                "initMessage ele : ${
+                                    Result.Success(
+                                        ChatModel(
+                                            message = message,
+                                            receiver = receiver,
+                                            sender = sender,
+                                            timestamp = timestamp
+                                        )
+                                    )
+                                }"
+                            )
+                        }
+                        Timber.d("initMessages : $list")
+                        if (continuation.isActive) {
+                            continuation.resume(list)
                         }
                     }
 
                     override fun onCancelled(error: DatabaseError) {
                         list.add(Result.Error(error.message))
+                        if (continuation.isActive) {
+                            continuation.resume(list)
+                        }
                     }
                 })
-            if(continuation.isActive) {
-                continuation.resume(list)
-            }
         }
     }
 
+    var lastChat: ChatModel? = null
 
-    suspend fun receiveMessage(feedId: String): Result<ChatModel> {
-        var isResumed = false
+    fun receiveMessage(feedId: String): Flow<Result<ChatModel>> {
         val job = SupervisorJob()
         val scope = CoroutineScope(Dispatchers.IO + job)
-        return suspendCancellableCoroutine<Result<ChatModel>> { continuation ->
-            messageRef.child(feedId).addChildEventListener(object : ChildEventListener {
+        return callbackFlow {
+            val listener = object : ChildEventListener {
                 override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                    if (isResumed) return
+                    Timber.d("onChildAdded 임")
                     val message = snapshot.child("message").value.toString()
                     val receiver = snapshot.child("receiver").value.toString()
                     val sender = snapshot.child("sender").value.toString()
                     val timestamp = Timestamp(Date(snapshot.child("timestamp").value as Long))
-                    if (snapshot.childrenCount == 1L) {
+                    val nowChatModel = ChatModel(
+                        message = message,
+                        receiver = receiver,
+                        sender = sender,
+                        timestamp = timestamp
+                    )
+                    if (lastChat != null)
+                        Timber.tag("nowMinusLast")
+                            .d("nowChatModel - lastChatModel : ${lastChat!!.timestamp!!.seconds - nowChatModel.timestamp!!.seconds} , $lastChat $nowChatModel")
+                    lastChat = nowChatModel
+                    Timber.tag("snapshot parent").d(snapshot.ref.parent.toString().substringAfterLast("/"))
+                    
+                    // TODO 나중에 메시지가 처음 시작되면 만들어지는 걸로 변경
+                    if (true) {
                         scope.launch {
-                            createMembers(receiver, sender)
+                            createMembers(feedId, receiver, sender)
                             createChats(
                                 chatRef,
                                 ChatListModel(
@@ -207,83 +245,75 @@ class ChatRemote @Inject constructor(
                             )
                         }
                     }
-                    continuation.resume(
+                    trySend(
                         Result.Success(
-                            ChatModel(
-                                message = message,
-                                receiver = receiver,
-                                sender = sender,
-                                timestamp = timestamp
-                            )
+                            nowChatModel
                         )
-                    )
-                    isResumed = true
+                    ).isSuccess
                 }
 
                 override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-                    if (isResumed) return
-                    val message = snapshot.child("message").value.toString()
-                    val receiver = snapshot.child("receiver").value.toString()
-                    val sender = snapshot.child("sender").value.toString()
-                    val timestamp = Timestamp(Date(snapshot.child("timestamp").value as Long))
-                    scope.launch {
-                        setChats(
-                            chatRef,
-                            ChatListModel(
-                                feedFrom = feedId,
-                                lastMessage = message,
-                                whenLast = timestamp
-                            )
-                        )
-                    }
-                    continuation.resume(
-                        Result.Success(
-                            ChatModel(
-                                message = message,
-                                receiver = receiver,
-                                sender = sender,
-                                timestamp = timestamp
-                            )
-                        )
-                    )
-                    isResumed = true
+                    Timber.d("onChildChanged 임")
+//                    val message = snapshot.child("message").value.toString()
+//                    val receiver = snapshot.child("receiver").value.toString()
+//                    val sender = snapshot.child("sender").value.toString()
+//                    val timestamp = Timestamp(Date(snapshot.child("timestamp").value as Long))
+//                    scope.launch {
+//                        setChats(
+//                            chatRef,
+//                            ChatListModel(
+//                                feedFrom = feedId,
+//                                lastMessage = message,
+//                                whenLast = timestamp
+//                            )
+//                        )
+//                    }
+//                    trySend(
+//                        Result.Success(
+//                            ChatModel(
+//                                message = message,
+//                                receiver = receiver,
+//                                sender = sender,
+//                                timestamp = timestamp
+//                            )
+//                        )
+//                    )
                 }
 
                 override fun onChildRemoved(snapshot: DataSnapshot) {
-                    if (!isResumed) {
-                        continuation.resume(Result.Error("removed"))
-                        isResumed = true
-                    }
+                    Timber.d("onChildRemoved 임")
                 }
 
                 override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-                    if (!isResumed) {
-                        continuation.resume(Result.Error("moved"))
-                        isResumed = true
-                    }
+                    Timber.d("onChildMoved 임")
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    if (!isResumed) {
-                        continuation.resume(Result.Error(error.message))
-                        isResumed = true
-                    }
+                    Timber.d("onChildCancelled 임")
+                    trySend(Result.Error(error.message))
                 }
 
-            })
+            }
+            messageRef.child(feedId).orderByChild("timestamp").limitToLast(1)
+                .addChildEventListener(listener)
+            awaitClose {
+                messageRef.child(feedId).orderByChild("timestamp").limitToLast(1)
+                    .removeEventListener(listener)
+            }
         }
     }
 
-    suspend fun createMembers(receiverUid: String, senderUid: String) {
-        memberRef.child(receiverUid).setValue(true)
-        memberRef.child(senderUid).setValue(true)
+    suspend fun createMembers(feedId: String, receiverUid: String, senderUid: String) {
+        val membersFeed = memberRef.child(feedId)
+        membersFeed.child(receiverUid).setValue(true)
+        membersFeed.child(senderUid).setValue(true)
     }
 
     suspend fun createChats(
         chatRef: DatabaseReference,
         chatListModel: ChatListModel,
         receiverUid: String,
-        senderUid: String
+        senderUid: String,
     ) {
         chatRef.child(chatListModel.feedFrom.toString()).apply {
             child(receiverUid).setValue(true)
