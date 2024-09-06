@@ -23,4 +23,15 @@ class AlarmRepositoryImpl @Inject constructor(private val alarmRemoteDataSource:
     override suspend fun deleteAlarm(uId: String, alarmId: String) {
         alarmRemoteDataSource.deleteAlarm(uId, alarmId)
     }
+
+    override suspend fun getUnreadAlarmCount(uId: String): Flow<Result<Long>> = flow {
+        emit(Result.Loading)
+        if (uId.isEmpty()) emit(Result.Error("Invalid user ID"))
+        try {
+            val data = alarmRemoteDataSource.getUnreadAlarmCount(uId)
+            emit(Result.Success(data))
+        } catch (e: Exception) {
+            emit(Result.Error(e.message ?: "An unknown error occurred"))
+        }
+    }
 }

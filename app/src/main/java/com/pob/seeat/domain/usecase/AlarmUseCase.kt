@@ -26,4 +26,9 @@ class AlarmUseCase @Inject constructor(
         val currentUserId = userInfoRepository.getCurrentUserUid().firstOrNull() ?: ""
         alarmRepository.deleteAlarm(currentUserId, alarmId)
     }
+
+    suspend fun getUnreadAlarmCount(): Flow<Result<Long>> {
+        val currentUserId = userInfoRepository.getCurrentUserUid().firstOrNull() ?: ""
+        return alarmRepository.getUnreadAlarmCount(currentUserId)
+    }
 }
