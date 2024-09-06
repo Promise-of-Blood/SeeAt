@@ -5,91 +5,103 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.pob.seeat.R
 import com.pob.seeat.databinding.ItemCommentBinding
 import com.pob.seeat.domain.model.CommentModel
 import com.pob.seeat.presentation.view.common.ViewHolder
+import com.pob.seeat.presentation.viewmodel.CommentViewModel
 import com.pob.seeat.utils.Utils.toKoreanDiffString
 import com.pob.seeat.utils.Utils.toLocalDateTime
+class FeedCommentAdapter(
+    private val viewModel: CommentViewModel,
+    private val onClick: (CommentModel) -> Unit,
+    private val onLongClick: (CommentModel) -> Unit
+) : ListAdapter<CommentModel, FeedCommentAdapter.PostViewHolder>(object :
+    DiffUtil.ItemCallback<CommentModel>() {
+    override fun areItemsTheSame(oldItem: CommentModel, newItem: CommentModel): Boolean {
+        return oldItem.commentId == newItem.commentId
+    }
 
-class FeedCommentAdapter(private val onClick: (CommentModel) -> Unit) :
-    ListAdapter<CommentModel, ViewHolder<CommentModel>>(object :
-        DiffUtil.ItemCallback<CommentModel>() {
-        override fun areItemsTheSame(oldItem: CommentModel, newItem: CommentModel): Boolean {
-            return oldItem.commentId == newItem.commentId
-        }
-
-        override fun areContentsTheSame(oldItem: CommentModel, newItem: CommentModel): Boolean {
-            return oldItem == newItem
-        }
+    override fun areContentsTheSame(oldItem: CommentModel, newItem: CommentModel): Boolean {
+        return oldItem == newItem
+    }
+}) {
 
 
-    }) {
+    // ViewHolder 정의
     class PostViewHolder(
-        val binding: ItemCommentBinding,
-        private val onClick: (CommentModel) -> Unit
-    ) :
-        ViewHolder<CommentModel>(binding.root) {
+        private val binding: ItemCommentBinding,
+        private val viewModel: CommentViewModel,
+        private val onClick: (CommentModel) -> Unit,
+        private val onLongClick: (CommentModel) -> Unit
+    ) : ViewHolder<CommentModel>(binding.root) {
+
         override fun onBind(item: CommentModel) = with(binding) {
+
+            val uid = item.user?.id.toString()
+            val feedId = item.feedId
+
+            viewModel.checkMyComment(uid)
+            isOwnerComment(tvCommentFeedOner, uid, feedId)
+            // UI 요소 초기화
             Glide.with(itemView.context)
                 .load(item.userImage)
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .skipMemoryCache(true)
                 .into(ivCommentItemUserImage)
+
             tvCommentItemUsername.text = item.userNickname
             tvCommentItemTimeStamp.text = item.timeStamp?.toLocalDateTime()?.toKoreanDiffString()
             tvCommentItemContent.text = item.comment
 
-            val userId = item.user?.id.toString()
-            val feedId = item.feedId
 
-            isMyComment(clCommentLayout, userId)
-            isOwnerComment(tvCommentFeedOner, userId, feedId)
 
-            clCommentLayout.setOnClickListener {
-                onClick(item)
+            // UI 업데이트: 사용자의 댓글 여부와 소유자 여부에 따른 배경 및 표시 설정
+
+            if(viewModel.isMyComment.value){
+                clCommentLayout.setBackgroundColor(ContextCompat.getColor(root.context,R.color.background_gray))
+            }else{
+                clCommentLayout.setBackgroundColor(ContextCompat.getColor(root.context,R.color.white))
+            }
+
+            if (viewModel.isOwnerComment.value[uid]?:false){
+                tvCommentFeedOner.visibility = View.VISIBLE
+            }else{
+                tvCommentFeedOner.visibility = View.GONE
+            }
+
+            // 클릭 리스너 설정
+            clCommentLayout.setOnClickListener { onClick(item) }
+            clCommentLayout.setOnLongClickListener {
+                onLongClick(item)
+                true
             }
         }
+
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder<CommentModel> {
-        return PostViewHolder(
-            ItemCommentBinding.inflate(
-                LayoutInflater.from(parent.context),
-                parent,
-                false
-            ),
-            onClick
-        )
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
+        val binding = ItemCommentBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return PostViewHolder(binding, viewModel, onClick, onLongClick)
     }
 
-    override fun onBindViewHolder(holder: ViewHolder<CommentModel>, position: Int) {
-        holder.onBind(getItem(position))
+    override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
+        val item = getItem(position)
+        holder.onBind(item) // `onBind` 메서드 호출
     }
+
+
 
 }
 
-fun isMyComment(layout: ConstraintLayout, commentUserUid: String) {
-    layout.apply {
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        val userUid = currentUser?.uid
 
-        if (userUid == commentUserUid) {
-            setBackgroundColor(ContextCompat.getColor(context, R.color.background_gray))
-        } else {
-            setBackgroundColor(ContextCompat.getColor(context, R.color.white))
-        }
-    }
-}
 
 
 fun isOwnerComment(textView: TextView, commentUserUid: String, feedId: String) {

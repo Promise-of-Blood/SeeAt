@@ -13,6 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -50,10 +51,13 @@ import com.pob.seeat.utils.Utils.px
 import com.pob.seeat.utils.Utils.toKoreanDiffString
 import com.pob.seeat.utils.Utils.toLocalDateTime
 import com.pob.seeat.utils.Utils.toTagList
+import com.pob.seeat.utils.dialog.Dialog.showCommentDialog
+import com.pob.seeat.utils.dialog.Dialog.showReportDialog
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import timber.log.Timber
 import java.util.Locale
 import kotlin.math.asin
@@ -73,7 +77,13 @@ class DetailFragment : Fragment() {
     private val detailViewModel: DetailViewModel by viewModels()
     private val commentViewModel: CommentViewModel by viewModels()
 
-    private val feedCommentAdapter: FeedCommentAdapter by lazy { FeedCommentAdapter(::handleClickFeed) }
+    private val feedCommentAdapter: FeedCommentAdapter by lazy {
+        FeedCommentAdapter(
+            commentViewModel,
+            ::handleClickFeed,
+            ::onLongClicked
+        )
+    }
 
     private lateinit var chattingResultLauncher: ActivityResultLauncher<Intent>
 
@@ -102,7 +112,7 @@ class DetailFragment : Fragment() {
         getFeed()
 //        initTagRecyclerView()
 
-        setupUI(view,binding.tvAddCommentButton)
+        setupUI(view, binding.tvAddCommentButton)
         initCommentRecyclerView()
         Timber.i(args.feedIdArg)
         initCommentViewModel()
@@ -166,6 +176,7 @@ class DetailFragment : Fragment() {
     }
 
     private fun initView(feed: FeedModel) {
+
         Timber.i(feed.toString())
         binding.run {
             tvWriterUsername.text = feed.nickname
@@ -271,10 +282,11 @@ class DetailFragment : Fragment() {
     }
 
     private fun initCommentViewModel() {
+
         viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 commentViewModel.comments.collect { comments ->
-                    feedCommentAdapter.submitList(comments)
+                    feedCommentAdapter.submitList(comments.toList())
                 }
             }
         }
@@ -355,6 +367,28 @@ class DetailFragment : Fragment() {
         // Todo 댓글 클릭시
     }
 
+    private fun onLongClicked(feedModel: CommentModel) {
+        val currentUid = FirebaseAuth.getInstance().currentUser?.uid
+        if(feedModel.user?.id == currentUid){
+            showCommentDialog(
+                requireContext(),
+                onDelete = {
+                    commentViewModel.deleteComment(feedModel)
+                    commentViewModel.fetchComments(args.feedIdArg)
+                },
+                onEdit = {
+                    Toast.makeText(requireContext(), "미구현된 기능입니다.", Toast.LENGTH_SHORT).show()
+                }
+            )
+        }else{
+            showReportDialog(
+                requireContext(),
+                onReport = {
+                    Toast.makeText(requireContext(), "미구현된 기능입니다.", Toast.LENGTH_SHORT).show()
+                })
+        }
+    }
+
     private fun sendCommentToServer(comment: String) {
         val feedId = args.feedIdArg
         val timeStamp = Timestamp.now()
@@ -398,7 +432,8 @@ class DetailFragment : Fragment() {
     }
 
     private fun hideKeyboard() {
-        val inputMethodManager = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        val inputMethodManager =
+            requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         val currentFocusView = requireActivity().currentFocus
         currentFocusView?.let {
             inputMethodManager.hideSoftInputFromWindow(it.windowToken, 0)
@@ -406,7 +441,7 @@ class DetailFragment : Fragment() {
     }
 
 
-    private fun setupUI(view: View,vararg exView:View) {
+    private fun setupUI(view: View, vararg exView: View) {
         // ViewGroup인 경우 자식들에게도 적용
         if (view !is EditText && !exView.contains(view)) {
             view.setOnTouchListener { _, _ ->

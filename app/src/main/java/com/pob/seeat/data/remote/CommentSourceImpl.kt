@@ -81,4 +81,21 @@ class CommentSourceImpl @Inject constructor(
             .set(commentData)
             .await()
     }
+
+    override suspend fun getComment(feedId: String, commentId: String): CommentData? {
+        return try {
+            // Firestore에서 특정 댓글을 가져오기
+            val document = firestore.collection("feed")
+                .document(feedId)
+                .collection("comments")
+                .document(commentId)
+                .get()
+                .await()
+
+            document.toObject<CommentData>() // 데이터 객체로 변환
+        } catch (e: Exception) {
+            Log.e("댓글 가져오기 실패", e.message ?: "알 수 없는 오류")
+            null
+        }
+    }
 }
