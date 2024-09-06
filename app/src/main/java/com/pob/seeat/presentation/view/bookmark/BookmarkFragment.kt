@@ -1,5 +1,6 @@
 package com.pob.seeat.presentation.view.bookmark
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +12,7 @@ import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.pob.seeat.R
 import com.pob.seeat.data.model.Result
 import com.pob.seeat.databinding.FragmentBookmarkBinding
 import com.pob.seeat.domain.model.BookmarkModel
@@ -18,7 +20,6 @@ import com.pob.seeat.presentation.viewmodel.BookmarkViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 @AndroidEntryPoint
 class BookmarkFragment : Fragment() {
@@ -27,6 +28,13 @@ class BookmarkFragment : Fragment() {
 
     private val bookmarkViewModel: BookmarkViewModel by viewModels()
     private val bookmarkAdapter: BookmarkAdapter by lazy { BookmarkAdapter(::handleClickBookmark) }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        // 디테일 화면 진입 후, 다른 화면으로 이동했다가 다시 돌아오면 북마크 화면으로 이동
+        // (디테일 화면 pop)
+        findNavController().popBackStack(R.id.navigation_bookmark, false)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
