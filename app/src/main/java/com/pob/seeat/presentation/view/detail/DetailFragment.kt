@@ -2,24 +2,19 @@ package com.pob.seeat.presentation.view.detail
 
 import android.app.Activity
 import android.content.Context
-import android.content.Context.INPUT_METHOD_SERVICE
 import android.content.Intent
-import android.graphics.Rect
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.constraintlayout.widget.ConstraintSet.Motion
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getSystemService
-import androidx.core.content.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -42,16 +37,15 @@ import com.pob.seeat.data.model.Result
 import com.pob.seeat.databinding.FragmentDetailBinding
 import com.pob.seeat.domain.model.CommentModel
 import com.pob.seeat.domain.model.FeedModel
+import com.pob.seeat.domain.model.toBookmarkEntity
 import com.pob.seeat.presentation.view.chat.ChattingActivity
 import com.pob.seeat.presentation.viewmodel.CommentViewModel
 import com.pob.seeat.presentation.viewmodel.DetailViewModel
-import com.pob.seeat.utils.GoogleAuthUtil.getUserUid
 import com.pob.seeat.utils.Utils.px
 import com.pob.seeat.utils.Utils.toKoreanDiffString
 import com.pob.seeat.utils.Utils.toLocalDateTime
 import com.pob.seeat.utils.Utils.toTagList
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -69,6 +63,7 @@ class DetailFragment : Fragment() {
     private val binding get() = _binding!!
 
     val args: DetailFragmentArgs by navArgs()
+    private lateinit var feed: FeedModel
 
     private val detailViewModel: DetailViewModel by viewModels()
     private val commentViewModel: CommentViewModel by viewModels()
@@ -102,7 +97,7 @@ class DetailFragment : Fragment() {
         getFeed()
 //        initTagRecyclerView()
 
-        setupUI(view,binding.tvAddCommentButton)
+        setupUI(view, binding.tvAddCommentButton)
         initCommentRecyclerView()
         Timber.i(args.feedIdArg)
         initCommentViewModel()
@@ -112,7 +107,7 @@ class DetailFragment : Fragment() {
         detailViewModel.getFeedById(args.feedIdArg)
 
         initFeedLiked()
-
+        initIsBookmarked()
 
     }
 
@@ -156,12 +151,36 @@ class DetailFragment : Fragment() {
                         }
 
                         is Result.Success -> {
-                            val feed = response.data
+                            feed = response.data
                             Timber.i("HomeFragment", feed.toString())
                             initView(feed)
                         }
                     }
                 }
+        }
+    }
+
+    private fun initIsBookmarked() = with(detailViewModel) {
+        getIsBookmarked(args.feedIdArg)
+        handleBookmark(detailViewModel.isBookmarked.value)
+        viewLifecycleOwner.lifecycleScope.launch {
+            isBookmarked.flowWithLifecycle(viewLifecycleOwner.lifecycle).collect { isBookmarked ->
+                handleBookmark(isBookmarked)
+                binding.clBookmarkBtn.setOnClickListener {
+                    if (::feed.isInitialized) {
+                        if (detailViewModel.isBookmarked.value) {
+                            detailViewModel.deleteBookmark(feed.feedId)
+                            Toast.makeText(requireContext(), "북마크를 삭제했습니다.", Toast.LENGTH_SHORT)
+                                .show()
+                        } else {
+                            detailViewModel.saveBookmark(feed.toBookmarkEntity())
+                            Toast.makeText(requireContext(), "북마크에 추가했습니다.", Toast.LENGTH_SHORT)
+                                .show()
+                        }
+                        getIsBookmarked(feed.feedId)
+                    }
+                }
+            }
         }
     }
 
@@ -197,10 +216,6 @@ class DetailFragment : Fragment() {
             setLikeCount()
 
 
-            clBookmarkBtn.setOnClickListener {
-                // Todo 북마크 누를 때
-            }
-
             tvFeedGetPositionButton.setOnClickListener {
                 // Todo 위치보기
             }
@@ -227,10 +242,36 @@ class DetailFragment : Fragment() {
             Timber.i(feed.contentImage.toString())
             if (feed.contentImage.isEmpty()) {
                 vpDetailImages.visibility = View.GONE
-                detailImageIndicator.visibility = View.GONE
+//                detailImageIndicator.visibility = View.GONE
             } else {
                 initImageViewPager(feed.contentImage)
             }
+        }
+    }
+
+    private fun handleBookmark(isBookmarked: Boolean) = with(binding) {
+        if (isBookmarked) {
+            tvBookmarkBtnText.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+            ivBookmarkBtnIcon.imageTintList =
+                ContextCompat.getColorStateList(requireContext(), R.color.white)
+            ivBookmarkBtnIcon.setImageDrawable(
+                ContextCompat.getDrawable(
+                    requireContext(),
+                    R.drawable.ic_heart
+                )
+            )
+            clBookmarkBtn.setBackgroundResource(R.drawable.round_r4_primary)
+        } else {
+            tvBookmarkBtnText.setTextColor(ContextCompat.getColor(requireContext(), R.color.gray))
+            ivBookmarkBtnIcon.imageTintList =
+                ContextCompat.getColorStateList(requireContext(), R.color.gray)
+            ivBookmarkBtnIcon.setImageDrawable(
+                ContextCompat.getDrawable(
+                    requireContext(),
+                    R.drawable.ic_heart_outlined
+                )
+            )
+            clBookmarkBtn.setBackgroundResource(R.drawable.round_r4_border)
         }
     }
 
@@ -286,7 +327,7 @@ class DetailFragment : Fragment() {
         val imageViewPager = binding.vpDetailImages
         imageViewPager.adapter = ImagesPagerAdapter(contentImage)
         imageViewPager.orientation = ViewPager2.ORIENTATION_HORIZONTAL
-        binding.detailImageIndicator.setViewPager(imageViewPager)
+//        binding.detailImageIndicator.setViewPager(imageViewPager)
     }
 
     private fun initTag(tags: List<String>) {
@@ -398,7 +439,8 @@ class DetailFragment : Fragment() {
     }
 
     private fun hideKeyboard() {
-        val inputMethodManager = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        val inputMethodManager =
+            requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         val currentFocusView = requireActivity().currentFocus
         currentFocusView?.let {
             inputMethodManager.hideSoftInputFromWindow(it.windowToken, 0)
@@ -406,7 +448,7 @@ class DetailFragment : Fragment() {
     }
 
 
-    private fun setupUI(view: View,vararg exView:View) {
+    private fun setupUI(view: View, vararg exView: View) {
         // ViewGroup인 경우 자식들에게도 적용
         if (view !is EditText && !exView.contains(view)) {
             view.setOnTouchListener { _, _ ->
