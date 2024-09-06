@@ -15,8 +15,9 @@ import com.pob.seeat.presentation.view.chat.viewholder.ChattingOnlyTimeViewHolde
 import com.pob.seeat.presentation.view.chat.viewholder.ChattingViewHolder
 import com.pob.seeat.presentation.view.chat.viewholder.MyChattingSuccessViewHolder
 import com.pob.seeat.presentation.view.chat.viewholder.YourChattingSuccessViewHolder
+import com.pob.seeat.data.model.Result
 
-class ChattingAdapter : ListAdapter<UiState<ChattingUiItem>, ChattingViewHolder>(
+class ChattingAdapter : ListAdapter<Result<ChattingUiItem>, ChattingViewHolder>(
     ChattingDiffUtil()
 ) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChattingViewHolder {
@@ -35,20 +36,20 @@ class ChattingAdapter : ListAdapter<UiState<ChattingUiItem>, ChattingViewHolder>
 
     override fun onBindViewHolder(holder: ChattingViewHolder, position: Int) {
         val nowData = getItem(position)
-        if(nowData is UiState.Success) holder.bind(nowData.data)
+        if(nowData is Result.Success) holder.bind(nowData.data)
     }
 
     override fun getItemViewType(position: Int): Int {
         when(val nowData = getItem(position)) {
-            is UiState.Success -> {
+            is Result.Success -> {
                 return when(nowData.data) {
                     is ChattingUiItem.MyChatItem -> ChattingViewType.MY_CHAT.viewType
                     is ChattingUiItem.YourChatItem -> ChattingViewType.YOUR_CHAT.viewType
                     is ChattingUiItem.OnlyTimeItem -> ChattingViewType.ONLY_TIME.viewType
                 }
             }
-            is UiState.Error -> TODO()
-            UiState.Loading -> TODO()
+            is Result.Error -> TODO()
+            Result.Loading -> TODO()
         }
     }
 

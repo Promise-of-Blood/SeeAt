@@ -90,7 +90,7 @@
         android:layout_marginTop="8dp"
         android:background="@color/white"
         android:paddingHorizontal="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/cl_chatting_input"
         app:layout_constraintTop_toBottomOf="@id/cl_feed_info"
         tools:itemCount="100"
         tools:listitem="@layout/item_chatting_message_me" />
@@ -99,8 +99,9 @@
         android:id="@+id/cl_chatting_input"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:layout_margin="16dp"
+        android:layout_margin="4dp"
         android:background="@drawable/background_chatting_input"
+        app:layout_constraintTop_toBottomOf="@id/rv_message"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <androidx.constraintlayout.widget.Guideline
