@@ -26,7 +26,7 @@ class DetailViewModel @Inject constructor(
     private val _userInfo = MutableStateFlow<UserInfoModel?>(null)
     val userInfo: StateFlow<UserInfoModel?> get() = _userInfo
 
-    private val _isLiked = MutableStateFlow<Boolean>(false)
+    private val _isLiked = MutableStateFlow(false)
     val isLiked: MutableStateFlow<Boolean> get() = _isLiked
 
     private val _singleFeedResponse = MutableStateFlow<Result<FeedModel>>(Result.Loading)
@@ -37,11 +37,9 @@ class DetailViewModel @Inject constructor(
     fun modifyIsLiked(count: Int) {
         viewModelScope.launch {
             if (isLiked.value) {
-                val modifyCount = count - 1
-                EventBus.post(modifyCount)
+                EventBus.post(count - 1)
             } else {
-                val modifyCount = count + 1
-                EventBus.post(modifyCount)
+                EventBus.post(count + 1)
             }
 
         }
