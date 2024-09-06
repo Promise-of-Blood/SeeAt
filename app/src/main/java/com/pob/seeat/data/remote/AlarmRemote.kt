@@ -1,5 +1,6 @@
 package com.pob.seeat.data.remote
 
+import com.google.firebase.firestore.AggregateSource
 import com.google.firebase.firestore.FirebaseFirestore
 import com.pob.seeat.data.model.AlarmResponse
 import com.pob.seeat.data.model.Result
@@ -57,6 +58,11 @@ class AlarmRemote @Inject constructor(
 
     suspend fun deleteAlarm(uId: String, alarmId: String) {
         getAlarmRef(uId).document(alarmId).delete().await()
+    }
+
+    suspend fun getUnreadAlarmCount(uId: String): Long {
+        return getAlarmRef(uId).whereEqualTo("isRead", false).count()
+            .get(AggregateSource.SERVER).await().count
     }
 
     private fun getAlarmRef(uId: String) =
