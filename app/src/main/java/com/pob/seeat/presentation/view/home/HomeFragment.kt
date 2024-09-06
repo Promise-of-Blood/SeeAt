@@ -289,14 +289,21 @@ class HomeFragment : Fragment() {
         val scaleBarView = binding.naverScaleBar
         scaleBarView.map = naverMap
 
+        var isCamMoving = false
         naverMap.addOnCameraChangeListener { reason, animated ->
-            Timber.tag("HomeFragment")
-                .d("카메라가 움직이고 있습니다. Reason: " + reason + ", Animated: " + animated)
+            if(!isCamMoving) {
+                isCamMoving = true
+                Timber.tag("HomeFragment")
+                    .d("카메라가 움직이고 있습니다. Reason: " + reason + ", Animated: " + animated)
+            }
         }
 
         // 카메라 움직임이 멈췄을 때 콜백을 받는 리스너 설정
         naverMap.addOnCameraIdleListener {
-            Timber.tag("HomeFragment").d("카메라 움직임이 멈췄습니다.")
+            if(isCamMoving) {
+                isCamMoving = false
+                Timber.tag("HomeFragment").d("카메라 움직임이 멈췄습니다.")
+            }
         }
 
     }
