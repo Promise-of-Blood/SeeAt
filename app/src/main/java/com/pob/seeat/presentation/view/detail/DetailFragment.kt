@@ -15,6 +15,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet.Motion
 import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getSystemService
@@ -31,7 +32,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.google.android.material.chip.Chip
-import com.google.firebase.Firebase
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -43,16 +43,15 @@ import com.pob.seeat.databinding.FragmentDetailBinding
 import com.pob.seeat.domain.model.CommentModel
 import com.pob.seeat.domain.model.FeedModel
 import com.pob.seeat.presentation.view.chat.ChattingActivity
-import com.pob.seeat.presentation.view.home.MarginItemDecoration
-import com.pob.seeat.presentation.view.home.TagAdapter
 import com.pob.seeat.presentation.viewmodel.CommentViewModel
 import com.pob.seeat.presentation.viewmodel.DetailViewModel
+import com.pob.seeat.utils.GoogleAuthUtil.getUserUid
 import com.pob.seeat.utils.Utils.px
-import com.pob.seeat.utils.Utils.tagList
 import com.pob.seeat.utils.Utils.toKoreanDiffString
 import com.pob.seeat.utils.Utils.toLocalDateTime
 import com.pob.seeat.utils.Utils.toTagList
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -94,8 +93,7 @@ class DetailFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentDetailBinding.inflate(inflater, container, false)
-        detailViewModel.getFeedById(args.feedIdArg)
-
+        initDetailViewmodel()
         return binding.root
     }
 
@@ -107,7 +105,35 @@ class DetailFragment : Fragment() {
         setupUI(view,binding.tvAddCommentButton)
         initCommentRecyclerView()
         Timber.i(args.feedIdArg)
-        initViewModel()
+        initCommentViewModel()
+    }
+
+    private fun initDetailViewmodel() {
+        detailViewModel.getFeedById(args.feedIdArg)
+
+        initFeedLiked()
+
+
+    }
+
+    private fun initFeedLiked() {
+        val uid = detailViewModel.uid
+        if (uid != null) {
+            detailViewModel.getUserInfo(uid)
+        } else {
+            Timber.e("userUid", "uid 조회 실패")
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            detailViewModel.userInfo.collect { userInfo ->
+                if (userInfo != null) {
+                    Timber.i(userInfo.likedFeedList.toString())
+                    detailViewModel.setIsLiked(args.feedIdArg in userInfo.likedFeedList)
+                } else {
+                    Timber.e("userInfo is null")
+                }
+            }
+        }
     }
 
     private fun initCommentRecyclerView() {
@@ -149,11 +175,11 @@ class DetailFragment : Fragment() {
                 .into(ivWriterImage)
 
             tvFeedTitle.text = feed.title
-            //todo 이미지 연결
             tvFeedTimeAgo.text = feed.date?.toLocalDateTime()?.toKoreanDiffString()
             tvFeedContent.text = feed.content
             tvFeedDetailLikeCount.text = feed.like.toString()
             tvCommentCount.text = feed.commentsCount.toString()
+
             // Todo 나의 위치 가져오기
             val myLatitude = 37.570201
             val myLongitude = 126.976879
@@ -162,9 +188,14 @@ class DetailFragment : Fragment() {
                 val distance = calculateDistance(geoPoint, it)
                 tvMyDistance.text = formatDistanceToString(distance)
             }
+
+            setFeedLikeButton(clLikeBtn)
+
             clLikeBtn.setOnClickListener {
-                // Todo 좋아요 누를때
+                detailViewModel.isLikedToggle(args.feedIdArg)
             }
+            setLikeCount()
+
 
             clBookmarkBtn.setOnClickListener {
                 // Todo 북마크 누를 때
@@ -203,7 +234,43 @@ class DetailFragment : Fragment() {
         }
     }
 
-    private fun initViewModel() {
+    private fun setLikeCount() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            detailViewModel.isLiked.collect { isLiked ->
+                val currentLikeCount =
+                    binding.tvFeedDetailLikeCount.text.toString().toIntOrNull() ?: 0
+
+                val newCount = if (isLiked) {
+                    currentLikeCount + 1
+                } else {
+                    currentLikeCount - 1
+                }
+
+                binding.tvFeedDetailLikeCount.text = newCount.toString()
+
+            }
+        }
+    }
+
+    private fun setFeedLikeButton(clLikeBtn: ConstraintLayout) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            detailViewModel.isLiked.collect { isLiked ->
+                when (isLiked) {
+                    true -> {
+                        clLikeBtn.background =
+                            ContextCompat.getDrawable(requireContext(), R.drawable.round_r4_primary)
+                    }
+
+                    false -> {
+                        clLikeBtn.background =
+                            ContextCompat.getDrawable(requireContext(), R.drawable.round_r4_border)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun initCommentViewModel() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 commentViewModel.comments.collect { comments ->

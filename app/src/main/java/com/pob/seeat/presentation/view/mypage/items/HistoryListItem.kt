@@ -15,7 +15,7 @@ sealed class HistoryListItem {
         val likeCount: Int,
         val time: String,
         val image: String,
-        val viewType: HistoryEnum = HistoryEnum.FEED,
+        val viewType: HistoryEnum,
     ) : HistoryListItem()
 
     data class CommentItem(
@@ -29,7 +29,7 @@ sealed class HistoryListItem {
     ) : HistoryListItem()
 }
 
-fun List<FeedModel>.toHistoryListFeedItemList(): List<HistoryListItem> {
+fun List<FeedModel>.toHistoryListFeedItemList(type: HistoryEnum = HistoryEnum.FEED): List<HistoryListItem> {
     return this.map {
         HistoryListItem.FeedItem(
             feedId = it.feedId,
@@ -39,7 +39,8 @@ fun List<FeedModel>.toHistoryListFeedItemList(): List<HistoryListItem> {
             commentCount = it.commentsCount,
             likeCount = it.like,
             time = it.date?.toLocalDateTime()?.toKoreanDiffString() ?: "",
-            image = "https://picsum.photos/200",
+            image = it.contentImage.firstOrNull() ?: "",
+            viewType = type,
         )
     }
 }

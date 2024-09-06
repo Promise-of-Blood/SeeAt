@@ -24,6 +24,7 @@ import com.pob.seeat.presentation.view.mypage.settings.SettingsActivity
 import com.pob.seeat.presentation.viewmodel.UserInfoViewModel
 import com.pob.seeat.utils.GoogleAuthUtil
 import com.pob.seeat.utils.GoogleAuthUtil.getUserUid
+import com.pob.seeat.utils.Utils.toFormatShortenedString
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -154,6 +155,8 @@ class MyPageFragment : Fragment() {
                         }
                         tvUserName.text = userInfo.nickname
                         tvUserIntroduce.text = userInfo.introduce
+                        tvUserPostNum.text = userInfo.feedCount.toFormatShortenedString()
+                        tvUserCommentNum.text = userInfo.commentCount.toFormatShortenedString()
                     }
                 } else {
                     Log.e("MyPageFragment", "UserInfo is null")

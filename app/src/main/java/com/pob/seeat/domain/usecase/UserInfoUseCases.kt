@@ -1,7 +1,6 @@
 package com.pob.seeat.domain.usecase
 
 
-import com.google.firebase.auth.UserInfo
 import com.pob.seeat.domain.model.UserInfoModel
 import com.pob.seeat.domain.repository.UserInfoRepository
 import kotlinx.coroutines.flow.firstOrNull
@@ -11,7 +10,9 @@ data class UserInfoUseCases(
     val updateUserInfoUseCase : UpdateUserInfoUseCase,
     val deleteUserInfoUseCase : DeleteUserInfoUseCase,
     val getUserInfoUseCase : GetUserInfoUseCase,
-    val getUserInfoByEmailUseCase : GetUserInfoByEmailUseCase
+    val getUserInfoByEmailUseCase : GetUserInfoByEmailUseCase,
+    val createLikedFeed: CreateLikedFeed,
+    val removeLikedFeed: RemoveLikedFeed
 )
 
 class CreateUserInfoUseCase(private val repository: UserInfoRepository){
@@ -41,5 +42,17 @@ class GetUserInfoUseCase(private val repository: UserInfoRepository){
 class GetUserInfoByEmailUseCase(private val repository : UserInfoRepository){
     suspend fun execute(email:String):UserInfoModel?{
         return repository.getUserInfoByEmail(email).firstOrNull()
+    }
+}
+
+class CreateLikedFeed(private val repository: UserInfoRepository){
+    suspend fun execute(uid: String, feedUid: String){
+        repository.createLikedFeed(uid, feedUid)
+    }
+}
+
+class RemoveLikedFeed(private val repository: UserInfoRepository) {
+    suspend fun execute(uid: String, feedUid: String){
+        repository.removeLikedFeed(uid, feedUid)
     }
 }
