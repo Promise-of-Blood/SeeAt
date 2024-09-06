@@ -12,31 +12,25 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.chip.Chip
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
 import com.pob.seeat.R
-import com.pob.seeat.databinding.FragmentHomeBinding
 import com.pob.seeat.databinding.FragmentNewFeedBinding
-import com.pob.seeat.presentation.view.home.TagAdapter
-import com.pob.seeat.utils.Utils.tagList
 import dagger.hilt.android.AndroidEntryPoint
 import com.google.firebase.Timestamp
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.GeoPoint
-import com.google.firebase.firestore.firestoreSettings
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraPosition
-import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
 import com.pob.seeat.MainActivity
 import com.pob.seeat.data.repository.NaverMapWrapper
 import com.pob.seeat.domain.model.TagModel
 import com.pob.seeat.presentation.viewmodel.NewFeedViewModel
+import com.pob.seeat.utils.GoogleAuthUtil.getUserUid
 import com.pob.seeat.utils.Utils.px
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -61,6 +55,8 @@ class NewFeedFragment : Fragment() {
     private var selectedTagList = emptyList<TagModel>()
     private var selectLocation: LatLng? = null
 
+    private val uid = getUserUid()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -78,7 +74,6 @@ class NewFeedFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initNaverMap()
         initialSetting()
-        uploadFeed()
     }
 
     private fun initNaverMap() {
@@ -204,6 +199,10 @@ class NewFeedFragment : Fragment() {
 
     private fun initialSetting() {
         binding.apply {
+            ivUploadImage.setOnClickListener {
+                // TODO 이미지 추가 코드
+            }
+
             tvMap.setOnClickListener {
                 findNavController().navigate(R.id.action_new_feed_to_select_locate)
             }
@@ -215,6 +214,10 @@ class NewFeedFragment : Fragment() {
                     R.style.RoundCornerBottomSheetDialogTheme
                 )
                 modal.show(parentFragmentManager, modal.tag)
+            }
+
+            tvUploadFeed.setOnClickListener {
+                uploadFeed()
             }
         }
 
@@ -231,55 +234,80 @@ class NewFeedFragment : Fragment() {
     }
 
     private fun uploadFeed() {
-        binding.apply {
+        if (checkException()) {
             Timber.tag("NewFeed").d("Upload Feed")
-            tvUploadFeed.setOnClickListener {
-                val firestore = FirebaseFirestore.getInstance()
+            val firestore = FirebaseFirestore.getInstance()
 
-                val tagNameList = selectedTagList.map { it.tagName }
-                val currentUser = FirebaseAuth.getInstance().currentUser
+            val tagNameList = selectedTagList.map { it.tagName }
 
-                var userDocRef: DocumentReference = FirebaseFirestore.getInstance()
-                    .collection("user")
-                    .document("4Y4GoAwt6yTlXYbeGzTbQTea9rq2")
+            val userDocRef: DocumentReference = firestore
+                .collection("user")
+                .document(uid!!)
 
-                currentUser?.let { user ->
-                    val uid = user.uid
+            val feedData: HashMap<String, Any> = hashMapOf(
+                "title" to binding.etTitle.text.toString(),
+                "content" to binding.etContent.text.toString(),
+                "date" to Timestamp(Date()),
+                "tagList" to tagNameList,
+                "location" to GeoPoint(selectLocation!!.latitude, selectLocation!!.longitude),
+                "like" to 0,
+                "commentsCount" to 0,
+                "user" to userDocRef
+            )
 
-                    userDocRef = FirebaseFirestore.getInstance()
-                        .collection("user")
-                        .document(uid)
+            val db = Firebase.firestore
+            Timber.tag("NewFeed").d("send firestore")
+            db.collection("feed")
+                .document()
+                .set(feedData)
+                .addOnSuccessListener {
+                    // 성공 시 처리
+                    Timber.d("DocumentSnapshot added successfully")
+                    Toast.makeText(context, "업로드 성공", Toast.LENGTH_SHORT).show()
+                    requireActivity().onBackPressed()
                 }
-
-                val feedData: HashMap<String, Any> = hashMapOf(
-                    "title" to etTitle.text.toString(),
-                    "content" to etContent.text.toString(),
-                    "date" to Timestamp(Date()),
-                    "tagList" to tagNameList,
-                    "location" to GeoPoint(selectLocation!!.latitude, selectLocation!!.longitude),
-                    "like" to 0,
-                    "commentsCount" to 0,
-                    "user" to userDocRef
-                )
-
-                val db = Firebase.firestore
-                Timber.tag("NewFeed").d("send firestore")
-                db
-                    .collection("feed")
-                    .document()
-                    .set(feedData)
-                    .addOnSuccessListener { documentReference ->
-                        // 성공 시 처리
-                        Timber.d("DocumentSnapshot added with ID: $documentReference")
-                        Toast.makeText(context, "업로드 성공", Toast.LENGTH_SHORT).show()
-                        requireActivity().onBackPressed()
-                    }
-                    .addOnFailureListener { e ->
-                        // 실패 시 처리
-                        Timber.w(e, "Error adding document")
-                        Toast.makeText(context, "업로드 실패", Toast.LENGTH_SHORT).show()
-                    }
-            }
+                .addOnFailureListener { e ->
+                    // 실패 시 처리
+                    Timber.w(e, "Error adding document")
+                    Toast.makeText(context, "업로드 실패", Toast.LENGTH_SHORT).show()
+                }
         }
+
+
     }
+
+    private fun checkException(): Boolean {
+        // title, content, selectLocation이 모두 유효한지 검사
+        val title = binding.etTitle.text.toString().trim()
+        val content = binding.etContent.text.toString().trim()
+        val location = selectLocation
+
+        // 제목이 비어 있을 때
+        if (uid == null) {
+            Toast.makeText(context, "유저 정보가 없습니다.", Toast.LENGTH_SHORT).show()
+            return false
+        }
+
+        // 제목이 비어 있을 때
+        if (title.isEmpty()) {
+            Toast.makeText(context, "제목을 입력해 주세요", Toast.LENGTH_SHORT).show()
+            return false
+        }
+
+        // 내용이 비어 있을 때
+        if (content.isEmpty()) {
+            Toast.makeText(context, "내용을 입력해 주세요", Toast.LENGTH_SHORT).show()
+            return false
+        }
+
+        // 위치가 선택되지 않았을 때
+        if (location == null) {
+            Toast.makeText(context, "위치를 선택해 주세요", Toast.LENGTH_SHORT).show()
+            return false
+        }
+
+        // 모든 조건이 만족되면 true 반환
+        return true
+    }
+
 }
