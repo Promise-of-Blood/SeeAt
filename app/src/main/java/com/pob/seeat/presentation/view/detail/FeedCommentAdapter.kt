@@ -10,6 +10,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
@@ -41,6 +42,8 @@ class FeedCommentAdapter(private val onClick: (CommentModel) -> Unit) :
         override fun onBind(item: CommentModel) = with(binding) {
             Glide.with(itemView.context)
                 .load(item.userImage)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)
                 .into(ivCommentItemUserImage)
             tvCommentItemUsername.text = item.userNickname
             tvCommentItemTimeStamp.text = item.timeStamp?.toLocalDateTime()?.toKoreanDiffString()
