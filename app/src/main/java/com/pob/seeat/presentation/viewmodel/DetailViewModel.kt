@@ -37,11 +37,9 @@ class DetailViewModel @Inject constructor(
     fun modifyIsLiked(count: Int) {
         viewModelScope.launch {
             if (isLiked.value) {
-                val modifyCount = count - 1
-                EventBus.post(modifyCount)
+                EventBus.post(count - 1)
             } else {
-                val modifyCount = count + 1
-                EventBus.post(modifyCount)
+                EventBus.post(count + 1)
             }
 
         }
