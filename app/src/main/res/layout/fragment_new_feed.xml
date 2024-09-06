@@ -5,192 +5,181 @@
     android:id="@+id/navigation_add_marker"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingHorizontal="16dp"
-    android:paddingVertical="32dp"
+    android:background="@color/background_gray"
     tools:context=".presentation.view.feed.NewFeedFragment">
 
-    <androidx.appcompat.widget.AppCompatEditText
-        android:id="@+id/et_title"
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar_message"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="제목 입력"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/select_tag"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/et_title"
-        app:layout_constraintStart_toStartOf="parent"
-        android:text="태그 선택"/>
-
-    <androidx.appcompat.widget.AppCompatEditText
-        android:id="@+id/et_content"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="내용 입력"
-        app:layout_constraintTop_toBottomOf="@id/select_tag" />
-
-    <TextView
-        android:id="@+id/tv_upload"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@color/primary"
-        android:padding="8dp"
-        android:text="올리기"
-        android:textColor="@color/white"
-        android:textSize="24sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:background="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navigationIcon="@drawable/ic_arrow_left"
+        app:title="씨앗 심기" />
 
-<!--    <androidx.constraintlayout.widget.ConstraintLayout-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:clipChildren="false"-->
-<!--        android:clipToPadding="false"-->
-<!--        android:padding="16dp"-->
-<!--        app:layout_constraintTop_toBottomOf="@id/et_content"-->
-<!--        app:behavior_draggable="true"-->
-<!--        app:behavior_hideable="true"-->
-<!--        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">-->
+    <ImageView
+        android:id="@+id/iv_upload_image"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/background_corners_radius_8dp"
+        android:backgroundTint="@color/primary"
+        android:padding="8dp"
+        android:src="@drawable/ic_camera"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="@id/toolbar_message"
+        app:layout_constraintEnd_toEndOf="@id/toolbar_message"
+        app:layout_constraintTop_toTopOf="@id/toolbar_message"
+        app:tint="@color/white" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/tv_upload_feed"
+        app:layout_constraintTop_toBottomOf="@id/toolbar_message">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/et_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@color/white"
+                android:defaultFocusHighlightEnabled="true"
+                android:hint="글 제목"
+                android:padding="16dp"
+                android:textColorHighlight="@color/primary"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_select_tag"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@color/white"
+                android:padding="16dp"
+                android:textColor="@color/light_gray"
+                android:text="태그를 선택해 주세요"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/et_title" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chip_group"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="@id/tv_select_tag"
+                app:layout_constraintTop_toTopOf="@id/tv_select_tag"
+                app:selectionRequired="false" />
+
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginEnd="16dp"
+                android:src="@drawable/ic_arrow_down"
+                app:layout_constraintBottom_toBottomOf="@id/tv_select_tag"
+                app:layout_constraintEnd_toEndOf="@id/tv_select_tag"
+                app:layout_constraintTop_toTopOf="@id/tv_select_tag"
+                app:tint="@color/light_gray" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cl_select_locate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@color/white"
+                android:padding="16dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_select_tag">
+
+                <TextView
+                    android:id="@+id/tv_select_locate"
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:gravity="center_vertical"
+                    android:text="씨앗 위치"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <androidx.fragment.app.FragmentContainerView
+                    android:id="@+id/map"
+                    android:name="com.naver.maps.map.MapFragment"
+                    android:visibility="invisible"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:background="@drawable/background_select_locate"
+                    android:clipToOutline="true"
+                    app:layout_constraintTop_toTopOf="@id/tv_map"
+                    app:layout_constraintBottom_toBottomOf="@id/tv_map"
+                    app:layout_constraintStart_toStartOf="@id/tv_map"
+                    app:layout_constraintEnd_toEndOf="@id/tv_map"/>
+
+                <ImageView
+                    android:id="@+id/iv_marker_shadow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_marker_shadow"
+                    app:layout_constraintBottom_toBottomOf="@id/map"
+                    app:layout_constraintEnd_toEndOf="@id/map"
+                    app:layout_constraintStart_toStartOf="@id/map"
+                    app:layout_constraintTop_toTopOf="@id/map" />
+
+                <ImageView
+                    android:id="@+id/iv_marker"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@drawable/ic_location_pin"
+                    app:layout_constraintBottom_toBottomOf="@id/iv_marker_shadow"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:tint="@color/primary" />
+
+                <TextView
+                    android:id="@+id/tv_map"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="8dp"
+                    android:gravity="center"
+                    android:text="씨앗 위치를 정해주세요!"
+                    android:background="@drawable/background_select_locate"
+                    android:clipToOutline="true"
+                    app:layout_constraintDimensionRatio="3:2"
+                    app:layout_constraintTop_toBottomOf="@id/tv_select_locate" />
 
 
-<!--        <TextView-->
-<!--            android:id="@+id/tv_sheet_title"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:text="게시글 태그를 선택해 주세요."-->
-<!--            android:textSize="18sp"-->
-<!--            android:textStyle="bold"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintTop_toTopOf="parent" />-->
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-<!--        <com.google.android.material.chip.ChipGroup-->
-<!--            android:id="@+id/chips_group"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginTop="16dp"-->
-<!--            app:layout_constraintTop_toBottomOf="@id/tv_sheet_title"-->
-<!--            app:selectionRequired="true">-->
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/et_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@color/white"
+                android:gravity="top"
+                android:hint="내용 입력"
+                android:minHeight="200dp"
+                android:padding="16dp"
+                app:layout_constraintTop_toBottomOf="@id/cl_select_locate" />
 
-<!--            <com.google.android.material.chip.Chip-->
-<!--                android:id="@+id/chip_restaurant"-->
-<!--                style="@style/custom_chip_style"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:text="맛집 추천"-->
-<!--                app:chipIcon="@drawable/ic_soup" />-->
 
-<!--            <com.google.android.material.chip.Chip-->
-<!--                android:id="@+id/chip_group"-->
-<!--                style="@style/custom_chip_style"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:text="모임"-->
-<!--                app:chipIcon="@drawable/ic_beer_strok" />-->
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-<!--            <com.google.android.material.chip.Chip-->
-<!--                android:id="@+id/chip_gym"-->
-<!--                style="@style/custom_chip_style"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:text="운동 친구"-->
-<!--                app:chipBackgroundColor="@drawable/background_chip_background_selector"-->
-<!--                app:chipIcon="@drawable/ic_gym" />-->
+    </ScrollView>
 
-<!--            <com.google.android.material.chip.Chip-->
-<!--                android:id="@+id/chip_study"-->
-<!--                style="@style/custom_chip_style"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:text="스터디"-->
-<!--                app:chipBackgroundColor="@drawable/background_chip_background_selector"-->
-<!--                app:chipIcon="@drawable/ic_pencil" />-->
-
-<!--            <com.google.android.material.chip.Chip-->
-<!--                android:id="@+id/ic_lost_item"-->
-<!--                style="@style/custom_chip_style"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:text="분실물"-->
-<!--                app:chipBackgroundColor="@drawable/background_chip_background_selector"-->
-<!--                app:chipIcon="@drawable/ic_lost_item" />-->
-
-<!--            <com.google.android.material.chip.Chip-->
-<!--                android:id="@+id/ic_info"-->
-<!--                style="@style/custom_chip_style"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:text="정보공유"-->
-<!--                app:chipBackgroundColor="@drawable/background_chip_background_selector"-->
-<!--                app:chipIcon="@drawable/ic_info" />-->
-
-<!--            <com.google.android.material.chip.Chip-->
-<!--                android:id="@+id/ic_question"-->
-<!--                style="@style/custom_chip_style"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:text="질문"-->
-<!--                app:chipBackgroundColor="@drawable/background_chip_background_selector"-->
-<!--                app:chipIcon="@drawable/ic_question" />-->
-
-<!--            <com.google.android.material.chip.Chip-->
-<!--                android:id="@+id/ic_paw"-->
-<!--                style="@style/custom_chip_style"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:text="산책"-->
-<!--                app:chipBackgroundColor="@drawable/background_chip_background_selector"-->
-<!--                app:chipIcon="@drawable/ic_paw" />-->
-
-<!--            <com.google.android.material.chip.Chip-->
-<!--                android:id="@+id/ic_restaurant"-->
-<!--                style="@style/custom_chip_style"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:text="밥친구"-->
-<!--                app:chipBackgroundColor="@drawable/background_chip_background_selector"-->
-<!--                app:chipIcon="@drawable/ic_restaurant" />-->
-
-<!--            <com.google.android.material.chip.Chip-->
-<!--                android:id="@+id/ic_microphone_line"-->
-<!--                style="@style/custom_chip_style"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:text="노래방"-->
-<!--                app:chipBackgroundColor="@drawable/background_chip_background_selector"-->
-<!--                app:chipIcon="@drawable/ic_microphone_line" />-->
-
-<!--            <com.google.android.material.chip.Chip-->
-<!--                android:id="@+id/ic_flag"-->
-<!--                style="@style/custom_chip_style"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:text="도움"-->
-<!--                app:chipBackgroundColor="@drawable/background_chip_background_selector"-->
-<!--                app:chipIcon="@drawable/ic_flag" />-->
-
-<!--            <com.google.android.material.chip.Chip-->
-<!--                android:id="@+id/ic_megaphone"-->
-<!--                style="@style/custom_chip_style"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:text="긴급"-->
-<!--                app:chipBackgroundColor="@drawable/background_chip_background_selector"-->
-<!--                app:chipIcon="@drawable/ic_megaphone" />-->
-
-<!--            <com.google.android.material.chip.Chip-->
-<!--                android:id="@+id/ic_sparkles"-->
-<!--                style="@style/custom_chip_style"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:text="기타"-->
-<!--                app:chipBackgroundColor="@drawable/background_chip_background_selector"-->
-<!--                app:chipIcon="@drawable/ic_sparkles" />-->
-
-<!--        </com.google.android.material.chip.ChipGroup>-->
-
-<!--    </androidx.constraintlayout.widget.ConstraintLayout>-->
+    <TextView
+        android:id="@+id/tv_upload_feed"
+        style="@style/signup_next_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingVertical="16dp"
+        android:text="등록"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

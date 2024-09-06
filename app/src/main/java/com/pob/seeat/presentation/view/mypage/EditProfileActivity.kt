@@ -93,7 +93,6 @@ class EditProfileActivity : AppCompatActivity() {
                     val uid = userViewModel.userInfo.value?.uid
                     val nickname = etvEditNickname.text.toString().trim()
                     val introduce = etvEditIntroduce.text.toString().trim()
-                    val profileUrl = profileImageUri
 
                     if (nickname.isBlank()) {
                         Toast.makeText(this@EditProfileActivity, "닉네임을 입력해주세요.", Toast.LENGTH_SHORT).show()
@@ -120,7 +119,33 @@ class EditProfileActivity : AppCompatActivity() {
                     }
                 }
                 else ->{
+                    val uid = userViewModel.userInfo.value?.uid
+                    val nickname = etvEditNickname.text.toString().trim()
+                    val introduce = etvEditIntroduce.text.toString().trim()
 
+                    if (nickname.isBlank()) {
+                        Toast.makeText(this@EditProfileActivity, "닉네임을 입력해주세요.", Toast.LENGTH_SHORT).show()
+                    }
+
+                    if (introduce.isBlank()) {
+                        Toast.makeText(this@EditProfileActivity, "소개글을 입력해주세요.", Toast.LENGTH_SHORT).show()
+                    }
+
+                    if (uid != null) {
+
+                        userViewModel.editProfile(uid, nickname, introduce)
+                        Toast.makeText(this@EditProfileActivity, "프로필 업데이트 완료", Toast.LENGTH_SHORT).show()
+
+                        val intent = Intent()
+                        intent.putExtra("updatedNickname", nickname)
+                        intent.putExtra("updatedIntroduce", introduce)
+
+                        setResult(Activity.RESULT_OK, intent)
+                        finish()
+
+                    } else {
+                        Toast.makeText(this@EditProfileActivity, "프로필 업데이트 실패", Toast.LENGTH_SHORT).show()
+                    }
 
                 }
             }
@@ -178,7 +203,7 @@ class EditProfileActivity : AppCompatActivity() {
         binding.pbBackground.visibility = View.VISIBLE
         binding.pbEditPhoto.visibility = View.VISIBLE
 
-        val uid = getUserUid()
+        val uid = userViewModel.userInfo.value?.uid
 
         // 이미지 리사이즈 및 압축
         val resizedBitmap = resizeImage(this@EditProfileActivity, uri)

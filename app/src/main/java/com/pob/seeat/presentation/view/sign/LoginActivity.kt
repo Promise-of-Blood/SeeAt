@@ -113,7 +113,7 @@ class LoginActivity : AppCompatActivity() {
 
     private fun isOurFamily(email: String, onUserExists: () -> Unit, onUserNotExist: () -> Unit) {
         val database = FirebaseFirestore.getInstance()
-
+        Log.d("가족","$email")
         if (email.isNotEmpty()) {
             // 이메일 필드가 email과 일치하는 문서 찾기
             database.collection("user")
@@ -123,7 +123,7 @@ class LoginActivity : AppCompatActivity() {
                     if (documents.isEmpty) {
                         onUserNotExist() // 일치하는 문서가 없는 경우
                     } else {
-                        onUserNotExist()
+                        onUserExists()
                     }
                 }
                 .addOnFailureListener { exception ->

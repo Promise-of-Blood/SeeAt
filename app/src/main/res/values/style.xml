@@ -27,7 +27,7 @@
     </style>
 
     <style name="custom_chip_style" parent="Widget.MaterialComponents.Chip.Action">
-        <item name="chipBackgroundColor">@drawable/background_chip_background_selector</item>
+        <item name="chipBackgroundColor">@color/background_chip_background_selector</item>
         <item name="chipStrokeWidth">0dp</item>
         <item name="chipIconSize">16dp</item>>
         <item name="chipStrokeColor">@color/transparent</item>
