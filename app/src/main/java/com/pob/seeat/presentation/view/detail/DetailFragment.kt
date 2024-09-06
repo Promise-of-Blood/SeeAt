@@ -41,6 +41,7 @@ import com.pob.seeat.domain.model.toBookmarkEntity
 import com.pob.seeat.presentation.view.chat.ChattingActivity
 import com.pob.seeat.presentation.viewmodel.CommentViewModel
 import com.pob.seeat.presentation.viewmodel.DetailViewModel
+import com.pob.seeat.utils.EventBus
 import com.pob.seeat.utils.Utils.px
 import com.pob.seeat.utils.Utils.toKoreanDiffString
 import com.pob.seeat.utils.Utils.toLocalDateTime
@@ -212,8 +213,14 @@ class DetailFragment : Fragment() {
 
             clLikeBtn.setOnClickListener {
                 detailViewModel.isLikedToggle(args.feedIdArg)
+                detailViewModel.modifyIsLiked(tvFeedDetailLikeCount.text.toString().toInt())
             }
-            setLikeCount()
+
+            viewLifecycleOwner.lifecycleScope.launch {
+                EventBus.subscribe().collect { value ->
+                    tvFeedDetailLikeCount.text = value.toString()
+                }
+            }
 
 
             tvFeedGetPositionButton.setOnClickListener {
@@ -242,7 +249,7 @@ class DetailFragment : Fragment() {
             Timber.i(feed.contentImage.toString())
             if (feed.contentImage.isEmpty()) {
                 vpDetailImages.visibility = View.GONE
-//                detailImageIndicator.visibility = View.GONE
+                detailImageIndicator.visibility = View.GONE
             } else {
                 initImageViewPager(feed.contentImage)
             }
@@ -327,7 +334,7 @@ class DetailFragment : Fragment() {
         val imageViewPager = binding.vpDetailImages
         imageViewPager.adapter = ImagesPagerAdapter(contentImage)
         imageViewPager.orientation = ViewPager2.ORIENTATION_HORIZONTAL
-//        binding.detailImageIndicator.setViewPager(imageViewPager)
+        binding.detailImageIndicator.setViewPager(imageViewPager)
     }
 
     private fun initTag(tags: List<String>) {
