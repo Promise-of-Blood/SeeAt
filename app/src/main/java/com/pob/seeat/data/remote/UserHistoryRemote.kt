@@ -16,6 +16,7 @@ class UserHistoryRemote @Inject constructor(
     ): List<FeedModel> {
         val userRef = firestore.collection("user").document(uid ?: "")
         var feedDocuments = firestore.collection("feed").whereEqualTo("user", userRef)
+            .orderBy("date", Query.Direction.DESCENDING) // 최신순
         if (limit != null) feedDocuments = feedDocuments.limit(limit)
         if (startAfter != null) feedDocuments = feedDocuments.startAfter(startAfter)
         return feedDocuments.get().await().documents.mapNotNull { documentSnapshot ->
@@ -34,6 +35,7 @@ class UserHistoryRemote @Inject constructor(
     ): List<CommentHistoryModel> {
         val userRef = firestore.collection("user").document(uid ?: "")
         var commentsDocuments = firestore.collectionGroup("comments").whereEqualTo("user", userRef)
+            .orderBy("timeStamp", Query.Direction.DESCENDING) // 최신순
         val feedDocumentsMap =
             mutableMapOf<String, DocumentSnapshot>() // 같은 글에 여러 개의 댓글을 단 경우 중복 요청 방지
         if (limit != null) commentsDocuments = commentsDocuments.limit(limit)
@@ -70,6 +72,6 @@ class UserHistoryRemote @Inject constructor(
                 tags = tagList?.filterIsInstance<String>().orEmpty(),
                 contentImage = imageList?.filterIsInstance<String>() ?: emptyList(),
             )
-        }
+        }.sortedByDescending { it.date }
     }
 }
