@@ -110,4 +110,10 @@
     <string name="navigation_select_locate">마커 선택 화면</string>
     <string name="navigation_new_feed">피드 추가 화면</string>
 
+    <!-- dialog -->
+    <string name="dialog_my_comment_title">댓글 관리</string>
+    <string name="dialog_my_comment_delete">삭제</string>
+    <string name="dialog_my_comment_edit">수정</string>
+    <string name="dialog_other_comment_report">신고</string>
+
 </resources>
