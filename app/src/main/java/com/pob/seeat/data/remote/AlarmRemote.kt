@@ -5,6 +5,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.pob.seeat.data.model.AlarmResponse
 import com.pob.seeat.data.model.Result
 import com.pob.seeat.domain.model.AlarmModel
+import com.pob.seeat.domain.model.toAlarmModel
 import com.pob.seeat.domain.model.toAlarmModelList
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -30,22 +31,23 @@ class AlarmRemote @Inject constructor(
                     async {
                         val commentDeferred = async { commentRef.get().await() }
                         val feedDeferred = async { commentRef.parent.parent?.get()?.await() }
-                        val commentDocument = commentDeferred.await()
-                        val feedDocument = feedDeferred.await()
+                        val commentDocument = commentDeferred.await() ?: return@async null
+                        val feedDocument = feedDeferred.await() ?: return@async null // 글 정보가 없는 경우
+                        if (commentDocument.getString("uid") == uId) return@async null // 현재 로그인 한 유저의 댓글인 경우
                         AlarmResponse(
                             alarmId = documentSnapshot.id,
-                            feedId = feedDocument?.id,
-                            feedTitle = feedDocument?.getString("title"),
-                            feedImage = (feedDocument?.get("contentImage") as? List<*>)?.firstOrNull() as? String,
-                            comment = commentDocument?.getString("comment"),
-                            timestamp = commentDocument?.getTimestamp("timeStamp"),
+                            feedId = feedDocument.id,
+                            feedTitle = feedDocument.getString("title"),
+                            feedImage = (feedDocument.get("contentImage") as? List<*>)?.firstOrNull() as? String,
+                            comment = commentDocument.getString("comment"),
+                            timestamp = commentDocument.getTimestamp("timeStamp"),
                             isRead = documentSnapshot.getBoolean("isRead"),
                         )
                     }
                 }
                 launch {
-                    val result = response.awaitAll()
-                    trySend(Result.Success(result.toAlarmModelList()))
+                    val result = response.awaitAll().filterNotNull()
+                    trySend(Result.Success(result.map(AlarmResponse::toAlarmModel)))
                 }
             }
         }
