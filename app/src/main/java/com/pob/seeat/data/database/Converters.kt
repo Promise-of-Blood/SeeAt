@@ -1,20 +1,28 @@
 package com.pob.seeat.data.database
 
 import androidx.room.TypeConverter
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
+import com.google.firebase.Timestamp
+import java.util.Date
 
-object LocalDateTimeConverter {
+object TimestampConverter {
     @TypeConverter
-    fun stringToLocalDateTime(value: String?): LocalDateTime? {
-        return value?.let {
-            LocalDateTime.parse(it, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-        }
+    fun dateToTimestamp(value: Date?): Timestamp? {
+        return value?.let { Timestamp(it) }
     }
 
     @TypeConverter
-    fun localDateTimeToString(date: LocalDateTime?): String? {
-        return date?.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+    fun timestampToDate(value: Timestamp?): Date? {
+        return value?.toDate()
+    }
+
+    @TypeConverter
+    fun longToDate(value: Long?): Date? {
+        return value?.let { Date(it) }
+    }
+
+    @TypeConverter
+    fun dateToLong(value: Date?): Long? {
+        return value?.time
     }
 }
 
