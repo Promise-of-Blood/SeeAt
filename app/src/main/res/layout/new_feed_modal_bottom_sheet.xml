@@ -5,6 +5,8 @@
     android:layout_height="match_parent"
     android:clipChildren="false"
     android:clipToPadding="false"
+    android:background="@drawable/background_bottom_sheet"
+    android:backgroundTint="#FAFAFA"
     android:padding="16dp"
     app:behavior_draggable="true"
     app:behavior_hideable="true"
@@ -14,8 +16,8 @@
         android:id="@+id/tv_sheet_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:text="게시글 태그를 선택해 주세요."
+        android:text="태그를 선택해 주세요."
+        android:layout_marginTop="16dp"
         android:textColor="@color/black"
         android:textSize="18sp"
         android:textStyle="bold"
@@ -27,128 +29,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+        app:chipSpacingHorizontal="12dp"
         app:layout_constraintTop_toBottomOf="@id/tv_sheet_title"
-        app:selectionRequired="false">
+        app:selectionRequired="false" />
 
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chip_restaurant"
-            style="@style/custom_chip_style"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:elevation="3dp"
-            android:text="맛집 추천"
-            app:chipIcon="@drawable/ic_soup" />
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chip_group"
-            style="@style/custom_chip_style"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:elevation="3dp"
-            android:text="모임"
-            app:chipIcon="@drawable/ic_beer_strok" />
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chip_gym"
-            style="@style/custom_chip_style"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:elevation="3dp"
-            android:text="운동 친구"
-            app:chipIcon="@drawable/ic_gym" />
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chip_study"
-            style="@style/custom_chip_style"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:elevation="3dp"
-            android:text="스터디"
-            app:chipIcon="@drawable/ic_pencil" />
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/ic_lost_item"
-            style="@style/custom_chip_style"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:elevation="3dp"
-            android:text="분실물"
-            app:chipIcon="@drawable/ic_lost_item" />
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/ic_info"
-            style="@style/custom_chip_style"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:elevation="3dp"
-            android:text="정보공유"
-            app:chipIcon="@drawable/ic_info" />
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/ic_question"
-            style="@style/custom_chip_style"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:elevation="3dp"
-            android:text="질문"
-            app:chipIcon="@drawable/ic_question" />
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/ic_paw"
-            style="@style/custom_chip_style"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:elevation="3dp"
-            android:text="산책"
-            app:chipIcon="@drawable/ic_paw" />
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/ic_restaurant"
-            style="@style/custom_chip_style"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:elevation="3dp"
-            android:text="밥친구"
-            app:chipBackgroundColor="@drawable/background_chip_background_selector"
-            app:chipIcon="@drawable/ic_restaurant" />
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/ic_microphone_line"
-            style="@style/custom_chip_style"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:elevation="3dp"
-            android:text="노래방"
-            app:chipIcon="@drawable/ic_microphone_line" />
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/ic_flag"
-            style="@style/custom_chip_style"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:elevation="3dp"
-            android:text="도움"
-            app:chipBackgroundColor="@drawable/background_chip_background_selector"
-            app:chipIcon="@drawable/ic_flag" />
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/ic_megaphone"
-            style="@style/custom_chip_style"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:elevation="3dp"
-            android:text="긴급"
-            app:chipIcon="@drawable/ic_megaphone" />
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/ic_sparkles"
-            style="@style/custom_chip_style"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:elevation="3dp"
-            android:text="기타"
-            app:chipIcon="@drawable/ic_sparkles" />
-
-    </com.google.android.material.chip.ChipGroup>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
