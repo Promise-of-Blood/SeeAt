@@ -1,7 +1,9 @@
 package com.pob.seeat.di
 
 import com.google.firebase.ktx.Firebase
-import com.pob.seeat.data.remote.ChatRemote
+import com.pob.seeat.data.remote.chat.ChatsRemote
+import com.pob.seeat.data.remote.chat.MessagesRemote
+import com.pob.seeat.data.remote.chat.UsersRemote
 import com.pob.seeat.data.repository.ChatRepositoryImpl
 import com.pob.seeat.data.repository.SampleRepositoryImpl
 import com.pob.seeat.data.repository.SeoulRestroomApiRepositoryImpl
@@ -29,12 +31,24 @@ abstract class ChatRepositoryModule {
 
 @Module
 @InstallIn(SingletonComponent::class)
-object ChatRemoteModule {
+object ChatsRemoteModule {
 
     @Singleton
     @Provides
-    fun provideChatRemote() : ChatRemote {
-        return ChatRemote(firebase = Firebase)
+    fun provideChatsRemote() : ChatsRemote {
+        return ChatsRemote()
+    }
+
+    @Singleton
+    @Provides
+    fun provideUsersRemote() : UsersRemote {
+        return UsersRemote()
+    }
+
+    @Singleton
+    @Provides
+    fun provideMessagesRemote() : MessagesRemote {
+        return MessagesRemote()
     }
 
 }

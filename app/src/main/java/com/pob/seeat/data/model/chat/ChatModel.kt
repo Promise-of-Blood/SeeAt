@@ -3,13 +3,13 @@ package com.pob.seeat.data.model.chat
 import com.google.firebase.Timestamp
 
 data class ChatModel(
-    val userId: String,
-    val chatIdList: Map<String, ChatsChattingModel>,
+    val chatId: String,
+    val chatInfo: ChatsChattingModel,
 )
 
 data class ChatsChattingModel(
-    val feedId: String,
+    val feedFrom: String,
     val lastMessage: String,
+    val users: Map<String, Boolean>,
     val whenLast: Timestamp,
-    val users: List<String>,
 )

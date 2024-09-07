@@ -9,7 +9,7 @@ data class MessageModel (
 
 data class MessagesInfoModel (
     val message: String,
-    val receiverId: String,
-    val senderId: String,
+    val receiver: String,
+    val sender: String,
     val timestamp: Timestamp
 )
