@@ -6,7 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_gray"
-    android:fitsSystemWindows="true"
     tools:context=".presentation.view.feed.NewFeedFragment">
 
     <androidx.appcompat.widget.Toolbar
@@ -14,6 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
+        android:paddingTop="32dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -25,6 +25,7 @@
         android:id="@+id/iv_upload_image"
         android:layout_width="32dp"
         android:layout_height="32dp"
+        android:layout_marginTop="32dp"
         android:layout_marginEnd="16dp"
         android:background="@drawable/background_corners_radius_8dp"
         android:backgroundTint="@color/primary"
