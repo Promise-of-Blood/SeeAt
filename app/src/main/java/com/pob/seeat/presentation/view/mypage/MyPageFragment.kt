@@ -166,9 +166,11 @@ class MyPageFragment : Fragment() {
     }
 
     private fun displayImage(imageUrl: String) {
-        Glide.with(this)
-            .load(imageUrl)
-            .into(binding.ivProfileImage)
+        if(isAdded){
+            Glide.with(this)
+                .load(imageUrl)
+                .into(binding.ivProfileImage)
+        }
     }
 
     private fun refreshUserInfo() {

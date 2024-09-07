@@ -307,6 +307,7 @@ class DetailFragment : Fragment() {
             locationRequest,
             object : LocationCallback() {
                 override fun onLocationResult(locationResult: LocationResult) {
+                    if(_binding == null) return
                     val location = locationResult.lastLocation
                     if (location != null) {
                         val currentGeoPoint = GeoPoint(location.latitude, location.longitude)
@@ -337,6 +338,7 @@ class DetailFragment : Fragment() {
             locationRequest,
             object : LocationCallback() {
                 override fun onLocationResult(locationResult: LocationResult) {
+                    if(_binding == null) return
                     val location = locationResult.lastLocation
                     if (location != null) {
                         val currentGeoPoint = GeoPoint(location.latitude, location.longitude)
@@ -448,14 +450,16 @@ class DetailFragment : Fragment() {
     }
 
     private fun initImageViewPager(contentImage: List<String>) {
-        val imageViewPager = binding.vpDetailImages
-        imageViewPager.adapter = ImagesPagerAdapter(contentImage)
-        imageViewPager.orientation = ViewPager2.ORIENTATION_HORIZONTAL
-        binding.detailImageIndicator.setViewPager(imageViewPager)
+        _binding?.apply {
+            val imageViewPager = binding.vpDetailImages
+            imageViewPager.adapter = ImagesPagerAdapter(contentImage)
+            imageViewPager.orientation = ViewPager2.ORIENTATION_HORIZONTAL
+            binding.detailImageIndicator.setViewPager(imageViewPager)
+        }
     }
 
     private fun initTag(tags: List<String>) {
-        val chipGroup = binding.chipsGroupDetail
+        val chipGroup = _binding?.chipsGroupDetail ?:return
         val tagLists = tags.toTagList()
         // tagList를 이용해 Chip을 동적으로 생성
         // tagLists:List<tag>
