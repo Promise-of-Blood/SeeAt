@@ -1,7 +1,7 @@
 package com.pob.seeat.presentation.view.mypage
 
 import android.os.Bundle
-import android.text.method.ScrollingMovementMethod
+import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -36,10 +36,9 @@ class TermsOfServiceFragment : Fragment() {
 
     private fun initView() = with(binding) {
         (activity as MainActivity).setBottomNavigationVisibility(View.GONE)
-        tvTermsOfService.apply {
-            text = getString(R.string.terms_of_service)
-            movementMethod = ScrollingMovementMethod()
-        }
+        val inputStream = resources.openRawResource(R.raw.terms_of_service)
+        val terms = inputStream.bufferedReader().use { it.readText() }
+        tvTermsOfService.text = Html.fromHtml(terms, Html.FROM_HTML_MODE_COMPACT)
         tbTermsOfService.apply {
             setNavigationIcon(R.drawable.ic_arrow_left)
             setNavigationOnClickListener {
