@@ -3,10 +3,14 @@ package com.pob.seeat.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
+import com.pob.seeat.data.model.BookmarkEntity
 import com.pob.seeat.data.model.Result
 import com.pob.seeat.domain.model.FeedModel
 import com.pob.seeat.domain.model.UserInfoModel
 import com.pob.seeat.domain.repository.FeedRepository
+import com.pob.seeat.domain.usecase.DeleteBookmarkUseCase
+import com.pob.seeat.domain.usecase.IsBookmarkedUseCase
+import com.pob.seeat.domain.usecase.SaveBookmarkUseCase
 import com.pob.seeat.domain.usecase.UserInfoUseCases
 import com.pob.seeat.utils.EventBus
 import com.pob.seeat.utils.GoogleAuthUtil
@@ -20,7 +24,10 @@ import javax.inject.Inject
 @HiltViewModel
 class DetailViewModel @Inject constructor(
     private val feedRepository: FeedRepository,
-    private val userInfoUseCases: UserInfoUseCases
+    private val userInfoUseCases: UserInfoUseCases,
+    private val saveBookmarkUseCase: SaveBookmarkUseCase,
+    private val deleteBookmarkUseCase: DeleteBookmarkUseCase,
+    private val isBookmarkedUseCase: IsBookmarkedUseCase,
 ) : ViewModel() {
 
     private val _userInfo = MutableStateFlow<UserInfoModel?>(null)
@@ -31,6 +38,9 @@ class DetailViewModel @Inject constructor(
 
     private val _singleFeedResponse = MutableStateFlow<Result<FeedModel>>(Result.Loading)
     val singleFeedResponse: StateFlow<Result<FeedModel>> get() = _singleFeedResponse
+
+    private val _isBookmarked = MutableStateFlow(false)
+    val isBookmarked: StateFlow<Boolean> get() = _isBookmarked
 
     val uid = GoogleAuthUtil.getUserUid()
 
@@ -90,6 +100,26 @@ class DetailViewModel @Inject constructor(
                 }
             }
             _isLiked.value = !isLiked.value
+        }
+    }
+
+    fun saveBookmark(feed: BookmarkEntity) {
+        viewModelScope.launch {
+            saveBookmarkUseCase(feed)
+            getIsBookmarked(feed.feedId)
+        }
+    }
+
+    fun deleteBookmark(feedId: String) {
+        viewModelScope.launch {
+            deleteBookmarkUseCase(feedId)
+            getIsBookmarked(feedId)
+        }
+    }
+
+    fun getIsBookmarked(feedId: String) {
+        viewModelScope.launch {
+            _isBookmarked.value = isBookmarkedUseCase(feedId)
         }
     }
 }
