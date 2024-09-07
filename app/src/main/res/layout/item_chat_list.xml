@@ -1,30 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:paddingHorizontal="16dp"
-    android:paddingVertical="32dp"
     android:layout_marginTop="4dp"
     android:background="@color/white"
-    >
+    android:paddingHorizontal="24dp"
+    android:paddingVertical="12dp">
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cv_chat_list_item"
         android:layout_width="70dp"
         android:layout_height="70dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:cardCornerRadius="300dp"
-        >
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:id="@+id/iv_chat_list_item"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:src="@mipmap/ic_launcher"
-            />
+            android:src="@mipmap/ic_launcher" />
 
     </com.google.android.material.card.MaterialCardView>
 
@@ -32,53 +29,48 @@
         android:id="@+id/tv_chat_list_item"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/chat_list_item_title"
-        app:layout_constraintStart_toEndOf="@id/cv_chat_list_item"
-        app:layout_constraintTop_toTopOf="@id/cv_chat_list_item"
         android:layout_marginStart="16dp"
+        android:ellipsize="end"
+        android:maxEms="8"
+        android:maxLines="1"
+        android:text="@string/chat_list_item_title"
         android:textColor="@color/primary"
         android:textSize="24sp"
-        android:maxEms="8"
-        android:ellipsize="end"
-        android:maxLines="1"
-        />
+        app:layout_constraintStart_toEndOf="@id/cv_chat_list_item"
+        app:layout_constraintTop_toTopOf="@id/cv_chat_list_item" />
 
     <TextView
         android:id="@+id/tv_chat_list_item_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/chat_list_item_time"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/tv_chat_list_item"
         android:textColor="@color/light_gray"
-        />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tv_chat_list_item" />
 
     <TextView
         android:id="@+id/tv_chat_list_item_content"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/chat_list_item_content"
-        app:layout_constraintStart_toStartOf="@id/tv_chat_list_item"
-        app:layout_constraintBottom_toBottomOf="@id/cv_chat_list_item"
-        android:textSize="16sp"
-        android:textColor="@color/gray"
-        android:maxEms="12"
         android:ellipsize="end"
+        android:maxEms="12"
         android:maxLines="1"
-        />
+        android:text="@string/chat_list_item_content"
+        android:textColor="@color/gray"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@id/cv_chat_list_item"
+        app:layout_constraintStart_toStartOf="@id/tv_chat_list_item" />
 
     <TextView
         android:id="@+id/tv_chat_list_item_count"
         android:layout_width="20dp"
         android:layout_height="20dp"
+        android:background="@drawable/background_circle_green"
         android:gravity="center"
         android:text="@string/chat_list_item_count"
-        app:layout_constraintEnd_toEndOf="@id/tv_chat_list_item_time"
         app:layout_constraintBottom_toBottomOf="@id/tv_chat_list_item_content"
-        app:layout_constraintTop_toTopOf="@id/tv_chat_list_item_content"
-        android:background="@drawable/background_circle_green"
-        />
-
+        app:layout_constraintEnd_toEndOf="@id/tv_chat_list_item_time"
+        app:layout_constraintTop_toTopOf="@id/tv_chat_list_item_content" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
