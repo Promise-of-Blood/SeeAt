@@ -138,6 +138,8 @@ dependencies {
     // ViewPager2 Indicator
     implementation(libs.circleindicator)
 
+    implementation(libs.switchbutton.library)
+
     // room
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.room.runtime)

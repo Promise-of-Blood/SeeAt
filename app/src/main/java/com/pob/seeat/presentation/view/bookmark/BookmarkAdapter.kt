@@ -67,10 +67,10 @@ class BookmarkAdapter(private val onClick: (BookmarkModel) -> Unit) :
                 .apply(RequestOptions.bitmapTransform(RoundedCorners(10))).into(image)
             if (item.tags.isEmpty()) {
                 chipGroup.visibility = View.GONE
-                container.setPadding(24f.px, 12f.px, 24f.px, 12f.px)
+                container.setPadding(16f.px, 12f.px, 16f.px, 12f.px)
             } else {
                 chipGroup.addFeedTags(item.tags)
-                container.setPadding(24f.px, 0f.px, 24f.px, 12f.px)
+                container.setPadding(16f.px, 0f.px, 16f.px, 12f.px)
             }
         }
 
