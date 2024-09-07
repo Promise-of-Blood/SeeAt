@@ -23,6 +23,7 @@ kotlinPlugin = "1.8.10"
 naverLogin = "5.9.1"
 navigationSafeArgsGradlePlugin = "2.7.7"
 ossLicensesPlugin = "0.10.6"
+photoview = "2.3.0"
 playServicesAuth = "21.2.0"
 playServicesLocation = "21.3.0"
 playServicesOssLicenses = "17.1.0"
@@ -60,6 +61,7 @@ material = { group = "com.google.android.material", name = "material", version.r
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 google-services = { module = "com.google.gms:google-services", version.ref = "googleServices" }
+photoview = { module = "com.github.chrisbanes:PhotoView", version.ref = "photoview" }
 play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
 
 # Network
