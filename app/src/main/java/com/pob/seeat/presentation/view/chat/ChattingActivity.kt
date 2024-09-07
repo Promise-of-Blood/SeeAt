@@ -126,6 +126,7 @@ class ChattingActivity : AppCompatActivity() {
                 text = tag.tagName
                 textSize = 12f
                 textEndPadding = 4f.px.toFloat()
+                setTextColor(AppCompatResources.getColorStateList(context, R.color.black))
 
                 setChipIconResource(tag.tagImage)
                 chipBackgroundColor = AppCompatResources.getColorStateList(context, R.color.white)

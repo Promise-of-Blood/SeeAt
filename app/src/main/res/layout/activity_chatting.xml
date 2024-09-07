@@ -18,7 +18,8 @@
         app:layout_constraintTop_toTopOf="parent"
         app:menu="@menu/menu_message"
         app:navigationIcon="@drawable/ic_arrow_left"
-        app:title="@string/message_title" />
+        app:title="@string/message_title"
+        app:titleTextColor="@color/black" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_feed_info"
@@ -56,6 +57,7 @@
             android:maxEms="10"
             android:maxLines="1"
             android:text="@string/message_feed_title"
+            android:textColor="@color/black"
             android:textSize="16sp"
             app:layout_constraintStart_toEndOf="@id/cv_message_feed"
             app:layout_constraintTop_toTopOf="@id/cv_message_feed" />
