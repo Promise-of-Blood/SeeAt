@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
     android:focusable="true"
     android:focusableInTouchMode="true"
     tools:context=".presentation.view.detail.DetailFragment">
@@ -15,6 +14,7 @@
         android:layout_height="wrap_content"
         android:background="@color/white"
         android:navigationIcon="@drawable/ic_arrow_left"
+        android:paddingTop="32dp"
         android:title="@string/feed"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -178,8 +178,8 @@
                 android:id="@+id/chips_group_detail"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
-                app:layout_constraintEnd_toEndOf="parent"
                 android:layout_marginStart="20dp"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tv_feed_get_position_button"
                 app:selectionRequired="false" />
