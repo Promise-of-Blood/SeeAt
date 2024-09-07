@@ -2,11 +2,13 @@ package com.pob.seeat.presentation.view.detail
 
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.Looper
 import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -33,7 +35,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
 import com.google.android.material.chip.Chip
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
@@ -91,6 +97,7 @@ class DetailFragment : Fragment() {
     }
 
     private lateinit var chattingResultLauncher: ActivityResultLauncher<Intent>
+    private var currentGeoPoint: GeoPoint = GeoPoint(0.0, 0.0)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -219,46 +226,7 @@ class DetailFragment : Fragment() {
             tvFeedDetailLikeCount.text = feed.like.toString()
             tvCommentCount.text = feed.commentsCount.toString()
 
-            if (ActivityCompat.checkSelfPermission(requireContext(), ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(
-                    requireContext(), ACCESS_COARSE_LOCATION
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                Timber.e("위치권한이 없습니다.")
-                hideDistance()
-            } else {
-                fusedLocationClient =
-                    LocationServices.getFusedLocationProviderClient(requireContext())
-                fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-                    if (location != null) {
-                        Timber.i(location.latitude.toString())
-                        Timber.i(location.longitude.toString())
-                        val currentGeoPoint = GeoPoint(location.latitude, location.longitude)
-                        Timber.i(currentGeoPoint.toString())
-                        Timber.i(feed.location.toString())
-
-                        feed.location?.let {
-                            val distance = calculateDistance(currentGeoPoint, it)
-                            tvMyDistance.text = formatDistanceToString(distance)
-                        }
-
-                    } else {
-                        hideDistance()
-
-                        Timber.e("나의 위치를 찾을 수 없습니다.")
-                    }
-                }
-            }
-
-
-//            // Todo 나의 위치 가져오기
-//            val myLatitude = 37.570201
-//            val myLongitude = 126.976879
-//            val geoPoint = GeoPoint(myLatitude, myLongitude)
-//            feed.location?.let {
-//                val distance = calculateDistance(geoPoint, it)
-//                tvMyDistance.text = formatDistanceToString(distance)
-//            }
+            initLocation()
 
             setFeedLikeButton(clLikeBtn)
 
@@ -305,6 +273,55 @@ class DetailFragment : Fragment() {
                 initImageViewPager(feed.contentImage)
             }
         }
+    }
+
+    private fun initLocation() {
+        if (ActivityCompat.checkSelfPermission(requireContext(), ACCESS_FINE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(
+                requireContext(), ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            Timber.e("위치권한이 없습니다.")
+            hideDistance()
+        } else {
+            requestSingleLocationUpdate()
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun requestSingleLocationUpdate() {
+
+        fusedLocationClient =
+            LocationServices.getFusedLocationProviderClient(requireContext())
+
+        val locationRequest = LocationRequest.Builder(
+            Priority.PRIORITY_HIGH_ACCURACY,
+            10000
+        ).setWaitForAccurateLocation(true)  // 높은 정확도의 위치 요청을 기다림
+            .setMaxUpdates(1)  // 한 번만 위치 업데이트 받기
+            .build()
+
+        fusedLocationClient.requestLocationUpdates(
+            locationRequest,
+            object : LocationCallback() {
+                override fun onLocationResult(locationResult: LocationResult) {
+                    val location = locationResult.lastLocation
+                    if (location != null) {
+                        currentGeoPoint = GeoPoint(location.latitude, location.longitude)
+                        Timber.i("최신 위치: $currentGeoPoint")
+
+                        feed.location?.let {
+                            val distance = calculateDistance(currentGeoPoint, it)
+                            binding.tvMyDistance.text = formatDistanceToString(distance)
+                        }
+
+                    }
+
+                    fusedLocationClient.removeLocationUpdates(this)
+                }
+            },
+            Looper.getMainLooper()
+        )
     }
 
     private fun hideDistance() {
