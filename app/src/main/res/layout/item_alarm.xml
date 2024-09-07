@@ -38,7 +38,7 @@
         android:id="@+id/cl_alarm_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingHorizontal="24dp"
+        android:paddingHorizontal="16dp"
         android:paddingVertical="12dp">
 
         <TextView

@@ -9,7 +9,7 @@
     android:background="@color/white"
     android:clipChildren="false"
     android:clipToPadding="false"
-    android:paddingHorizontal="24dp"
+    android:paddingHorizontal="16dp"
     android:paddingVertical="12dp">
 
     <com.google.android.material.chip.ChipGroup
