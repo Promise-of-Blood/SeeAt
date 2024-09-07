@@ -47,7 +47,7 @@
     <!-- my page (history) -->
     <string name="history_feed">작성글</string>
     <string name="history_comment">작성 댓글</string>
-    <string name="history_liked_feed">좋아요한 글</string>
+    <string name="history_liked_feed">추천한 글</string>
     <string name="history_more">더보기</string>
     <string name="history_feed_title">제목</string>
     <string-array name="history_title">
@@ -56,7 +56,10 @@
         <item>좋아요한 글</item>
     </string-array>
 
-    <!-- my page -->
+    <!-- my page (settings) -->
+    <string name="settings_alarm">알림 설정</string>
+    <string name="settings_alarm_comment">댓글 알림</string>
+    <string name="settings_alarm_chat">채팅 알림</string>
     <string name="settings_account">계정 설정</string>
     <string name="settings_user_account">현재 로그인 계정</string>
     <string name="settings_logout">로그아웃</string>

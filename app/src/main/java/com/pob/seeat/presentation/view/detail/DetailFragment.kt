@@ -101,13 +101,6 @@ class DetailFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        chattingResultLauncher =
-            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-                if (result.resultCode == Activity.RESULT_OK) {
-                    findNavController().navigate(R.id.navigation_home)
-                    (activity as MainActivity).setBottomNavigationSelectedItem(R.id.navigation_message)
-                }
-            }
     }
 
     override fun onCreateView(
@@ -228,6 +221,11 @@ class DetailFragment : Fragment() {
 
             initLocation()
 
+            // 툴바 뒤로가기
+            tbFeed.setNavigationOnClickListener {
+                findNavController().popBackStack()
+            }
+
             setFeedLikeButton(clLikeBtn)
 
             clLikeBtn.setOnClickListener {
@@ -259,7 +257,7 @@ class DetailFragment : Fragment() {
             tvChatButton.setOnClickListener {
                 val intent = Intent(requireContext(), ChattingActivity::class.java)
                 intent.putExtra("feedId", feed.feedId)
-                chattingResultLauncher.launch(intent)
+                startActivity(intent)
             }
 
 
@@ -468,7 +466,7 @@ class DetailFragment : Fragment() {
                 setChipIconResource(tag.tagImage)
 
                 chipBackgroundColor =
-                    ContextCompat.getColorStateList(context, R.color.background_gray)
+                    ContextCompat.getColorStateList(context, R.color.white)
                 chipStrokeWidth = 0f
                 chipIconSize = 16f.px.toFloat()
                 chipCornerRadius = 32f.px.toFloat()

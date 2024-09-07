@@ -6,6 +6,7 @@
         <item name="backgroundTint">@color/white</item>
     </style>
 
+
     <style name="tab_text">
         <item name="android:textSize">14sp</item>
     </style>

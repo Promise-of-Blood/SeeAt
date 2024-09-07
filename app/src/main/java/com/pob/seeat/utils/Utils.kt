@@ -4,7 +4,11 @@ import android.content.Context
 import android.content.res.Resources.getSystem
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.net.Uri
+import android.view.WindowManager
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowInsetsControllerCompat
 import com.google.firebase.Timestamp
 import com.pob.seeat.R
 import com.pob.seeat.domain.model.TagModel
@@ -136,4 +140,22 @@ object Utils {
         return Bitmap.createScaledBitmap(originalBitmap, 800, 800, true)
     }
 
+    /**
+     * 상단 바의 색상을 변경합니다.
+     * @param color 변경할 색상
+     * */
+    fun AppCompatActivity.setStatusBarColor(color: Int) {
+        this.window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+        this.window.statusBarColor = color
+        WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = true
+    }
+
+    /**
+     * 상단 바의 색상을 투명하게 변경합니다.
+     * */
+    fun AppCompatActivity.hideStatusBar() {
+        this.window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+        this.window.statusBarColor = Color.TRANSPARENT
+        WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = true
+    }
 }

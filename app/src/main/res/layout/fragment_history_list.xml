@@ -4,37 +4,31 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@color/background_gray"
+    android:fitsSystemWindows="true"
     tools:context=".presentation.view.mypage.history.HistoryListFragment">
 
-    <LinearLayout
-        android:id="@+id/ll_history_header"
+    <Toolbar
+        android:id="@+id/tb_history"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@color/white"
-        android:paddingTop="24dp"
         android:elevation="2dp"
+        android:navigationIcon="@drawable/ic_arrow_left"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <Toolbar
-            android:id="@+id/tb_history"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:navigationIcon="@drawable/ic_arrow_left"
-            tools:title="작성글" />
-
-    </LinearLayout>
+        app:layout_constraintTop_toTopOf="parent"
+        tools:title="작성글" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_history"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:background="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ll_history_header"
+        app:layout_constraintTop_toBottomOf="@id/tb_history"
         tools:listitem="@layout/item_feed_history" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

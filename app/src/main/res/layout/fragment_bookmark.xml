@@ -5,20 +5,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_gray"
+    android:fitsSystemWindows="true"
     tools:context=".presentation.view.bookmark.BookmarkFragment">
 
-    <TextView
-        android:id="@+id/tv_bookmark_title"
+    <Toolbar
+        android:id="@+id/tb_bookmark"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@color/white"
-        android:paddingHorizontal="24dp"
-        android:paddingTop="32dp"
-        android:paddingBottom="12dp"
-        android:text="@string/navigation_bookmark"
-        android:textColor="@color/black"
-        android:textSize="24sp"
-        android:textStyle="bold"
+        android:title="@string/navigation_bookmark"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -27,11 +22,11 @@
         android:id="@+id/rv_bookmark"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="2dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_bookmark_title"
+        app:layout_constraintTop_toBottomOf="@id/tb_bookmark"
         tools:listitem="@layout/item_feed_bookmark" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
