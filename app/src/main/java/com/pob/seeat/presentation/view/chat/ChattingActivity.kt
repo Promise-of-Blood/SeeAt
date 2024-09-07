@@ -104,7 +104,6 @@ class ChattingActivity : AppCompatActivity() {
         toolbarMessage.apply {
             title = feed.nickname
             setNavigationOnClickListener {
-                setResult(Activity.RESULT_OK)
                 finish()
             }
         }
