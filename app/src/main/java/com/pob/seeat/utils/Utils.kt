@@ -95,7 +95,7 @@ object Utils {
     }
 
     fun compressBitmapToUri(context: Context, bitmap: Bitmap): Uri {
-        val file = File(context.cacheDir, "compressed_image.jpg")
+        val file = File(context.cacheDir, "compressed_image${System.currentTimeMillis()}.jpg")
         val outputStream = FileOutputStream(file)
         bitmap.compress(Bitmap.CompressFormat.JPEG, 80, outputStream) // 품질 80으로 압축
         outputStream.flush()
