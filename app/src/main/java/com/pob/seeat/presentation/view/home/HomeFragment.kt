@@ -33,6 +33,7 @@ import com.naver.maps.map.clustering.LeafMarkerInfo
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.Overlay
 import com.naver.maps.map.util.FusedLocationSource
+import com.pob.seeat.MainActivity
 import com.pob.seeat.R
 import com.pob.seeat.data.model.Result
 import com.pob.seeat.data.repository.NaverMapWrapper
@@ -97,7 +98,11 @@ class HomeFragment : Fragment() {
 
     private fun initialSetting() {
         binding.run {
-            ivAlarm.setOnClickListener { findNavController().navigate(R.id.action_home_to_alarm) }
+            ivAlarm.setOnClickListener {
+                (activity as MainActivity).setBottomNavigationSelectedItem(
+                    R.id.navigation_alarm
+                )
+            }
             ibAddMarker.setOnClickListener {
                 findNavController().navigate(R.id.action_home_to_new_feed)
             }

@@ -15,8 +15,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.pob.seeat.MainActivity
-import com.pob.seeat.R
 import com.pob.seeat.data.model.Result
 import com.pob.seeat.databinding.FragmentAlarmBinding
 import com.pob.seeat.domain.model.AlarmModel
@@ -51,18 +49,10 @@ class AlarmFragment : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-        (activity as MainActivity).setBottomNavigationVisibility(View.VISIBLE)
         _binding = null
     }
 
     private fun initView() = with(binding) {
-        (activity as MainActivity).setBottomNavigationVisibility(View.GONE)
-        tbAlarm.apply {
-            setNavigationIcon(R.drawable.ic_arrow_left)
-            setNavigationOnClickListener {
-                findNavController().popBackStack()
-            }
-        }
         rvAlarm.apply {
             adapter = alarmAdapter
             layoutManager = LinearLayoutManager(requireContext())
