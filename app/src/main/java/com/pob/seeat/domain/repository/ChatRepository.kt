@@ -1,8 +1,5 @@
 package com.pob.seeat.domain.repository
 
-import com.pob.seeat.data.model.ChatListModel
-import com.pob.seeat.data.model.ChatMemberModel
-import com.pob.seeat.data.model.ChatModel
 import kotlinx.coroutines.flow.Flow
 import com.pob.seeat.data.model.Result
 import com.pob.seeat.presentation.view.chat.items.ChattingUiItem

@@ -13,9 +13,6 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.database.snapshots
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
-import com.pob.seeat.data.model.ChatListModel
-import com.pob.seeat.data.model.ChatMemberModel
-import com.pob.seeat.data.model.ChatModel
 import com.pob.seeat.utils.GoogleAuthUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -44,36 +41,13 @@ class ChatRemote @Inject constructor(
     val uid = FirebaseAuth.getInstance().currentUser?.uid
     private val chatRef = firebaseDb.getReference("chats")
     private val messageRef = firebaseDb.getReference("messages")
-    private val memberRef = firebaseDb.getReference("members")
-    private val usersChatListRef = firebaseDb.getReference("usersChatList")
+    private val usersRef = firebaseDb.getReference("users")
 
     // TODO model은 레포지토리로 바꾸고, 여기서는 response로 받아오는 게 나을 듯 - 리팩토링 1순위
     suspend fun getMyChatList(): Result<List<ChatListModel>> {
         var result: Result<List<ChatListModel>> = Result.Loading
         val userChatList: ArrayList<String> = arrayListOf()
         val chatList: ArrayList<ChatListModel> = arrayListOf()
-//        chatRef.addValueEventListener(object : ValueEventListener {
-//            override fun onDataChange(snapshot: DataSnapshot) {
-//                val dataList: ArrayList<DataSnapshot> = arrayListOf()
-//                for (child in snapshot.children) {
-//                    if (child.key.equals(uid)) dataList.add(child)
-//                }
-//                dataList.forEach {
-//                    chatList.add(
-//                        ChatListModel(
-//                            feedFrom = it.child("feedFrom").value.toString(),
-//                            lastMessage = it.child("lastMessage").value.toString(),
-//                            whenLast = it.child("whenLast").value as Timestamp,
-//                        )
-//                    )
-//                }
-//                Timber.d("data : $dataList")
-//            }
-//
-//            override fun onCancelled(error: DatabaseError) {
-//                Timber.d("error : $error")
-//            }
-//        })
         if (uid != null) {
             usersChatListRef.child(uid).addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -193,8 +167,6 @@ class ChatRemote @Inject constructor(
         }
     }
 
-    var lastChat: ChatModel? = null
-
     fun receiveMessage(feedId: String): Flow<Result<ChatModel>> {
         val job = SupervisorJob()
         val scope = CoroutineScope(Dispatchers.IO + job)
@@ -212,10 +184,6 @@ class ChatRemote @Inject constructor(
                         sender = sender,
                         timestamp = timestamp
                     )
-                    if (lastChat != null)
-                        Timber.tag("nowMinusLast")
-                            .d("nowChatModel - lastChatModel : ${lastChat!!.timestamp!!.seconds - nowChatModel.timestamp!!.seconds} , $lastChat $nowChatModel")
-                    lastChat = nowChatModel
                     Timber.tag("snapshot parent").d(snapshot.ref.parent.toString().substringAfterLast("/"))
                     
                     // TODO 나중에 메시지가 처음 시작되면 만들어지는 걸로 변경
@@ -254,30 +222,6 @@ class ChatRemote @Inject constructor(
 
                 override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
                     Timber.d("onChildChanged 임")
-//                    val message = snapshot.child("message").value.toString()
-//                    val receiver = snapshot.child("receiver").value.toString()
-//                    val sender = snapshot.child("sender").value.toString()
-//                    val timestamp = Timestamp(Date(snapshot.child("timestamp").value as Long))
-//                    scope.launch {
-//                        setChats(
-//                            chatRef,
-//                            ChatListModel(
-//                                feedFrom = feedId,
-//                                lastMessage = message,
-//                                whenLast = timestamp
-//                            )
-//                        )
-//                    }
-//                    trySend(
-//                        Result.Success(
-//                            ChatModel(
-//                                message = message,
-//                                receiver = receiver,
-//                                sender = sender,
-//                                timestamp = timestamp
-//                            )
-//                        )
-//                    )
                 }
 
                 override fun onChildRemoved(snapshot: DataSnapshot) {
@@ -330,6 +274,11 @@ class ChatRemote @Inject constructor(
             child("lastMessage").setValue(chatListModel.lastMessage)
             child("whenLast").setValue(chatListModel.whenLast)
         }
+    }
+
+    fun getChatIdFromUsers() : String {
+
+        return ""
     }
 
 }

@@ -1,8 +1,5 @@
 package com.pob.seeat.data.repository
 
-import com.pob.seeat.data.model.ChatListModel
-import com.pob.seeat.data.model.ChatMemberModel
-import com.pob.seeat.data.model.ChatModel
 import com.pob.seeat.data.remote.ChatRemote
 import com.pob.seeat.domain.repository.ChatRepository
 import kotlinx.coroutines.flow.Flow

@@ -2,8 +2,6 @@ package com.pob.seeat.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.pob.seeat.data.model.ChatListModel
-import com.pob.seeat.data.model.ChatModel
 import com.pob.seeat.domain.repository.ChatRepository
 import com.pob.seeat.presentation.view.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
