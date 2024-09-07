@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -33,6 +34,7 @@ import com.naver.maps.map.clustering.LeafMarkerInfo
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.Overlay
 import com.naver.maps.map.util.FusedLocationSource
+import com.pob.seeat.MainActivity
 import com.pob.seeat.R
 import com.pob.seeat.data.model.Result
 import com.pob.seeat.data.repository.NaverMapWrapper
@@ -41,7 +43,9 @@ import com.pob.seeat.domain.model.FeedModel
 import com.pob.seeat.presentation.view.UiState
 import com.pob.seeat.presentation.viewmodel.HomeViewModel
 import com.pob.seeat.presentation.viewmodel.RestroomViewModel
+import com.pob.seeat.utils.Utils.hideStatusBar
 import com.pob.seeat.utils.Utils.px
+import com.pob.seeat.utils.Utils.setStatusBarColor
 import com.pob.seeat.utils.Utils.tagList
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -96,8 +100,13 @@ class HomeFragment : Fragment() {
     }
 
     private fun initialSetting() {
+        (activity as AppCompatActivity).hideStatusBar()
         binding.run {
-            ivAlarm.setOnClickListener { findNavController().navigate(R.id.action_home_to_alarm) }
+            ivAlarm.setOnClickListener {
+                (activity as MainActivity).setBottomNavigationSelectedItem(
+                    R.id.navigation_alarm
+                )
+            }
             ibAddMarker.setOnClickListener {
                 findNavController().navigate(R.id.action_home_to_new_feed)
             }
@@ -107,10 +116,17 @@ class HomeFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         getFeed()
+        (activity as AppCompatActivity).hideStatusBar()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
+        (activity as AppCompatActivity).setStatusBarColor(
+            ContextCompat.getColor(
+                requireContext(),
+                R.color.white
+            )
+        )
         _binding = null
     }
 
@@ -314,14 +330,21 @@ class HomeFragment : Fragment() {
         val scaleBarView = binding.naverScaleBar
         scaleBarView.map = naverMap
 
+        var isCamMoving = false
         naverMap.addOnCameraChangeListener { reason, animated ->
-            Timber.tag("HomeFragment")
-                .d("카메라가 움직이고 있습니다. Reason: " + reason + ", Animated: " + animated)
+            if(!isCamMoving) {
+                isCamMoving = true
+                Timber.tag("HomeFragment")
+                    .d("카메라가 움직이고 있습니다. Reason: " + reason + ", Animated: " + animated)
+            }
         }
 
         // 카메라 움직임이 멈췄을 때 콜백을 받는 리스너 설정
         naverMap.addOnCameraIdleListener {
-            Timber.tag("HomeFragment").d("카메라 움직임이 멈췄습니다.")
+            if(isCamMoving) {
+                isCamMoving = false
+                Timber.tag("HomeFragment").d("카메라 움직임이 멈췄습니다.")
+            }
         }
 
     }

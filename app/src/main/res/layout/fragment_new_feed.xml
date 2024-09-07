@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_gray"
+    android:fitsSystemWindows="true"
     tools:context=".presentation.view.feed.NewFeedFragment">
 
     <androidx.appcompat.widget.Toolbar
@@ -13,16 +14,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
+        android:paddingTop="32dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:navigationIcon="@drawable/ic_arrow_left"
-        app:title="씨앗 심기" />
+        app:title="씨앗 심기"
+        app:titleTextColor="@color/black" />
 
     <ImageView
         android:id="@+id/iv_upload_image"
         android:layout_width="32dp"
         android:layout_height="32dp"
+        android:layout_marginTop="32dp"
         android:layout_marginEnd="16dp"
         android:background="@drawable/background_corners_radius_8dp"
         android:backgroundTint="@color/primary"
@@ -63,8 +67,8 @@
                 android:layout_marginTop="8dp"
                 android:background="@color/white"
                 android:padding="16dp"
-                android:textColor="@color/light_gray"
                 android:text="태그를 선택해 주세요"
+                android:textColor="@color/light_gray"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/et_title" />
 
@@ -111,15 +115,15 @@
                 <androidx.fragment.app.FragmentContainerView
                     android:id="@+id/map"
                     android:name="com.naver.maps.map.MapFragment"
-                    android:visibility="invisible"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:background="@drawable/background_select_locate"
                     android:clipToOutline="true"
-                    app:layout_constraintTop_toTopOf="@id/tv_map"
+                    android:visibility="invisible"
                     app:layout_constraintBottom_toBottomOf="@id/tv_map"
+                    app:layout_constraintEnd_toEndOf="@id/tv_map"
                     app:layout_constraintStart_toStartOf="@id/tv_map"
-                    app:layout_constraintEnd_toEndOf="@id/tv_map"/>
+                    app:layout_constraintTop_toTopOf="@id/tv_map" />
 
                 <ImageView
                     android:id="@+id/iv_marker_shadow"
@@ -146,10 +150,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_marginTop="8dp"
-                    android:gravity="center"
-                    android:text="씨앗 위치를 정해주세요!"
                     android:background="@drawable/background_select_locate"
                     android:clipToOutline="true"
+                    android:gravity="center"
+                    android:text="씨앗 위치를 정해주세요!"
                     app:layout_constraintDimensionRatio="3:2"
                     app:layout_constraintTop_toBottomOf="@id/tv_select_locate" />
 
@@ -168,6 +172,21 @@
                 android:padding="16dp"
                 app:layout_constraintTop_toBottomOf="@id/cl_select_locate" />
 
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_image_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:clipToPadding="false"
+                android:paddingHorizontal="16dp"
+                app:layout_constraintTop_toBottomOf="@+id/et_content"
+                tools:itemCount="1"
+                tools:listitem="@layout/item_image_upload" />
+
+            <androidx.fragment.app.FragmentContainerView
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                app:layout_constraintTop_toBottomOf="@id/rv_image_list" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -181,5 +200,23 @@
         android:paddingVertical="16dp"
         android:text="등록"
         app:layout_constraintBottom_toBottomOf="parent" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_progress"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#88000000">
+
+        <ProgressBar
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:indeterminateTint="@color/primary"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

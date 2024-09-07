@@ -22,11 +22,10 @@ import com.pob.seeat.presentation.view.chat.adapter.ChattingAdapter
 import com.pob.seeat.presentation.viewmodel.ChatViewModel
 import com.pob.seeat.presentation.viewmodel.DetailViewModel
 import com.pob.seeat.utils.Utils.px
+import com.pob.seeat.utils.Utils.setStatusBarColor
 import com.pob.seeat.utils.Utils.toTagList
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -36,7 +35,7 @@ class ChattingActivity : AppCompatActivity() {
     private val detailViewModel by viewModels<DetailViewModel>()
     private val chatViewModel by viewModels<ChatViewModel>()
     private val chattingAdapter by lazy { ChattingAdapter() }
-    var targetId : String = ""
+    var targetId: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,6 +46,7 @@ class ChattingActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+        this@ChattingActivity.setStatusBarColor(getColor(R.color.white))
 
         val feedId = intent.getStringExtra("feedId") ?: ""
 
@@ -104,7 +104,6 @@ class ChattingActivity : AppCompatActivity() {
         toolbarMessage.apply {
             title = feed.nickname
             setNavigationOnClickListener {
-                setResult(Activity.RESULT_OK)
                 finish()
             }
         }
@@ -126,6 +125,7 @@ class ChattingActivity : AppCompatActivity() {
                 text = tag.tagName
                 textSize = 12f
                 textEndPadding = 4f.px.toFloat()
+                setTextColor(AppCompatResources.getColorStateList(context, R.color.black))
 
                 setChipIconResource(tag.tagImage)
                 chipBackgroundColor = AppCompatResources.getColorStateList(context, R.color.white)

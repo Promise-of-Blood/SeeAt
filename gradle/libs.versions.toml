@@ -13,6 +13,7 @@ junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 appcompat = "1.7.0"
 kotlinxCoroutinesAndroid = "1.7.3"
+libraryVersion = "2.1.0"
 naverMap = "3.19.1"
 material = "1.12.0"
 activity = "1.9.1"
@@ -23,6 +24,7 @@ kotlinPlugin = "1.8.10"
 naverLogin = "5.9.1"
 navigationSafeArgsGradlePlugin = "2.7.7"
 ossLicensesPlugin = "0.10.6"
+photoview = "2.3.0"
 playServicesAuth = "21.2.0"
 playServicesLocation = "21.3.0"
 playServicesOssLicenses = "17.1.0"
@@ -30,6 +32,8 @@ retrofit = "2.11.0"
 okhttp3 = "4.12.0"
 ksp = "2.0.0-1.0.23"
 kakaoLogin = "2.20.1"
+switchbutton = "1.1.8"
+toggle = "1.1.0"
 viewpager2 = "1.1.0"
 navigationFragmentKtx = "2.7.7"
 navigationUiKtx = "2.7.7"
@@ -37,6 +41,7 @@ kotlin-jvm = "2.0.0"
 timber = "5.0.1"
 firebaseMessagingKtxVersion = "24.0.1"
 firebaseStorageKtx = "21.0.0"
+room = "2.6.1"
 
 [libraries]
 android-image-cropper = { module = "com.vanniktech:android-image-cropper", version.ref = "androidImageCropper" }
@@ -60,6 +65,7 @@ material = { group = "com.google.android.material", name = "material", version.r
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 google-services = { module = "com.google.gms:google-services", version.ref = "googleServices" }
+photoview = { module = "com.github.chrisbanes:PhotoView", version.ref = "photoview" }
 play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
 
 # Network
@@ -76,6 +82,7 @@ firebase-auth-ktx = { module = "com.google.firebase:firebase-auth-ktx" }
 firebase-firestore-ktx = { module = "com.google.firebase:firebase-firestore-ktx" }
 firebase-messaging-ktx = { group = "com.google.firebase", name = "firebase-messaging-ktx", version.ref = "firebaseMessagingKtxVersion" }
 firebase-database-ktx = { group = "com.google.firebase", name = "firebase-database-ktx" }
+firebase-storage-ktx = { group = "com.google.firebase", name = "firebase-storage-ktx", version.ref = "firebaseStorageKtx" }
 
 # kakao
 kakao-login = { module = "com.kakao.sdk:v2-user", version.ref = "kakaoLogin" }
@@ -91,8 +98,16 @@ oss-licenses-plugin = { module = "com.google.android.gms:oss-licenses-plugin", v
 play-services-oss-licenses = { module = "com.google.android.gms:play-services-oss-licenses", version.ref = "playServicesOssLicenses" }
 
 # Timeber Log
+switchbutton = { module = "lib.kingja.switchbutton:switchbutton", version.ref = "switchbutton" }
+switchbutton-library = { module = "com.kyleduo.switchbutton:library", version.ref = "libraryVersion" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
-firebase-storage-ktx = { group = "com.google.firebase", name = "firebase-storage-ktx", version.ref = "firebaseStorageKtx" }
+
+# room
+androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+androidx-room-testing = { group = "androidx.room", name = "room-testing", version.ref = "room" }
+toggle = { module = "com.github.angads25:toggle", version.ref = "toggle" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -102,6 +117,7 @@ kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize",  version.ref 
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin-jvm" }
+room = { id = "androidx.room", version.ref = "room"}
 
 [bundles]
 retrofit = [
@@ -115,5 +131,6 @@ firebase = [
     "firebase-auth-ktx",
     "firebase-firestore-ktx",
     "firebase-messaging-ktx",
-    "firebase-database-ktx"
+    "firebase-database-ktx",
+    "firebase-storage-ktx"
 ]
