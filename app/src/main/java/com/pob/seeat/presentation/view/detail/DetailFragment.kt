@@ -219,6 +219,11 @@ class DetailFragment : Fragment() {
                 tvMyDistance.text = formatDistanceToString(distance)
             }
 
+            // 툴바 뒤로가기
+            tbFeed.setNavigationOnClickListener {
+                findNavController().popBackStack()
+            }
+
             setFeedLikeButton(clLikeBtn)
 
             clLikeBtn.setOnClickListener {

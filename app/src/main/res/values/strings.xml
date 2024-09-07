@@ -47,7 +47,7 @@
     <!-- my page (history) -->
     <string name="history_feed">작성글</string>
     <string name="history_comment">작성 댓글</string>
-    <string name="history_liked_feed">좋아요한 글</string>
+    <string name="history_liked_feed">추천한 글</string>
     <string name="history_more">더보기</string>
     <string name="history_feed_title">제목</string>
     <string-array name="history_title">
