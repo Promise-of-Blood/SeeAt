@@ -137,4 +137,7 @@ dependencies {
 
     // ViewPager2 Indicator
     implementation(libs.circleindicator)
+
+    // PhotoView
+    implementation(libs.photoview)
 }
