@@ -6,6 +6,7 @@
         <item name="backgroundTint">@color/white</item>
     </style>
 
+
     <style name="tab_text">
         <item name="android:textSize">14sp</item>
     </style>
@@ -44,6 +45,10 @@
 
     <style name="RoundCornerModalStyle" parent="Widget.Design.BottomSheet.Modal">
         <item name="android:background">@drawable/background_bottom_sheet</item>
+    </style>
+
+    <style name="NavigationTextStyle">
+        <item name="android:textSize">11sp</item>
     </style>
 
 </resources>

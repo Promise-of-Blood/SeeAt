@@ -28,40 +28,6 @@ class ChatListFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val db = Firebase.database
-        // child 가 아래 속성
-        //        val ref = db.getReference("chats").child("base").child("person")
-        // 값 설정
-        //        ref.child("base").child("person").setValue("상대방 이름(string)")
-        val ref = db.getReference("chats")
-        val newData = mapOf(
-            "test" to "테스트용",
-        )
-
-        // 임의의 고정키 이름으로 자식 생성
-//        val newChild = ref.push()
-
-        // 이름 지정한 자식 생성
-        val newChild = ref.child("mytest")
-
-        newChild.setValue(newData).addOnSuccessListener {
-            Timber.d("rtdb success")
-        }.addOnFailureListener {
-            Timber.d("rtdb fail")
-        }
-
-        ref.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val value = snapshot.value
-                // 자식 개수 구하기
-//                val count = snapshot.childrenCount
-                Timber.d("rtdb value : $value")
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                Timber.d("rtdb error : ${error.toException()}")
-            }
-        })
     }
 
     override fun onCreateView(

@@ -21,6 +21,7 @@ import com.pob.seeat.domain.usecase.DeleteCommentUseCases
 import com.pob.seeat.domain.usecase.DeleteUserInfoUseCase
 import com.pob.seeat.domain.usecase.EditCommentUseCases
 import com.pob.seeat.domain.usecase.GetCommentListUseCases
+import com.pob.seeat.domain.usecase.GetCommentUseCases
 import com.pob.seeat.domain.usecase.GetSampleImageListUseCase
 import com.pob.seeat.domain.usecase.GetSampleVideoListUseCase
 import com.pob.seeat.domain.usecase.GetUserInfoByEmailUseCase
@@ -161,7 +162,8 @@ abstract class CommentModule {
                 createCommentUseCases = CreateCommentUseCases(repository),
                 getCommentListUsesCases = GetCommentListUseCases(repository),
                 deleteCommentUseCases = DeleteCommentUseCases(repository),
-                editCommentUseCases = EditCommentUseCases(repository)
+                editCommentUseCases = EditCommentUseCases(repository),
+                getCommentUseCases = GetCommentUseCases(repository)
             )
         }
     }

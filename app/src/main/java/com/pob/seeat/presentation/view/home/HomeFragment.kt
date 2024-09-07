@@ -4,32 +4,29 @@ import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
-import android.graphics.Color
 import android.graphics.Rect
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.constraintlayout.widget.ConstraintLayout
+import android.view.ViewTreeObserver
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import android.view.ViewTreeObserver
-import androidx.core.content.ContextCompat
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.chip.Chip
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
-import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.clustering.Clusterer
 import com.naver.maps.map.clustering.ClusteringKey
 import com.naver.maps.map.clustering.DefaultLeafMarkerUpdater
@@ -37,21 +34,22 @@ import com.naver.maps.map.clustering.LeafMarkerInfo
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.Overlay
 import com.naver.maps.map.util.FusedLocationSource
-import com.naver.maps.map.util.MapConstants
+import com.pob.seeat.MainActivity
 import com.pob.seeat.R
+import com.pob.seeat.data.model.Result
+import com.pob.seeat.data.repository.NaverMapWrapper
 import com.pob.seeat.databinding.FragmentHomeBinding
+import com.pob.seeat.domain.model.FeedModel
 import com.pob.seeat.presentation.view.UiState
 import com.pob.seeat.presentation.viewmodel.HomeViewModel
 import com.pob.seeat.presentation.viewmodel.RestroomViewModel
+import com.pob.seeat.utils.Utils.hideStatusBar
 import com.pob.seeat.utils.Utils.px
+import com.pob.seeat.utils.Utils.setStatusBarColor
+import com.pob.seeat.utils.Utils.tagList
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import com.pob.seeat.data.model.Result
-import com.pob.seeat.data.repository.NaverMapWrapper
-import com.pob.seeat.domain.model.FeedModel
-import com.pob.seeat.utils.Utils.tagList
-import com.pob.seeat.utils.Utils.toTagList
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -97,12 +95,18 @@ class HomeFragment : Fragment() {
         initTagRecyclerView()
         initBottomSheet()
         getFeed()
+        getUnReadAlarmCount()
         initialSetting()
     }
 
     private fun initialSetting() {
+        (activity as AppCompatActivity).hideStatusBar()
         binding.run {
-            ivAlarm.setOnClickListener { findNavController().navigate(R.id.action_home_to_alarm) }
+            ivAlarm.setOnClickListener {
+                (activity as MainActivity).setBottomNavigationSelectedItem(
+                    R.id.navigation_alarm
+                )
+            }
             ibAddMarker.setOnClickListener {
                 findNavController().navigate(R.id.action_home_to_new_feed)
             }
@@ -112,13 +116,46 @@ class HomeFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         getFeed()
+        (activity as AppCompatActivity).hideStatusBar()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
+        (activity as AppCompatActivity).setStatusBarColor(
+            ContextCompat.getColor(
+                requireContext(),
+                R.color.white
+            )
+        )
         _binding = null
     }
 
+    private fun getUnReadAlarmCount() = with(homeViewModel) {
+        getUnReadAlarmCount()
+        viewLifecycleOwner.lifecycleScope.launch {
+            unreadAlarmCount.flowWithLifecycle(viewLifecycleOwner.lifecycle)
+                .collectLatest { response ->
+                    when (response) {
+                        is Result.Error -> Timber.e("Error: ${response.message}")
+                        is Result.Loading -> {}
+                        is Result.Success -> bindUnreadAlarmCount(response.data)
+                    }
+                }
+        }
+    }
+
+    private fun bindUnreadAlarmCount(count: Long) = with(binding) {
+        if (count == 0L) {
+            ivAlarm.imageTintList =
+                ColorStateList.valueOf(resources.getColor(R.color.light_gray, null))
+            tvAlarmCount.visibility = View.GONE
+        } else {
+            ivAlarm.imageTintList =
+                ColorStateList.valueOf(resources.getColor(R.color.tertiary, null))
+            tvAlarmCount.visibility = View.VISIBLE
+            tvAlarmCount.text = if (count <= 9) count.toString() else "9+"
+        }
+    }
 
     private fun getFeed() = with(homeViewModel) {
 
@@ -186,7 +223,11 @@ class HomeFragment : Fragment() {
                         val feedModel = feedList.find { it.feedId == (info.key as ItemKey).id }
                         feedModel?.let { model ->
                             Timber.tag("HomeFragment")
-                                .d("%s%s", "Marker Clicked: " + model.feedId + ", " + model.title + ", ", model.content)
+                                .d(
+                                    "%s%s",
+                                    "Marker Clicked: " + model.feedId + ", " + model.title + ", ",
+                                    model.content
+                                )
                         } ?: Timber.tag("HomeFragment").e("FeedModel not found for marker")
                         true
                     }

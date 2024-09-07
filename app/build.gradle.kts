@@ -140,4 +140,13 @@ dependencies {
 
     // PhotoView
     implementation(libs.photoview)
+
+    implementation(libs.switchbutton.library)
+
+    // room
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.room.runtime)
+    annotationProcessor(libs.androidx.room.compiler)
+    ksp(libs.androidx.room.compiler)
+    testImplementation(libs.androidx.room.testing)
 }

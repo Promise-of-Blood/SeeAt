@@ -8,4 +8,5 @@ interface CommentSource {
     suspend fun getCommentList(feedId: String) : Flow<List<CommentData>>
     suspend fun deleteComment(commentData: CommentData)
     suspend fun editComment(commentData: CommentData)
+    suspend fun getComment(feedId: String, commentId:String) : CommentData?
 }

@@ -1,25 +1,28 @@
 package com.pob.seeat.presentation.view.detail
 
+import android.Manifest.permission.ACCESS_COARSE_LOCATION
+import android.Manifest.permission.ACCESS_FINE_LOCATION
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
-import android.content.Context.INPUT_METHOD_SERVICE
 import android.content.Intent
-import android.graphics.Rect
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.Looper
 import android.util.Log
+import android.util.TypedValue
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.constraintlayout.widget.ConstraintSet.Motion
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getSystemService
-import androidx.core.content.getSystemService
+import androidx.core.view.marginStart
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -31,6 +34,12 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
 import com.google.android.material.chip.Chip
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
@@ -42,18 +51,21 @@ import com.pob.seeat.data.model.Result
 import com.pob.seeat.databinding.FragmentDetailBinding
 import com.pob.seeat.domain.model.CommentModel
 import com.pob.seeat.domain.model.FeedModel
+import com.pob.seeat.domain.model.toBookmarkEntity
 import com.pob.seeat.presentation.view.chat.ChattingActivity
 import com.pob.seeat.presentation.viewmodel.CommentViewModel
 import com.pob.seeat.presentation.viewmodel.DetailViewModel
-import com.pob.seeat.utils.GoogleAuthUtil.getUserUid
+import com.pob.seeat.utils.EventBus
 import com.pob.seeat.utils.Utils.px
 import com.pob.seeat.utils.Utils.toKoreanDiffString
 import com.pob.seeat.utils.Utils.toLocalDateTime
 import com.pob.seeat.utils.Utils.toTagList
+import com.pob.seeat.utils.dialog.Dialog.showCommentDialog
+import com.pob.seeat.utils.dialog.Dialog.showReportDialog
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import timber.log.Timber
 import java.util.Locale
 import kotlin.math.asin
@@ -69,23 +81,26 @@ class DetailFragment : Fragment() {
     private val binding get() = _binding!!
 
     val args: DetailFragmentArgs by navArgs()
+    private lateinit var feed: FeedModel
 
     private val detailViewModel: DetailViewModel by viewModels()
     private val commentViewModel: CommentViewModel by viewModels()
 
-    private val feedCommentAdapter: FeedCommentAdapter by lazy { FeedCommentAdapter(::handleClickFeed) }
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+
+    private val feedCommentAdapter: FeedCommentAdapter by lazy {
+        FeedCommentAdapter(
+            commentViewModel,
+            ::handleClickFeed,
+            ::onLongClicked
+        )
+    }
 
     private lateinit var chattingResultLauncher: ActivityResultLauncher<Intent>
+    private var currentGeoPoint: GeoPoint = GeoPoint(0.0, 0.0)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        chattingResultLauncher =
-            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-                if (result.resultCode == Activity.RESULT_OK) {
-                    findNavController().navigate(R.id.navigation_home)
-                    (activity as MainActivity).setBottomNavigationSelectedItem(R.id.navigation_message)
-                }
-            }
     }
 
     override fun onCreateView(
@@ -100,9 +115,8 @@ class DetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         getFeed()
-//        initTagRecyclerView()
 
-        setupUI(view,binding.tvAddCommentButton)
+        setupUI(view, binding.tvAddCommentButton)
         initCommentRecyclerView()
         Timber.i(args.feedIdArg)
         initCommentViewModel()
@@ -112,7 +126,7 @@ class DetailFragment : Fragment() {
         detailViewModel.getFeedById(args.feedIdArg)
 
         initFeedLiked()
-
+        initIsBookmarked()
 
     }
 
@@ -156,7 +170,7 @@ class DetailFragment : Fragment() {
                         }
 
                         is Result.Success -> {
-                            val feed = response.data
+                            feed = response.data
                             Timber.i("HomeFragment", feed.toString())
                             initView(feed)
                         }
@@ -165,7 +179,32 @@ class DetailFragment : Fragment() {
         }
     }
 
+    private fun initIsBookmarked() = with(detailViewModel) {
+        getIsBookmarked(args.feedIdArg)
+        handleBookmark(detailViewModel.isBookmarked.value)
+        viewLifecycleOwner.lifecycleScope.launch {
+            isBookmarked.flowWithLifecycle(viewLifecycleOwner.lifecycle).collect { isBookmarked ->
+                handleBookmark(isBookmarked)
+                binding.clBookmarkBtn.setOnClickListener {
+                    if (::feed.isInitialized) {
+                        if (detailViewModel.isBookmarked.value) {
+                            detailViewModel.deleteBookmark(feed.feedId)
+                            Toast.makeText(requireContext(), "북마크를 삭제했습니다.", Toast.LENGTH_SHORT)
+                                .show()
+                        } else {
+                            detailViewModel.saveBookmark(feed.toBookmarkEntity())
+                            Toast.makeText(requireContext(), "북마크에 추가했습니다.", Toast.LENGTH_SHORT)
+                                .show()
+                        }
+                        getIsBookmarked(feed.feedId)
+                    }
+                }
+            }
+        }
+    }
+
     private fun initView(feed: FeedModel) {
+
         Timber.i(feed.toString())
         binding.run {
             tvWriterUsername.text = feed.nickname
@@ -180,26 +219,26 @@ class DetailFragment : Fragment() {
             tvFeedDetailLikeCount.text = feed.like.toString()
             tvCommentCount.text = feed.commentsCount.toString()
 
-            // Todo 나의 위치 가져오기
-            val myLatitude = 37.570201
-            val myLongitude = 126.976879
-            val geoPoint = GeoPoint(myLatitude, myLongitude)
-            feed.location?.let {
-                val distance = calculateDistance(geoPoint, it)
-                tvMyDistance.text = formatDistanceToString(distance)
+            initLocation()
+
+            // 툴바 뒤로가기
+            tbFeed.setNavigationOnClickListener {
+                findNavController().popBackStack()
             }
 
             setFeedLikeButton(clLikeBtn)
 
             clLikeBtn.setOnClickListener {
                 detailViewModel.isLikedToggle(args.feedIdArg)
+                detailViewModel.modifyIsLiked(tvFeedDetailLikeCount.text.toString().toInt())
             }
-            setLikeCount()
 
-
-            clBookmarkBtn.setOnClickListener {
-                // Todo 북마크 누를 때
+            viewLifecycleOwner.lifecycleScope.launch {
+                EventBus.subscribe().collect { value ->
+                    tvFeedDetailLikeCount.text = value.toString()
+                }
             }
+
 
             tvFeedGetPositionButton.setOnClickListener {
                 // Todo 위치보기
@@ -218,7 +257,7 @@ class DetailFragment : Fragment() {
             tvChatButton.setOnClickListener {
                 val intent = Intent(requireContext(), ChattingActivity::class.java)
                 intent.putExtra("feedId", feed.feedId)
-                chattingResultLauncher.launch(intent)
+                startActivity(intent)
             }
 
 
@@ -232,6 +271,131 @@ class DetailFragment : Fragment() {
                 initImageViewPager(feed.contentImage)
             }
         }
+    }
+
+    private fun initLocation() {
+
+        fusedLocationClient =
+            LocationServices.getFusedLocationProviderClient(requireContext())
+
+        when (PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.checkSelfPermission(requireContext(), ACCESS_FINE_LOCATION)
+            -> {
+                requestFineLocation()
+            }
+            ActivityCompat.checkSelfPermission(requireContext(), ACCESS_COARSE_LOCATION)
+            -> {
+                requestCoarseLocation()
+            }
+            else -> {
+                Timber.e("위치 권한이 없습니다.")
+                hideDistance()
+            }
+        }
+
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun requestFineLocation() {
+        val locationRequest = LocationRequest.Builder(
+            Priority.PRIORITY_HIGH_ACCURACY,
+            10000
+        ).setMaxUpdates(1)
+            .build()
+
+        fusedLocationClient.requestLocationUpdates(
+            locationRequest,
+            object : LocationCallback() {
+                override fun onLocationResult(locationResult: LocationResult) {
+                    val location = locationResult.lastLocation
+                    if (location != null) {
+                        val currentGeoPoint = GeoPoint(location.latitude, location.longitude)
+                        Timber.i("고정밀 위치: $currentGeoPoint")
+                        feed.location?.let {
+                            val distance = calculateDistance(currentGeoPoint, it)
+                            binding.tvMyDistance.text = formatDistanceToString(distance)
+                        }
+                    }
+                    fusedLocationClient.removeLocationUpdates(this)
+                }
+            },
+            Looper.getMainLooper()
+        )
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun requestCoarseLocation() {
+
+        val locationRequest = LocationRequest.Builder(
+            Priority.PRIORITY_BALANCED_POWER_ACCURACY,
+            10000
+        ).setWaitForAccurateLocation(true)
+            .setMaxUpdates(1)
+            .build()
+
+        fusedLocationClient.requestLocationUpdates(
+            locationRequest,
+            object : LocationCallback() {
+                override fun onLocationResult(locationResult: LocationResult) {
+                    val location = locationResult.lastLocation
+                    if (location != null) {
+                        val currentGeoPoint = GeoPoint(location.latitude, location.longitude)
+                        Timber.i("저정밀 위치: $currentGeoPoint")
+                        feed.location?.let {
+                            val distance = calculateDistance(currentGeoPoint, it)
+                            binding.tvMyDistance.text = formatDistanceToString(distance)
+                        }
+                    }
+                    fusedLocationClient.removeLocationUpdates(this)
+                }
+            },
+            Looper.getMainLooper()
+        )
+    }
+
+    private fun hideDistance() {
+        binding.tvMyDistance.visibility = View.GONE
+        binding.viewDistanceDivider.visibility = View.GONE
+        val marginInDp = 20
+        val marginInPx = TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP, marginInDp.toFloat(), resources.displayMetrics
+        ).toInt()
+
+        val params = binding.tvFeedTimeAgo.layoutParams as ViewGroup.MarginLayoutParams
+        params.marginStart = marginInPx
+        binding.tvFeedTimeAgo.layoutParams = params
+    }
+
+    private fun handleBookmark(isBookmarked: Boolean) = with(binding) {
+        if (isBookmarked) {
+            tvBookmarkBtnText.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+            ivBookmarkBtnIcon.imageTintList =
+                ContextCompat.getColorStateList(requireContext(), R.color.white)
+            ivBookmarkBtnIcon.setImageDrawable(
+                ContextCompat.getDrawable(
+                    requireContext(),
+                    R.drawable.ic_heart
+                )
+            )
+            clBookmarkBtn.setBackgroundResource(R.drawable.round_r4_primary)
+        } else {
+            tvBookmarkBtnText.setTextColor(ContextCompat.getColor(requireContext(), R.color.gray))
+            ivBookmarkBtnIcon.imageTintList =
+                ContextCompat.getColorStateList(requireContext(), R.color.gray)
+            ivBookmarkBtnIcon.setImageDrawable(
+                ContextCompat.getDrawable(
+                    requireContext(),
+                    R.drawable.ic_heart_outlined
+                )
+            )
+            clBookmarkBtn.setBackgroundResource(R.drawable.round_r4_border)
+        }
+    }
+
+    private fun changeDP(value: Int): Int {
+        val displayMetrics = resources.displayMetrics
+        val dp = Math.round(value * displayMetrics.density)
+        return dp
     }
 
     private fun setLikeCount() {
@@ -271,10 +435,11 @@ class DetailFragment : Fragment() {
     }
 
     private fun initCommentViewModel() {
+
         viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 commentViewModel.comments.collect { comments ->
-                    feedCommentAdapter.submitList(comments)
+                    feedCommentAdapter.submitList(comments.toList())
                 }
             }
         }
@@ -301,7 +466,7 @@ class DetailFragment : Fragment() {
                 setChipIconResource(tag.tagImage)
 
                 chipBackgroundColor =
-                    ContextCompat.getColorStateList(context, R.color.background_gray)
+                    ContextCompat.getColorStateList(context, R.color.white)
                 chipStrokeWidth = 0f
                 chipIconSize = 16f.px.toFloat()
                 chipCornerRadius = 32f.px.toFloat()
@@ -355,6 +520,28 @@ class DetailFragment : Fragment() {
         // Todo 댓글 클릭시
     }
 
+    private fun onLongClicked(feedModel: CommentModel) {
+        val currentUid = FirebaseAuth.getInstance().currentUser?.uid
+        if (feedModel.user?.id == currentUid) {
+            showCommentDialog(
+                requireContext(),
+                onDelete = {
+                    commentViewModel.deleteComment(feedModel)
+                    commentViewModel.fetchComments(args.feedIdArg)
+                },
+                onEdit = {
+                    Toast.makeText(requireContext(), "미구현된 기능입니다.", Toast.LENGTH_SHORT).show()
+                }
+            )
+        } else {
+            showReportDialog(
+                requireContext(),
+                onReport = {
+                    Toast.makeText(requireContext(), "미구현된 기능입니다.", Toast.LENGTH_SHORT).show()
+                })
+        }
+    }
+
     private fun sendCommentToServer(comment: String) {
         val feedId = args.feedIdArg
         val timeStamp = Timestamp.now()
@@ -398,7 +585,8 @@ class DetailFragment : Fragment() {
     }
 
     private fun hideKeyboard() {
-        val inputMethodManager = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        val inputMethodManager =
+            requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         val currentFocusView = requireActivity().currentFocus
         currentFocusView?.let {
             inputMethodManager.hideSoftInputFromWindow(it.windowToken, 0)
@@ -406,7 +594,7 @@ class DetailFragment : Fragment() {
     }
 
 
-    private fun setupUI(view: View,vararg exView:View) {
+    private fun setupUI(view: View, vararg exView: View) {
         // ViewGroup인 경우 자식들에게도 적용
         if (view !is EditText && !exView.contains(view)) {
             view.setOnTouchListener { _, _ ->

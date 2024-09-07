@@ -9,7 +9,8 @@ data class CommentUseCases(
     val createCommentUseCases: CreateCommentUseCases,
     val getCommentListUsesCases: GetCommentListUseCases,
     val deleteCommentUseCases: DeleteCommentUseCases,
-    val editCommentUseCases: EditCommentUseCases
+    val editCommentUseCases: EditCommentUseCases,
+    val getCommentUseCases: GetCommentUseCases
 )
 
 class CreateCommentUseCases(private val repository: CommentRepository){
@@ -33,5 +34,11 @@ class DeleteCommentUseCases(private val repository: CommentRepository){
 class EditCommentUseCases(private val repository: CommentRepository){
     suspend fun execute(commentModel : CommentModel){
         repository.editComment(commentModel)
+    }
+}
+
+class GetCommentUseCases(private val repository: CommentRepository){
+    suspend fun execute(feedId: String, commentId:String):CommentModel?{
+        return repository.getComment(feedId,commentId)
     }
 }
