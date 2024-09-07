@@ -13,6 +13,7 @@ junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 appcompat = "1.7.0"
 kotlinxCoroutinesAndroid = "1.7.3"
+libraryVersion = "2.1.0"
 naverMap = "3.19.1"
 material = "1.12.0"
 activity = "1.9.1"
@@ -30,6 +31,8 @@ retrofit = "2.11.0"
 okhttp3 = "4.12.0"
 ksp = "2.0.0-1.0.23"
 kakaoLogin = "2.20.1"
+switchbutton = "1.1.8"
+toggle = "1.1.0"
 viewpager2 = "1.1.0"
 navigationFragmentKtx = "2.7.7"
 navigationUiKtx = "2.7.7"
@@ -93,6 +96,8 @@ oss-licenses-plugin = { module = "com.google.android.gms:oss-licenses-plugin", v
 play-services-oss-licenses = { module = "com.google.android.gms:play-services-oss-licenses", version.ref = "playServicesOssLicenses" }
 
 # Timeber Log
+switchbutton = { module = "lib.kingja.switchbutton:switchbutton", version.ref = "switchbutton" }
+switchbutton-library = { module = "com.kyleduo.switchbutton:library", version.ref = "libraryVersion" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 
 # room
@@ -100,6 +105,7 @@ androidx-room-runtime = { group = "androidx.room", name = "room-runtime", versio
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 androidx-room-testing = { group = "androidx.room", name = "room-testing", version.ref = "room" }
+toggle = { module = "com.github.angads25:toggle", version.ref = "toggle" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
