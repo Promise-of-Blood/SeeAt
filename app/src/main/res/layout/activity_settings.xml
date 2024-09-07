@@ -5,15 +5,36 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".presentation.view.mypage.settings.SettingsActivity">
+
+    <LinearLayout
+        android:id="@+id/ll_setting_header"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:paddingTop="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <Toolbar
+            android:id="@+id/tb_alarm"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:navigationIcon="@drawable/ic_arrow_left"
+            android:title="@string/my_page_settings" />
+
+    </LinearLayout>
 
     <ScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:background="@color/background_gray"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/ll_setting_header">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -28,10 +49,10 @@
                 android:background="@color/white"
                 android:paddingHorizontal="24dp"
                 android:paddingVertical="12dp"
-                android:textSize="14sp"
-                android:textStyle="bold"
+                android:text="@string/settings_account"
                 android:textColor="@color/gray"
-                android:text="@string/settings_account" />
+                android:textSize="14sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/tv_user_email_title"
@@ -40,9 +61,8 @@
                 android:background="@color/white"
                 android:paddingHorizontal="24dp"
                 android:text="@string/settings_user_account"
-                android:textSize="14sp"
                 android:textColor="@color/gray"
-                />
+                android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/tv_user_email"
@@ -51,9 +71,9 @@
                 android:background="@color/white"
                 android:paddingHorizontal="24dp"
                 android:paddingVertical="12dp"
-                android:textSize="18sp"
                 android:textColor="@color/gray"
-                tools:text="pobnbc@gmail.com"/>
+                android:textSize="18sp"
+                tools:text="pobnbc@gmail.com" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/settings_logout"
@@ -90,7 +110,6 @@
                 app:icon="@drawable/ic_arrow_right"
                 app:iconGravity="end"
                 app:iconTint="@color/gray" />
-
 
 
         </LinearLayout>
