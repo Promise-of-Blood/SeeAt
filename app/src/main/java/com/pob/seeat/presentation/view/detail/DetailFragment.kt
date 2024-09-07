@@ -1,10 +1,14 @@
 package com.pob.seeat.presentation.view.detail
 
+import android.Manifest.permission.ACCESS_COARSE_LOCATION
+import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,7 +18,9 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.marginStart
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -26,6 +32,8 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.android.material.chip.Chip
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
@@ -72,6 +80,8 @@ class DetailFragment : Fragment() {
     private val detailViewModel: DetailViewModel by viewModels()
     private val commentViewModel: CommentViewModel by viewModels()
 
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+
     private val feedCommentAdapter: FeedCommentAdapter by lazy {
         FeedCommentAdapter(
             commentViewModel,
@@ -105,7 +115,6 @@ class DetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         getFeed()
-//        initTagRecyclerView()
 
         setupUI(view, binding.tvAddCommentButton)
         initCommentRecyclerView()
@@ -210,14 +219,46 @@ class DetailFragment : Fragment() {
             tvFeedDetailLikeCount.text = feed.like.toString()
             tvCommentCount.text = feed.commentsCount.toString()
 
-            // Todo 나의 위치 가져오기
-            val myLatitude = 37.570201
-            val myLongitude = 126.976879
-            val geoPoint = GeoPoint(myLatitude, myLongitude)
-            feed.location?.let {
-                val distance = calculateDistance(geoPoint, it)
-                tvMyDistance.text = formatDistanceToString(distance)
+            if (ActivityCompat.checkSelfPermission(requireContext(), ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(
+                    requireContext(), ACCESS_COARSE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                Timber.e("위치권한이 없습니다.")
+                hideDistance()
+            } else {
+                fusedLocationClient =
+                    LocationServices.getFusedLocationProviderClient(requireContext())
+                fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                    if (location != null) {
+                        Timber.i(location.latitude.toString())
+                        Timber.i(location.longitude.toString())
+                        val currentGeoPoint = GeoPoint(location.latitude, location.longitude)
+                        Timber.i(currentGeoPoint.toString())
+                        Timber.i(feed.location.toString())
+
+                        feed.location?.let {
+                            val distance = calculateDistance(currentGeoPoint, it)
+                            tvMyDistance.text = formatDistanceToString(distance)
+                        }
+
+                    } else {
+                        hideDistance()
+
+                        Timber.e("나의 위치를 찾을 수 없습니다.")
+                    }
+                }
             }
+
+
+//            // Todo 나의 위치 가져오기
+//            val myLatitude = 37.570201
+//            val myLongitude = 126.976879
+//            val geoPoint = GeoPoint(myLatitude, myLongitude)
+//            feed.location?.let {
+//                val distance = calculateDistance(geoPoint, it)
+//                tvMyDistance.text = formatDistanceToString(distance)
+//            }
 
             setFeedLikeButton(clLikeBtn)
 
@@ -266,6 +307,19 @@ class DetailFragment : Fragment() {
         }
     }
 
+    private fun hideDistance() {
+        binding.tvMyDistance.visibility = View.GONE
+        binding.viewDistanceDivider.visibility = View.GONE
+        val marginInDp = 20
+        val marginInPx = TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP, marginInDp.toFloat(), resources.displayMetrics
+        ).toInt()
+
+        val params = binding.tvFeedTimeAgo.layoutParams as ViewGroup.MarginLayoutParams
+        params.marginStart = marginInPx
+        binding.tvFeedTimeAgo.layoutParams = params
+    }
+
     private fun handleBookmark(isBookmarked: Boolean) = with(binding) {
         if (isBookmarked) {
             tvBookmarkBtnText.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
@@ -290,6 +344,12 @@ class DetailFragment : Fragment() {
             )
             clBookmarkBtn.setBackgroundResource(R.drawable.round_r4_border)
         }
+    }
+
+    private fun changeDP(value: Int): Int {
+        val displayMetrics = resources.displayMetrics
+        val dp = Math.round(value * displayMetrics.density)
+        return dp
     }
 
     private fun setLikeCount() {
@@ -416,7 +476,7 @@ class DetailFragment : Fragment() {
 
     private fun onLongClicked(feedModel: CommentModel) {
         val currentUid = FirebaseAuth.getInstance().currentUser?.uid
-        if(feedModel.user?.id == currentUid){
+        if (feedModel.user?.id == currentUid) {
             showCommentDialog(
                 requireContext(),
                 onDelete = {
@@ -427,7 +487,7 @@ class DetailFragment : Fragment() {
                     Toast.makeText(requireContext(), "미구현된 기능입니다.", Toast.LENGTH_SHORT).show()
                 }
             )
-        }else{
+        } else {
             showReportDialog(
                 requireContext(),
                 onReport = {
