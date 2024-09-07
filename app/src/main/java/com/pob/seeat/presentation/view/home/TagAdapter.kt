@@ -12,7 +12,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.pob.seeat.R
 import com.pob.seeat.domain.model.TagModel
 
-class TagAdapter(private val tagList: List<TagModel>) : RecyclerView.Adapter<TagAdapter.TagViewHolder>() {
+class TagAdapter(private val tagList: List<TagModel>) :
+    RecyclerView.Adapter<TagAdapter.TagViewHolder>() {
     interface OnItemClickListener {
         fun onItemClick(view: View, position: Int)
     }
