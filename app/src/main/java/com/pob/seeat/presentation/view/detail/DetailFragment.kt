@@ -276,29 +276,33 @@ class DetailFragment : Fragment() {
     }
 
     private fun initLocation() {
-        if (ActivityCompat.checkSelfPermission(requireContext(), ACCESS_FINE_LOCATION)
-            != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(
-                requireContext(), ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            Timber.e("위치권한이 없습니다.")
-            hideDistance()
-        } else {
-            requestSingleLocationUpdate()
-        }
-    }
-
-    @SuppressLint("MissingPermission")
-    private fun requestSingleLocationUpdate() {
 
         fusedLocationClient =
             LocationServices.getFusedLocationProviderClient(requireContext())
 
+        when (PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.checkSelfPermission(requireContext(), ACCESS_FINE_LOCATION)
+            -> {
+                requestFineLocation()
+            }
+            ActivityCompat.checkSelfPermission(requireContext(), ACCESS_COARSE_LOCATION)
+            -> {
+                requestCoarseLocation()
+            }
+            else -> {
+                Timber.e("위치 권한이 없습니다.")
+                hideDistance()
+            }
+        }
+
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun requestFineLocation() {
         val locationRequest = LocationRequest.Builder(
             Priority.PRIORITY_HIGH_ACCURACY,
             10000
-        ).setWaitForAccurateLocation(true)  // 높은 정확도의 위치 요청을 기다림
-            .setMaxUpdates(1)  // 한 번만 위치 업데이트 받기
+        ).setMaxUpdates(1)
             .build()
 
         fusedLocationClient.requestLocationUpdates(
@@ -307,16 +311,43 @@ class DetailFragment : Fragment() {
                 override fun onLocationResult(locationResult: LocationResult) {
                     val location = locationResult.lastLocation
                     if (location != null) {
-                        currentGeoPoint = GeoPoint(location.latitude, location.longitude)
-                        Timber.i("최신 위치: $currentGeoPoint")
-
+                        val currentGeoPoint = GeoPoint(location.latitude, location.longitude)
+                        Timber.i("고정밀 위치: $currentGeoPoint")
                         feed.location?.let {
                             val distance = calculateDistance(currentGeoPoint, it)
                             binding.tvMyDistance.text = formatDistanceToString(distance)
                         }
-
                     }
+                    fusedLocationClient.removeLocationUpdates(this)
+                }
+            },
+            Looper.getMainLooper()
+        )
+    }
 
+    @SuppressLint("MissingPermission")
+    private fun requestCoarseLocation() {
+
+        val locationRequest = LocationRequest.Builder(
+            Priority.PRIORITY_BALANCED_POWER_ACCURACY,
+            10000
+        ).setWaitForAccurateLocation(true)
+            .setMaxUpdates(1)
+            .build()
+
+        fusedLocationClient.requestLocationUpdates(
+            locationRequest,
+            object : LocationCallback() {
+                override fun onLocationResult(locationResult: LocationResult) {
+                    val location = locationResult.lastLocation
+                    if (location != null) {
+                        val currentGeoPoint = GeoPoint(location.latitude, location.longitude)
+                        Timber.i("저정밀 위치: $currentGeoPoint")
+                        feed.location?.let {
+                            val distance = calculateDistance(currentGeoPoint, it)
+                            binding.tvMyDistance.text = formatDistanceToString(distance)
+                        }
+                    }
                     fusedLocationClient.removeLocationUpdates(this)
                 }
             },
