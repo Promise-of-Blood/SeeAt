@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_gray"
+    android:fitsSystemWindows="true"
     tools:context=".presentation.view.feed.NewFeedFragment">
 
     <androidx.appcompat.widget.Toolbar
@@ -17,7 +18,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:navigationIcon="@drawable/ic_arrow_left"
-        app:title="씨앗 심기" />
+        app:title="씨앗 심기"
+        app:titleTextColor="@color/black" />
 
     <ImageView
         android:id="@+id/iv_upload_image"

@@ -5,25 +5,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_gray"
+    android:fitsSystemWindows="true"
     tools:context=".presentation.view.bookmark.BookmarkFragment">
 
-    <LinearLayout
-        android:id="@+id/ll_bookmark_header"
+    <Toolbar
+        android:id="@+id/tb_bookmark"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@color/white"
-        android:paddingTop="24dp"
+        android:title="@string/navigation_bookmark"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <Toolbar
-            android:id="@+id/tv_bookmark"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:title="@string/navigation_bookmark" />
-
-    </LinearLayout>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_bookmark"
@@ -33,7 +26,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ll_bookmark_header"
+        app:layout_constraintTop_toBottomOf="@id/tb_bookmark"
         tools:listitem="@layout/item_feed_bookmark" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

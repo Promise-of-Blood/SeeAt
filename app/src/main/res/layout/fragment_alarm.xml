@@ -5,25 +5,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_gray"
+    android:fitsSystemWindows="true"
     tools:context=".presentation.view.alarm.AlarmFragment">
 
-    <LinearLayout
-        android:id="@+id/ll_alarm_header"
+    <Toolbar
+        android:id="@+id/tb_alarm"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@color/white"
-        android:paddingTop="24dp"
+        android:title="@string/alarm_title"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <Toolbar
-            android:id="@+id/tb_alarm"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:title="@string/alarm_title" />
-
-    </LinearLayout>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_alarm"
@@ -33,7 +26,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ll_alarm_header"
+        app:layout_constraintTop_toBottomOf="@id/tb_alarm"
         tools:listitem="@layout/item_alarm" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
