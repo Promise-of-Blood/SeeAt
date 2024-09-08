@@ -47,6 +47,10 @@ class SelectLocateFragment : Fragment() {
 
     private fun initialSetting() {
         binding.apply {
+            toolbarMessage.setNavigationOnClickListener {
+                requireActivity().onBackPressedDispatcher.onBackPressed()
+            }
+
             tvConfirmLocate.setOnClickListener {
                 viewModel.updateSelectLocation(currentLatLng)
                 requireActivity().onBackPressed()
