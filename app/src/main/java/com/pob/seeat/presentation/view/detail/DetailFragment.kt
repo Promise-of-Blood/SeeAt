@@ -444,6 +444,7 @@ class DetailFragment : Fragment() {
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 commentViewModel.comments.collect { comments ->
                     feedCommentAdapter.submitList(comments.toList())
+                    binding.tvCommentCount.text = commentViewModel.comments.value.toList().size.toString()
                 }
             }
         }
@@ -573,6 +574,9 @@ class DetailFragment : Fragment() {
                     )
                     commentViewModel.fetchComments(feedId)
                     binding.etAddComment.setText("")
+
+
+                    Log.d("코멘트사이즈","${commentViewModel.comments.value.toList().size}")
                 } else {
                     Log.e("댓글 달기", "댓글달기 실패! 사용자 문서 X")
                 }
