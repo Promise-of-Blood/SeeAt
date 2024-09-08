@@ -7,7 +7,6 @@ import com.pob.seeat.domain.model.BookmarkModel
 import com.pob.seeat.domain.model.toBookmarkModelList
 import com.pob.seeat.domain.usecase.FetchBookmarkListUseCase
 import com.pob.seeat.domain.usecase.GetBookmarkListUseCase
-import com.pob.seeat.domain.usecase.GetFeedListByIdUseCase
 import com.pob.seeat.domain.usecase.SaveBookmarkListUseCase
 import com.pob.seeat.domain.usecase.SaveBookmarkUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,7 +21,6 @@ class BookmarkViewModel @Inject constructor(
     private val saveBookmarkListUseCase: SaveBookmarkListUseCase,
     private val saveBookmarkUseCase: SaveBookmarkUseCase,
     private val fetchBookmarkListUseCase: FetchBookmarkListUseCase,
-    private val getFeedLIstByIdUseCase: GetFeedListByIdUseCase,
 ) : ViewModel() {
     private val _bookmarkList = MutableStateFlow<Result<List<BookmarkModel>>>(Result.Loading)
     val bookmarkList: StateFlow<Result<List<BookmarkModel>>> get() = _bookmarkList
