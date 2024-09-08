@@ -8,18 +8,17 @@ import com.pob.seeat.domain.model.toBookmarkModelList
 import com.pob.seeat.domain.usecase.FetchBookmarkListUseCase
 import com.pob.seeat.domain.usecase.GetBookmarkListUseCase
 import com.pob.seeat.domain.usecase.SaveBookmarkListUseCase
-import com.pob.seeat.domain.usecase.SaveBookmarkUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
 class BookmarkViewModel @Inject constructor(
     private val getBookmarkListUseCase: GetBookmarkListUseCase,
     private val saveBookmarkListUseCase: SaveBookmarkListUseCase,
-    private val saveBookmarkUseCase: SaveBookmarkUseCase,
     private val fetchBookmarkListUseCase: FetchBookmarkListUseCase,
 ) : ViewModel() {
     private val _bookmarkList = MutableStateFlow<Result<List<BookmarkModel>>>(Result.Loading)
@@ -31,14 +30,14 @@ class BookmarkViewModel @Inject constructor(
         }
     }
 
-    fun fetchBookmarkList(feedIdList: List<String>) {
+    fun fetchBookmarkList() {
+        val feedIdList = (_bookmarkList.value as? Result.Success)?.data?.map { it.feedId } ?: return
         viewModelScope.launch {
             fetchBookmarkListUseCase(feedIdList).collect {
                 when (it) {
-                    is Result.Loading -> _bookmarkList.value = Result.Loading
-                    is Result.Error -> _bookmarkList.value = Result.Error(it.message)
+                    is Result.Loading -> Timber.tag("Bookmark").d("Fetching Bookmarks...")
+                    is Result.Error -> Timber.tag("Bookmark").e(it.message)
                     is Result.Success -> {
-                        _bookmarkList.value = Result.Success(it.data.toBookmarkModelList())
                         saveBookmarkList(it.data.toBookmarkModelList())
                     }
                 }

@@ -110,7 +110,7 @@ class AlarmFragment : Fragment() {
         }
 
         override fun getSwipeThreshold(viewHolder: RecyclerView.ViewHolder): Float {
-            return 2f // 반 이상 스와이프 시 자동으로 아이템뷰 삭제
+            return 1.8f // 반 이상 스와이프 시 자동으로 아이템뷰 삭제
         }
 
         override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {

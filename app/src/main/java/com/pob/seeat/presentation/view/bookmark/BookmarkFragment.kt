@@ -50,13 +50,9 @@ class BookmarkFragment : Fragment() {
         initViewModel()
     }
 
-    override fun onResume() {
-        super.onResume()
-        bookmarkViewModel.fetchBookmarkList(bookmarkAdapter.currentList.map { it.feedId })
-    }
-
     override fun onDestroy() {
         super.onDestroy()
+        bookmarkViewModel.fetchBookmarkList()
         _binding = null
     }
 
