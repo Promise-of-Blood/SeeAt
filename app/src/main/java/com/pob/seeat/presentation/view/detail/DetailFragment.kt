@@ -283,10 +283,12 @@ class DetailFragment : Fragment() {
             -> {
                 requestFineLocation()
             }
+
             ActivityCompat.checkSelfPermission(requireContext(), ACCESS_COARSE_LOCATION)
             -> {
                 requestCoarseLocation()
             }
+
             else -> {
                 Timber.e("위치 권한이 없습니다.")
                 hideDistance()
@@ -307,7 +309,7 @@ class DetailFragment : Fragment() {
             locationRequest,
             object : LocationCallback() {
                 override fun onLocationResult(locationResult: LocationResult) {
-                    if(_binding == null) return
+                    if (_binding == null) return
                     val location = locationResult.lastLocation
                     if (location != null) {
                         val currentGeoPoint = GeoPoint(location.latitude, location.longitude)
@@ -338,7 +340,7 @@ class DetailFragment : Fragment() {
             locationRequest,
             object : LocationCallback() {
                 override fun onLocationResult(locationResult: LocationResult) {
-                    if(_binding == null) return
+                    if (_binding == null) return
                     val location = locationResult.lastLocation
                     if (location != null) {
                         val currentGeoPoint = GeoPoint(location.latitude, location.longitude)
@@ -459,7 +461,7 @@ class DetailFragment : Fragment() {
     }
 
     private fun initTag(tags: List<String>) {
-        val chipGroup = _binding?.chipsGroupDetail ?:return
+        val chipGroup = _binding?.chipsGroupDetail ?: return
         val tagLists = tags.toTagList()
         // tagList를 이용해 Chip을 동적으로 생성
         // tagLists:List<tag>
