@@ -10,5 +10,7 @@ data class ChatModel(
 data class ChatsChattingModel(
     val feedFrom: String,
     val lastMessage: String,
-    val whenLast: Timestamp,
-)
+    val whenLast: Long,
+) {
+    constructor() : this("", "", 0L)
+}

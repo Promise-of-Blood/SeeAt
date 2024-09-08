@@ -27,7 +27,7 @@ class ChatsRemote {
     val uid = FirebaseAuth.getInstance().currentUser?.uid
     private val chatRef = firebaseDb.getReference("chats")
 
-    fun createChat(chat: ChatsChattingModel) : String {
+    fun createChat(chat: ChatsChattingModel): String {
         val chatId = chatRef.push()
         saveChat(chat, chatId)
         return chatId.key ?: ""
@@ -49,25 +49,36 @@ class ChatsRemote {
         }
     }
 
-    suspend fun getChat(chatId: String) : ChatsChattingModel {
+    suspend fun getChat(chatId: String): ChatsChattingModel {
         return suspendCancellableCoroutine { continuation ->
             chatRef.child(chatId).get().addOnSuccessListener {
-                continuation.resume(ChatsChattingModel(
-                    feedFrom = it.child("feedFrom").value.toString(),
-                    lastMessage = it.child("lastMessage").value.toString(),
-                    whenLast = it.child("whenLast").value as Timestamp,
-                ))
+                continuation.resume(
+                    ChatsChattingModel(
+                        feedFrom = it.child("feedFrom").value.toString(),
+                        lastMessage = it.child("lastMessage").value.toString(),
+                        whenLast = it.child("whenLast").value as Long,
+                    )
+                )
             }
         }
     }
 
-    fun receiveChat(chatId : String) : Flow<Result<ChatsChattingModel>> {
+    fun receiveChat(chatId: String): Flow<Result<ChatModel>> {
         return callbackFlow {
             val listener = object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    snapshot.getValue(ChatsChattingModel::class.java)?.let {
-                        trySend(Result.Success(it)).isSuccess
-                    }
+                    trySend(
+                        Result.Success(
+                            ChatModel(
+                                chatId = snapshot.key ?: "",
+                                chatInfo = ChatsChattingModel(
+                                    feedFrom = snapshot.child("feedFrom").value.toString(),
+                                    lastMessage = snapshot.child("lastMessage").value.toString(),
+                                    whenLast = snapshot.child("whenLast").value as Long,
+                                )
+                            )
+                        )
+                    ).isSuccess
                 }
 
                 override fun onCancelled(error: DatabaseError) {

@@ -41,7 +41,7 @@ class ChatRepositoryImpl @Inject constructor(
                 ChatsChattingModel(
                     feedFrom = feedId,
                     lastMessage = message,
-                    whenLast = Timestamp.now(),
+                    whenLast = System.currentTimeMillis(),
                 )
             )
             usersRemote.createUserChat(feedId, chatId, userId = uid)
@@ -52,7 +52,7 @@ class ChatRepositoryImpl @Inject constructor(
                 ChatsChattingModel(
                     feedFrom = feedId,
                     lastMessage = message,
-                    whenLast = Timestamp.now(),
+                    whenLast = System.currentTimeMillis(),
                 ), chatId
             )
         }

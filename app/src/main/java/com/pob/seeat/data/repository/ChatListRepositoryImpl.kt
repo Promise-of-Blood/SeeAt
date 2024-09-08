@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import javax.inject.Inject
 import com.pob.seeat.data.model.Result
+import com.pob.seeat.data.model.chat.ChatModel
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.flattenMerge
@@ -21,7 +22,7 @@ class ChatListRepositoryImpl @Inject constructor(
     private val messagesRemote: MessagesRemote,
     private val usersRemote: UsersRemote,
 ) : ChatListRepository {
-    override fun receiveChatList(): Flow<Result<ChatsChattingModel>> {
+    override fun receiveChatList(): Flow<Result<ChatModel>> {
         val userId = FirebaseAuth.getInstance().currentUser?.uid
         return usersRemote.getChatIdListFromUser(userId ?: "")
             .flatMapLatest { chatIdList ->
