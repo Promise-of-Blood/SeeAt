@@ -10,5 +10,6 @@ interface BookmarkRepository {
     suspend fun saveBookmarkList(list: List<BookmarkModel>)
     suspend fun saveBookmark(feed: BookmarkEntity)
     suspend fun deleteBookmark(feedId: String)
+    suspend fun deleteBookmark(feedIdList: List<String>)
     suspend fun isBookmarked(feedId: String): Boolean
 }

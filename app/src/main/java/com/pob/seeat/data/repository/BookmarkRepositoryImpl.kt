@@ -37,6 +37,10 @@ class BookmarkRepositoryImpl @Inject constructor(
         bookmarkDao.deleteBookmark(feedId)
     }
 
+    override suspend fun deleteBookmark(feedIdList: List<String>) {
+        bookmarkDao.deleteBookmarkNotInIdList(feedIdList)
+    }
+
     override suspend fun isBookmarked(feedId: String): Boolean {
         return bookmarkDao.isBookmarkExists(feedId)
     }

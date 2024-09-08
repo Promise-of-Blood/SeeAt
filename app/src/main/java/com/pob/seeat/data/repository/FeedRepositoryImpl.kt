@@ -35,6 +35,17 @@ class FeedRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun getFeedListById(feedIdList: List<String>): Flow<Result<List<FeedModel>>> =
+        flow {
+            emit(Result.Loading)
+            try {
+                val feedList = feedRemote.getFeedListById(feedIdList)
+                emit(Result.Success(feedList))
+            } catch (e: Exception) {
+                emit(Result.Error(e.message ?: "An unknown error occurred"))
+            }
+        }
+
     override suspend fun setLikePlus(feedId: String) {
         try {
             feedRemote.updateLikePlus(feedId)

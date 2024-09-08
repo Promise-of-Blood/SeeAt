@@ -21,6 +21,9 @@ interface BookmarkDao {
     @Query("DELETE FROM bookmark_table WHERE feedId = :feedId")
     suspend fun deleteBookmark(feedId: String)
 
+    @Query("DELETE FROM bookmark_table WHERE feedId NOT IN (:feedIdList)")
+    suspend fun deleteBookmarkNotInIdList(feedIdList: List<String>)
+
     @Query("SELECT EXISTS(SELECT 1 FROM bookmark_table WHERE feedId = :feedId)")
     suspend fun isBookmarkExists(feedId: String): Boolean
 }
