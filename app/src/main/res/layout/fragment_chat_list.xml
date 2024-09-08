@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     android:background="@color/background_gray"
     android:fitsSystemWindows="true"
-    android:paddingTop="24dp"
     tools:context=".presentation.view.chat.ChatListFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
