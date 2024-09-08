@@ -51,13 +51,14 @@
             </intent-filter>
         </activity>
 
-        <service
-            android:name=".presentation.service.FirebaseMessagingService"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
-            </intent-filter>
-        </service>
+<!--        TODO 서비스가 백그라운드에서 심한 배터리 소모 및 발열 문제 발생 예상 근거-->
+<!--        <service-->
+<!--            android:name=".presentation.service.FirebaseMessagingService"-->
+<!--            android:exported="false">-->
+<!--            <intent-filter>-->
+<!--                <action android:name="com.google.firebase.MESSAGING_EVENT" />-->
+<!--            </intent-filter>-->
+<!--        </service>-->
 
         <meta-data
             android:name="com.naver.maps.map.CLIENT_ID"

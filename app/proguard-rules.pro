@@ -29,3 +29,10 @@
     -keepclassmembers class com.yourcompany.models.** {
       *;
     }
+
+    -keepclassmembers class * {
+        public <init>(...);
+    }
+    -keepnames class com.pob.seeat.data.model.chat.ChatsChattingModel {
+        public <init>(...);
+    }

@@ -57,7 +57,8 @@ class ChattingActivity : AppCompatActivity() {
         binding.btnChattingSend.setOnClickListener {
             lifecycleScope.launch {
                 Timber.tag("ChattingLOG").d("btnChattingSend Clicked : $targetId !")
-                chatViewModel.sendMessage(feedId, targetId, binding.etChattingInput.text.toString())
+                chatViewModel.sendMessage(
+                    feedId = feedId, targetUid = targetId, message = binding.etChattingInput.text.toString())
             }
             binding.etChattingInput.setText("")
         }

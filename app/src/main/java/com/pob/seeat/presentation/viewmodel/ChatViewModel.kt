@@ -2,8 +2,6 @@ package com.pob.seeat.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.pob.seeat.data.model.ChatListModel
-import com.pob.seeat.data.model.ChatModel
 import com.pob.seeat.domain.repository.ChatRepository
 import com.pob.seeat.presentation.view.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,23 +23,20 @@ import timber.log.Timber
 class ChatViewModel @Inject constructor(
     private val chatRepositoryImpl: ChatRepository
 ) : ViewModel() {
-    val _chatResult = MutableStateFlow<List<Result<ChattingUiItem>>>(listOf())
+    private val _chatResult = MutableStateFlow<List<Result<ChattingUiItem>>>(listOf())
     val chatResult: StateFlow<List<Result<ChattingUiItem>>> get() = _chatResult
 
-    var newMessage : Flow<Result<ChattingUiItem>> = flowOf()
+    private var newMessage : Flow<Result<ChattingUiItem>> = flowOf()
 
     suspend fun initMessage(feedId: String) {
         viewModelScope.launch {
-            chatRepositoryImpl.initMessage(feedId)
-                .flowOn(Dispatchers.IO)
-                .collectLatest { list ->
-                    Timber.d(list.toString())
-                    _chatResult.value = list.toMutableList()
-                }
+            Timber.tag("initMessage?").d("initMessage is On")
+            _chatResult.value = chatRepositoryImpl.initMessage(feedId)
         }
     }
 
-    fun subscribeMessage(feedId: String) {
+    suspend fun subscribeMessage(feedId: String) {
+        Timber.tag("subscribeMessage").d("subscribeMessage is On")
         newMessage = chatRepositoryImpl.receiveMessage(feedId)
         viewModelScope.launch {
             newMessage.flowOn(Dispatchers.IO).collectLatest {
@@ -59,7 +54,11 @@ class ChatViewModel @Inject constructor(
     }
 
     suspend fun sendMessage(targetUid: String, feedId: String, message: String) {
-        chatRepositoryImpl.sendMessage(targetUid, feedId, message)
+        chatRepositoryImpl.sendMessage(
+            targetUid = targetUid,
+            feedId = feedId,
+            message = message,
+        )
     }
 
 }
