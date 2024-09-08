@@ -24,6 +24,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.naver.maps.geometry.LatLng
+import com.naver.maps.map.CameraAnimation
+import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
@@ -222,12 +224,7 @@ class HomeFragment : Fragment() {
                         // ItemKey의 id를 통해 feedList에서 FeedModel을 가져옴
                         val feedModel = feedList.find { it.feedId == (info.key as ItemKey).id }
                         feedModel?.let { model ->
-                            Timber.tag("HomeFragment")
-                                .d(
-                                    "%s%s",
-                                    "Marker Clicked: " + model.feedId + ", " + model.title + ", ",
-                                    model.content
-                                )
+                            clickMarker(model)
                         } ?: Timber.tag("HomeFragment").e("FeedModel not found for marker")
                         true
                     }
@@ -256,6 +253,35 @@ class HomeFragment : Fragment() {
                 addAll(keyTagMap)
                 map = naverMap
             }
+    }
+
+    private fun clickMarker(model: FeedModel) {
+        Timber.tag("HomeFragment")
+            .d(
+                "%s%s",
+                "Marker Clicked: " + model.feedId + ", " + model.title + ", ",
+                model.content
+            )
+        model.location.let {
+            val cameraUpdate =
+                CameraUpdate.scrollAndZoomTo(LatLng(it!!.latitude, it.longitude), 14.0)
+                    .animate(CameraAnimation.Easing, 2000)
+
+            naverMap.moveCamera(cameraUpdate)
+        }
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
+
+        scrollToFeed(model.feedId)
+    }
+
+    fun scrollToFeed(feedId: String) {
+        // bottomSheetFeedAdapter의 currentList를 사용하여 position 찾기
+        val position = bottomSheetFeedAdapter.currentList.indexOfFirst { it.feedId == feedId }
+        if (position != -1) {
+            val layoutManager = binding.rvBottomSheetPostList.layoutManager as LinearLayoutManager
+            // 해당 아이템을 정확히 최상단에 위치하도록 스크롤
+            layoutManager.scrollToPositionWithOffset(position, 0)
+        }
     }
 
 
@@ -330,10 +356,10 @@ class HomeFragment : Fragment() {
         val scaleBarView = binding.naverScaleBar
         scaleBarView.map = naverMap
 
-        var isCamMoving = false
+        var isMoving = false
         naverMap.addOnCameraChangeListener { reason, animated ->
-            if(!isCamMoving) {
-                isCamMoving = true
+            if (!isMoving) {
+                isMoving = true
                 Timber.tag("HomeFragment")
                     .d("카메라가 움직이고 있습니다. Reason: " + reason + ", Animated: " + animated)
             }
@@ -341,12 +367,11 @@ class HomeFragment : Fragment() {
 
         // 카메라 움직임이 멈췄을 때 콜백을 받는 리스너 설정
         naverMap.addOnCameraIdleListener {
-            if(isCamMoving) {
-                isCamMoving = false
+            if (isMoving) {
+                isMoving = false
                 Timber.tag("HomeFragment").d("카메라 움직임이 멈췄습니다.")
             }
         }
-
     }
 
     /**
@@ -379,12 +404,16 @@ class HomeFragment : Fragment() {
 
         bottomSheetBehavior.addBottomSheetCallback(object :
             BottomSheetBehavior.BottomSheetCallback() {
+
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 when (newState) {
                     BottomSheetBehavior.STATE_EXPANDED -> {
                         // BottomSheet가 최대 높이에 도달했을 때 수행할 동작
                         isExpanded = true
                         onBottomSheetExpanded()
+                    }
+
+                    BottomSheetBehavior.STATE_HALF_EXPANDED -> {
                     }
 
                     BottomSheetBehavior.STATE_COLLAPSED,
@@ -395,6 +424,7 @@ class HomeFragment : Fragment() {
                     BottomSheetBehavior.STATE_DRAGGING -> {
                         // BottomSheet의 드래그 상태에서 수행할 동작
                         if (isExpanded) {
+                            isExpanded = false
                             onBottomSheetDragging()
                         }
                     }
@@ -405,6 +435,72 @@ class HomeFragment : Fragment() {
                     }
                 }
             }
+
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                // BottomSheet의 슬라이드 상태에 따라 호출됨 (0.0f ~ 1.0f)
+            }
+
+            /**
+             * 바텀시트가 슬라이드 될 때마다 Y값을 계산해서 MapItem을 이동하는 코드
+             * 지속적이고 빠른 계산을 지속적으로 요구해 앱의 성능이 크게 저하됨
+             * 다른 방법 시도 필요
+             **/
+//            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+//                // 바텀시트가 슬라이드될 때 맵의 높이를 조정
+//                adjustMapHeightForSliding(slideOffset)
+//
+//                val BottomSheet = IntArray(2)
+//                binding.persistentBottomSheet.getLocationOnScreen(BottomSheet)
+//                val defaultBottomSheetY = BottomSheet[1]
+//
+//                binding.persistentBottomSheet.viewTreeObserver.addOnGlobalLayoutListener(object :
+//                    ViewTreeObserver.OnGlobalLayoutListener {
+//                    override fun onGlobalLayout() {
+//                        // 태그 리스트의 하단 위치 구하기
+//                        // [0]: 대상의 x 좌표
+//                        // [1]: 대상의 y 좌표
+//                        val sheetLocation = IntArray(2)
+//                        binding.persistentBottomSheet.getLocationOnScreen(sheetLocation)
+//
+//                        val bottomSheetY = sheetLocation[1]
+//
+//                        Log.d("HomeFragment", "bottomSheetY: $bottomSheetY")
+//
+//                        adjustButtonPositionBasedOnSheetY(bottomSheetY, defaultBottomSheetY)
+//                    }
+//                })
+//            }
+
+//            private fun adjustButtonPositionBasedOnSheetY(bottomSheetY: Int, defaultY: Int) {
+//                // 화면 상에서 버튼들의 원래 Y 좌표를 가져옵니다
+//                val locationMapItem = IntArray(2)
+//
+//                // 각 뷰들의 화면상 Y 좌표를 얻어옵니다
+//                binding.clMapItem.getLocationOnScreen(locationMapItem)
+//                Log.d("HomeFragment", "bottomSheetY: ${bottomSheetY}")
+//                Log.d("HomeFragment", "default: ${defaultY}")
+//                // bottomSheetY와 각 뷰들의 Y 좌표 차이를 이용해 translationY를 계산
+//                binding.clMapItem.translationY =
+//                    (bottomSheetY - locationMapItem[1] + defaultY).toFloat()
+//                Log.d("HomeFragment", "result: ${binding.clMapItem.translationY}")
+//            }
+
+//            private fun adjustMapHeightForSliding(slideOffset: Float) {
+//                val maxMapHeight = binding.clMapView.height // 지도 전체 높이
+//                val minMapHeight = maxMapHeight * 0.5 // 최소 지도의 높이를 원하는 비율로 설정 (예: 50%)
+//
+//                // slideOffset은 0.0 (collapsed)에서 1.0 (expanded) 사이의 값을 가짐
+//                if (slideOffset <= 0.5) {
+//                    val newMapHeight =
+//                        (minMapHeight + (maxMapHeight - minMapHeight) * (1 - slideOffset)).toInt()
+//
+//                    // 지도의 높이를 변경
+//                    val layoutParams = binding.map.layoutParams
+//                    layoutParams.height = newMapHeight
+//                    binding.map.layoutParams = layoutParams
+//                }
+//            }
+
 
             private fun onBottomSheetExpanded() {
                 binding.apply {
@@ -451,10 +547,6 @@ class HomeFragment : Fragment() {
                     view.setBackgroundColor(animator.animatedValue as Int)
                 }
                 colorAnimation.start()
-            }
-
-            override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                // BottomSheet의 슬라이드 상태에 따라 호출됨 (0.0f ~ 1.0f)
             }
         })
 
