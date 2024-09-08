@@ -12,7 +12,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getColor
 import androidx.fragment.app.Fragment
@@ -47,9 +46,7 @@ import com.pob.seeat.presentation.common.CustomDecoration
 import com.pob.seeat.presentation.view.UiState
 import com.pob.seeat.presentation.viewmodel.HomeViewModel
 import com.pob.seeat.presentation.viewmodel.RestroomViewModel
-import com.pob.seeat.utils.Utils.hideStatusBar
 import com.pob.seeat.utils.Utils.px
-import com.pob.seeat.utils.Utils.setStatusBarColor
 import com.pob.seeat.utils.Utils.tagList
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -104,7 +101,6 @@ class HomeFragment : Fragment() {
     }
 
     private fun initialSetting() {
-        (activity as AppCompatActivity).hideStatusBar()
         binding.run {
             ivAlarm.setOnClickListener {
                 (activity as MainActivity).setBottomNavigationSelectedItem(
@@ -120,17 +116,10 @@ class HomeFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         getFeed()
-        (activity as AppCompatActivity).hideStatusBar()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        (activity as AppCompatActivity).setStatusBarColor(
-            ContextCompat.getColor(
-                requireContext(),
-                R.color.white
-            )
-        )
         _binding = null
     }
 
@@ -404,7 +393,13 @@ class HomeFragment : Fragment() {
 
         binding.rvBottomSheetPostList.adapter = bottomSheetFeedAdapter
         binding.rvBottomSheetPostList.layoutManager = LinearLayoutManager(requireContext())
-        binding.rvBottomSheetPostList.addItemDecoration(CustomDecoration(1f,0f,getColor(requireContext(),R.color.light_gray)))
+        binding.rvBottomSheetPostList.addItemDecoration(
+            CustomDecoration(
+                1f,
+                0f,
+                getColor(requireContext(), R.color.light_gray)
+            )
+        )
 
         bottomSheetBehavior.addBottomSheetCallback(object :
             BottomSheetBehavior.BottomSheetCallback() {
