@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
@@ -126,10 +127,12 @@ class NewFeedFragment : Fragment() {
     override fun onPause() {
         super.onPause()
         Timber.tag("NewfeedFragment").d("onPause")
+        requireActivity().window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
     }
 
     override fun onResume() {
         super.onResume()
+        requireActivity().window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
         Timber.tag("NewfeedFragment").d("onResume")
 
         // 좌표 선택 후 돌아오면 선택한 좌표값 가져오기
@@ -247,6 +250,11 @@ class NewFeedFragment : Fragment() {
 
     private fun initialSetting() {
         binding.apply {
+
+            toolbarMessage.setNavigationOnClickListener {
+                requireActivity().onBackPressedDispatcher.onBackPressed()
+            }
+
             // RecyclerView를 가로 스크롤 가능하게 설정
             val layoutManager =
                 LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)

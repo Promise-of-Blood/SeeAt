@@ -1,6 +1,7 @@
 package com.pob.seeat.presentation.view.home
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
@@ -37,6 +38,8 @@ class BottomSheetFeedAdapter(private val onClick: (FeedModel) -> Unit) :
                 Glide.with(itemView.context)
                     .load(item.contentImage[0])
                     .into(ivPostMainImage)
+            }else{
+                ivPostMainImage.visibility = View.GONE
             }
 
             tvPostTitle.text = item.title
@@ -53,10 +56,10 @@ class BottomSheetFeedAdapter(private val onClick: (FeedModel) -> Unit) :
         }
 
         private fun initTag(tags: List<String>, chipsGroupMainFeed: ChipGroup) {
+            chipsGroupMainFeed.removeAllViews() // 기존의 Chip들을 모두 제거
             val tagLists = tags.toTagList()
             // tagList를 이용해 Chip을 동적으로 생성
             // tagLists:List<tag>
-
             for (tag in tagLists) {
                 val chip = Chip(itemView.context).apply {
                     text = tag.tagName

@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.Flow
 interface FeedRepository {
     suspend fun getFeedList(): Flow<Result<List<FeedModel>>>
     suspend fun getFeed(feedId: String): Flow<Result<FeedModel>>
+    suspend fun getFeedListById(feedIdList: List<String>): Flow<Result<List<FeedModel>>>
     suspend fun setLikePlus(feedId: String)
     suspend fun setLikeMinus(feedId: String)
 }

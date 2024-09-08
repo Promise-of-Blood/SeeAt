@@ -283,10 +283,12 @@ class DetailFragment : Fragment() {
             -> {
                 requestFineLocation()
             }
+
             ActivityCompat.checkSelfPermission(requireContext(), ACCESS_COARSE_LOCATION)
             -> {
                 requestCoarseLocation()
             }
+
             else -> {
                 Timber.e("위치 권한이 없습니다.")
                 hideDistance()
@@ -307,6 +309,7 @@ class DetailFragment : Fragment() {
             locationRequest,
             object : LocationCallback() {
                 override fun onLocationResult(locationResult: LocationResult) {
+                    if (_binding == null) return
                     val location = locationResult.lastLocation
                     if (location != null) {
                         val currentGeoPoint = GeoPoint(location.latitude, location.longitude)
@@ -337,6 +340,7 @@ class DetailFragment : Fragment() {
             locationRequest,
             object : LocationCallback() {
                 override fun onLocationResult(locationResult: LocationResult) {
+                    if (_binding == null) return
                     val location = locationResult.lastLocation
                     if (location != null) {
                         val currentGeoPoint = GeoPoint(location.latitude, location.longitude)
@@ -440,6 +444,7 @@ class DetailFragment : Fragment() {
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 commentViewModel.comments.collect { comments ->
                     feedCommentAdapter.submitList(comments.toList())
+                    binding.tvCommentCount.text = commentViewModel.comments.value.toList().size.toString()
                 }
             }
         }
@@ -448,14 +453,16 @@ class DetailFragment : Fragment() {
     }
 
     private fun initImageViewPager(contentImage: List<String>) {
-        val imageViewPager = binding.vpDetailImages
-        imageViewPager.adapter = ImagesPagerAdapter(contentImage)
-        imageViewPager.orientation = ViewPager2.ORIENTATION_HORIZONTAL
-        binding.detailImageIndicator.setViewPager(imageViewPager)
+        _binding?.apply {
+            val imageViewPager = binding.vpDetailImages
+            imageViewPager.adapter = ImagesPagerAdapter(contentImage)
+            imageViewPager.orientation = ViewPager2.ORIENTATION_HORIZONTAL
+            binding.detailImageIndicator.setViewPager(imageViewPager)
+        }
     }
 
     private fun initTag(tags: List<String>) {
-        val chipGroup = binding.chipsGroupDetail
+        val chipGroup = _binding?.chipsGroupDetail ?: return
         val tagLists = tags.toTagList()
         // tagList를 이용해 Chip을 동적으로 생성
         // tagLists:List<tag>
@@ -567,6 +574,9 @@ class DetailFragment : Fragment() {
                     )
                     commentViewModel.fetchComments(feedId)
                     binding.etAddComment.setText("")
+
+
+                    Log.d("코멘트사이즈","${commentViewModel.comments.value.toList().size}")
                 } else {
                     Log.e("댓글 달기", "댓글달기 실패! 사용자 문서 X")
                 }

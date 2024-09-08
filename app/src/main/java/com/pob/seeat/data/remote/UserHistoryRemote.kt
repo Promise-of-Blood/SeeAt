@@ -64,7 +64,8 @@ class UserHistoryRemote @Inject constructor(
         if (limit != null) likedFeedRefs = likedFeedRefs.limit(limit)
         if (startAfter != null) likedFeedRefs = likedFeedRefs.startAfter(startAfter)
         return likedFeedRefs.get().await().documents.mapNotNull { documentSnapshot ->
-            val feedDocument = documentSnapshot.getDocumentReference("feed")?.get()?.await()
+            val feedPath = documentSnapshot.getString("feed") ?: ""
+            val feedDocument = firestore.document(feedPath).get().await()
             val tagList = documentSnapshot.get("tagList") as? List<*>
             val imageList = documentSnapshot.get("contentImage") as? List<*>
             feedDocument?.toObject(FeedModel::class.java)?.copy(
