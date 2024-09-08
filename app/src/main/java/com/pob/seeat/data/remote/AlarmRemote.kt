@@ -20,6 +20,7 @@ class AlarmRemote @Inject constructor(
 ) {
     suspend fun getAlarmList(uId: String): Flow<Result<List<AlarmModel>>> = callbackFlow {
         trySend(Result.Loading)
+        val userRef = firestore.collection("user").document(uId)
         val alarmListener = getAlarmRef(uId).addSnapshotListener { snapshot, exception ->
             if (exception != null) trySend(Result.Error("알림 목록을 가져오는데 실패했습니다."))
             else if (snapshot != null) {
@@ -31,10 +32,15 @@ class AlarmRemote @Inject constructor(
                         async {
                             val commentDeferred = async { commentRef.get().await() }
                             val feedDeferred = async { commentRef.parent.parent?.get()?.await() }
-                            val commentDocument = commentDeferred.await() ?: return@async null
-                            val feedDocument =
-                                feedDeferred.await() ?: return@async null // 글 정보가 없는 경우
-                            if (commentDocument.getString("uid") == uId) return@async null // 현재 로그인 한 유저의 댓글인 경우
+                            val commentDocument = commentDeferred.await()
+                            val feedDocument = feedDeferred.await()
+                            if (!commentDocument.exists()) return@async null // 댓글 문서가 존재하지 않는 경우
+                            if (feedDocument == null || !feedDocument.exists()) return@async null // // 글 정보가 없는 경우
+                            if (commentDocument.getDocumentReference("user") == userRef) {
+                                // 현재 로그인 한 유저의 댓글인 경우
+                                getAlarmRef(uId).document(documentSnapshot.id).delete().await() // 해당 알람 삭제
+                                return@async null
+                            }
                             AlarmResponse(
                                 alarmId = documentSnapshot.id,
                                 feedId = feedDocument.id,
