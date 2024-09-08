@@ -95,9 +95,11 @@ class FeedRemote @Inject constructor(
             feedDocuments.addAll(querySnapshot.documents)
         }
         return feedDocuments.mapNotNull { documentSnapshot ->
+            val userDocument = documentSnapshot.getDocumentReference("user")?.get()?.await()
             val tagList = documentSnapshot.get("tagList") as? List<*>
             val imageList = documentSnapshot.get("contentImage") as? List<*>
             documentSnapshot.toObject(FeedModel::class.java)?.copy(
+                nickname = userDocument?.getString("nickname") ?: "탈퇴한 사용자",
                 feedId = documentSnapshot.id,
                 tags = tagList?.filterIsInstance<String>() ?: emptyList(),
                 contentImage = imageList?.filterIsInstance<String>() ?: emptyList(),
