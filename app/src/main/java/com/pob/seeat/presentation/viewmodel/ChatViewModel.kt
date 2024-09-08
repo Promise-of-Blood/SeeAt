@@ -30,11 +30,13 @@ class ChatViewModel @Inject constructor(
 
     suspend fun initMessage(feedId: String) {
         viewModelScope.launch {
+            Timber.tag("initMessage?").d("initMessage is On")
             _chatResult.value = chatRepositoryImpl.initMessage(feedId)
         }
     }
 
-    fun subscribeMessage(feedId: String) {
+    suspend fun subscribeMessage(feedId: String) {
+        Timber.tag("subscribeMessage").d("subscribeMessage is On")
         newMessage = chatRepositoryImpl.receiveMessage(feedId)
         viewModelScope.launch {
             newMessage.flowOn(Dispatchers.IO).collectLatest {

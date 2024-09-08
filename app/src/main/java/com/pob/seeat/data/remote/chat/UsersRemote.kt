@@ -1,40 +1,79 @@
 package com.pob.seeat.data.remote.chat
 
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.pob.seeat.data.model.chat.UserModel
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.suspendCancellableCoroutine
+import timber.log.Timber
+import kotlin.coroutines.resume
+import com.pob.seeat.data.model.Result
 
 class UsersRemote {
     private val firebaseDb = Firebase.database
     val uid = FirebaseAuth.getInstance().currentUser?.uid
     private val userRef = firebaseDb.getReference("users")
 
-    fun getChatId(userId: String, feedId: String) : String {
-        var chatId = "none"
-        userRef.child(userId).get().addOnSuccessListener {
-            if(!it.hasChild(feedId)) return@addOnSuccessListener
-            it.child(feedId).children.forEach { ele ->
-                chatId = ele.value as String
+    suspend fun getChatId(userId: String, feedId: String) : String {
+        return suspendCancellableCoroutine { continuation ->
+            var chatId = "none"
+            Timber.tag("getUserId!!").d(userId)
+            Timber.tag("getFeedId!!").d(feedId)
+            userRef.child(userId).get().addOnSuccessListener {
+                if(!it.hasChild(feedId)) {
+                    Timber.tag("getChatIdWhenNone!").d(chatId)
+                    continuation.resume(chatId)
+                } else {
+                    chatId = it.child(feedId).getValue(String::class.java).toString()
+                    Timber.tag("getChatIdWhenNotNone").d(chatId)
+                    continuation.resume(chatId)
+                }
+            }.addOnFailureListener {
+                Timber.tag("getChatIdFailure").d(it)
+                continuation.resume(chatId)
             }
         }
-        return chatId
+
     }
 
-    fun createUserChat(feedId: String, chatId: String) {
-        val userId = uid?.let { userRef.child(it) }
-        val userFeed = userId?.child(feedId)
-        userFeed?.get()?.addOnSuccessListener {
+    fun createUserChat(feedId: String, chatId: String, userId: String) {
+        val userFeed = userRef.child(userId).child(feedId)
+        userFeed.get().addOnSuccessListener {
             userFeed.setValue(chatId)
         }
     }
 
-    fun getChatIdListFromUser(userId: String) : List<String> {
-        var values : List<String> = listOf()
-        firebaseDb.getReference("users").child(userId).get().addOnSuccessListener { user ->
-            values = user.children.map { it.value as String }
+    fun getChatIdListFromUser(userId: String) : Flow<Result<List<String>>> {
+        return callbackFlow {
+
+            val listener = object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val chatIdList = mutableListOf<String>()
+                    snapshot.children.forEach { postSnapshot ->
+                        val chatId = postSnapshot.getValue(String::class.java)
+                        if (chatId != null) {
+                            chatIdList.add(chatId)
+                        }
+                    }
+                    trySend(Result.Success(chatIdList)).isSuccess
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    trySend(Result.Error(error.message))
+                }
+            }
+
+            userRef.child(userId).addValueEventListener(listener)
+            awaitClose {
+                userRef.child(userId).removeEventListener(listener)
+            }
         }
-        return values
     }
 
 }

@@ -10,6 +10,5 @@ data class ChatModel(
 data class ChatsChattingModel(
     val feedFrom: String,
     val lastMessage: String,
-    val users: Map<String, Boolean>,
     val whenLast: Timestamp,
 )

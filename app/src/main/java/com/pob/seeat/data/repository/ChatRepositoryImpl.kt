@@ -16,7 +16,9 @@ import com.pob.seeat.data.remote.chat.MessagesRemote
 import com.pob.seeat.data.remote.chat.UsersRemote
 import com.pob.seeat.presentation.view.chat.items.ChattingUiItem
 import com.pob.seeat.utils.GoogleAuthUtil
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import timber.log.Timber
@@ -31,22 +33,28 @@ class ChatRepositoryImpl @Inject constructor(
     val uid = FirebaseAuth.getInstance().currentUser?.uid ?: ""
 
     override suspend fun sendMessage(feedId: String, targetUid: String, message: String) {
-        var chatId = usersRemote.getChatId(userId = uid, feedId = feedId)
-        if(chatId == "none") {
-            chatId = chatsRemote.createChat(ChatsChattingModel(
-                feedFrom = feedId,
-                lastMessage = message,
-                users = mapOf(uid to true, targetUid to true),
-                whenLast = Timestamp.now(),
-            ))
-            usersRemote.createUserChat(feedId, chatId)
+        var chatId = ""
+        chatId = usersRemote.getChatId(userId = uid, feedId = feedId)
+        if (chatId == "none") {
+            Timber.tag("sendMessage's chatId!").d("chatId none!")
+            chatId = chatsRemote.createChat(
+                ChatsChattingModel(
+                    feedFrom = feedId,
+                    lastMessage = message,
+                    whenLast = Timestamp.now(),
+                )
+            )
+            usersRemote.createUserChat(feedId, chatId, userId = uid)
+            usersRemote.createUserChat(feedId, chatId, userId = targetUid)
         } else {
-            chatsRemote.saveChat(ChatsChattingModel(
-                feedFrom = feedId,
-                lastMessage = message,
-                users = mapOf(uid to true, targetUid to true),
-                whenLast = Timestamp.now(),
-            ), chatId)
+            Timber.tag("sendMessage's chatId").d("chatId $chatId")
+            chatsRemote.saveChat(
+                ChatsChattingModel(
+                    feedFrom = feedId,
+                    lastMessage = message,
+                    whenLast = Timestamp.now(),
+                ), chatId
+            )
         }
         messagesRemote.sendMessage(
             chatId = chatId,
@@ -55,33 +63,42 @@ class ChatRepositoryImpl @Inject constructor(
         )
     }
 
-    override fun receiveMessage(feedId: String): Flow<Result<ChattingUiItem>> {
-        val chatId = usersRemote.getChatId(userId = uid, feedId = feedId)
-        val remoteMessage = messagesRemote.receiveMessage(chatId)
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override suspend fun receiveMessage(feedId: String): Flow<Result<ChattingUiItem>> {
+        val chatIdFlow = subscribeChatId(feedId)
 
-        return remoteMessage.map {
-            when(it) {
-                is Result.Success -> Result.Success(it.data.toChattingUiItem())
-                is Result.Error -> Result.Error(it.message)
-                Result.Loading -> Result.Loading
+        return chatIdFlow.flatMapLatest {
+            messagesRemote.receiveMessage(it).map {
+                when (it) {
+                    is Result.Success -> Result.Success(it.data.toChattingUiItem())
+                    is Result.Error -> Result.Error(it.message)
+                    Result.Loading -> Result.Loading
+                }
             }
         }
     }
 
     override suspend fun initMessage(feedId: String): List<Result<ChattingUiItem>> {
-        return when (val messages = messagesRemote.initMessage(feedId)) {
+        val chatId = usersRemote.getChatId(userId = uid, feedId = feedId)
+        return when (val messages = messagesRemote.initMessage(chatId)) {
             is Result.Success -> {
                 messages.data.map {
                     Result.Success(it.toChattingUiItem())
                 }
             }
+
             is Result.Error -> {
                 listOf(Result.Error(messages.message))
             }
+
             Result.Loading -> {
                 listOf(Result.Loading)
             }
         }
+    }
+
+    fun subscribeChatId(feedId: String): Flow<String> = flow {
+        emit(usersRemote.getChatId(userId = uid, feedId = feedId))
     }
 }
 

@@ -21,7 +21,7 @@ class ChatListAdapter : ListAdapter<UiState<ChatListUiItem>, RecyclerView.ViewHo
         when(holder) {
             is SuccessViewHolder ->
                 if(getItem(position) is UiState.Success)
-                holder.bind((getItem(position) as UiState.Success).data as ChatListUiItem.ChatItem)
+                holder.bind((getItem(position) as UiState.Success).data as ChatListUiItem)
         }
     }
 

@@ -6,6 +6,6 @@ import com.pob.seeat.presentation.view.chat.items.ChattingUiItem
 
 interface ChatRepository {
     suspend fun sendMessage(feedId: String, targetUid: String, message: String)
-    fun receiveMessage(feedId: String): Flow<Result<ChattingUiItem>>
+    suspend fun receiveMessage(feedId: String): Flow<Result<ChattingUiItem>>
     suspend fun initMessage(feedId: String): List<Result<ChattingUiItem>>
 }

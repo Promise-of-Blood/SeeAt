@@ -6,7 +6,7 @@ import com.pob.seeat.databinding.ItemChatListBinding
 import com.pob.seeat.presentation.view.chat.items.ChatListUiItem
 
 class SuccessViewHolder(private val binding: ItemChatListBinding) : RecyclerView.ViewHolder(binding.root) {
-    fun bind(item: ChatListUiItem.ChatItem) {
+    fun bind(item: ChatListUiItem) {
         binding.apply {
             root.setOnClickListener {
                 Log.d("ChatList", "챗 리스트 클릭 ${binding.tvChatListItem}")

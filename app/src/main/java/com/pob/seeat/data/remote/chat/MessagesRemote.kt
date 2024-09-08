@@ -30,10 +30,10 @@ class MessagesRemote {
     private val messageRef = firebaseDb.getReference("messages")
 
     // TODO 나중에 메시지 초기화할 때, 각 메시지마다 Result로 받아서 error가 있는지 확인. 그리고 receiveMessage를 써보는 것도 좋을 듯
-    suspend fun initMessage(feedId: String): Result<List<MessagesInfoModel>> {
+    suspend fun initMessage(chatId: String): Result<List<MessagesInfoModel>> {
         val infoList: ArrayList<MessagesInfoModel> = arrayListOf()
         return suspendCancellableCoroutine { continuation ->
-            messageRef.child(feedId)
+            messageRef.child(chatId)
                 .addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         for (messageSnapshot in snapshot.children) {
@@ -71,8 +71,13 @@ class MessagesRemote {
 //        val scope = CoroutineScope(Dispatchers.IO + job)
         return callbackFlow {
             val listener = object : ChildEventListener {
+                var isInit = true
                 override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                    Timber.d("onChildAdded 임")
+                    if(isInit) {
+                        isInit = false
+                        return
+                    }
+                    Timber.d("onChildAdded 임 ${snapshot.key}")
                     val message = snapshot.child("message").value.toString()
                     val receiver = snapshot.child("receiver").value.toString()
                     val sender = snapshot.child("sender").value.toString()
