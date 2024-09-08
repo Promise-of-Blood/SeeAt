@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:focusable="true"
+    android:fitsSystemWindows="true"
     android:focusableInTouchMode="true"
     tools:context=".presentation.view.detail.DetailFragment">
 
@@ -14,7 +15,6 @@
         android:layout_height="wrap_content"
         android:background="@color/white"
         android:navigationIcon="@drawable/ic_arrow_left"
-        android:paddingTop="32dp"
         android:title="@string/feed"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

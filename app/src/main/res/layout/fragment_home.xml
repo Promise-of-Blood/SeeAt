@@ -107,8 +107,9 @@
             android:id="@+id/iv_alarm"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginTop="48dp"
+            android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
+            android:maxHeight="48dp"
             android:background="@drawable/background_corners_radius_8dp"
             android:elevation="16dp"
             android:padding="12dp"
@@ -116,7 +117,7 @@
             android:src="@drawable/ic_bell"
             app:layout_constraintDimensionRatio="1.2:1"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHeight_percent="0.3"
+            app:layout_constraintHeight_percent="0.4"
             app:layout_constraintTop_toTopOf="parent"
             app:tint="@color/light_gray" />
 
@@ -164,13 +165,12 @@
         android:paddingHorizontal="16dp"
         android:paddingTop="16dp"
         android:paddingBottom="140dp"
-        android:translationY="30dp"
         app:behavior_draggable="true"
         app:behavior_expandedOffset="0dp"
         app:behavior_fitToContents="false"
-        app:behavior_halfExpandedRatio="0.5"
+        app:behavior_halfExpandedRatio="0.45"
         app:behavior_hideable="false"
-        app:behavior_peekHeight="0dp"
+        app:behavior_peekHeight="50dp"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
         <View
