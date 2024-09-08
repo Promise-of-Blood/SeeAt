@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.pob.seeat.domain.model.CommentModel
 import com.pob.seeat.domain.usecase.CommentUseCases
@@ -61,14 +62,35 @@ class CommentViewModel @Inject constructor(private val commentUseCases: CommentU
 
         viewModelScope.launch {
             createComment(newComment)
+            updateCommentCountPlus(feedId)
+            withContext(Dispatchers.Main) {
+                _comments.update { it + newComment }  // 새로운 코멘트를 리스트에 추가
+                Log.d("CommentViewModel", "댓글 추가됨: ${_comments.value.size}")
+            }
         }
     }
+
+    suspend fun updateCommentCountPlus(postId: String) {
+        FirebaseFirestore.getInstance().collection("feed")
+            .document(postId)
+            .update("commentsCount", FieldValue.increment(1))
+            .await()
+    }
+
+
 
     fun deleteMyComment(feedId: String, commentId: String) {
         viewModelScope.launch {
             val selectedComment = commentUseCases.getCommentUseCases.execute(feedId, commentId)
             selectedComment?.let { deleteComment(it) }
         }
+    }
+
+    suspend fun updateCommentCountMinus(postId: String) {
+        FirebaseFirestore.getInstance().collection("feed")
+            .document(postId)
+            .update("commentsCount", FieldValue.increment(-1))
+            .await()
     }
 
     fun checkMyComment(commentUserUid: String) {
@@ -134,6 +156,11 @@ class CommentViewModel @Inject constructor(private val commentUseCases: CommentU
     fun deleteComment(commentModel: CommentModel) {
         viewModelScope.launch {
             commentUseCases.deleteCommentUseCases.execute(commentModel)
+            updateCommentCountMinus(commentModel.feedId)
+            withContext(Dispatchers.Main) {
+                _comments.update { it.filter { comment -> comment.commentId != commentModel.commentId } }
+                Log.d("CommentViewModel", "댓글 삭제됨: ${_comments.value.size}")
+            }
         }
     }
 
