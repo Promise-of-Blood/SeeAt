@@ -1,6 +1,7 @@
 package com.pob.seeat.presentation.view.home
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
@@ -37,6 +38,8 @@ class BottomSheetFeedAdapter(private val onClick: (FeedModel) -> Unit) :
                 Glide.with(itemView.context)
                     .load(item.contentImage[0])
                     .into(ivPostMainImage)
+            }else{
+                ivPostMainImage.visibility = View.GONE
             }
 
             tvPostTitle.text = item.title

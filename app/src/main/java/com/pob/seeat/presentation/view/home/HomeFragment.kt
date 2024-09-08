@@ -14,6 +14,7 @@ import android.view.ViewTreeObserver
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getColor
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.flowWithLifecycle
@@ -42,6 +43,7 @@ import com.pob.seeat.data.model.Result
 import com.pob.seeat.data.repository.NaverMapWrapper
 import com.pob.seeat.databinding.FragmentHomeBinding
 import com.pob.seeat.domain.model.FeedModel
+import com.pob.seeat.presentation.common.CustomDecoration
 import com.pob.seeat.presentation.view.UiState
 import com.pob.seeat.presentation.viewmodel.HomeViewModel
 import com.pob.seeat.presentation.viewmodel.RestroomViewModel
@@ -388,6 +390,7 @@ class HomeFragment : Fragment() {
 
             val marginDecoration = MarginItemDecoration(16f.px) // 마진 설정
             rvTagList.addItemDecoration(marginDecoration)
+
         }
     }
 
@@ -401,6 +404,7 @@ class HomeFragment : Fragment() {
 
         binding.rvBottomSheetPostList.adapter = bottomSheetFeedAdapter
         binding.rvBottomSheetPostList.layoutManager = LinearLayoutManager(requireContext())
+        binding.rvBottomSheetPostList.addItemDecoration(CustomDecoration(1f,0f,getColor(requireContext(),R.color.light_gray)))
 
         bottomSheetBehavior.addBottomSheetCallback(object :
             BottomSheetBehavior.BottomSheetCallback() {
