@@ -65,24 +65,25 @@ class SelectLocateFragment : Fragment() {
                 naverMap?.let {
                     Timber.tag("SelectLocateFragment").d("NaverMap 객체가 초기화되었습니다.")
                     naverMap.addOnCameraChangeListener { reason, animated ->
-                        Timber.tag("SelectLocateFragment")
-                            .d("카메라가 움직이고 있습니다. Reason: " + reason + ", Animated: " + animated)
                         if (!isMoving) {
                             isMoving = true
+                            Timber.tag("SelectLocateFragment")
+                                .d("카메라가 움직이고 있습니다. Reason: " + reason + ", Animated: " + animated)
                             floatingMarker(binding.ivMarker, true)
                         }
                     }
 
                     naverMap.addOnCameraIdleListener {
-                        Timber.tag("SelectLocateFragment").d("카메라 움직임이 멈췄습니다.")
                         if (isMoving) {
                             isMoving = false
+                            Timber.tag("SelectLocateFragment").d("카메라 움직임이 멈췄습니다.")
                             floatingMarker(binding.ivMarker, false)
                             currentLatLng = naverMap.cameraPosition.target
                             Timber.tag("SelectLocateFragment").d("맵 중앙 위치 %s", currentLatLng)
                         }
                     }
-                } ?: Timber.tag("SelectLocateFragment").d("NaverMap 객체가 아직 null입니다.")  // NaverMap이 null일 때 로그 추가
+                } ?: Timber.tag("SelectLocateFragment")
+                    .d("NaverMap 객체가 아직 null입니다.")  // NaverMap이 null일 때 로그 추가
             }
         }
     }

@@ -437,9 +437,8 @@ class HomeFragment : Fragment() {
             }
 
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
-
+                // BottomSheet의 슬라이드 상태에 따라 호출됨 (0.0f ~ 1.0f)
             }
-
 
             /**
              * 바텀시트가 슬라이드 될 때마다 Y값을 계산해서 MapItem을 이동하는 코드
