@@ -53,3 +53,17 @@ fun FeedModel.toBookmarkEntity() = BookmarkEntity(
     tags = this.tags,
     contentImage = this.contentImage.firstOrNull() ?: "",
 )
+
+fun List<FeedModel>.toBookmarkModelList() = this.map {
+    BookmarkModel(
+        feedId = it.feedId,
+        nickname = it.nickname,
+        title = it.title,
+        content = it.content,
+        like = it.like,
+        commentsCount = it.commentsCount,
+        date = it.date ?: Timestamp.now(),
+        tags = it.tags,
+        contentImage = it.contentImage.firstOrNull() ?: "",
+    )
+}

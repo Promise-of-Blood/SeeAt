@@ -52,7 +52,7 @@ class BookmarkFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        bookmarkViewModel.getBookmarkList()
+        bookmarkViewModel.fetchBookmarkList(bookmarkAdapter.currentList.map { it.feedId })
     }
 
     override fun onDestroy() {
@@ -66,7 +66,6 @@ class BookmarkFragment : Fragment() {
     }
 
     private fun initViewModel() = with(bookmarkViewModel) {
-        getBookmarkList()
         viewLifecycleOwner.lifecycleScope.launch {
             bookmarkList.flowWithLifecycle(viewLifecycleOwner.lifecycle).collectLatest { response ->
                 when (response) {
