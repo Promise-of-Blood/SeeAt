@@ -64,7 +64,7 @@ class CommentViewModel @Inject constructor(private val commentUseCases: CommentU
             createComment(newComment)
             updateCommentCountPlus(feedId)
             withContext(Dispatchers.Main) {
-                _comments.update { it + newComment }  // 새로운 코멘트를 리스트에 추가
+                fetchComments(feedId)
                 Log.d("CommentViewModel", "댓글 추가됨: ${_comments.value.size}")
             }
         }
@@ -158,7 +158,7 @@ class CommentViewModel @Inject constructor(private val commentUseCases: CommentU
             commentUseCases.deleteCommentUseCases.execute(commentModel)
             updateCommentCountMinus(commentModel.feedId)
             withContext(Dispatchers.Main) {
-                _comments.update { it.filter { comment -> comment.commentId != commentModel.commentId } }
+                fetchComments(commentModel.feedId)
                 Log.d("CommentViewModel", "댓글 삭제됨: ${_comments.value.size}")
             }
         }
