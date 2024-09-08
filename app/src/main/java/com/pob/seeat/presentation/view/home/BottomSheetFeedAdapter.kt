@@ -56,10 +56,10 @@ class BottomSheetFeedAdapter(private val onClick: (FeedModel) -> Unit) :
         }
 
         private fun initTag(tags: List<String>, chipsGroupMainFeed: ChipGroup) {
+            chipsGroupMainFeed.removeAllViews() // 기존의 Chip들을 모두 제거
             val tagLists = tags.toTagList()
             // tagList를 이용해 Chip을 동적으로 생성
             // tagLists:List<tag>
-
             for (tag in tagLists) {
                 val chip = Chip(itemView.context).apply {
                     text = tag.tagName
