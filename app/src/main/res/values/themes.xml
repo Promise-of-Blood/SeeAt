@@ -11,11 +11,11 @@
 
     <style name="Theme.OssLicense" parent="Theme.AppCompat">
         <!-- App Bar Text color -->
-        <item name="android:textColorPrimary">@color/white</item>
+        <item name="android:textColorPrimary">@color/black</item>
 
         <!-- App Bar color -->
-        <item name="colorPrimary">@color/primary</item>
-        <item name="colorPrimaryDark">@color/primary</item>
+        <item name="colorPrimary">@color/white</item>
+        <item name="colorPrimaryDark">@color/white</item>
 
         <!-- Screen color -->
         <item name="android:windowBackground">@color/white</item>
