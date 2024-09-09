@@ -60,6 +60,7 @@ import com.pob.seeat.domain.model.toBookmarkEntity
 import com.pob.seeat.presentation.view.chat.ChattingActivity
 import com.pob.seeat.presentation.viewmodel.CommentViewModel
 import com.pob.seeat.presentation.viewmodel.DetailViewModel
+import com.pob.seeat.presentation.viewmodel.ReportCommentViewModel
 import com.pob.seeat.utils.EventBus
 import com.pob.seeat.utils.Utils.px
 import com.pob.seeat.utils.Utils.toKoreanDiffString
@@ -90,6 +91,7 @@ class DetailFragment : Fragment() {
 
     private val detailViewModel: DetailViewModel by viewModels()
     private val commentViewModel: CommentViewModel by viewModels()
+    private val reportCommentViewModel : ReportCommentViewModel by viewModels()
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
@@ -120,12 +122,14 @@ class DetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         getFeed()
-
+        initToolbar()
         setupUI(view, binding.tvAddCommentButton)
         initCommentRecyclerView()
         Timber.i(args.feedIdArg)
         initCommentViewModel()
+    }
 
+    private fun initToolbar() {
         (activity as AppCompatActivity).setSupportActionBar(binding.tbFeed)
         (activity as AppCompatActivity).supportActionBar?.title = getString(R.string.feed)
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -147,7 +151,6 @@ class DetailFragment : Fragment() {
                 }
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
-
     }
 
     private fun initDetailViewmodel() {
@@ -562,7 +565,7 @@ class DetailFragment : Fragment() {
             showCommentDialog(
                 requireContext(),
                 onDelete = {
-                    commentViewModel.deleteComment(feedModel)
+                    commentViewModel.deleteComment(feedModel, requireContext())
                     commentViewModel.fetchComments(args.feedIdArg)
                 },
                 onEdit = {
@@ -573,7 +576,14 @@ class DetailFragment : Fragment() {
             showReportDialog(
                 requireContext(),
                 onReport = {
-                    Toast.makeText(requireContext(), "미구현된 기능입니다.", Toast.LENGTH_SHORT).show()
+                    val reportedUserUid = feedModel.user?.id
+                    val timeStamp = Timestamp.now()
+                    if(reportedUserUid != null){
+                        reportCommentViewModel.sendReport(feedModel.user.id,feedModel.feedId,feedModel.commentId,timeStamp)
+                        Toast.makeText(requireContext(), "신고가 정상적으로 접수 되었습니다. 감사합니다.", Toast.LENGTH_SHORT).show()
+                    }else{
+                        Toast.makeText(requireContext(), "신고를 접수하는데 실패했습니다. 다시 시도해주세요", Toast.LENGTH_SHORT).show()
+                    }
                 })
         }
     }
