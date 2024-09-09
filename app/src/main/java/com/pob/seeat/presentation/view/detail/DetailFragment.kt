@@ -12,6 +12,9 @@ import android.os.Looper
 import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
@@ -19,9 +22,11 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.MenuProvider
 import androidx.core.view.marginStart
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -120,6 +125,29 @@ class DetailFragment : Fragment() {
         initCommentRecyclerView()
         Timber.i(args.feedIdArg)
         initCommentViewModel()
+
+        (activity as AppCompatActivity).setSupportActionBar(binding.tbFeed)
+        (activity as AppCompatActivity).supportActionBar?.title = getString(R.string.feed)
+        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        requireActivity().addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.menu_detail, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return when (menuItem.itemId) {
+                    R.id.report -> {
+                        // 신고하기
+                        Toast.makeText(requireContext(), "게시물이 신고되었습니다.", Toast.LENGTH_SHORT).show()
+                        true
+                    }
+
+                    else -> false
+                }
+            }
+        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+
     }
 
     private fun initDetailViewmodel() {
@@ -444,7 +472,8 @@ class DetailFragment : Fragment() {
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 commentViewModel.comments.collect { comments ->
                     feedCommentAdapter.submitList(comments.toList())
-                    binding.tvCommentCount.text = commentViewModel.comments.value.toList().size.toString()
+                    binding.tvCommentCount.text =
+                        commentViewModel.comments.value.toList().size.toString()
                 }
             }
         }
@@ -576,7 +605,7 @@ class DetailFragment : Fragment() {
                     binding.etAddComment.setText("")
 
 
-                    Log.d("코멘트사이즈","${commentViewModel.comments.value.toList().size}")
+                    Log.d("코멘트사이즈", "${commentViewModel.comments.value.toList().size}")
                 } else {
                     Log.e("댓글 달기", "댓글달기 실패! 사용자 문서 X")
                 }

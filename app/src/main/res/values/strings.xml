@@ -119,4 +119,9 @@
     <string name="dialog_my_comment_edit">수정</string>
     <string name="dialog_other_comment_report">신고</string>
 
+    <!-- detail -->
+    <string-array name="detail_spinner_string">
+        <item>신고하기</item>
+    </string-array>
+
 </resources>
