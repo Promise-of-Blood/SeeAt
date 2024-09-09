@@ -533,7 +533,7 @@ class DetailFragment : Fragment() {
             showCommentDialog(
                 requireContext(),
                 onDelete = {
-                    commentViewModel.deleteComment(feedModel)
+                    commentViewModel.deleteComment(feedModel, requireContext())
                     commentViewModel.fetchComments(args.feedIdArg)
                 },
                 onEdit = {
