@@ -6,8 +6,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
@@ -26,7 +29,7 @@ import timber.log.Timber
 @AndroidEntryPoint
 class ChatListFragment : Fragment() {
     private val chatListAdapter = ChatListAdapter()
-    private val chatListViewModel by viewModels<ChatListViewModel>()
+    private val chatListViewModel by activityViewModels<ChatListViewModel>()
 
     companion object {
         fun newInstance() = ChatListFragment
@@ -37,7 +40,6 @@ class ChatListFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        chatListViewModel.receiveChatList()
     }
 
     override fun onCreateView(
@@ -50,13 +52,16 @@ class ChatListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        chatListViewModel.receiveChatList()
         binding.rvChatList.adapter = chatListAdapter
         Timber.d("onViewCreated Adapters ${chatListViewModel.chatList.value}")
         chatListAdapter.submitList(chatListViewModel.chatList.value)
         viewLifecycleOwner.lifecycleScope.launch {
-            chatListViewModel.chatList.collectLatest {
-                Timber.d("collectLatestAdapterView $it")
-                chatListAdapter.submitList(it)
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                chatListViewModel.chatList.collect {
+                    Timber.d("collectLatestAdapterView $it")
+                    chatListAdapter.submitList(it)
+                }
             }
         }
         chatListAdapter.clickListener = object : ChatListAdapter.ClickListener {

@@ -12,90 +12,95 @@ import kotlinx.coroutines.flow.collectLatest
 import javax.inject.Inject
 import com.pob.seeat.data.model.Result
 import com.pob.seeat.utils.Utils.toKoreanDiffString
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
 @HiltViewModel
 class ChatListViewModel @Inject constructor(
-    private val chatListRepositoryImpl: ChatListRepository
-): ViewModel() {
+    private val chatListRepositoryImpl: ChatListRepository,
+) : ViewModel() {
     private val _chatList = MutableStateFlow<List<Result<ChatListUiItem>>>(listOf())
-    val chatList: StateFlow<List<Result<ChatListUiItem>>> get() = _chatList
+    val chatList: StateFlow<List<Result<ChatListUiItem>>> = _chatList
 
     fun receiveChatList() {
-        Timber.d("receiveChatList")
+        val list = _chatList.value.toList()
+        val updatedList = list.toMutableList()
         viewModelScope.launch {
-            Timber.d("receiveChatListInScope")
-            chatListRepositoryImpl.receiveChatList().collectLatest {
-                val list = _chatList.value.toMutableList()
-                Timber.d("receiveChatListInCollect")
-                when(it) {
+            chatListRepositoryImpl.receiveChatList().collectLatest { it ->
+                Timber.d("receiveChatList: $it")
+                when (it) {
                     is Result.Success -> {
-                        if(list.isEmpty()) {
-                            list.add(
-                                Result.Success(ChatListUiItem(
-                                    id = it.data.chatId,
-                                    personId = "",
-                                    person = "",
-                                    icon = "",
-                                    content = it.data.chatInfo.lastMessage,
-                                    lastTime = Timestamp(it.data.chatInfo.whenLast / 1000,
-                                        ((it.data.chatInfo.whenLast % 1000L) * 1000000L).toInt()
-                                    ).toKoreanDiffString(),
-                                    unreadMessageCount = 0,
-                                    feedFrom = it.data.chatInfo.feedFrom
-                                ))
+                        if (updatedList.isEmpty()) {
+                            updatedList.add(
+                                Result.Success(
+                                    ChatListUiItem(
+                                        id = it.data.chatId,
+                                        personId = "",
+                                        person = "",
+                                        icon = "",
+                                        content = it.data.chatInfo.lastMessage,
+                                        lastTime = it.data.chatInfo.whenLast,
+                                        unreadMessageCount = 0,
+                                        feedFrom = it.data.chatInfo.feedFrom
+                                    )
+                                )
                             )
-                        }
-                        for(i in list.indices) {
-                            Timber.d("$i receiveIsLOOP")
-                            if(list[i] is Result.Success) {
-                                Timber.d("receiveIsSuccess")
-                                if((list[i] as Result.Success<ChatListUiItem>).data.id != it.data.chatId) {
-                                    Timber.d("receiveIsEqual")
-                                    list.add(
-                                        Result.Success(ChatListUiItem(
-                                            id = it.data.chatId,
-                                            personId = "",
-                                            person = "",
-                                            icon = "",
-                                            content = it.data.chatInfo.lastMessage,
-                                            lastTime = Timestamp(it.data.chatInfo.whenLast / 1000,
-                                                ((it.data.chatInfo.whenLast % 1000L) * 1000000L).toInt()
-                                            ).toKoreanDiffString(),
-                                            unreadMessageCount = 0,
-                                            feedFrom = it.data.chatInfo.feedFrom
-                                        ))
-                                    )
-                                } else {
-                                    Timber.d("receiveIsNotEqual")
-                                    list[i] = (
-                                        Result.Success(ChatListUiItem(
-                                            id = it.data.chatId,
-                                            personId = "",
-                                            person = "",
-                                            icon = "",
-                                            content = it.data.chatInfo.lastMessage,
-                                            lastTime = Timestamp(it.data.chatInfo.whenLast / 1000,
-                                                ((it.data.chatInfo.whenLast % 1000L) * 1000000L).toInt()
-                                            ).toKoreanDiffString(),
-                                            unreadMessageCount = 0,
-                                            feedFrom = it.data.chatInfo.feedFrom
-                                        ))
-                                    )
+                        } else {
+                            var isExist = false
+                            for (i in updatedList.indices) {
+                                if (updatedList[i] is Result.Success && (updatedList[i] as Result.Success<ChatListUiItem>).data.id == it.data.chatId) {
+                                    updatedList[i] =
+                                        Result.Success(
+                                            ChatListUiItem(
+                                                id = it.data.chatId,
+                                                personId = "",
+                                                person = "",
+                                                icon = "",
+                                                content = it.data.chatInfo.lastMessage,
+                                                lastTime = it.data.chatInfo.whenLast,
+                                                unreadMessageCount = 0,
+                                                feedFrom = it.data.chatInfo.feedFrom
+                                            )
+                                        )
+                                    isExist = true
+                                    Timber.d("receiveChatListAdded: $it")
+                                    break
                                 }
                             }
+                            if(!isExist) {
+                                updatedList.add(
+                                    Result.Success(
+                                        ChatListUiItem(
+                                            id = it.data.chatId,
+                                            personId = "",
+                                            person = "",
+                                            icon = "",
+                                            content = it.data.chatInfo.lastMessage,
+                                            lastTime = it.data.chatInfo.whenLast,
+                                            unreadMessageCount = 0,
+                                            feedFrom = it.data.chatInfo.feedFrom
+                                        )
+                                    )
+                                )
+                            }
+
                         }
 
                     }
+
                     is Result.Error -> {
-                        list.add(Result.Error(it.message))
+                        updatedList.add(Result.Error(it.message))
                     }
+
                     is Result.Loading -> {
-                        list.add(Result.Loading)
+                        updatedList.add(Result.Loading)
                     }
                 }
-                _chatList.value = list
+                _chatList.value = updatedList
+                chatList.collect { collected ->
+                    Timber.d("chatListCollect? : $collected")
+                }
                 Timber.d("chatList: ${_chatList.value}")
             }
         }

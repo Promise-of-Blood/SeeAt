@@ -68,10 +68,10 @@ class ChatRepositoryImpl @Inject constructor(
         val chatIdFlow = subscribeChatId(feedId)
 
         return chatIdFlow.flatMapLatest {
-            messagesRemote.receiveMessage(it).map {
-                when (it) {
-                    is Result.Success -> Result.Success(it.data.toChattingUiItem())
-                    is Result.Error -> Result.Error(it.message)
+            messagesRemote.receiveMessage(it).map { message ->
+                when (message) {
+                    is Result.Success -> Result.Success(message.data.toChattingUiItem())
+                    is Result.Error -> Result.Error(message.message)
                     Result.Loading -> Result.Loading
                 }
             }

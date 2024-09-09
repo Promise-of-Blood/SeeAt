@@ -23,7 +23,7 @@ import timber.log.Timber
 class ChatViewModel @Inject constructor(
     private val chatRepositoryImpl: ChatRepository
 ) : ViewModel() {
-    private val _chatResult = MutableStateFlow<List<Result<ChattingUiItem>>>(listOf())
+    val _chatResult = MutableStateFlow<List<Result<ChattingUiItem>>>(listOf())
     val chatResult: StateFlow<List<Result<ChattingUiItem>>> get() = _chatResult
 
     private var newMessage : Flow<Result<ChattingUiItem>> = flowOf()
@@ -46,6 +46,7 @@ class ChatViewModel @Inject constructor(
                 Timber.tag("Subscribe Message ViewModel Before").d("chatResult : ${_chatResult.value}")
                 list.add(it)
                 _chatResult.value = list
+                _chatResult.emit(list)
                 Timber.tag("Subscribe Message ViewModel After").d(it.toString())
                 Timber.tag("Subscribe Message ViewModel After").d("list : $list")
                 Timber.tag("Subscribe Message ViewModel After").d("chatResult : ${_chatResult.value}")

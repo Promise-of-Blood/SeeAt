@@ -8,8 +8,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.google.android.material.chip.Chip
@@ -67,9 +69,11 @@ class ChattingActivity : AppCompatActivity() {
         val messageLayoutManager = LinearLayoutManager(this)
         binding.rvMessage.layoutManager = messageLayoutManager
         lifecycleScope.launch {
-            chatViewModel.chatResult.collect {
-                Timber.tag("ChattingAddLog").d("chatResult : $it")
-                chattingAdapter.submitList(chatViewModel.chatResult.value)
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                chatViewModel._chatResult.collect {
+                    Timber.tag("ChattingAddLog").d("chatResult : $it")
+                    chattingAdapter.submitList(chatViewModel.chatResult.value)
+                }
             }
         }
     }
