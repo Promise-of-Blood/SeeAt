@@ -2,15 +2,20 @@ package com.pob.seeat.presentation.view.home
 
 import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
+import android.content.Context
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.graphics.Rect
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getColor
@@ -36,7 +41,6 @@ import com.naver.maps.map.clustering.LeafMarkerInfo
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.Overlay
 import com.naver.maps.map.util.FusedLocationSource
-import com.pob.seeat.MainActivity
 import com.pob.seeat.R
 import com.pob.seeat.data.model.Result
 import com.pob.seeat.data.repository.NaverMapWrapper
@@ -68,6 +72,7 @@ class HomeFragment : Fragment() {
     private lateinit var naverMap: NaverMap
     private lateinit var locationSource: FusedLocationSource
     private var isLocationTrackingEnabled = false
+    private var clusterer: Clusterer<ItemKey>? = null
 
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
 
@@ -75,7 +80,12 @@ class HomeFragment : Fragment() {
 
     private val homeViewModel: HomeViewModel by viewModels()
 
-    private val bottomSheetFeedAdapter: BottomSheetFeedAdapter by lazy { BottomSheetFeedAdapter(::handleClickFeed) }
+    private val bottomSheetFeedAdapter: BottomSheetFeedAdapter by lazy {
+        BottomSheetFeedAdapter(
+            ::handleClickFeed,
+            ::updateMarker
+        )
+    }
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
@@ -96,19 +106,34 @@ class HomeFragment : Fragment() {
         initTagRecyclerView()
         initBottomSheet()
         getFeed()
-        getUnReadAlarmCount()
         initialSetting()
     }
 
     private fun initialSetting() {
         binding.run {
-            ivAlarm.setOnClickListener {
-                (activity as MainActivity).setBottomNavigationSelectedItem(
-                    R.id.navigation_alarm
-                )
-            }
             ibAddMarker.setOnClickListener {
                 findNavController().navigate(R.id.action_home_to_new_feed)
+            }
+
+            // 검색
+            ivSearch.setOnClickListener {
+                bottomSheetFeedAdapter.filter.filter(etSearch.text)
+                hideKeyboard()
+            }
+            etSearch.apply {
+                addTextChangedListener(object : TextWatcher {
+                    override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+                    override fun afterTextChanged(p0: Editable?) {}
+                    override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                        bottomSheetFeedAdapter.filter.filter(p0)
+                    }
+                })
+                setOnEditorActionListener { _, actionId, _ ->
+                    if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                        hideKeyboard()
+                        true
+                    } else false
+                }
             }
         }
     }
@@ -123,31 +148,11 @@ class HomeFragment : Fragment() {
         _binding = null
     }
 
-    private fun getUnReadAlarmCount() = with(homeViewModel) {
-        getUnReadAlarmCount()
-        viewLifecycleOwner.lifecycleScope.launch {
-            unreadAlarmCount.flowWithLifecycle(viewLifecycleOwner.lifecycle)
-                .collectLatest { response ->
-                    when (response) {
-                        is Result.Error -> Timber.e("Error: ${response.message}")
-                        is Result.Loading -> {}
-                        is Result.Success -> bindUnreadAlarmCount(response.data)
-                    }
-                }
-        }
-    }
-
-    private fun bindUnreadAlarmCount(count: Long) = with(binding) {
-        if (count == 0L) {
-            ivAlarm.imageTintList =
-                ColorStateList.valueOf(resources.getColor(R.color.light_gray, null))
-            tvAlarmCount.visibility = View.GONE
-        } else {
-            ivAlarm.imageTintList =
-                ColorStateList.valueOf(resources.getColor(R.color.tertiary, null))
-            tvAlarmCount.visibility = View.VISIBLE
-            tvAlarmCount.text = if (count <= 9) count.toString() else "9+"
-        }
+    private fun hideKeyboard() = with(binding) {
+        val imm =
+            requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(requireActivity().currentFocus?.windowToken, 0)
+        etSearch.clearFocus()
     }
 
     private fun getFeed() = with(homeViewModel) {
@@ -191,18 +196,21 @@ class HomeFragment : Fragment() {
         override fun hashCode() = id.hashCode()
     }
 
+
     /**
      * 모든 feed 도큐먼트를 가져와 해당 좌표값에 마커 생성
      * 클릭 시 로그로 정보확인 가능
      */
-    private fun updateMarker(feedList: List<FeedModel>) {
+    fun updateMarker(feedList: List<FeedModel>) {
+        Timber.tag("ASDF")
+            .d("받아온거@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@: ${feedList.toString()}")
         Timber.tag("HomeFragment").d("Enter UpdateMarker..")
         if (!::naverMap.isInitialized) {
             Timber.tag("HomeFragment").e("naverMap is not initialized")
             return
         }
 
-        var clusterer: Clusterer<ItemKey>? = null
+        clusterer?.clear()
         val listSize = feedList.size
 
         clusterer = Clusterer.Builder<ItemKey>()
@@ -354,6 +362,7 @@ class HomeFragment : Fragment() {
                 Timber.tag("HomeFragment")
                     .d("카메라가 움직이고 있습니다. Reason: " + reason + ", Animated: " + animated)
             }
+            if (binding.etSearch.isFocused) hideKeyboard()
         }
 
         // 카메라 움직임이 멈췄을 때 콜백을 받는 리스너 설정
@@ -405,6 +414,7 @@ class HomeFragment : Fragment() {
             BottomSheetBehavior.BottomSheetCallback() {
 
             override fun onStateChanged(bottomSheet: View, newState: Int) {
+                if (binding.etSearch.isFocused) hideKeyboard()
                 when (newState) {
                     BottomSheetBehavior.STATE_EXPANDED -> {
                         // BottomSheet가 최대 높이에 도달했을 때 수행할 동작
