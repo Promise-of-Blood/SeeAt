@@ -55,6 +55,7 @@ import com.pob.seeat.domain.model.toBookmarkEntity
 import com.pob.seeat.presentation.view.chat.ChattingActivity
 import com.pob.seeat.presentation.viewmodel.CommentViewModel
 import com.pob.seeat.presentation.viewmodel.DetailViewModel
+import com.pob.seeat.presentation.viewmodel.ReportCommentViewModel
 import com.pob.seeat.utils.EventBus
 import com.pob.seeat.utils.Utils.px
 import com.pob.seeat.utils.Utils.toKoreanDiffString
@@ -85,6 +86,7 @@ class DetailFragment : Fragment() {
 
     private val detailViewModel: DetailViewModel by viewModels()
     private val commentViewModel: CommentViewModel by viewModels()
+    private val reportCommentViewModel : ReportCommentViewModel by viewModels()
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
@@ -544,7 +546,14 @@ class DetailFragment : Fragment() {
             showReportDialog(
                 requireContext(),
                 onReport = {
-                    Toast.makeText(requireContext(), "미구현된 기능입니다.", Toast.LENGTH_SHORT).show()
+                    val reportedUserUid = feedModel.user?.id
+                    val timeStamp = Timestamp.now()
+                    if(reportedUserUid != null){
+                        reportCommentViewModel.sendReport(feedModel.user.id,feedModel.feedId,feedModel.commentId,timeStamp)
+                        Toast.makeText(requireContext(), "신고가 정상적으로 접수 되었습니다. 감사합니다.", Toast.LENGTH_SHORT).show()
+                    }else{
+                        Toast.makeText(requireContext(), "신고를 접수하는데 실패했습니다. 다시 시도해주세요", Toast.LENGTH_SHORT).show()
+                    }
                 })
         }
     }
