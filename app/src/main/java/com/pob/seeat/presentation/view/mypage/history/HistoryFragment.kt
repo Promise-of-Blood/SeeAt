@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -16,6 +17,7 @@ import com.pob.seeat.databinding.FragmentHistoryBinding
 import com.pob.seeat.presentation.common.CustomDecoration
 import com.pob.seeat.presentation.view.UiState
 import com.pob.seeat.presentation.view.mypage.items.HistoryListItem
+import com.pob.seeat.presentation.viewmodel.MyPageSharedViewModel
 import com.pob.seeat.presentation.viewmodel.UserHistoryViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -30,6 +32,7 @@ class HistoryFragment : Fragment() {
 
     private val historyAdapter by lazy { HistoryAdapter(::onClickListItem) }
     private val userHistoryViewModel by viewModels<UserHistoryViewModel>()
+    private val myPageSharedViewModel by activityViewModels<MyPageSharedViewModel>()
     private var position: Int? = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,11 +52,7 @@ class HistoryFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initView()
         initViewModel()
-        getHistoryList()
-    }
-
-    override fun onResume() {
-        super.onResume()
+        initSharedViewModel()
         getHistoryList()
     }
 
@@ -67,6 +66,7 @@ class HistoryFragment : Fragment() {
             adapter = historyAdapter
             layoutManager =
                 LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+            itemAnimator = null
             addItemDecoration(
                 CustomDecoration(1f, 48f, resources.getColor(R.color.light_gray, null))
             )
@@ -91,10 +91,18 @@ class HistoryFragment : Fragment() {
                     }
 
                     is UiState.Success -> {
-                        binding.rvHistory.visibility = View.VISIBLE
                         historyAdapter.submitList(response.data)
+                        handleEmptyListView(response.data.size)
                     }
                 }
+            }
+        }
+    }
+
+    private fun initSharedViewModel() = with(myPageSharedViewModel) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            triggerEvent.flowWithLifecycle(viewLifecycleOwner.lifecycle).collectLatest {
+                getHistoryList()
             }
         }
     }
@@ -112,6 +120,32 @@ class HistoryFragment : Fragment() {
         }
         val action = HistoryFragmentDirections.actionUserHistoryToFeedDetail(feedId)
         findNavController().navigate(action)
+    }
+
+    private fun handleEmptyListView(size: Int) = with(binding) {
+        val defaultString = resources.getString(R.string.empty_default)
+        val emptyHistoryStringArray = resources.getStringArray(R.array.empty_history)
+        when (size) {
+            0 -> {
+                binding.rvHistory.visibility = View.GONE
+                binding.tvHistoryMore.visibility = View.GONE
+                binding.tvHistoryEmpty.visibility = View.VISIBLE
+                binding.tvHistoryEmpty.text =
+                    position?.let { emptyHistoryStringArray[it] } ?: defaultString
+            }
+
+            in 1..3 -> {
+                binding.rvHistory.visibility = View.VISIBLE
+                binding.tvHistoryMore.visibility = View.GONE
+                binding.tvHistoryEmpty.visibility = View.GONE
+            }
+
+            else -> {
+                binding.rvHistory.visibility = View.VISIBLE
+                binding.tvHistoryMore.visibility = View.VISIBLE
+                binding.tvHistoryEmpty.visibility = View.GONE
+            }
+        }
     }
 
     companion object {

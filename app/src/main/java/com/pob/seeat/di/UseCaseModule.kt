@@ -19,7 +19,7 @@ import com.pob.seeat.domain.usecase.CreateLikedFeed
 import com.pob.seeat.domain.usecase.CreateUserInfoUseCase
 import com.pob.seeat.domain.usecase.DeleteCommentUseCases
 import com.pob.seeat.domain.usecase.DeleteUserInfoUseCase
-import com.pob.seeat.domain.usecase.EditCommentUseCases
+import com.pob.seeat.domain.usecase.UpdateCommentUseCases
 import com.pob.seeat.domain.usecase.GetCommentListUseCases
 import com.pob.seeat.domain.usecase.GetCommentUseCases
 import com.pob.seeat.domain.usecase.GetSampleImageListUseCase
@@ -162,7 +162,7 @@ abstract class CommentModule {
                 createCommentUseCases = CreateCommentUseCases(repository),
                 getCommentListUsesCases = GetCommentListUseCases(repository),
                 deleteCommentUseCases = DeleteCommentUseCases(repository),
-                editCommentUseCases = EditCommentUseCases(repository),
+                updateCommentUseCases = UpdateCommentUseCases(repository),
                 getCommentUseCases = GetCommentUseCases(repository)
             )
         }

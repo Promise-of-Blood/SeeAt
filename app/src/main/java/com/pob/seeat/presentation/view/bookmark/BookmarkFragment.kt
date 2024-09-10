@@ -75,6 +75,8 @@ class BookmarkFragment : Fragment() {
                     }
 
                     is Result.Success -> {
+                        binding.tvBookmarkEmpty.visibility =
+                            if (response.data.isEmpty()) View.VISIBLE else View.GONE
                         binding.rvBookmark.visibility = View.VISIBLE
                         bookmarkAdapter.submitList(response.data)
                     }

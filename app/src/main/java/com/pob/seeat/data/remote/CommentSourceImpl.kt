@@ -73,7 +73,7 @@ class CommentSourceImpl @Inject constructor(
             .await()
     }
 
-    override suspend fun editComment(commentData: CommentData) {
+    override suspend fun updateComment(commentData: CommentData) {
         firestore.collection("feed")
             .document(commentData.feedId) // 동일하게 feedId 사용
             .collection("comments")

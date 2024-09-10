@@ -44,7 +44,6 @@ class FeedRemote @Inject constructor(
                     copy(nickname = it)
                 } ?: this
             }
-
         }
     }
 

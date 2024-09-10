@@ -32,6 +32,7 @@ retrofit = "2.11.0"
 okhttp3 = "4.12.0"
 ksp = "2.0.0-1.0.23"
 kakaoLogin = "2.20.1"
+swiperefreshlayout = "1.2.0-alpha01"
 switchbutton = "1.1.8"
 toggle = "1.1.0"
 viewpager2 = "1.1.0"
@@ -48,6 +49,7 @@ android-image-cropper = { module = "com.vanniktech:android-image-cropper", versi
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-fragment-ktx = {group = "androidx.fragment", name = "fragment-ktx", version.ref = "fragment"}
 androidx-navigation-safe-args-gradle-plugin = { module = "androidx.navigation:navigation-safe-args-gradle-plugin", version.ref = "navigationSafeArgsGradlePlugin" }
+androidx-swiperefreshlayout = { module = "androidx.swiperefreshlayout:swiperefreshlayout", version.ref = "swiperefreshlayout" }
 androidx-viewpager2 = { module = "androidx.viewpager2:viewpager2", version.ref = "viewpager2" }
 circleindicator = { module = "me.relex:circleindicator", version.ref = "circleindicator" }
 dagger-hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }

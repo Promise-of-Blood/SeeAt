@@ -46,20 +46,20 @@ class TagAdapter(private val tagList: List<TagModel>) :
 
         holder.itemView.setOnClickListener {
             // 선택된 위치를 업데이트하고 RecyclerView를 갱신
-            if (position == selectedPosition) {
+            if (holder.bindingAdapterPosition == selectedPosition) {
                 // 동일한 항목을 다시 클릭한 경우 선택 해제
                 selectedPosition = RecyclerView.NO_POSITION
             } else {
                 // 다른 항목을 클릭한 경우 선택된 위치를 업데이트
                 val previousPosition = selectedPosition
-                selectedPosition = position
+                selectedPosition = holder.bindingAdapterPosition
                 notifyItemChanged(previousPosition)
             }
 
-            notifyItemChanged(position) // 현재 선택된 항목 갱신
+            notifyItemChanged(holder.bindingAdapterPosition) // 현재 선택된 항목 갱신
 
             // 클릭 리스너 호출
-            itemClickListener?.onItemClick(it, position)
+            itemClickListener?.onItemClick(it, selectedPosition)
         }
     }
 

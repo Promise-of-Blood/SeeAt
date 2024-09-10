@@ -79,7 +79,7 @@ class NewFeedFragment : Fragment() {
             registerForActivityResult(ActivityResultContracts.PickMultipleVisualMedia(imageCount)) { uris ->
                 if (uris.isNotEmpty()) {
                     uris.forEach { uri ->
-                        val resizedBitmap = resizeImage(requireContext(), uri) // 원하는 크기로 조정
+                        val resizedBitmap = resizeImage(requireContext(), uri)
 
                         resizedBitmap.let {
                             // Bitmap을 파일로 저장하고 Uri로 변환
