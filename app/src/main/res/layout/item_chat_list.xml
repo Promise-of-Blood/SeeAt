@@ -62,6 +62,7 @@
         app:layout_constraintStart_toStartOf="@id/tv_chat_list_item" />
 
     <TextView
+        android:visibility="invisible"
         android:id="@+id/tv_chat_list_item_count"
         android:layout_width="20dp"
         android:layout_height="20dp"

@@ -11,92 +11,77 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import javax.inject.Inject
 import com.pob.seeat.data.model.Result
+import com.pob.seeat.data.model.chat.ChatModel
 import com.pob.seeat.utils.Utils.toKoreanDiffString
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
 @HiltViewModel
 class ChatListViewModel @Inject constructor(
-    private val chatListRepositoryImpl: ChatListRepository
-): ViewModel() {
+    private val chatListRepositoryImpl: ChatListRepository,
+) : ViewModel() {
     private val _chatList = MutableStateFlow<List<Result<ChatListUiItem>>>(listOf())
-    val chatList: StateFlow<List<Result<ChatListUiItem>>> get() = _chatList
+    val chatList: StateFlow<List<Result<ChatListUiItem>>> = _chatList
 
-    fun receiveChatList() {
-        Timber.d("receiveChatList")
+    private var newChat : Flow<Result<ChatListUiItem>> = flowOf()
+
+    suspend fun receiveChatList() {
+        newChat = chatListRepositoryImpl.receiveChatList()
         viewModelScope.launch {
-            Timber.d("receiveChatListInScope")
-            chatListRepositoryImpl.receiveChatList().collectLatest {
-                val list = _chatList.value.toMutableList()
-                Timber.d("receiveChatListInCollect")
-                when(it) {
+            launch {
+                chatList.collect { collected ->
+                    Timber.d("chatListCollect? : $collected")
+                }
+            }
+            newChat.flowOn(Dispatchers.IO).collectLatest { chat ->
+                val list = _chatList.value.toList()
+                val updatedList = list.toMutableList()
+                Timber.d("receiveChatList: $chat")
+                when (chat) {
                     is Result.Success -> {
-                        if(list.isEmpty()) {
-                            list.add(
-                                Result.Success(ChatListUiItem(
-                                    id = it.data.chatId,
-                                    personId = "",
-                                    person = "",
-                                    icon = "",
-                                    content = it.data.chatInfo.lastMessage,
-                                    lastTime = Timestamp(it.data.chatInfo.whenLast / 1000,
-                                        ((it.data.chatInfo.whenLast % 1000L) * 1000000L).toInt()
-                                    ).toKoreanDiffString(),
-                                    unreadMessageCount = 0,
-                                    feedFrom = it.data.chatInfo.feedFrom
-                                ))
+                        if (updatedList.isEmpty()) {
+                            updatedList.add(
+                                chat
                             )
-                        }
-                        for(i in list.indices) {
-                            Timber.d("$i receiveIsLOOP")
-                            if(list[i] is Result.Success) {
-                                Timber.d("receiveIsSuccess")
-                                if((list[i] as Result.Success<ChatListUiItem>).data.id != it.data.chatId) {
-                                    Timber.d("receiveIsEqual")
-                                    list.add(
-                                        Result.Success(ChatListUiItem(
-                                            id = it.data.chatId,
-                                            personId = "",
-                                            person = "",
-                                            icon = "",
-                                            content = it.data.chatInfo.lastMessage,
-                                            lastTime = Timestamp(it.data.chatInfo.whenLast / 1000,
-                                                ((it.data.chatInfo.whenLast % 1000L) * 1000000L).toInt()
-                                            ).toKoreanDiffString(),
-                                            unreadMessageCount = 0,
-                                            feedFrom = it.data.chatInfo.feedFrom
-                                        ))
-                                    )
-                                } else {
-                                    Timber.d("receiveIsNotEqual")
-                                    list[i] = (
-                                        Result.Success(ChatListUiItem(
-                                            id = it.data.chatId,
-                                            personId = "",
-                                            person = "",
-                                            icon = "",
-                                            content = it.data.chatInfo.lastMessage,
-                                            lastTime = Timestamp(it.data.chatInfo.whenLast / 1000,
-                                                ((it.data.chatInfo.whenLast % 1000L) * 1000000L).toInt()
-                                            ).toKoreanDiffString(),
-                                            unreadMessageCount = 0,
-                                            feedFrom = it.data.chatInfo.feedFrom
-                                        ))
-                                    )
+                        } else {
+                            var isExist = false
+                            for (i in updatedList.indices) {
+                                if (updatedList[i] is Result.Success && (updatedList[i] as Result.Success<ChatListUiItem>).data.id == chat.data.id) {
+                                    updatedList[i] =
+                                        chat
+                                    isExist = true
+                                    Timber.d("receiveChatListAdded: $chat")
+                                    break
                                 }
                             }
+                            if(!isExist) {
+                                updatedList.add(
+                                    chat
+                                )
+                            }
+
                         }
 
                     }
+
                     is Result.Error -> {
-                        list.add(Result.Error(it.message))
+                        updatedList.add(Result.Error(chat.message))
                     }
+
                     is Result.Loading -> {
-                        list.add(Result.Loading)
+                        updatedList.add(Result.Loading)
                     }
                 }
-                _chatList.value = list
+                _chatList.value = updatedList
+                _chatList.emit(updatedList)
                 Timber.d("chatList: ${_chatList.value}")
+                Timber.d("ViewModel chatList: $chatList")
             }
         }
     }
