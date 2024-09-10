@@ -74,6 +74,8 @@ class AlarmFragment : Fragment() {
                         }
 
                         is Result.Success -> {
+                            binding.tvAlarmEmpty.visibility =
+                                if (response.data.isEmpty()) View.GONE else View.VISIBLE
                             binding.rvAlarm.isVisible = true
                             alarmAdapter.submitList(response.data)
                         }
