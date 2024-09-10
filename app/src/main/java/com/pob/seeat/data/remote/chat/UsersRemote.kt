@@ -30,7 +30,8 @@ class UsersRemote {
                     Timber.tag("getChatIdWhenNone!").d(chatId)
                     continuation.resume(chatId)
                 } else {
-                    chatId = it.child(feedId).getValue(String::class.java).toString()
+                    val chatIdMap = it.child(feedId).value as? Map<String, String>
+                    chatId = chatIdMap?.keys?.first().toString()
                     Timber.tag("getChatIdWhenNotNone").d(chatId)
                     continuation.resume(chatId)
                 }
@@ -45,20 +46,20 @@ class UsersRemote {
     fun createUserChat(feedId: String, chatId: String, userId: String) {
         val userFeed = userRef.child(userId).child(feedId)
         userFeed.get().addOnSuccessListener {
-            userFeed.setValue(chatId)
+            val target = userFeed.child(chatId)
+            target.setValue(true)
         }
     }
 
     fun getChatIdListFromUser(userId: String) : Flow<Result<List<String>>> {
         return callbackFlow {
-
             val listener = object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val chatIdList = mutableListOf<String>()
                     snapshot.children.forEach { postSnapshot ->
-                        val chatId = postSnapshot.getValue(String::class.java)
-                        if (chatId != null) {
-                            chatIdList.add(chatId)
+                        val chatIdMap = postSnapshot.value as? Map<String, String>
+                        if (chatIdMap != null) {
+                            chatIdList.addAll(chatIdMap.keys)
                         }
                     }
                     trySend(Result.Success(chatIdList)).isSuccess

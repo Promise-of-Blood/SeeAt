@@ -31,13 +31,13 @@ class ChatViewModel @Inject constructor(
     suspend fun initMessage(feedId: String) {
         viewModelScope.launch {
             Timber.tag("initMessage?").d("initMessage is On")
-            _chatResult.value = chatRepositoryImpl.initMessage(feedId)
+            _chatResult.value = chatRepositoryImpl.initMessage(feedId = feedId)
         }
     }
 
     suspend fun subscribeMessage(feedId: String) {
         Timber.tag("subscribeMessage").d("subscribeMessage is On")
-        newMessage = chatRepositoryImpl.receiveMessage(feedId)
+        newMessage = chatRepositoryImpl.receiveMessage(feedId = feedId)
         viewModelScope.launch {
             newMessage.flowOn(Dispatchers.IO).collectLatest {
                 val list = _chatResult.value.toMutableList()
@@ -46,6 +46,7 @@ class ChatViewModel @Inject constructor(
                 Timber.tag("Subscribe Message ViewModel Before").d("chatResult : ${_chatResult.value}")
                 list.add(it)
                 _chatResult.value = list
+                _chatResult.emit(list)
                 Timber.tag("Subscribe Message ViewModel After").d(it.toString())
                 Timber.tag("Subscribe Message ViewModel After").d("list : $list")
                 Timber.tag("Subscribe Message ViewModel After").d("chatResult : ${_chatResult.value}")

@@ -38,14 +38,12 @@ class MessagesRemote {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         for (messageSnapshot in snapshot.children) {
                             val message = messageSnapshot.child("message").value.toString()
-                            val receiver = messageSnapshot.child("receiver").value.toString()
                             val sender = messageSnapshot.child("sender").value.toString()
                             val timestamp =
                                 Timestamp(Date(messageSnapshot.child("timestamp").value as Long))
                             infoList.add(
                                 MessagesInfoModel(
                                     message = message,
-                                    receiver = receiver,
                                     sender = sender,
                                     timestamp = timestamp
                                 )
@@ -79,12 +77,10 @@ class MessagesRemote {
                     }
                     Timber.d("onChildAdded 임 ${snapshot.key}")
                     val message = snapshot.child("message").value.toString()
-                    val receiver = snapshot.child("receiver").value.toString()
                     val sender = snapshot.child("sender").value.toString()
                     val timestamp = Timestamp(Date(snapshot.child("timestamp").value as Long))
                     val nowChatModel = MessagesInfoModel(
                         message = message,
-                        receiver = receiver,
                         sender = sender,
                         timestamp = timestamp
                     )
@@ -124,12 +120,11 @@ class MessagesRemote {
         }
     }
 
-    suspend fun sendMessage(chatId: String, targetUid: String, message: String) {
+    suspend fun sendMessage(chatId: String, message: String) {
         val messageDb = messageRef.child(chatId)
         val newMessage = messageDb.push()
         val messageMap = hashMapOf(
             "message" to message,
-            "receiver" to targetUid,
             "sender" to uid,
             "timestamp" to ServerValue.TIMESTAMP,
         )
