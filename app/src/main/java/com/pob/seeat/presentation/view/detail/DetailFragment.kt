@@ -315,6 +315,15 @@ class DetailFragment : Fragment() {
                 findNavController().popBackStack()
             }
 
+            tvFeedGetPositionButton.setOnClickListener {
+                Timber.d("tvFeedGetPositionButton Clicked")
+                val bundle = Bundle().apply {
+                    putFloat("feedLatitude", feed.location!!.latitude.toFloat()) // 전달할 위도
+                    putFloat("feedLongitude", feed.location.longitude.toFloat()) // 전달할 경도
+                }
+                findNavController().navigate(R.id.action_detail_to_show_locate, bundle)
+            }
+
             setFeedLikeButton(clLikeBtn)
 
             clLikeBtn.setOnClickListener {
@@ -326,11 +335,6 @@ class DetailFragment : Fragment() {
                 EventBus.subscribe().collect { value ->
                     tvFeedDetailLikeCount.text = value.toString()
                 }
-            }
-
-
-            tvFeedGetPositionButton.setOnClickListener {
-                // Todo 위치보기
             }
 
             tvAddCommentButton.setOnClickListener {
