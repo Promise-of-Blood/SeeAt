@@ -117,7 +117,7 @@ class HomeFragment : Fragment() {
 
             // 검색
             ivSearch.setOnClickListener {
-                bottomSheetFeedAdapter.filter.filter(etSearch.text)
+                bottomSheetFeedAdapter.performSearch(SearchType.TITLE, etSearch.text)
                 hideKeyboard()
             }
             etSearch.apply {
@@ -125,7 +125,7 @@ class HomeFragment : Fragment() {
                     override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
                     override fun afterTextChanged(p0: Editable?) {}
                     override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                        bottomSheetFeedAdapter.filter.filter(p0)
+                        bottomSheetFeedAdapter.performSearch(SearchType.TITLE, p0)
                     }
                 })
                 setOnEditorActionListener { _, actionId, _ ->
@@ -202,8 +202,6 @@ class HomeFragment : Fragment() {
      * 클릭 시 로그로 정보확인 가능
      */
     fun updateMarker(feedList: List<FeedModel>) {
-        Timber.tag("ASDF")
-            .d("받아온거@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@: ${feedList.toString()}")
         Timber.tag("HomeFragment").d("Enter UpdateMarker..")
         if (!::naverMap.isInitialized) {
             Timber.tag("HomeFragment").e("naverMap is not initialized")
@@ -389,6 +387,19 @@ class HomeFragment : Fragment() {
             val marginDecoration = MarginItemDecoration(16f.px) // 마진 설정
             rvTagList.addItemDecoration(marginDecoration)
 
+            // Handle Click Tag
+            adapter.setOnItemClickListener(object : TagAdapter.OnItemClickListener {
+                override fun onItemClick(view: View, position: Int) {
+                    val selectedTag = tagList.getOrNull(position)
+                    if (selectedTag != null) {
+                        val tagName = selectedTag.tagName
+                        bottomSheetFeedAdapter.performSearch(
+                            SearchType.TAG,
+                            if (tagName == "전체") null else tagName
+                        )
+                    } else bottomSheetFeedAdapter.performSearch(SearchType.TAG, null)
+                }
+            })
         }
     }
 

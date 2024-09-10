@@ -21,7 +21,10 @@ import com.pob.seeat.utils.Utils.px
 import com.pob.seeat.utils.Utils.toKoreanDiffString
 import com.pob.seeat.utils.Utils.toLocalDateTime
 import com.pob.seeat.utils.Utils.toTagList
-import timber.log.Timber
+
+enum class SearchType {
+    TITLE, TAG
+}
 
 class BottomSheetFeedAdapter(
     private val onClick: (FeedModel) -> Unit,
@@ -89,12 +92,14 @@ class BottomSheetFeedAdapter(
     }
 
     private var originalList: List<FeedModel> = emptyList()
+    private val searchQuery = hashMapOf<SearchType, CharSequence?>(
+        SearchType.TITLE to null,
+        SearchType.TAG to null,
+    )
 
     override fun submitList(list: List<FeedModel>?) {
         super.submitList(list)
-        Timber.tag("ASDF").d(originalList.size.toString())
         originalList = originalList.ifEmpty { list ?: emptyList() }
-        Timber.tag("ASDF").d(originalList.size.toString())
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder<FeedModel> {
@@ -112,18 +117,20 @@ class BottomSheetFeedAdapter(
     override fun getFilter(): Filter {
         return object : Filter() {
             override fun performFiltering(constraint: CharSequence?): FilterResults {
-                val charString = constraint.toString().lowercase().trim()
                 return FilterResults().apply {
-                    values = if (charString.isBlank()) originalList else onFilter(
-                        originalList,
-                        charString
-                    )
+                    values = if (searchQuery.all { it.value.isNullOrBlank() }) {
+                        originalList
+                    } else {
+                        val tagFiltered = filterTag(originalList)
+                        val titleFiltered = filterTitle(tagFiltered)
+                        titleFiltered
+                    }
                 }
             }
 
             @Suppress("UNCHECKED_CAST")
             override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
-                if (constraint.isNullOrBlank()) {
+                if (searchQuery.all { it.value.isNullOrBlank() }) {
                     updateMarker(originalList)
                     submitList(originalList)
                 } else {
@@ -134,18 +141,34 @@ class BottomSheetFeedAdapter(
         }
     }
 
-    private fun onFilter(list: List<FeedModel>, charString: String): List<FeedModel> {
-        return list.filter { item ->
-            if (charString.all { it in 'a'..'z' || it in 'A'..'Z' })
-                item.title.lowercase().contains(charString.lowercase())
-            else
-                KoreanMatcher.matchKoreanAndConsonant(item.title, charString)
-        }
+    private fun filterTitle(list: List<FeedModel>): List<FeedModel> {
+        val target = searchQuery[SearchType.TITLE].toString()
+        return if (target.isNotBlank() && target != "null") list.filter { item ->
+            if (target.all { it in 'a'..'z' || it in 'A'..'Z' }) {
+                item.title.lowercase().contains(target.lowercase())
+            } else {
+                KoreanMatcher.matchKoreanAndConsonant(item.title, target)
+            }
+        } else list
+    }
+
+    private fun filterTag(list: List<FeedModel>): List<FeedModel> {
+        val target = searchQuery[SearchType.TAG].toString()
+        return if (target.isNotBlank() && target != "null") list.filter { item ->
+            item.tags.contains(target)
+        } else list
     }
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
         originalList = emptyList()
+        searchQuery[SearchType.TITLE] = null
+        searchQuery[SearchType.TAG] = null
+    }
+
+    fun performSearch(type: SearchType, query: CharSequence?) {
+        searchQuery[type] = query
+        filter.filter(query)
     }
 }
 
