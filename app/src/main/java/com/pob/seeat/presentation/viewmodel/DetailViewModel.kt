@@ -28,6 +28,8 @@ class DetailViewModel @Inject constructor(
     private val saveBookmarkUseCase: SaveBookmarkUseCase,
     private val deleteBookmarkUseCase: DeleteBookmarkUseCase,
     private val isBookmarkedUseCase: IsBookmarkedUseCase,
+    private val reportFeedUseCase: ReportFeedUseCase,
+    private val firebaseAuth: FirebaseAuth
 ) : ViewModel() {
 
     private val _userInfo = MutableStateFlow<UserInfoModel?>(null)
@@ -42,7 +44,7 @@ class DetailViewModel @Inject constructor(
     private val _isBookmarked = MutableStateFlow(false)
     val isBookmarked: StateFlow<Boolean> get() = _isBookmarked
 
-    val uid = FirebaseAuth.getInstance().currentUser?.uid
+    val uid = firebaseAuth.currentUser?.uid
 
     fun modifyIsLiked(count: Int) {
         viewModelScope.launch {
