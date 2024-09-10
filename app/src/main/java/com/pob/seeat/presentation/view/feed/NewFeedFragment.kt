@@ -19,8 +19,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.chip.Chip
-import com.google.firebase.Firebase
-import com.google.firebase.firestore.firestore
 import com.pob.seeat.R
 import com.pob.seeat.databinding.FragmentNewFeedBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -33,7 +31,7 @@ import com.naver.maps.map.CameraPosition
 import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
 import com.pob.seeat.MainActivity
-import com.pob.seeat.data.repository.NaverMapWrapper
+import com.pob.seeat.presentation.service.NaverMapWrapper
 import com.pob.seeat.domain.model.TagModel
 import com.pob.seeat.presentation.viewmodel.NewFeedViewModel
 import com.pob.seeat.utils.GoogleAuthUtil.getUserUid

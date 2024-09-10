@@ -10,4 +10,5 @@ interface FeedRepository {
     suspend fun getFeedListById(feedIdList: List<String>): Flow<Result<List<FeedModel>>>
     suspend fun setLikePlus(feedId: String)
     suspend fun setLikeMinus(feedId: String)
+    suspend fun removeFeed(feedId: String)
 }

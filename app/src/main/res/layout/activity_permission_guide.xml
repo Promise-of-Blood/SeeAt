@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".presentation.view.PermissionGuideActivity">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/gl_horizon_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.1"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/gl_horizon_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.3"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/gl_horizon_3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.7"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/gl_vertical_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.1"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/gl_vertical_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.9"/>
+
+    <ImageView
+        android:id="@+id/iv_app_icon"
+        android:layout_width="0dp"
+        app:layout_constraintWidth_percent="0.12"
+        android:layout_height="0dp"
+        app:layout_constraintDimensionRatio="1"
+        android:src="@drawable/ic_main_icon"
+        app:layout_constraintTop_toTopOf="@id/gl_horizon_1"
+        app:layout_constraintStart_toStartOf="@id/gl_vertical_1"/>
+
+    <TextView
+        android:id="@+id/tv_permission_guide_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/permission_guide_title"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@id/iv_app_icon"
+        app:layout_constraintStart_toStartOf="@id/gl_vertical_1"/>
+
+    <TextView
+        android:id="@+id/tv_permission_guide_subtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/permission_guide_subtitle"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@id/tv_permission_guide_title"
+        app:layout_constraintStart_toStartOf="@id/gl_vertical_1"
+        android:textColor="@color/gray"/>
+
+    <ImageView
+        android:id="@+id/iv_icon_location"
+        android:layout_width="0dp"
+        app:layout_constraintWidth_percent="0.15"
+        android:layout_height="0dp"
+        app:layout_constraintDimensionRatio="1"
+        android:src="@drawable/ic_location_pin"
+        app:tint="@color/white"
+        android:background="@drawable/round_r4_gray"
+        android:backgroundTint="@color/primary"
+        android:padding="8dp"
+        app:layout_constraintTop_toTopOf="@id/gl_horizon_2"
+        app:layout_constraintStart_toStartOf="@id/gl_vertical_1"
+        />
+    
+    <TextView
+        android:id="@+id/tv_location_p_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/permission_guide_location_title"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:layout_marginStart="16dp"
+        app:layout_constraintTop_toTopOf="@id/iv_icon_location"
+        app:layout_constraintStart_toEndOf="@id/iv_icon_location"/>
+
+    <TextView
+        android:id="@+id/tv_location_p_desc"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/permission_guide_location_desc"
+        android:textSize="12sp"
+        android:layout_marginStart="16dp"
+        app:layout_constraintTop_toBottomOf="@id/tv_location_p_title"
+        app:layout_constraintStart_toEndOf="@id/iv_icon_location"
+        app:layout_constraintEnd_toEndOf="@id/gl_vertical_2"/>
+
+    <ImageView
+        android:id="@+id/iv_icon_alarm"
+        android:layout_width="0dp"
+        app:layout_constraintWidth_percent="0.15"
+        android:layout_height="0dp"
+        app:layout_constraintDimensionRatio="1"
+        android:src="@drawable/ic_bell_filled"
+        app:tint="@color/white"
+        android:background="@drawable/round_r4_gray"
+        android:backgroundTint="@color/primary"
+        android:padding="8dp"
+        android:layout_marginTop="32dp"
+        app:layout_constraintTop_toBottomOf="@id/iv_icon_location"
+        app:layout_constraintStart_toStartOf="@id/gl_vertical_1"
+
+        />
+
+    <TextView
+        android:id="@+id/tv_alarm_p_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/permission_guide_alarm_title"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:layout_marginStart="16dp"
+        app:layout_constraintTop_toTopOf="@id/iv_icon_alarm"
+        app:layout_constraintStart_toEndOf="@id/iv_icon_alarm"/>
+
+    <TextView
+        android:id="@+id/tv_alarm_p_desc"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/permission_guide_alarm_desc"
+        android:textSize="12sp"
+        android:layout_marginStart="16dp"
+        app:layout_constraintTop_toBottomOf="@id/tv_alarm_p_title"
+        app:layout_constraintStart_toEndOf="@id/iv_icon_location"
+        app:layout_constraintEnd_toEndOf="@id/gl_vertical_2"/>
+
+    <ImageView
+        android:id="@+id/iv_icon_photo"
+        android:layout_width="0dp"
+        app:layout_constraintWidth_percent="0.15"
+        android:layout_height="0dp"
+        app:layout_constraintDimensionRatio="1"
+        android:src="@drawable/ic_gallery"
+        app:tint="@color/white"
+        android:background="@drawable/round_r4_gray"
+        android:backgroundTint="@color/primary"
+        android:padding="8dp"
+        android:layout_marginTop="32dp"
+        app:layout_constraintTop_toBottomOf="@id/iv_icon_alarm"
+        app:layout_constraintStart_toStartOf="@id/gl_vertical_1"
+        />
+
+    <TextView
+        android:id="@+id/tv_gallery_p_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/permission_guide_gallery_title"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:layout_marginStart="16dp"
+        app:layout_constraintTop_toTopOf="@id/iv_icon_photo"
+        app:layout_constraintStart_toEndOf="@id/iv_icon_alarm"/>
+
+    <TextView
+        android:id="@+id/tv_gallery_p_desc"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/permission_guide_gallery_desc"
+        android:textSize="12sp"
+        android:layout_marginStart="16dp"
+        app:layout_constraintTop_toBottomOf="@id/tv_gallery_p_title"
+        app:layout_constraintStart_toEndOf="@id/iv_icon_location"
+        app:layout_constraintEnd_toEndOf="@id/gl_vertical_2"/>
+
+    <TextView
+        android:id="@+id/tv_permission_guide_notice"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/permission_guide_notice"
+        android:textColor="@color/gray"
+        android:textSize="12sp"
+        app:layout_constraintTop_toTopOf="@id/gl_horizon_3"
+        app:layout_constraintStart_toStartOf="@id/gl_vertical_1"
+        app:layout_constraintEnd_toEndOf="@id/gl_vertical_2"/>
+
+    <Button
+        android:id="@+id/btn_permission_guide"
+        style="@style/my_page_edit_profile"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:text="@string/permission_guide_btn"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+
+
+
+
+
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

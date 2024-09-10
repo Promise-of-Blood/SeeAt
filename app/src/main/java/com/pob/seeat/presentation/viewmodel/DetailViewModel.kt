@@ -6,14 +6,16 @@ import com.google.firebase.auth.FirebaseAuth
 import com.pob.seeat.data.model.BookmarkEntity
 import com.pob.seeat.data.model.Result
 import com.pob.seeat.domain.model.FeedModel
+import com.pob.seeat.domain.model.FeedReportModel
 import com.pob.seeat.domain.model.UserInfoModel
 import com.pob.seeat.domain.repository.FeedRepository
 import com.pob.seeat.domain.usecase.DeleteBookmarkUseCase
 import com.pob.seeat.domain.usecase.IsBookmarkedUseCase
+import com.pob.seeat.domain.usecase.RemoveFeedUseCase
+import com.pob.seeat.domain.usecase.ReportFeedUseCase
 import com.pob.seeat.domain.usecase.SaveBookmarkUseCase
 import com.pob.seeat.domain.usecase.UserInfoUseCases
 import com.pob.seeat.utils.EventBus
-import com.pob.seeat.utils.GoogleAuthUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -28,6 +30,9 @@ class DetailViewModel @Inject constructor(
     private val saveBookmarkUseCase: SaveBookmarkUseCase,
     private val deleteBookmarkUseCase: DeleteBookmarkUseCase,
     private val isBookmarkedUseCase: IsBookmarkedUseCase,
+    private val reportFeedUseCase: ReportFeedUseCase,
+    private val firebaseAuth: FirebaseAuth,
+    private val removeFeedUseCase: RemoveFeedUseCase
 ) : ViewModel() {
 
     private val _userInfo = MutableStateFlow<UserInfoModel?>(null)
@@ -42,7 +47,7 @@ class DetailViewModel @Inject constructor(
     private val _isBookmarked = MutableStateFlow(false)
     val isBookmarked: StateFlow<Boolean> get() = _isBookmarked
 
-    val uid = FirebaseAuth.getInstance().currentUser?.uid
+    val uid: String? = firebaseAuth.currentUser?.uid
 
     fun modifyIsLiked(count: Int) {
         viewModelScope.launch {
@@ -122,4 +127,17 @@ class DetailViewModel @Inject constructor(
             _isBookmarked.value = isBookmarkedUseCase(feedId)
         }
     }
+
+    fun addReportFeed(feedReportModel: FeedReportModel) {
+        viewModelScope.launch {
+            reportFeedUseCase(feedReportModel)
+        }
+    }
+
+    fun removeFeed(feedId: String){
+        viewModelScope.launch {
+            removeFeedUseCase(feedId)
+        }
+    }
+
 }
