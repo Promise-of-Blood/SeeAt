@@ -76,6 +76,7 @@ class ChatListFragment : Fragment() {
             override fun onClick(item: ChatListUiItem) {
                 val intent = Intent(requireContext(), ChattingActivity::class.java)
                 intent.putExtra("feedId", item.feedFrom)
+                intent.putExtra("chatId", item.id)
                 startActivity(intent)
             }
         }

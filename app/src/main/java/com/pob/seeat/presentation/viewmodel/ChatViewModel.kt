@@ -28,37 +28,40 @@ class ChatViewModel @Inject constructor(
 
     private var newMessage : Flow<Result<ChattingUiItem>> = flowOf()
 
-    suspend fun initMessage(feedId: String) {
+    suspend fun initMessage(feedId: String, chatId: String) {
         viewModelScope.launch {
             Timber.tag("initMessage?").d("initMessage is On")
-            _chatResult.value = chatRepositoryImpl.initMessage(feedId = feedId)
+            _chatResult.value = chatRepositoryImpl.initMessage(feedId = feedId, chatId = chatId)
         }
     }
 
-    suspend fun subscribeMessage(feedId: String) {
+    suspend fun subscribeMessage(feedId: String, chatId: String) {
         Timber.tag("subscribeMessage").d("subscribeMessage is On")
-        newMessage = chatRepositoryImpl.receiveMessage(feedId = feedId)
-        viewModelScope.launch {
-            newMessage.flowOn(Dispatchers.IO).collectLatest {
-                val list = _chatResult.value.toMutableList()
-                Timber.tag("Subscribe Message ViewModel Before").d(it.toString())
-                Timber.tag("Subscribe Message ViewModel Before").d("list : $list")
-                Timber.tag("Subscribe Message ViewModel Before").d("chatResult : ${_chatResult.value}")
-                list.add(it)
-                _chatResult.value = list
-                _chatResult.emit(list)
-                Timber.tag("Subscribe Message ViewModel After").d(it.toString())
-                Timber.tag("Subscribe Message ViewModel After").d("list : $list")
-                Timber.tag("Subscribe Message ViewModel After").d("chatResult : ${_chatResult.value}")
+        if(chatId != "none") {
+            newMessage = chatRepositoryImpl.receiveMessage(feedId = feedId, chatId = chatId)
+            viewModelScope.launch {
+                newMessage.flowOn(Dispatchers.IO).collectLatest {
+                    val list = _chatResult.value.toMutableList()
+                    Timber.tag("Subscribe Message ViewModel Before").d(it.toString())
+                    Timber.tag("Subscribe Message ViewModel Before").d("list : $list")
+                    Timber.tag("Subscribe Message ViewModel Before").d("chatResult : ${_chatResult.value}")
+                    list.add(it)
+                    _chatResult.value = list
+                    _chatResult.emit(list)
+                    Timber.tag("Subscribe Message ViewModel After").d(it.toString())
+                    Timber.tag("Subscribe Message ViewModel After").d("list : $list")
+                    Timber.tag("Subscribe Message ViewModel After").d("chatResult : ${_chatResult.value}")
+                }
             }
         }
     }
 
-    suspend fun sendMessage(targetUid: String, feedId: String, message: String) {
+    suspend fun sendMessage(targetUid: String, feedId: String, message: String, chatId: String) {
         chatRepositoryImpl.sendMessage(
             targetUid = targetUid,
             feedId = feedId,
             message = message,
+            chatId = chatId
         )
     }
 

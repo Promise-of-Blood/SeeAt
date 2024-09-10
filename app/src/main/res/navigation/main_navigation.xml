@@ -5,11 +5,11 @@
     android:id="@+id/mobile_navigation"
     app:startDestination="@+id/navigation_home">
 
-    <fragment
-        android:id="@+id/navigation_message"
-        android:name="com.pob.seeat.presentation.view.chat.ChatListFragment"
-        android:label="@string/navigation_message"
-        tools:layout="@layout/fragment_chat_list" />
+<!--    <fragment-->
+<!--        android:id="@+id/navigation_message"-->
+<!--        android:name="com.pob.seeat.presentation.view.chat.ChatListFragment"-->
+<!--        android:label="@string/navigation_message"-->
+<!--        tools:layout="@layout/fragment_chat_list" />-->
     <fragment
         android:id="@+id/navigation_home"
         android:name="com.pob.seeat.presentation.view.home.HomeFragment"

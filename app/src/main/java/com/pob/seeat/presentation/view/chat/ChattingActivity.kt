@@ -62,7 +62,8 @@ class ChattingActivity : AppCompatActivity() {
                 chatViewModel.sendMessage(
                     feedId = feedId,
                     targetUid = targetId,
-                    message = binding.etChattingInput.text.toString()
+                    message = binding.etChattingInput.text.toString(),
+                    chatId = intent.getStringExtra("chatId") ?: "none"
                 )
             }
             binding.etChattingInput.setText("")
@@ -108,8 +109,8 @@ class ChattingActivity : AppCompatActivity() {
 
     private suspend fun initChatViewModel() = with(chatViewModel) {
         Timber.tag("initChatViewModel").d("initChatViewModel is On")
-        initMessage(feedId = intent.getStringExtra("feedId") ?: "")
-        subscribeMessage(feedId = intent.getStringExtra("feedId") ?: "")
+        initMessage(feedId = intent.getStringExtra("feedId") ?: "", chatId = intent.getStringExtra("chatId") ?: "none")
+        subscribeMessage(feedId = intent.getStringExtra("feedId") ?: "", chatId = intent.getStringExtra("chatId") ?: "none")
         Timber.tag("InitChattingLOG").d("chatResult : ${chatResult.value}")
     }
 
