@@ -16,11 +16,9 @@ import com.pob.seeat.R
 import com.pob.seeat.domain.model.TagModel
 import java.io.File
 import java.io.FileOutputStream
-import java.text.SimpleDateFormat
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 import java.util.concurrent.TimeUnit
@@ -147,7 +145,8 @@ object Utils {
         inputStream?.close()
 
         val exif = ExifInterface(context.contentResolver.openInputStream(imageUri)!!)
-        val orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
+        val orientation =
+            exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
 
         val rotatedBitmap = when (orientation) {
             ExifInterface.ORIENTATION_ROTATE_90 -> rotateBitmap(originalBitmap, 90)
