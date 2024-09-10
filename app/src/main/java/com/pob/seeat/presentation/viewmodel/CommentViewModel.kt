@@ -138,6 +138,25 @@ class CommentViewModel @Inject constructor(private val commentUseCases: CommentU
 //        }
 //    }
 
+    fun editComment(
+        feedId: String = "",
+        commentId: String = "",
+        comment: String = ""
+    ){
+        viewModelScope.launch {
+            getComment(feedId,commentId)
+            val editedComment = selectedComment.value
+            if(editedComment!= null){
+                editedComment.copy(
+                    comment = comment
+                )
+                updateComment(editedComment)
+            }else{
+                Log.d("edit","댓글정보 찾을 수 없음")
+            }
+        }
+    }
+
     fun createComment(commentModel: CommentModel) {
         viewModelScope.launch {
             commentUseCases.createCommentUseCases.execute(commentModel)
@@ -171,9 +190,9 @@ class CommentViewModel @Inject constructor(private val commentUseCases: CommentU
     }
 
 
-    fun editComment(commentModel: CommentModel) {
+    fun updateComment(commentModel: CommentModel) {
         viewModelScope.launch {
-            commentUseCases.editCommentUseCases.execute(commentModel)
+            commentUseCases.updateCommentUseCases.execute(commentModel)
         }
     }
 
