@@ -66,6 +66,7 @@ class HistoryFragment : Fragment() {
             adapter = historyAdapter
             layoutManager =
                 LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+            itemAnimator = null
             addItemDecoration(
                 CustomDecoration(1f, 48f, resources.getColor(R.color.light_gray, null))
             )
@@ -90,8 +91,8 @@ class HistoryFragment : Fragment() {
                     }
 
                     is UiState.Success -> {
-                        binding.rvHistory.visibility = View.VISIBLE
                         historyAdapter.submitList(response.data)
+                        handleEmptyListView(response.data.size)
                     }
                 }
             }
@@ -119,6 +120,32 @@ class HistoryFragment : Fragment() {
         }
         val action = HistoryFragmentDirections.actionUserHistoryToFeedDetail(feedId)
         findNavController().navigate(action)
+    }
+
+    private fun handleEmptyListView(size: Int) = with(binding) {
+        val defaultString = resources.getString(R.string.empty_default)
+        val emptyHistoryStringArray = resources.getStringArray(R.array.empty_history)
+        when (size) {
+            0 -> {
+                binding.rvHistory.visibility = View.GONE
+                binding.tvHistoryMore.visibility = View.GONE
+                binding.tvHistoryEmpty.visibility = View.VISIBLE
+                binding.tvHistoryEmpty.text =
+                    position?.let { emptyHistoryStringArray[it] } ?: defaultString
+            }
+
+            in 1..3 -> {
+                binding.rvHistory.visibility = View.VISIBLE
+                binding.tvHistoryMore.visibility = View.GONE
+                binding.tvHistoryEmpty.visibility = View.GONE
+            }
+
+            else -> {
+                binding.rvHistory.visibility = View.VISIBLE
+                binding.tvHistoryMore.visibility = View.VISIBLE
+                binding.tvHistoryEmpty.visibility = View.GONE
+            }
+        }
     }
 
     companion object {
