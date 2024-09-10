@@ -6,6 +6,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.pob.seeat.data.model.BookmarkEntity
 import com.pob.seeat.data.model.Result
 import com.pob.seeat.domain.model.FeedModel
+import com.pob.seeat.domain.model.FeedReportModel
 import com.pob.seeat.domain.model.UserInfoModel
 import com.pob.seeat.domain.repository.FeedRepository
 import com.pob.seeat.domain.usecase.DeleteBookmarkUseCase
@@ -125,5 +126,10 @@ class DetailViewModel @Inject constructor(
         }
     }
 
+    fun addReportFeed(feedReportModel: FeedReportModel) {
+        viewModelScope.launch {
+            reportFeedUseCase(feedReportModel)
+        }
+    }
 
 }
