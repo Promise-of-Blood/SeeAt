@@ -7,6 +7,6 @@ interface CommentRepository {
     suspend fun createComment(commentModel: CommentModel)
     suspend fun getCommentList(feedId: String) : Flow<List<CommentModel>>
     suspend fun deleteComment(commentData: CommentModel)
-    suspend fun editComment(commentData: CommentModel)
+    suspend fun updateComment(commentData: CommentModel)
     suspend fun getComment(feedId: String,commentId:String) : CommentModel?
 }

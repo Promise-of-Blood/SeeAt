@@ -7,6 +7,6 @@ interface CommentSource {
     suspend fun createComment(commentData: CommentData)
     suspend fun getCommentList(feedId: String) : Flow<List<CommentData>>
     suspend fun deleteComment(commentData: CommentData)
-    suspend fun editComment(commentData: CommentData)
+    suspend fun updateComment(commentData: CommentData)
     suspend fun getComment(feedId: String, commentId:String) : CommentData?
 }

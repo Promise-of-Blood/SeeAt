@@ -1,6 +1,8 @@
 package com.pob.seeat.presentation.viewmodel
 
+import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.Timestamp
@@ -78,11 +80,10 @@ class CommentViewModel @Inject constructor(private val commentUseCases: CommentU
     }
 
 
-
-    fun deleteMyComment(feedId: String, commentId: String) {
+    fun deleteMyComment(feedId: String, commentId: String, context: Context) {
         viewModelScope.launch {
             val selectedComment = commentUseCases.getCommentUseCases.execute(feedId, commentId)
-            selectedComment?.let { deleteComment(it) }
+            selectedComment?.let { deleteComment(it, context) }
         }
     }
 
@@ -137,6 +138,25 @@ class CommentViewModel @Inject constructor(private val commentUseCases: CommentU
 //        }
 //    }
 
+    fun editComment(
+        feedId: String = "",
+        commentId: String = "",
+        comment: String = ""
+    ){
+        viewModelScope.launch {
+            getComment(feedId,commentId)
+            val editedComment = selectedComment.value
+            if(editedComment!= null){
+                editedComment.copy(
+                    comment = comment
+                )
+                updateComment(editedComment)
+            }else{
+                Log.d("edit","댓글정보 찾을 수 없음")
+            }
+        }
+    }
+
     fun createComment(commentModel: CommentModel) {
         viewModelScope.launch {
             commentUseCases.createCommentUseCases.execute(commentModel)
@@ -153,25 +173,31 @@ class CommentViewModel @Inject constructor(private val commentUseCases: CommentU
 
     }
 
-    fun deleteComment(commentModel: CommentModel) {
+    fun deleteComment(commentModel: CommentModel, context: Context) {
         viewModelScope.launch {
-            commentUseCases.deleteCommentUseCases.execute(commentModel)
-            updateCommentCountMinus(commentModel.feedId)
-            withContext(Dispatchers.Main) {
-                fetchComments(commentModel.feedId)
-                Log.d("CommentViewModel", "댓글 삭제됨: ${_comments.value.size}")
+            try {
+                commentUseCases.deleteCommentUseCases.execute(commentModel)
+                updateCommentCountMinus(commentModel.feedId)
+                withContext(Dispatchers.Main) {
+                    fetchComments(commentModel.feedId)
+                    Log.d("CommentViewModel", "댓글 삭제됨: ${_comments.value.size}")
+                }
+            } catch (e: Exception) {
+                Log.e("댓글삭제오류","댓글 삭제 중 오류 발생 : ${e.message}")
+                Toast.makeText(context, "댓글 삭제에 실패했습니다 다시 한 번 시도해주세요", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    fun editComment(commentModel: CommentModel) {
+
+    fun updateComment(commentModel: CommentModel) {
         viewModelScope.launch {
-            commentUseCases.editCommentUseCases.execute(commentModel)
+            commentUseCases.updateCommentUseCases.execute(commentModel)
         }
     }
 
     fun getComment(feedId: String, commentId: String) {
-        viewModelScope.launch{
+        viewModelScope.launch {
             val comment = commentUseCases.getCommentUseCases.execute(feedId, commentId)
             _selectedComment.value = comment
         }

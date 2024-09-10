@@ -149,4 +149,7 @@ dependencies {
     annotationProcessor(libs.androidx.room.compiler)
     ksp(libs.androidx.room.compiler)
     testImplementation(libs.androidx.room.testing)
+
+    // pull to refresh
+    implementation(libs.androidx.swiperefreshlayout)
 }

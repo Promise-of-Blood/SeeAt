@@ -5,6 +5,8 @@ import android.content.res.Resources.getSystem
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.graphics.Matrix
+import android.media.ExifInterface
 import android.net.Uri
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
@@ -136,8 +138,23 @@ object Utils {
         val originalBitmap = BitmapFactory.decodeStream(inputStream)
         inputStream?.close()
 
+        val exif = ExifInterface(context.contentResolver.openInputStream(imageUri)!!)
+        val orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
+
+        val rotatedBitmap = when (orientation) {
+            ExifInterface.ORIENTATION_ROTATE_90 -> rotateBitmap(originalBitmap, 90)
+            ExifInterface.ORIENTATION_ROTATE_180 -> rotateBitmap(originalBitmap, 180)
+            ExifInterface.ORIENTATION_ROTATE_270 -> rotateBitmap(originalBitmap, 270)
+            else -> originalBitmap
+        }
+
         // 이미지 크기를 조정합니다. (예: 800x800 픽셀로 조정)
-        return Bitmap.createScaledBitmap(originalBitmap, 800, 800, true)
+        return Bitmap.createScaledBitmap(rotatedBitmap, 800, 800, true)
+    }
+
+    private fun rotateBitmap(bitmap: Bitmap, degrees: Int): Bitmap {
+        val matrix = Matrix().apply { postRotate(degrees.toFloat()) }
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
     }
 
     /**

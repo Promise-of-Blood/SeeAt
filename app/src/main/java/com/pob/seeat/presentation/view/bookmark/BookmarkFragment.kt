@@ -50,13 +50,9 @@ class BookmarkFragment : Fragment() {
         initViewModel()
     }
 
-    override fun onResume() {
-        super.onResume()
-        bookmarkViewModel.fetchBookmarkList(bookmarkAdapter.currentList.map { it.feedId })
-    }
-
     override fun onDestroy() {
         super.onDestroy()
+        bookmarkViewModel.fetchBookmarkList()
         _binding = null
     }
 
@@ -79,6 +75,8 @@ class BookmarkFragment : Fragment() {
                     }
 
                     is Result.Success -> {
+                        binding.tvBookmarkEmpty.visibility =
+                            if (response.data.isEmpty()) View.VISIBLE else View.GONE
                         binding.rvBookmark.visibility = View.VISIBLE
                         bookmarkAdapter.submitList(response.data)
                     }

@@ -74,6 +74,8 @@ class AlarmFragment : Fragment() {
                         }
 
                         is Result.Success -> {
+                            binding.tvAlarmEmpty.visibility =
+                                if (response.data.isEmpty()) View.VISIBLE else View.GONE
                             binding.rvAlarm.isVisible = true
                             alarmAdapter.submitList(response.data)
                         }
@@ -110,7 +112,7 @@ class AlarmFragment : Fragment() {
         }
 
         override fun getSwipeThreshold(viewHolder: RecyclerView.ViewHolder): Float {
-            return 2f // 반 이상 스와이프 시 자동으로 아이템뷰 삭제
+            return 1.8f // 반 이상 스와이프 시 자동으로 아이템뷰 삭제
         }
 
         override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
