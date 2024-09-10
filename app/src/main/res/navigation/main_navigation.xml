@@ -75,7 +75,7 @@
             app:destination="@id/navigation_select_locate" />
         <action
             android:id="@+id/action_new_feed_to_detail_image"
-            app:destination="@id/navigation_detail_image" >
+            app:destination="@id/navigation_detail_image">
             <argument
                 android:name="imageUri"
                 app:argType="string" />
@@ -90,7 +90,7 @@
     <fragment
         android:id="@+id/navigation_detail_image"
         android:name="com.pob.seeat.presentation.view.feed.DetailImageFragment"
-        android:label="이미지 확대 화면">
+        android:label="@string/navigation_detail_image">
         <argument
             android:name="imageUri"
             app:argType="string" />
@@ -154,6 +154,31 @@
         <argument
             android:name="feedIdArg"
             app:argType="string" />
+
+        <action
+            android:id="@+id/action_detail_to_show_locate"
+            app:destination="@id/navigation_show_locate" >
+            <argument
+                android:name="feedLatitude"
+                app:argType="float" />
+            <argument
+                android:name="feedLongitude"
+                app:argType="float" />
+        </action>
+    </fragment>
+    <fragment
+        android:id="@+id/navigation_show_locate"
+        android:name="com.pob.seeat.presentation.view.detail.ShowLocateFragment"
+        android:label="위치 보기"
+        tools:layout="@layout/fragment_show_locate">
+        <argument
+            android:name="feedLatitude"
+            app:argType="float" />
+        <argument
+            android:name="feedLongitude"
+            app:argType="float" />
+
+
     </fragment>
 
 </navigation>

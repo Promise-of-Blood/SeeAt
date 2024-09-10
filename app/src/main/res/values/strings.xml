@@ -129,6 +129,7 @@
     <string name="dialog_my_comment_delete">삭제</string>
     <string name="dialog_my_comment_edit">수정</string>
     <string name="dialog_other_comment_report">신고</string>
+    <string name="navigation_detail_image">이미지 확대 화면</string>
 
     <!-- detail -->
     <string-array name="detail_spinner_string">
