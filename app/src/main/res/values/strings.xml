@@ -69,15 +69,12 @@
     <!-- comment -->
     <string name="feed_oner"> - 작성자</string>
 
-
     <!-- alarm -->
     <string name="alarm_title">알림</string>
     <string name="alarm_image">게시물 이미지</string>
     <string name="alarm_post_title">\'%s\'</string>
     <string name="alarm_description_comment">글에 새로운 댓글이 달렸습니다.</string>
     <string name="alarm_description_like">글에 %s 님이 좋아요를 눌렀습니다.</string>
-
-    <!-- alarm -->
     <string name="feed_image">게시물 이미지</string>
     <string name="feed_like">좋아요 아이콘</string>
     <string name="feed_comment">댓글 아이콘</string>
@@ -119,5 +116,15 @@
     <string name="dialog_my_comment_delete">삭제</string>
     <string name="dialog_my_comment_edit">수정</string>
     <string name="dialog_other_comment_report">신고</string>
+
+    <!-- empty list -->
+    <string name="empty_default">표시할 목록이 없습니다.</string>
+    <string-array name="empty_history">
+        <item>작성한 글이 없습니다.</item>
+        <item>작성한 댓글이 없습니다.</item>
+        <item>추천한 글이 없습니다.</item>
+    </string-array>
+    <string name="empty_alarm">받은 알림이 없습니다.</string>
+    <string name="empty_bookmark">저장한 글이 없습니다.</string>
 
 </resources>

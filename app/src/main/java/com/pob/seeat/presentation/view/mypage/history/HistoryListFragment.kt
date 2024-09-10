@@ -65,6 +65,7 @@ class HistoryListFragment : Fragment() {
             adapter = historyAdapter
             layoutManager =
                 LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+            itemAnimator = null
             addItemDecoration(
                 CustomDecoration(
                     1f,
@@ -99,10 +100,26 @@ class HistoryListFragment : Fragment() {
                     }
 
                     is UiState.Success -> {
-                        binding.rvHistory.visibility = View.VISIBLE
+                        handleEmptyListView(response.data.size)
                         historyAdapter.submitList(response.data)
                     }
                 }
+            }
+        }
+    }
+
+    private fun handleEmptyListView(size: Int) = with(binding) {
+        val emptyHistoryString = resources.getStringArray(R.array.empty_history)[args.position]
+        when (size) {
+            0 -> {
+                binding.rvHistory.visibility = View.GONE
+                binding.tvHistoryEmpty.visibility = View.VISIBLE
+                binding.tvHistoryEmpty.text = emptyHistoryString
+            }
+
+            else -> {
+                binding.rvHistory.visibility = View.VISIBLE
+                binding.tvHistoryEmpty.visibility = View.GONE
             }
         }
     }
