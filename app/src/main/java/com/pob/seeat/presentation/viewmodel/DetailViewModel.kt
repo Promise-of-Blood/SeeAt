@@ -10,10 +10,10 @@ import com.pob.seeat.domain.model.UserInfoModel
 import com.pob.seeat.domain.repository.FeedRepository
 import com.pob.seeat.domain.usecase.DeleteBookmarkUseCase
 import com.pob.seeat.domain.usecase.IsBookmarkedUseCase
+import com.pob.seeat.domain.usecase.ReportFeedUseCase
 import com.pob.seeat.domain.usecase.SaveBookmarkUseCase
 import com.pob.seeat.domain.usecase.UserInfoUseCases
 import com.pob.seeat.utils.EventBus
-import com.pob.seeat.utils.GoogleAuthUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -124,4 +124,6 @@ class DetailViewModel @Inject constructor(
             _isBookmarked.value = isBookmarkedUseCase(feedId)
         }
     }
+
+
 }
