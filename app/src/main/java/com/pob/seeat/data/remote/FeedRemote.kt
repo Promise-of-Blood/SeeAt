@@ -133,5 +133,12 @@ class FeedRemote @Inject constructor(
             .await()
     }
 
+    override suspend fun removeFeed(postId: String) {
+        firestore.collection("feed")
+            .document(postId)
+            .delete()
+            .await()
+    }
+
 
 }
