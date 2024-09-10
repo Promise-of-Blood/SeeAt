@@ -49,7 +49,9 @@ class ShowLocateFragment : Fragment() {
 
     private fun initialSetting() {
         binding.apply {
-
+            toolbarMessage.setNavigationOnClickListener {
+                requireActivity().onBackPressedDispatcher.onBackPressed()
+            }
         }
     }
 
