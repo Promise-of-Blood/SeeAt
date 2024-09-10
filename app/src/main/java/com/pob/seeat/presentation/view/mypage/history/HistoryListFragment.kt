@@ -73,6 +73,10 @@ class HistoryListFragment : Fragment() {
                 )
             )
         }
+        srHistory.setOnRefreshListener {
+            getHistoryList()
+            srHistory.isRefreshing = false
+        }
     }
 
     private fun getHistoryList() = when (args.position) {

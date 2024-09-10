@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -21,6 +22,7 @@ import com.pob.seeat.BuildConfig
 import com.pob.seeat.R
 import com.pob.seeat.databinding.FragmentMyPageBinding
 import com.pob.seeat.presentation.view.mypage.settings.SettingsActivity
+import com.pob.seeat.presentation.viewmodel.MyPageSharedViewModel
 import com.pob.seeat.presentation.viewmodel.UserInfoViewModel
 import com.pob.seeat.utils.GoogleAuthUtil
 import com.pob.seeat.utils.GoogleAuthUtil.getUserUid
@@ -34,6 +36,7 @@ class MyPageFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val userViewModel: UserInfoViewModel by viewModels()
+    private val mypageSharedViewModel: MyPageSharedViewModel by activityViewModels()
     val uid = getUserUid()
 
     private val editProfileLauncher = registerForActivityResult(
@@ -41,24 +44,24 @@ class MyPageFragment : Fragment() {
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             val data = result.data
-            if(data != null){
+            if (data != null) {
                 val updatedNickname = data.getStringExtra("updatedNickname")
                 val updatedIntroduce = data.getStringExtra("updatedIntroduce")
 
-                if (updatedNickname != null && updatedIntroduce != null){
+                if (updatedNickname != null && updatedIntroduce != null) {
 
                     binding.tvUserName.text = updatedNickname
                     binding.tvUserIntroduce.text = updatedIntroduce
 
                     userViewModel.getUserInfo(uid!!)
-                }else{
+                } else {
                     Log.e("MyPageFragment", "업데이트된 데이터가 없습니다.")
                 }
-            }else{
+            } else {
                 Log.e("MyPageFragment", "결과 데이터가 null입니다.")
             }
             refreshUserInfo()
-        }else{
+        } else {
             Toast.makeText(requireContext(), "프로필 업데이트 실패", Toast.LENGTH_SHORT).show()
         }
     }
@@ -138,6 +141,11 @@ class MyPageFragment : Fragment() {
             }
             _easterEgg++
         }
+
+        srMyPage.setOnRefreshListener {
+            mypageSharedViewModel.triggerRefresh()
+            srMyPage.isRefreshing = false
+        }
     }
 
     private fun observeUserInfo() {
@@ -166,7 +174,7 @@ class MyPageFragment : Fragment() {
     }
 
     private fun displayImage(imageUrl: String) {
-        if(isAdded){
+        if (isAdded) {
             Glide.with(this)
                 .load(imageUrl)
                 .into(binding.ivProfileImage)
