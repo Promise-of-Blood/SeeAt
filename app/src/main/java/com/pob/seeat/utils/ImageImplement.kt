@@ -1,8 +1,5 @@
 package com.pob.seeat.utils
 
-import android.app.Activity
-import android.content.Context
-import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.Uri

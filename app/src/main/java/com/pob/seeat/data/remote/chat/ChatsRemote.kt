@@ -1,8 +1,6 @@
 package com.pob.seeat.data.remote.chat
 
-import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -12,14 +10,10 @@ import com.google.firebase.ktx.Firebase
 import com.pob.seeat.data.model.Result
 import com.pob.seeat.data.model.chat.ChatModel
 import com.pob.seeat.data.model.chat.ChatsChattingModel
-import com.pob.seeat.data.model.chat.MessagesInfoModel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.suspendCancellableCoroutine
-import timber.log.Timber
-import java.util.Date
 import kotlin.coroutines.resume
 
 class ChatsRemote {

@@ -1,9 +1,7 @@
 package com.pob.seeat.data.remote
 
-import dagger.Provides
 import retrofit2.http.GET
 import retrofit2.http.Query
-import javax.inject.Named
 
 interface SampleRemoteDataSource {
     @GET("/v2/search/image")

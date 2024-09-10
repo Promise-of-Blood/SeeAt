@@ -8,15 +8,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
-import com.pob.seeat.R
 import com.pob.seeat.databinding.FragmentSignUpNameBinding
 import com.pob.seeat.presentation.viewmodel.UserInfoViewModel
-import com.pob.seeat.utils.GoogleAuthUtil
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class SignUpNameFragment : Fragment() {

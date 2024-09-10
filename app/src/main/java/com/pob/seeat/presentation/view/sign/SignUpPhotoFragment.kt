@@ -1,10 +1,5 @@
 package com.pob.seeat.presentation.view.sign
 
-import android.app.Activity
-import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -15,8 +10,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.storage.FirebaseStorage
 import com.pob.seeat.databinding.FragmentSignUpPhotoBinding
 import com.pob.seeat.presentation.viewmodel.UserInfoViewModel
 import com.pob.seeat.utils.ImageImplement.getCropOptions
@@ -26,13 +19,7 @@ import com.pob.seeat.utils.ImageImplement.registerImagePicker
 import com.pob.seeat.utils.Utils.compressBitmapToUri
 import com.pob.seeat.utils.Utils.resizeImage
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withContext
-import java.io.File
-import java.io.FileOutputStream
 
 @AndroidEntryPoint
 class SignUpPhotoFragment : Fragment() {

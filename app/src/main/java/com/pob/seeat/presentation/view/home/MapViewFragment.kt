@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.naver.maps.map.MapView
-import com.pob.seeat.R
 import com.pob.seeat.databinding.FragmentMapBinding
 
 class MapViewFragment : Fragment() {

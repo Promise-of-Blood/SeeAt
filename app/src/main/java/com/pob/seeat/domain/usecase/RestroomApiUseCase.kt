@@ -2,13 +2,8 @@ package com.pob.seeat.domain.usecase
 
 import com.pob.seeat.domain.model.RestroomModel
 import com.pob.seeat.domain.repository.RestroomApiRepository
-import dagger.Module
-import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ViewModelComponent
-import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
-import javax.inject.Singleton
 
 class RestroomApiUseCase @Inject constructor(
     private val seoulRestroomApiRepository: RestroomApiRepository,

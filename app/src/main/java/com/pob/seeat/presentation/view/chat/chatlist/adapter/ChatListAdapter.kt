@@ -7,10 +7,8 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.RequestBuilder
 import com.pob.seeat.databinding.ItemChatListBinding
-import com.pob.seeat.presentation.view.UiState
 import com.pob.seeat.presentation.view.chat.items.ChatListUiItem
 import com.pob.seeat.presentation.view.chat.chatlist.viewholder.SuccessViewHolder
-import com.pob.seeat.presentation.view.chat.chatlist.adapter.ChatListDiffUtil
 import com.pob.seeat.data.model.Result
 
 class ChatListAdapter : ListAdapter<Result<ChatListUiItem>, RecyclerView.ViewHolder>(
