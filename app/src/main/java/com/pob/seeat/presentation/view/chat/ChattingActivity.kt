@@ -27,6 +27,7 @@ import com.pob.seeat.utils.Utils.px
 import com.pob.seeat.utils.Utils.setStatusBarColor
 import com.pob.seeat.utils.Utils.toTagList
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -53,14 +54,16 @@ class ChattingActivity : AppCompatActivity() {
         val feedId = intent.getStringExtra("feedId") ?: ""
 
         initViewModel()
-        initChatViewModel()
         getFeedData()
 //        chatViewModel.subscribeMessage(intent.getStringExtra("feedId") ?: "")
         binding.btnChattingSend.setOnClickListener {
             lifecycleScope.launch {
                 Timber.tag("ChattingLOG").d("btnChattingSend Clicked : $targetId !")
                 chatViewModel.sendMessage(
-                    feedId = feedId, targetUid = targetId, message = binding.etChattingInput.text.toString())
+                    feedId = feedId,
+                    targetUid = targetId,
+                    message = binding.etChattingInput.text.toString()
+                )
             }
             binding.etChattingInput.setText("")
         }
@@ -70,7 +73,7 @@ class ChattingActivity : AppCompatActivity() {
         binding.rvMessage.layoutManager = messageLayoutManager
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                chatViewModel._chatResult.collect {
+                chatViewModel.chatResult.collect {
                     Timber.tag("ChattingAddLog").d("chatResult : $it")
                     chattingAdapter.submitList(chatViewModel.chatResult.value)
                 }
@@ -83,24 +86,31 @@ class ChattingActivity : AppCompatActivity() {
         detailViewModel.getFeedById(feedId)
     }
 
-    private fun initViewModel() = with(detailViewModel) {
+    private fun initViewModel() {
         lifecycleScope.launch {
-            singleFeedResponse.flowWithLifecycle(lifecycle).collectLatest { response ->
-                when (response) {
-                    is Result.Error -> Timber.e("Error: ${response.message}")
-                    is Result.Loading -> Timber.i("Loading..")
-                    is Result.Success -> initFeedData(response.data)
+            initAsyncViewModel()
+        }
+    }
+
+    private suspend fun initAsyncViewModel() {
+        Timber.tag("initAsyncViewModel").d("initAsyncViewModel is On")
+        detailViewModel.singleFeedResponse.flowWithLifecycle(lifecycle).collectLatest { response ->
+            when (response) {
+                is Result.Error -> Timber.e("Error: ${response.message}")
+                is Result.Loading -> Timber.i("Loading..")
+                is Result.Success -> {
+                    initFeedData(response.data)
+                    initChatViewModel()
                 }
             }
         }
     }
 
-    private fun initChatViewModel() = with(chatViewModel) {
-        lifecycleScope.launch {
-            initMessage(intent.getStringExtra("feedId") ?: "")
-            subscribeMessage(intent.getStringExtra("feedId") ?: "")
-            Timber.tag("InitChattingLOG").d("chatResult : ${chatResult.value}")
-        }
+    private suspend fun initChatViewModel() = with(chatViewModel) {
+        Timber.tag("initChatViewModel").d("initChatViewModel is On")
+        initMessage(feedId = intent.getStringExtra("feedId") ?: "")
+        subscribeMessage(feedId = intent.getStringExtra("feedId") ?: "")
+        Timber.tag("InitChattingLOG").d("chatResult : ${chatResult.value}")
     }
 
     private fun initFeedData(feed: FeedModel) = with(binding) {

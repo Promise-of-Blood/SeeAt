@@ -24,7 +24,7 @@ class ChatListRepositoryImpl @Inject constructor(
 ) : ChatListRepository {
     override fun receiveChatList(): Flow<Result<ChatModel>> {
         val userId = FirebaseAuth.getInstance().currentUser?.uid
-        return usersRemote.getChatIdListFromUser(userId ?: "")
+        return usersRemote.getChatIdListFromUser(userId = userId ?: "")
             .flatMapLatest { chatIdList ->
                 Timber.d("chatReceiveList: $chatIdList")
                 when (chatIdList) {

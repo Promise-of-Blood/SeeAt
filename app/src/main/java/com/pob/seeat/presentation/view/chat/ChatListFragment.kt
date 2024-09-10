@@ -21,6 +21,7 @@ import com.pob.seeat.presentation.view.chat.chatlist.adapter.ChatListAdapter
 import com.pob.seeat.presentation.view.chat.items.ChatListUiItem
 import com.pob.seeat.presentation.viewmodel.ChatListViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
@@ -52,15 +53,19 @@ class ChatListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        chatListViewModel.receiveChatList()
         binding.rvChatList.adapter = chatListAdapter
-        Timber.d("onViewCreated Adapters ${chatListViewModel.chatList.value}")
+        Timber.d("onViewCreated Adapters chatList: ${chatListViewModel.chatList}")
         chatListAdapter.submitList(chatListViewModel.chatList.value)
         viewLifecycleOwner.lifecycleScope.launch {
+            chatListViewModel.receiveChatList()
+            Timber.d("viewLifeCycleOwner launch")
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                chatListViewModel.chatList.collect {
-                    Timber.d("collectLatestAdapterView $it")
-                    chatListAdapter.submitList(it)
+                Timber.d("repeat LifeCycleOwner launch")
+                launch {
+                    chatListViewModel.chatList.collect {
+                        Timber.d("collectLatestAdapterView $it")
+                        chatListAdapter.submitList(it)
+                    }
                 }
             }
         }

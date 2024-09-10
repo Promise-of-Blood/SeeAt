@@ -16,6 +16,7 @@ import com.pob.seeat.data.remote.chat.MessagesRemote
 import com.pob.seeat.data.remote.chat.UsersRemote
 import com.pob.seeat.presentation.view.chat.items.ChattingUiItem
 import com.pob.seeat.utils.GoogleAuthUtil
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flatMapLatest
@@ -31,6 +32,7 @@ class ChatRepositoryImpl @Inject constructor(
     private val usersRemote: UsersRemote,
 ) : ChatRepository {
     val uid = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+    var chatIdInClass = flow<String> {  }
 
     override suspend fun sendMessage(feedId: String, targetUid: String, message: String) {
         var chatId = ""
@@ -44,8 +46,10 @@ class ChatRepositoryImpl @Inject constructor(
                     whenLast = System.currentTimeMillis(),
                 )
             )
-            usersRemote.createUserChat(feedId, chatId, userId = uid)
-            usersRemote.createUserChat(feedId, chatId, userId = targetUid)
+            usersRemote.createUserChat(feedId = feedId, chatId = chatId, userId = uid)
+            usersRemote.createUserChat(feedId = feedId, chatId = chatId, userId = targetUid)
+            Timber.tag("sendMessage's chatId before emit").d(chatId)
+            chatIdInClass = flow { emit(chatId) }
         } else {
             Timber.tag("sendMessage's chatId").d("chatId $chatId")
             chatsRemote.saveChat(
@@ -58,16 +62,16 @@ class ChatRepositoryImpl @Inject constructor(
         }
         messagesRemote.sendMessage(
             chatId = chatId,
-            targetUid = targetUid,
             message = message,
         )
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override suspend fun receiveMessage(feedId: String): Flow<Result<ChattingUiItem>> {
-        val chatIdFlow = subscribeChatId(feedId)
+        chatIdInClass = subscribeChatId(feedId)
+        chatIdInClass.collectLatest { Timber.tag("receiveMessage's chatIdInClass").d(it) }
 
-        return chatIdFlow.flatMapLatest {
+        return chatIdInClass.flatMapLatest {
             messagesRemote.receiveMessage(it).map { message ->
                 when (message) {
                     is Result.Success -> Result.Success(message.data.toChattingUiItem())
@@ -98,7 +102,8 @@ class ChatRepositoryImpl @Inject constructor(
     }
 
     fun subscribeChatId(feedId: String): Flow<String> = flow {
-        emit(usersRemote.getChatId(userId = uid, feedId = feedId))
+        Timber.d("subscribeChatId!! feedId : $feedId")
+        emit( usersRemote.getChatId(userId = uid, feedId = feedId) )
     }
 }
 

@@ -11,8 +11,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import javax.inject.Inject
 import com.pob.seeat.data.model.Result
+import com.pob.seeat.data.model.chat.ChatModel
 import com.pob.seeat.utils.Utils.toKoreanDiffString
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -23,48 +29,56 @@ class ChatListViewModel @Inject constructor(
     private val _chatList = MutableStateFlow<List<Result<ChatListUiItem>>>(listOf())
     val chatList: StateFlow<List<Result<ChatListUiItem>>> = _chatList
 
-    fun receiveChatList() {
-        val list = _chatList.value.toList()
-        val updatedList = list.toMutableList()
+    private var newChat : Flow<Result<ChatModel>> = flowOf()
+
+    suspend fun receiveChatList() {
+        newChat = chatListRepositoryImpl.receiveChatList()
         viewModelScope.launch {
-            chatListRepositoryImpl.receiveChatList().collectLatest { it ->
-                Timber.d("receiveChatList: $it")
-                when (it) {
+            launch {
+                chatList.collect { collected ->
+                    Timber.d("chatListCollect? : $collected")
+                }
+            }
+            newChat.flowOn(Dispatchers.IO).collectLatest { chat ->
+                val list = _chatList.value.toList()
+                val updatedList = list.toMutableList()
+                Timber.d("receiveChatList: $chat")
+                when (chat) {
                     is Result.Success -> {
                         if (updatedList.isEmpty()) {
                             updatedList.add(
                                 Result.Success(
                                     ChatListUiItem(
-                                        id = it.data.chatId,
+                                        id = chat.data.chatId,
                                         personId = "",
                                         person = "",
                                         icon = "",
-                                        content = it.data.chatInfo.lastMessage,
-                                        lastTime = it.data.chatInfo.whenLast,
+                                        content = chat.data.chatInfo.lastMessage,
+                                        lastTime = chat.data.chatInfo.whenLast,
                                         unreadMessageCount = 0,
-                                        feedFrom = it.data.chatInfo.feedFrom
+                                        feedFrom = chat.data.chatInfo.feedFrom
                                     )
                                 )
                             )
                         } else {
                             var isExist = false
                             for (i in updatedList.indices) {
-                                if (updatedList[i] is Result.Success && (updatedList[i] as Result.Success<ChatListUiItem>).data.id == it.data.chatId) {
+                                if (updatedList[i] is Result.Success && (updatedList[i] as Result.Success<ChatListUiItem>).data.id == chat.data.chatId) {
                                     updatedList[i] =
                                         Result.Success(
                                             ChatListUiItem(
-                                                id = it.data.chatId,
+                                                id = chat.data.chatId,
                                                 personId = "",
                                                 person = "",
                                                 icon = "",
-                                                content = it.data.chatInfo.lastMessage,
-                                                lastTime = it.data.chatInfo.whenLast,
+                                                content = chat.data.chatInfo.lastMessage,
+                                                lastTime = chat.data.chatInfo.whenLast,
                                                 unreadMessageCount = 0,
-                                                feedFrom = it.data.chatInfo.feedFrom
+                                                feedFrom = chat.data.chatInfo.feedFrom
                                             )
                                         )
                                     isExist = true
-                                    Timber.d("receiveChatListAdded: $it")
+                                    Timber.d("receiveChatListAdded: $chat")
                                     break
                                 }
                             }
@@ -72,14 +86,14 @@ class ChatListViewModel @Inject constructor(
                                 updatedList.add(
                                     Result.Success(
                                         ChatListUiItem(
-                                            id = it.data.chatId,
+                                            id = chat.data.chatId,
                                             personId = "",
                                             person = "",
                                             icon = "",
-                                            content = it.data.chatInfo.lastMessage,
-                                            lastTime = it.data.chatInfo.whenLast,
+                                            content = chat.data.chatInfo.lastMessage,
+                                            lastTime = chat.data.chatInfo.whenLast,
                                             unreadMessageCount = 0,
-                                            feedFrom = it.data.chatInfo.feedFrom
+                                            feedFrom = chat.data.chatInfo.feedFrom
                                         )
                                     )
                                 )
@@ -90,7 +104,7 @@ class ChatListViewModel @Inject constructor(
                     }
 
                     is Result.Error -> {
-                        updatedList.add(Result.Error(it.message))
+                        updatedList.add(Result.Error(chat.message))
                     }
 
                     is Result.Loading -> {
@@ -98,10 +112,9 @@ class ChatListViewModel @Inject constructor(
                     }
                 }
                 _chatList.value = updatedList
-                chatList.collect { collected ->
-                    Timber.d("chatListCollect? : $collected")
-                }
+                _chatList.emit(updatedList)
                 Timber.d("chatList: ${_chatList.value}")
+                Timber.d("ViewModel chatList: $chatList")
             }
         }
     }
