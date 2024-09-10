@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -16,6 +17,7 @@ import com.pob.seeat.databinding.FragmentHistoryBinding
 import com.pob.seeat.presentation.common.CustomDecoration
 import com.pob.seeat.presentation.view.UiState
 import com.pob.seeat.presentation.view.mypage.items.HistoryListItem
+import com.pob.seeat.presentation.viewmodel.MyPageSharedViewModel
 import com.pob.seeat.presentation.viewmodel.UserHistoryViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -30,6 +32,7 @@ class HistoryFragment : Fragment() {
 
     private val historyAdapter by lazy { HistoryAdapter(::onClickListItem) }
     private val userHistoryViewModel by viewModels<UserHistoryViewModel>()
+    private val myPageSharedViewModel by activityViewModels<MyPageSharedViewModel>()
     private var position: Int? = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,11 +52,7 @@ class HistoryFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initView()
         initViewModel()
-        getHistoryList()
-    }
-
-    override fun onResume() {
-        super.onResume()
+        initSharedViewModel()
         getHistoryList()
     }
 
@@ -95,6 +94,14 @@ class HistoryFragment : Fragment() {
                         historyAdapter.submitList(response.data)
                     }
                 }
+            }
+        }
+    }
+
+    private fun initSharedViewModel() = with(myPageSharedViewModel) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            triggerEvent.flowWithLifecycle(viewLifecycleOwner.lifecycle).collectLatest {
+                getHistoryList()
             }
         }
     }
