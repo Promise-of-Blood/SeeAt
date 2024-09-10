@@ -62,7 +62,7 @@ class MyPageFragment : Fragment() {
             }
             refreshUserInfo()
         } else {
-            Toast.makeText(requireContext(), "프로필 업데이트 실패", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "프로필 업데이트 취소", Toast.LENGTH_SHORT).show()
         }
     }
 
