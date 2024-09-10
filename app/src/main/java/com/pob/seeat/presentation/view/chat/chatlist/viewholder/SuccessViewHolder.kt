@@ -9,7 +9,7 @@ import com.pob.seeat.presentation.view.chat.items.ChatListUiItem
 import com.pob.seeat.utils.Utils.toKoreanDiffString
 
 class SuccessViewHolder(private val binding: ItemChatListBinding) : RecyclerView.ViewHolder(binding.root) {
-    fun bind(item: ChatListUiItem, clickListener: ChatListAdapter.ClickListener?) {
+    fun bind(item: ChatListUiItem, clickListener: ChatListAdapter.ClickListener?, setPhotoListener: ChatListAdapter.SetPhotoListener?) {
         binding.apply {
             root.setOnClickListener {
                 Log.d("ChatList", "챗 리스트 클릭 ${binding.tvChatListItem}")
@@ -19,6 +19,7 @@ class SuccessViewHolder(private val binding: ItemChatListBinding) : RecyclerView
             tvChatListItemTime.text = Timestamp(item.lastTime / 1000, ((item.lastTime % 1000L) * 1000000L).toInt()).toKoreanDiffString()
             tvChatListItemContent.text = item.content
             tvChatListItemCount.text = item.unreadMessageCount.toString()
+            setPhotoListener?.onSet(item.icon)?.into(ivChatListItem)
         }
     }
 }

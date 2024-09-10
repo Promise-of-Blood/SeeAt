@@ -29,7 +29,6 @@ class ChatListDiffUtil : DiffUtil.ItemCallback<Result<ChatListUiItem>>() {
             (oldItem.data.id == newItem.data.id)
                     && (oldItem.data.content == newItem.data.content)
                     && (oldItem.data.feedFrom == newItem.data.feedFrom)
-                    && (oldItem.data.personId == newItem.data.personId)
         } else oldItem == newItem
     }
 }

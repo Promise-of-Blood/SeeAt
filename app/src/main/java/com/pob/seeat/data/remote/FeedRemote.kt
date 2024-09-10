@@ -6,6 +6,7 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.pob.seeat.data.model.chat.ChatFeedInfoModel
 import com.pob.seeat.domain.model.CommentModel
 import com.pob.seeat.domain.model.FeedModel
 import kotlinx.coroutines.tasks.await
@@ -81,6 +82,18 @@ class FeedRemote @Inject constructor(
             )
 
         }
+    }
+
+    suspend fun getUserByFeedId(feedId: String) : ChatFeedInfoModel {
+        val feedUserRef = firestore.collection("feed")
+            .document(feedId)
+            .get()
+            .await()
+            .getDocumentReference("user")
+        return ChatFeedInfoModel(
+            nickname = feedUserRef?.get()?.await()?.getString("nickname") ?: "(알 수 없음)",
+            profileUrl = feedUserRef?.get()?.await()?.getString("profileUrl"),
+        )
     }
 
     suspend fun getFeedListById(feedIdList: List<String>): List<FeedModel> {

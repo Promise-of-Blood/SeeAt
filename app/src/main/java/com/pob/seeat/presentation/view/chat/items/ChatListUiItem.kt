@@ -5,7 +5,6 @@ import java.util.UUID
 
 data class ChatListUiItem(
     val id: String,
-    val personId: String,
     val person: String,
     val icon: String,
     val content: String,

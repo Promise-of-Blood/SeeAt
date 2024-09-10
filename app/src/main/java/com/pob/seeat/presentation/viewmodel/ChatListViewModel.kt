@@ -29,7 +29,7 @@ class ChatListViewModel @Inject constructor(
     private val _chatList = MutableStateFlow<List<Result<ChatListUiItem>>>(listOf())
     val chatList: StateFlow<List<Result<ChatListUiItem>>> = _chatList
 
-    private var newChat : Flow<Result<ChatModel>> = flowOf()
+    private var newChat : Flow<Result<ChatListUiItem>> = flowOf()
 
     suspend fun receiveChatList() {
         newChat = chatListRepositoryImpl.receiveChatList()
@@ -47,36 +47,14 @@ class ChatListViewModel @Inject constructor(
                     is Result.Success -> {
                         if (updatedList.isEmpty()) {
                             updatedList.add(
-                                Result.Success(
-                                    ChatListUiItem(
-                                        id = chat.data.chatId,
-                                        personId = "",
-                                        person = "",
-                                        icon = "",
-                                        content = chat.data.chatInfo.lastMessage,
-                                        lastTime = chat.data.chatInfo.whenLast,
-                                        unreadMessageCount = 0,
-                                        feedFrom = chat.data.chatInfo.feedFrom
-                                    )
-                                )
+                                chat
                             )
                         } else {
                             var isExist = false
                             for (i in updatedList.indices) {
-                                if (updatedList[i] is Result.Success && (updatedList[i] as Result.Success<ChatListUiItem>).data.id == chat.data.chatId) {
+                                if (updatedList[i] is Result.Success && (updatedList[i] as Result.Success<ChatListUiItem>).data.id == chat.data.id) {
                                     updatedList[i] =
-                                        Result.Success(
-                                            ChatListUiItem(
-                                                id = chat.data.chatId,
-                                                personId = "",
-                                                person = "",
-                                                icon = "",
-                                                content = chat.data.chatInfo.lastMessage,
-                                                lastTime = chat.data.chatInfo.whenLast,
-                                                unreadMessageCount = 0,
-                                                feedFrom = chat.data.chatInfo.feedFrom
-                                            )
-                                        )
+                                        chat
                                     isExist = true
                                     Timber.d("receiveChatListAdded: $chat")
                                     break
@@ -84,18 +62,7 @@ class ChatListViewModel @Inject constructor(
                             }
                             if(!isExist) {
                                 updatedList.add(
-                                    Result.Success(
-                                        ChatListUiItem(
-                                            id = chat.data.chatId,
-                                            personId = "",
-                                            person = "",
-                                            icon = "",
-                                            content = chat.data.chatInfo.lastMessage,
-                                            lastTime = chat.data.chatInfo.whenLast,
-                                            unreadMessageCount = 0,
-                                            feedFrom = chat.data.chatInfo.feedFrom
-                                        )
-                                    )
+                                    chat
                                 )
                             }
 
