@@ -39,7 +39,7 @@ import com.naver.maps.map.util.FusedLocationSource
 import com.pob.seeat.MainActivity
 import com.pob.seeat.R
 import com.pob.seeat.data.model.Result
-import com.pob.seeat.data.repository.NaverMapWrapper
+import com.pob.seeat.presentation.service.NaverMapWrapper
 import com.pob.seeat.databinding.FragmentHomeBinding
 import com.pob.seeat.domain.model.FeedModel
 import com.pob.seeat.presentation.common.CustomDecoration

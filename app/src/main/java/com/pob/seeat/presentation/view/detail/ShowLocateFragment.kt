@@ -1,12 +1,10 @@
 package com.pob.seeat.presentation.view.detail
 
-import android.graphics.Color
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import com.naver.maps.geometry.LatLng
@@ -17,10 +15,8 @@ import com.naver.maps.map.NaverMapOptions
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.OverlayImage
 import com.pob.seeat.R
-import com.pob.seeat.data.repository.NaverMapWrapper
-import com.pob.seeat.databinding.FragmentSelectLocateBinding
+import com.pob.seeat.presentation.service.NaverMapWrapper
 import com.pob.seeat.databinding.FragmentShowLocateBinding
-import com.pob.seeat.presentation.viewmodel.NewFeedViewModel
 import com.pob.seeat.utils.Utils.px
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber

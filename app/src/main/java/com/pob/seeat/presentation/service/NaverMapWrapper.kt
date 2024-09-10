@@ -1,4 +1,4 @@
-package com.pob.seeat.data.repository
+package com.pob.seeat.presentation.service
 
 import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
