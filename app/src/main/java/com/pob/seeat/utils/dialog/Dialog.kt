@@ -11,7 +11,7 @@ import com.pob.seeat.R
 
 object Dialog {
 
-    fun showCommentDialog(context: Context, onDelete: () -> Unit, onEdit: () -> Unit) {
+    fun showCommentDialog(context: Context, onDelete: () -> Unit) {
         val dialogView: View =
             LayoutInflater.from(context).inflate(R.layout.my_comment_dialog, null)
 
@@ -19,15 +19,10 @@ object Dialog {
         dialog.setContentView(dialogView)
 
         val deleteButton = dialogView.findViewById<TextView>(R.id.btn_delete)
-        val editButton = dialogView.findViewById<TextView>(R.id.btn_edit)
+//        val editButton = dialogView.findViewById<TextView>(R.id.btn_edit)
 
         deleteButton.setOnClickListener {
             onDelete()
-            dialog.dismiss()
-        }
-
-        editButton.setOnClickListener {
-            onEdit()
             dialog.dismiss()
         }
 

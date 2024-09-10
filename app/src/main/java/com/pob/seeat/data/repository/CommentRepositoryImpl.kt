@@ -24,8 +24,8 @@ class CommentRepositoryImpl @Inject constructor(private val source : CommentSour
         source.deleteComment(commentModel.toCommentData())
     }
 
-    override suspend fun editComment(commentModel: CommentModel) {
-        source.editComment(commentModel.toCommentData())
+    override suspend fun updateComment(commentModel: CommentModel) {
+        source.updateComment(commentModel.toCommentData())
     }
 
     override suspend fun getComment(feedId: String, commentId: String): CommentModel? {

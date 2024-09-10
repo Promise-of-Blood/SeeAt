@@ -537,9 +537,6 @@ class DetailFragment : Fragment() {
                 onDelete = {
                     commentViewModel.deleteComment(feedModel, requireContext())
                     commentViewModel.fetchComments(args.feedIdArg)
-                },
-                onEdit = {
-                    Toast.makeText(requireContext(), "미구현된 기능입니다.", Toast.LENGTH_SHORT).show()
                 }
             )
         } else {
