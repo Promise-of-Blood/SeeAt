@@ -128,44 +128,85 @@ class DetailFragment : Fragment() {
         (activity as AppCompatActivity).setSupportActionBar(binding.tbFeed)
         (activity as AppCompatActivity).supportActionBar?.title = getString(R.string.feed)
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        val reportedUserId = feed.user?.id
+        val loginUserId = detailViewModel.uid
 
-        requireActivity().addMenuProvider(object : MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.menu_detail, menu)
-            }
-
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                return when (menuItem.itemId) {
-                    R.id.report -> {
-                        // 신고하기
-                        val reportedUserId = feed.user?.id
-                        if (reportedUserId != null) {
-
-                            val reportFeed = FeedReportModel(
-                                detailViewModel.uid,
-                                feed.user.id,
-                                feed.feedId,
-                                Timestamp.now()
-                            )
-                            detailViewModel.addReportFeed(reportFeed)
-                            Toast.makeText(requireContext(), "게시물이 신고되었습니다.", Toast.LENGTH_SHORT)
-                                .show()
-
-                        } else {
-                            Toast.makeText(
-                                requireContext(),
-                                "신고를 접수하는데 실패했습니다. 다시 시도해주세요.",
-                                Toast.LENGTH_SHORT
-                            )
-                                .show()
-                        }
-                        true
-                    }
-
-                    else -> false
+        if (reportedUserId == loginUserId) {
+            requireActivity().addMenuProvider(object : MenuProvider {
+                override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                    menuInflater.inflate(R.menu.menu_detail, menu)
                 }
-            }
-        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+
+                override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                    return when (menuItem.itemId) {
+                        R.id.feed_remove -> {
+
+                            detailViewModel.removeFeed(feed.feedId)
+                            Toast.makeText(requireContext(), "게시물이 삭제되었습니다.", Toast.LENGTH_SHORT)
+                                .show()
+
+                            requireActivity().onBackPressedDispatcher.onBackPressed()
+
+                            true
+                        }
+
+                        android.R.id.home -> {
+                            requireActivity().onBackPressedDispatcher.onBackPressed()
+                            true
+                        }
+
+                        else -> false
+                    }
+                }
+            }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+        } else {
+            requireActivity().addMenuProvider(object : MenuProvider {
+                override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                    menuInflater.inflate(R.menu.menu_detail_another_user, menu)
+                }
+
+                override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                    return when (menuItem.itemId) {
+                        R.id.report -> {
+                            // 신고하기
+                            if (reportedUserId != null) {
+                                val reportFeed = FeedReportModel(
+                                    loginUserId,
+                                    reportedUserId,
+                                    feed.feedId,
+                                    Timestamp.now()
+                                )
+                                detailViewModel.addReportFeed(reportFeed)
+                                Toast.makeText(
+                                    requireContext(),
+                                    "게시물이 신고되었습니다.",
+                                    Toast.LENGTH_SHORT
+                                )
+                                    .show()
+
+                            } else {
+                                Toast.makeText(
+                                    requireContext(),
+                                    "신고를 접수하는데 실패했습니다. 다시 시도해주세요.",
+                                    Toast.LENGTH_SHORT
+                                )
+                                    .show()
+                            }
+                            true
+                        }
+
+                        android.R.id.home -> {
+                            requireActivity().onBackPressedDispatcher.onBackPressed()
+                            true
+                        }
+
+                        else -> false
+                    }
+                }
+            }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+        }
+
+
     }
 
     private fun initDetailViewmodel() {
