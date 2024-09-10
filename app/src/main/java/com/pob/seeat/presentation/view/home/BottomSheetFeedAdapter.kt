@@ -28,7 +28,8 @@ enum class SearchType {
 
 class BottomSheetFeedAdapter(
     private val onClick: (FeedModel) -> Unit,
-    private val updateMarker: (List<FeedModel>) -> Unit
+    private val updateMarker: (List<FeedModel>) -> Unit,
+    private val handleEmptyFeedList: (Int) -> Unit,
 ) :
     ListAdapter<FeedModel, ViewHolder<FeedModel>>(object : DiffUtil.ItemCallback<FeedModel>() {
         override fun areItemsTheSame(oldItem: FeedModel, newItem: FeedModel): Boolean {
@@ -131,9 +132,11 @@ class BottomSheetFeedAdapter(
             @Suppress("UNCHECKED_CAST")
             override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
                 if (searchQuery.all { it.value.isNullOrBlank() }) {
+                    handleEmptyFeedList(originalList.size)
                     updateMarker(originalList)
                     submitList(originalList)
                 } else {
+                    handleEmptyFeedList((results?.values as? List<FeedModel>)?.size ?: 0)
                     updateMarker(results?.values as? List<FeedModel> ?: emptyList())
                     submitList(results?.values as? List<FeedModel>)
                 }
