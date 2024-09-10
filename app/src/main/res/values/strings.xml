@@ -28,6 +28,7 @@
 
     <!-- home fragment -->
     <string name="search_hint">검색어를 입력하세요</string>
+    <string name="search">검색</string>
 
     <!-- my page -->
     <string name="my_page_user_post">작성글</string>
