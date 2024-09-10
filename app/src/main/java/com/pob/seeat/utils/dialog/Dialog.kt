@@ -4,9 +4,7 @@ import android.app.Dialog
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.Button
 import android.widget.TextView
-import androidx.fragment.app.Fragment
 import com.pob.seeat.R
 
 object Dialog {

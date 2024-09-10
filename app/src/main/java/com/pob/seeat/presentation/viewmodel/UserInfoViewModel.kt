@@ -2,14 +2,12 @@ package com.pob.seeat.presentation.viewmodel
 
 import android.net.Uri
 import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.storage.FirebaseStorage
 import com.pob.seeat.domain.model.TempUserInfo
 import com.pob.seeat.domain.model.UserInfoModel
 import com.pob.seeat.domain.usecase.UserInfoUseCases
-import com.pob.seeat.utils.GoogleAuthUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +18,6 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel

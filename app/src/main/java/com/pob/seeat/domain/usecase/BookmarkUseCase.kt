@@ -7,9 +7,7 @@ import com.pob.seeat.domain.model.FeedModel
 import com.pob.seeat.domain.repository.BookmarkRepository
 import com.pob.seeat.domain.repository.FeedRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flatMap
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
 import javax.inject.Inject
 
 class GetBookmarkListUseCase @Inject constructor(
