@@ -3,7 +3,6 @@ package com.pob.seeat.presentation.view.detail
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -21,13 +20,11 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.MenuProvider
-import androidx.core.view.marginStart
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -50,12 +47,12 @@ import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.GeoPoint
-import com.pob.seeat.MainActivity
 import com.pob.seeat.R
 import com.pob.seeat.data.model.Result
 import com.pob.seeat.databinding.FragmentDetailBinding
 import com.pob.seeat.domain.model.CommentModel
 import com.pob.seeat.domain.model.FeedModel
+import com.pob.seeat.domain.model.FeedReportModel
 import com.pob.seeat.domain.model.toBookmarkEntity
 import com.pob.seeat.presentation.view.chat.ChattingActivity
 import com.pob.seeat.presentation.viewmodel.CommentViewModel
@@ -71,7 +68,6 @@ import com.pob.seeat.utils.dialog.Dialog.showReportDialog
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import timber.log.Timber
 import java.util.Locale
 import kotlin.math.asin
@@ -91,7 +87,7 @@ class DetailFragment : Fragment() {
 
     private val detailViewModel: DetailViewModel by viewModels()
     private val commentViewModel: CommentViewModel by viewModels()
-    private val reportCommentViewModel : ReportCommentViewModel by viewModels()
+    private val reportCommentViewModel: ReportCommentViewModel by viewModels()
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
@@ -122,14 +118,13 @@ class DetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         getFeed()
-        initToolbar()
         setupUI(view, binding.tvAddCommentButton)
         initCommentRecyclerView()
         Timber.i(args.feedIdArg)
         initCommentViewModel()
     }
 
-    private fun initToolbar() {
+    private fun initToolbar(feed: FeedModel) {
         (activity as AppCompatActivity).setSupportActionBar(binding.tbFeed)
         (activity as AppCompatActivity).supportActionBar?.title = getString(R.string.feed)
         (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -143,7 +138,27 @@ class DetailFragment : Fragment() {
                 return when (menuItem.itemId) {
                     R.id.report -> {
                         // 신고하기
-                        Toast.makeText(requireContext(), "게시물이 신고되었습니다.", Toast.LENGTH_SHORT).show()
+                        val reportedUserId = feed.user?.id
+                        if (reportedUserId != null) {
+
+                            val reportFeed = FeedReportModel(
+                                detailViewModel.uid,
+                                feed.user.id,
+                                feed.feedId,
+                                Timestamp.now()
+                            )
+                            detailViewModel.addReportFeed(reportFeed)
+                            Toast.makeText(requireContext(), "게시물이 신고되었습니다.", Toast.LENGTH_SHORT)
+                                .show()
+
+                        } else {
+                            Toast.makeText(
+                                requireContext(),
+                                "신고를 접수하는데 실패했습니다. 다시 시도해주세요.",
+                                Toast.LENGTH_SHORT
+                            )
+                                .show()
+                        }
                         true
                     }
 
@@ -204,6 +219,8 @@ class DetailFragment : Fragment() {
                             feed = response.data
                             Timber.i("HomeFragment", feed.toString())
                             initView(feed)
+                            initToolbar(feed)
+
                         }
                     }
                 }
@@ -578,11 +595,24 @@ class DetailFragment : Fragment() {
                 onReport = {
                     val reportedUserUid = feedModel.user?.id
                     val timeStamp = Timestamp.now()
-                    if(reportedUserUid != null){
-                        reportCommentViewModel.sendReport(feedModel.user.id,feedModel.feedId,feedModel.commentId,timeStamp)
-                        Toast.makeText(requireContext(), "신고가 정상적으로 접수 되었습니다. 감사합니다.", Toast.LENGTH_SHORT).show()
-                    }else{
-                        Toast.makeText(requireContext(), "신고를 접수하는데 실패했습니다. 다시 시도해주세요", Toast.LENGTH_SHORT).show()
+                    if (reportedUserUid != null) {
+                        reportCommentViewModel.sendReport(
+                            feedModel.user.id,
+                            feedModel.feedId,
+                            feedModel.commentId,
+                            timeStamp
+                        )
+                        Toast.makeText(
+                            requireContext(),
+                            "신고가 정상적으로 접수 되었습니다. 감사합니다.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        Toast.makeText(
+                            requireContext(),
+                            "신고를 접수하는데 실패했습니다. 다시 시도해주세요",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 })
         }

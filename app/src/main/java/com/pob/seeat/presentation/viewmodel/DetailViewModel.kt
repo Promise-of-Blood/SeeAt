@@ -45,7 +45,7 @@ class DetailViewModel @Inject constructor(
     private val _isBookmarked = MutableStateFlow(false)
     val isBookmarked: StateFlow<Boolean> get() = _isBookmarked
 
-    val uid = firebaseAuth.currentUser?.uid
+    val uid: String? = firebaseAuth.currentUser?.uid
 
     fun modifyIsLiked(count: Int) {
         viewModelScope.launch {
