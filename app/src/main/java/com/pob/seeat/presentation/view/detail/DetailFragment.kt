@@ -538,6 +538,8 @@ class DetailFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 commentViewModel.comments.collect { comments ->
+                    binding.tvCommentEmpty.visibility =
+                        if (comments.isEmpty()) View.VISIBLE else View.GONE
                     feedCommentAdapter.submitList(comments.toList())
                     binding.tvCommentCount.text =
                         commentViewModel.comments.value.toList().size.toString()
