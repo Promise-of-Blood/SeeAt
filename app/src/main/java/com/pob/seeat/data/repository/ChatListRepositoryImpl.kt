@@ -15,6 +15,7 @@ import com.pob.seeat.data.remote.FeedRemote
 import com.pob.seeat.data.remote.UserInfoSource
 import com.pob.seeat.presentation.view.chat.items.ChatListUiItem
 import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flattenMerge
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
