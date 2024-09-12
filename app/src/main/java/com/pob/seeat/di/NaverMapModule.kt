@@ -1,7 +1,6 @@
 package com.pob.seeat.di
 
-import com.naver.maps.map.NaverMap
-import com.pob.seeat.data.repository.NaverMapWrapper
+import com.pob.seeat.presentation.service.NaverMapWrapper
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

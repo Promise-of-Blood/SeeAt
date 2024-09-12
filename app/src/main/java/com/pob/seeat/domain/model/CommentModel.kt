@@ -3,7 +3,6 @@ package com.pob.seeat.domain.model
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentReference
 import com.pob.seeat.data.model.CommentData
-import com.pob.seeat.data.model.toCommentModel
 import kotlinx.parcelize.RawValue
 
 data class CommentModel(

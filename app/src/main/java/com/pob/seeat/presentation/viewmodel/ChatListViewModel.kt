@@ -2,7 +2,6 @@ package com.pob.seeat.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.Timestamp
 import com.pob.seeat.domain.repository.ChatListRepository
 import com.pob.seeat.presentation.view.chat.items.ChatListUiItem
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -11,12 +10,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import javax.inject.Inject
 import com.pob.seeat.data.model.Result
-import com.pob.seeat.data.model.chat.ChatModel
-import com.pob.seeat.utils.Utils.toKoreanDiffString
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch

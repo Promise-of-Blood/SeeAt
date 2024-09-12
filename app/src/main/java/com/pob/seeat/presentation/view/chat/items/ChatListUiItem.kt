@@ -1,7 +1,5 @@
 package com.pob.seeat.presentation.view.chat.items
 
-import java.util.Date
-import java.util.UUID
 
 data class ChatListUiItem(
     val id: String,

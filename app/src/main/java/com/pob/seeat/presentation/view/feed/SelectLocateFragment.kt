@@ -10,7 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.MapFragment
 import com.pob.seeat.R
-import com.pob.seeat.data.repository.NaverMapWrapper
+import com.pob.seeat.presentation.service.NaverMapWrapper
 import com.pob.seeat.databinding.FragmentSelectLocateBinding
 import com.pob.seeat.presentation.viewmodel.NewFeedViewModel
 import dagger.hilt.android.AndroidEntryPoint

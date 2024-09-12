@@ -11,16 +11,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
-import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.firestore
 import com.pob.seeat.MainActivity
 import com.pob.seeat.R
 import com.pob.seeat.databinding.ActivityLoginBinding
+import com.pob.seeat.presentation.view.PermissionGuideActivity
 import com.pob.seeat.presentation.viewmodel.UserInfoViewModel
 import com.pob.seeat.utils.GoogleAuthUtil
-import com.pob.seeat.utils.NotificationTokenUtils.getNotificationToken
 import com.pob.seeat.utils.NotificationTokenUtils.initNotificationToken
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -63,6 +61,18 @@ class LoginActivity : AppCompatActivity() {
 
 
     private fun initView() = with(binding) {
+
+        val sharedPref = getSharedPreferences("app_preferences", MODE_PRIVATE)
+        val isFirstRun = sharedPref.getBoolean("isFirstRun",true)
+
+        if(isFirstRun){
+            val intent = Intent(this@LoginActivity,PermissionGuideActivity::class.java)
+            startActivity(intent)
+
+            val editor = sharedPref.edit()
+            editor.putBoolean("isFirstRun",false)
+            editor.apply()
+        }
 
         GoogleAuthUtil.initialize(this@LoginActivity)
 

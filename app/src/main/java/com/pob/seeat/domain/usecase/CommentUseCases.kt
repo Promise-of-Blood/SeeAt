@@ -3,7 +3,6 @@ package com.pob.seeat.domain.usecase
 import com.pob.seeat.domain.model.CommentModel
 import com.pob.seeat.domain.repository.CommentRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.firstOrNull
 
 data class CommentUseCases(
     val createCommentUseCases: CreateCommentUseCases,

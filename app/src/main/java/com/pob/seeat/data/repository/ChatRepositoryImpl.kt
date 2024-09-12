@@ -1,26 +1,21 @@
 package com.pob.seeat.data.repository
 
-import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.pob.seeat.domain.repository.ChatRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 import com.pob.seeat.data.model.Result
-import com.pob.seeat.data.model.chat.ChatModel
 import com.pob.seeat.data.model.chat.ChatsChattingModel
-import com.pob.seeat.data.model.chat.MessageModel
 import com.pob.seeat.data.model.chat.MessagesInfoModel
 import com.pob.seeat.data.remote.chat.ChatsRemote
 import com.pob.seeat.data.remote.chat.MessagesRemote
 import com.pob.seeat.data.remote.chat.UsersRemote
 import com.pob.seeat.presentation.view.chat.items.ChattingUiItem
 import com.pob.seeat.utils.GoogleAuthUtil
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import timber.log.Timber
 
