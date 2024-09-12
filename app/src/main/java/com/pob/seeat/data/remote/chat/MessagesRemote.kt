@@ -120,18 +120,22 @@ class MessagesRemote {
         }
     }
 
-    suspend fun sendMessage(chatId: String, message: String) {
-        val messageDb = messageRef.child(chatId)
-        val newMessage = messageDb.push()
-        val messageMap = hashMapOf(
-            "message" to message,
-            "sender" to uid,
-            "timestamp" to ServerValue.TIMESTAMP,
-        )
-        newMessage.setValue(messageMap).addOnSuccessListener {
-            Timber.d("message success")
-        }.addOnFailureListener {
-            Timber.d("message fail")
+    suspend fun sendMessage(chatId: String, message: String) : Boolean {
+        return suspendCancellableCoroutine { continuation ->
+            val messageDb = messageRef.child(chatId)
+            val newMessage = messageDb.push()
+            val messageMap = hashMapOf(
+                "message" to message,
+                "sender" to uid,
+                "timestamp" to ServerValue.TIMESTAMP,
+            )
+            newMessage.setValue(messageMap).addOnSuccessListener {
+                Timber.d("message success")
+                continuation.resume(true)
+            }.addOnFailureListener {
+                Timber.d("message fail")
+                continuation.resume(false)
+            }
         }
     }
 }
