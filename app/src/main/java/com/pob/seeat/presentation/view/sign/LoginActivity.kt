@@ -36,17 +36,17 @@ class LoginActivity : AppCompatActivity() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             GoogleAuthUtil.handleSignInResult(this, result.resultCode, result.data,
                 onSuccess = { uid, email, nickname ->
-                        isOurFamily(
-                            email,
-                            {
-                                hideProgressBar()
-                                navigateToHome()
-                            },
-                            {
-                                hideProgressBar()
-                                navigateToSignUp(uid, email, nickname)
-                            }
-                        )
+                    isOurFamily(
+                        email,
+                        {
+                            hideProgressBar()
+                            navigateToHome()
+                        },
+                        {
+                            hideProgressBar()
+                            navigateToSignUp(uid, email, nickname)
+                        }
+                    )
                 },
                 onFailure = {
                     Toast.makeText(this, "Google 로그인에 실패했습니다.", Toast.LENGTH_SHORT).show()
@@ -71,14 +71,14 @@ class LoginActivity : AppCompatActivity() {
     private fun initView() = with(binding) {
 
         val sharedPref = getSharedPreferences("app_preferences", MODE_PRIVATE)
-        val isFirstRun = sharedPref.getBoolean("isFirstRun",true)
+        val isFirstRun = sharedPref.getBoolean("isFirstRun", true)
 
-        if(isFirstRun){
-            val intent = Intent(this@LoginActivity,PermissionGuideActivity::class.java)
+        if (isFirstRun) {
+            val intent = Intent(this@LoginActivity, PermissionGuideActivity::class.java)
             startActivity(intent)
 
             val editor = sharedPref.edit()
-            editor.putBoolean("isFirstRun",false)
+            editor.putBoolean("isFirstRun", false)
             editor.apply()
         }
 
@@ -114,18 +114,18 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    private fun showProgressBar(){
+    private fun showProgressBar() {
         binding.pbLogin.visibility = View.VISIBLE
     }
 
-    private fun hideProgressBar(){
+    private fun hideProgressBar() {
         binding.pbLogin.visibility = View.GONE
     }
 
 
     private fun navigateToHome() {
         lifecycleScope.launch {
-            withContext(Dispatchers.Main){
+            withContext(Dispatchers.Main) {
                 val intent = Intent(this@LoginActivity, MainActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
                 startActivity(intent)
@@ -135,9 +135,9 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun navigateToSignUp(uid: String, email: String, nickname: String) {
-        userViewModel.signUp(uid,email,nickname, profileUrl ="" , introduce ="",token="")
+        userViewModel.signUp(uid, email, nickname, profileUrl = "", introduce = "", token = "")
         lifecycleScope.launch {
-            withContext(Dispatchers.Main){
+            withContext(Dispatchers.Main) {
                 val intent = Intent(this@LoginActivity, SignUpActivity::class.java).apply {
                     putExtra("uid", uid)
                     putExtra("email", email)
@@ -152,7 +152,7 @@ class LoginActivity : AppCompatActivity() {
 
     private fun isOurFamily(email: String, onUserExists: () -> Unit, onUserNotExist: () -> Unit) {
         val database = FirebaseFirestore.getInstance()
-        Log.d("가족","$email")
+        Log.d("가족", "$email")
         if (email.isNotEmpty()) {
             // 이메일 필드가 email과 일치하는 문서 찾기
             database.collection("user")

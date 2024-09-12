@@ -50,7 +50,7 @@ class SignUpNameFragment : Fragment() {
 
     private fun initView() = with(binding) {
 
-        val name = userViewModel.tempUserInfo.value?.name ?:"활동명을 입력해주세요"
+        val name = userViewModel.tempUserInfo.value?.name ?: "활동명을 입력해주세요"
         etvSignupName.setText(name)
 
         btnSignupNext.setOnClickListener {
@@ -60,7 +60,7 @@ class SignUpNameFragment : Fragment() {
                 val etvText = etvSignupName.text.toString()
 
                 userViewModel.saveTempUserInfo(name = etvText)
-                Log.d("TempUserInfo","tempUserInfo : ${userViewModel.tempUserInfo.value}")
+                Log.d("TempUserInfo", "tempUserInfo : ${userViewModel.tempUserInfo.value}")
 
                 (activity as? SignUpActivity)?.let { activity ->
                     activity.signUpBinding.vpSignUp.currentItem += 1
@@ -74,7 +74,7 @@ class SignUpNameFragment : Fragment() {
             showProfileConfirmDialog(
                 requireContext(),
                 onConfirm = {
-                    val intent = Intent(requireContext(),MainActivity::class.java)
+                    val intent = Intent(requireContext(), MainActivity::class.java)
                     startActivity(intent)
                 }
             )
