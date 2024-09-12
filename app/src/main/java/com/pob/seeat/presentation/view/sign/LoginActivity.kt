@@ -3,6 +3,7 @@ package com.pob.seeat.presentation.view.sign
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
@@ -24,7 +25,9 @@ import com.pob.seeat.utils.GoogleAuthUtil
 import com.pob.seeat.utils.NotificationTokenUtils.getNotificationToken
 import com.pob.seeat.utils.NotificationTokenUtils.initNotificationToken
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @AndroidEntryPoint
 class LoginActivity : AppCompatActivity() {
@@ -36,18 +39,25 @@ class LoginActivity : AppCompatActivity() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             GoogleAuthUtil.handleSignInResult(this, result.resultCode, result.data,
                 onSuccess = { uid, email, nickname ->
-                    isOurFamily(
-                        email,
-                        { navigateToHome() },
-                        {
-                            navigateToSignUp(uid, email, nickname)
-                        }
-                    )
+
+                        isOurFamily(
+                            email,
+                            {
+                                hideProgressBar()
+                                navigateToHome()
+                            },
+                            {
+                                hideProgressBar()
+                                navigateToSignUp(uid, email, nickname)
+                            }
+                        )
+
                 },
                 onFailure = {
                     Toast.makeText(this, "Google 로그인에 실패했습니다.", Toast.LENGTH_SHORT).show()
                 })
         }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -83,6 +93,7 @@ class LoginActivity : AppCompatActivity() {
 
 
         clBtnLogin.setOnClickListener {
+            showProgressBar()
             GoogleAuthUtil.googleLogin(this@LoginActivity, googleSignInLauncher)
         }
 
@@ -100,6 +111,7 @@ class LoginActivity : AppCompatActivity() {
             lifecycleScope.launch {
                 userViewModel.userInfo.collect { userInfo ->
                     if (userInfo != null) {
+                        hideProgressBar()
                         navigateToHome()
                     }
                 }
@@ -107,21 +119,40 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
+    private fun showProgressBar(){
+        binding.pbLogin.visibility = View.VISIBLE
+    }
+
+    private fun hideProgressBar(){
+        binding.pbLogin.visibility = View.GONE
+    }
+
+
     private fun navigateToHome() {
-        val intent = Intent(this, MainActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
-        startActivity(intent)
-        finish()
+        lifecycleScope.launch {
+            withContext(Dispatchers.Main){
+                val intent = Intent(this@LoginActivity, MainActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                startActivity(intent)
+                finish()
+            }
+        }
     }
 
     private fun navigateToSignUp(uid: String, email: String, nickname: String) {
         userViewModel.signUp(uid,email,nickname, profileUrl ="" , introduce ="",token="")
-        val intent = Intent(this, SignUpActivity::class.java).apply {
-            putExtra("uid", uid)
-            putExtra("email", email)
-            putExtra("nickname", nickname)
+        lifecycleScope.launch {
+            withContext(Dispatchers.Main){
+                val intent = Intent(this@LoginActivity, SignUpActivity::class.java).apply {
+                    putExtra("uid", uid)
+                    putExtra("email", email)
+                    putExtra("nickname", nickname)
+                }
+                startActivity(intent)
+            }
         }
-        startActivity(intent)
+
+
     }
 
     private fun isOurFamily(email: String, onUserExists: () -> Unit, onUserNotExist: () -> Unit) {

@@ -57,7 +57,8 @@ class SignUpPhotoFragment : Fragment() {
         pickImageUri?.let {
             uploadImageImmediately(it)
         }
-        binding.icCamera.setImageURI(pickImageUri)
+        binding.ivImageInput.setImageURI(pickImageUri)
+        binding.icCamera.visibility = View.INVISIBLE
     }
 
 
@@ -116,7 +117,7 @@ class SignUpPhotoFragment : Fragment() {
             }
         }
 
-        flImageInput.setOnClickListener {
+        ivImageInput.setOnClickListener {
             launchImagePickerAndCrop(pickImageLauncher, cropImageLauncher)
         }
     }
