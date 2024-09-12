@@ -1,14 +1,12 @@
 package com.pob.seeat.di
 
 import com.pob.seeat.data.repository.ReportFeedRepositoryImpl
-import com.pob.seeat.domain.repository.FeedRepository
 import com.pob.seeat.domain.repository.ReportFeedRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.scopes.ViewModelScoped
-import javax.inject.Singleton
 
 @Module
 @InstallIn(ViewModelComponent::class)

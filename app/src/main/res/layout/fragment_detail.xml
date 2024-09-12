@@ -93,11 +93,10 @@
             android:textColor="@color/white"
             android:textSize="14sp"
             android:textStyle="bold"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:visibility="gone"
-            />
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -371,17 +370,32 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/view_divider" />
 
+            <TextView
+                android:id="@+id/tv_comment_empty"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/empty_comment"
+                android:textColor="@color/gray"
+                android:textSize="14sp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@id/rv_comment_list"
+                app:layout_constraintEnd_toEndOf="@id/rv_comment_list"
+                app:layout_constraintStart_toStartOf="@id/rv_comment_list"
+                app:layout_constraintTop_toTopOf="@id/rv_comment_list" />
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_comment_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
+                android:minHeight="200dp"
+                android:nestedScrollingEnabled="false"
+                android:paddingBottom="24dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tv_comment"
-                tools:itemCount="10"
+                tools:itemCount="0"
                 tools:listitem="@layout/item_tag" />
-
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

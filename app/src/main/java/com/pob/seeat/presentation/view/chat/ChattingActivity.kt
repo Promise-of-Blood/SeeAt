@@ -1,6 +1,5 @@
 package com.pob.seeat.presentation.view.chat
 
-import android.app.Activity
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
@@ -27,7 +26,6 @@ import com.pob.seeat.utils.Utils.px
 import com.pob.seeat.utils.Utils.setStatusBarColor
 import com.pob.seeat.utils.Utils.toTagList
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import timber.log.Timber

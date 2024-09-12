@@ -1,8 +1,6 @@
 package com.pob.seeat.data.model
 
 import com.google.firebase.Timestamp
-import java.time.LocalDateTime
-import java.util.UUID
 
 data class AlarmResponse(
     val alarmId: String? = "", // 알림 고유 ID

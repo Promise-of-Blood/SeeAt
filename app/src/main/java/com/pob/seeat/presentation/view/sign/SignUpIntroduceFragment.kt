@@ -1,7 +1,6 @@
 package com.pob.seeat.presentation.view.sign
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -13,9 +12,7 @@ import androidx.fragment.app.activityViewModels
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.pob.seeat.MainActivity
-import com.pob.seeat.R
 import com.pob.seeat.databinding.FragmentSignUpIntroduceBinding
-import com.pob.seeat.databinding.FragmentSignUpNameBinding
 import com.pob.seeat.presentation.viewmodel.UserInfoViewModel
 import com.pob.seeat.utils.NotificationTokenUtils.getNotificationToken
 import com.pob.seeat.utils.dialog.Dialog.showProfileConfirmDialog

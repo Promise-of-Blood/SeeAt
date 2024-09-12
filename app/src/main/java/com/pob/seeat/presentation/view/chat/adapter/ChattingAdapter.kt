@@ -3,13 +3,10 @@ package com.pob.seeat.presentation.view.chat.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
-import androidx.recyclerview.widget.RecyclerView
 import com.pob.seeat.databinding.ItemChattingMessageMeBinding
 import com.pob.seeat.databinding.ItemChattingMessageYouBinding
 import com.pob.seeat.databinding.ItemOnlyTimeBinding
-import com.pob.seeat.presentation.view.UiState
 import com.pob.seeat.presentation.view.chat.chatlist.adapter.ChattingViewType
-import com.pob.seeat.presentation.view.chat.items.ChatListUiItem
 import com.pob.seeat.presentation.view.chat.items.ChattingUiItem
 import com.pob.seeat.presentation.view.chat.viewholder.ChattingOnlyTimeViewHolder
 import com.pob.seeat.presentation.view.chat.viewholder.ChattingViewHolder
