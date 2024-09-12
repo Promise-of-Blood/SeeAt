@@ -48,6 +48,7 @@ class ChatRepositoryImpl @Inject constructor(
                     feedFrom = feedId,
                     lastMessage = message,
                     whenLast = System.currentTimeMillis(),
+                    userList = listOf(uid, targetUid),
                 )
             )
             Timber.tag("sendMessage's base chatId").d("chatId $chatId")
@@ -60,7 +61,8 @@ class ChatRepositoryImpl @Inject constructor(
                     feedFrom = feedId,
                     lastMessage = message,
                     whenLast = System.currentTimeMillis(),
-                ), mutableChatId
+                    userList = listOf(uid, targetUid),
+                ), chatId = mutableChatId
             )
         }
         return messagesRemote.sendMessage(
