@@ -1,5 +1,6 @@
 package com.pob.seeat.presentation.view.chat
 
+import android.app.Activity
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
@@ -26,8 +27,12 @@ import com.pob.seeat.utils.Utils.px
 import com.pob.seeat.utils.Utils.setStatusBarColor
 import com.pob.seeat.utils.Utils.toTagList
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import timber.log.Timber
 
 @AndroidEntryPoint
@@ -37,6 +42,7 @@ class ChattingActivity : AppCompatActivity() {
     private val chatViewModel by viewModels<ChatViewModel>()
     private val chattingAdapter by lazy { ChattingAdapter() }
     var targetId: String = ""
+    var chatId = "none"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,26 +56,37 @@ class ChattingActivity : AppCompatActivity() {
         this@ChattingActivity.setStatusBarColor(getColor(R.color.white))
 
         val feedId = intent.getStringExtra("feedId") ?: ""
+        chatId = intent.getStringExtra("chatId") ?: "none"
 
         initViewModel()
         getFeedData()
 //        chatViewModel.subscribeMessage(intent.getStringExtra("feedId") ?: "")
         binding.btnChattingSend.setOnClickListener {
             lifecycleScope.launch {
-                Timber.tag("ChattingLOG").d("btnChattingSend Clicked : $targetId !")
-                chatViewModel.sendMessage(
-                    feedId = feedId,
-                    targetUid = targetId,
-                    message = binding.etChattingInput.text.toString(),
-                    chatId = intent.getStringExtra("chatId") ?: "none"
-                )
+                val sendCallback : Deferred<Boolean> = async {
+                    Timber.tag("ChattingLOG").d("btnChattingSend Clicked : $targetId !")
+                    chatViewModel.sendMessage(
+                        feedId = feedId,
+                        targetUid = targetId,
+                        message = binding.etChattingInput.text.toString(),
+                        chatId = chatId
+                    )
+                }
+                if(sendCallback.await()) {
+                    if(chatId == "none") {
+                        getChatIdWhenNone(feedId)
+                    }
+                }
             }
+
             binding.etChattingInput.setText("")
         }
+
         binding.rvMessage.adapter = chattingAdapter
         binding.rvMessage.itemAnimator = null
         val messageLayoutManager = LinearLayoutManager(this)
         binding.rvMessage.layoutManager = messageLayoutManager
+
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 chatViewModel.chatResult.collect {
@@ -107,9 +124,12 @@ class ChattingActivity : AppCompatActivity() {
 
     private suspend fun initChatViewModel() = with(chatViewModel) {
         Timber.tag("initChatViewModel").d("initChatViewModel is On")
-        initMessage(feedId = intent.getStringExtra("feedId") ?: "", chatId = intent.getStringExtra("chatId") ?: "none")
-        subscribeMessage(feedId = intent.getStringExtra("feedId") ?: "", chatId = intent.getStringExtra("chatId") ?: "none")
-        Timber.tag("InitChattingLOG").d("chatResult : ${chatResult.value}")
+        val feedId = intent.getStringExtra("feedId") ?: ""
+        if(chatId != "none") {
+            initMessage(feedId = feedId, chatId = chatId)
+            subscribeMessage(feedId = feedId, chatId = chatId)
+            Timber.tag("InitChattingLOG").d("chatResult : ${chatResult.value}")
+        }
     }
 
     private fun initFeedData(feed: FeedModel) = with(binding) {
@@ -129,6 +149,15 @@ class ChattingActivity : AppCompatActivity() {
                 .into(ivMessageFeed)
         }
         targetId = feed.user?.id.toString()
+    }
+
+    private suspend fun getChatIdWhenNone(feedId: String) {
+        val getChatId = chatViewModel.getChatId(feedId)
+        Timber.tag("whenNoneChattingLOG").d(getChatId)
+        if(getChatId != "none") {
+            chatId = getChatId
+            initChatViewModel()
+        }
     }
 
     private fun ChipGroup.addFeedTags(tags: List<String>) {

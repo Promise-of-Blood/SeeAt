@@ -27,11 +27,14 @@ class ChatsRemote {
         return chatId.key ?: ""
     }
 
-    fun saveChat(chat: ChatsChattingModel, chatId: DatabaseReference) {
+    private fun saveChat(chat: ChatsChattingModel, chatId: DatabaseReference) {
         chatId.apply {
             child("feedFrom").setValue(chat.feedFrom)
             child("lastMessage").setValue(chat.lastMessage)
             child("whenLast").setValue(chat.whenLast)
+            for(user in chat.userList) {
+                child("users").child(user).setValue(true)
+            }
         }
     }
 
@@ -40,6 +43,10 @@ class ChatsRemote {
             child("feedFrom").setValue(chat.feedFrom)
             child("lastMessage").setValue(chat.lastMessage)
             child("whenLast").setValue(chat.whenLast)
+            // TODO 매번 유저 리스트를 업데이트 하지 말고, 유저 리스트의 변화가 있는지 보고 업데이트 하는 식으로 변경
+            for(user in chat.userList) {
+                child("users").child(user).setValue(true)
+            }
         }
     }
 
@@ -51,6 +58,7 @@ class ChatsRemote {
                         feedFrom = it.child("feedFrom").value.toString(),
                         lastMessage = it.child("lastMessage").value.toString(),
                         whenLast = it.child("whenLast").value as Long,
+                        userList = (it.child("users").value as Map<String, Boolean>).keys.toList()
                     )
                 )
             }
@@ -61,6 +69,7 @@ class ChatsRemote {
         return callbackFlow {
             val listener = object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
+                    val usersMap = snapshot.child("users").value as Map<String, Boolean>
                     trySend(
                         Result.Success(
                             ChatModel(
@@ -69,6 +78,7 @@ class ChatsRemote {
                                     feedFrom = snapshot.child("feedFrom").value.toString(),
                                     lastMessage = snapshot.child("lastMessage").value.toString(),
                                     whenLast = snapshot.child("whenLast").value as Long,
+                                    userList = usersMap.keys.toList()
                                 )
                             )
                         )

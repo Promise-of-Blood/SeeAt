@@ -56,6 +56,7 @@ import com.pob.seeat.domain.model.FeedModel
 import com.pob.seeat.domain.model.FeedReportModel
 import com.pob.seeat.domain.model.toBookmarkEntity
 import com.pob.seeat.presentation.view.chat.ChattingActivity
+import com.pob.seeat.presentation.viewmodel.ChatViewModel
 import com.pob.seeat.presentation.viewmodel.CommentViewModel
 import com.pob.seeat.presentation.viewmodel.DetailViewModel
 import com.pob.seeat.presentation.viewmodel.ReportCommentViewModel
@@ -85,10 +86,12 @@ class DetailFragment : Fragment() {
 
     val args: DetailFragmentArgs by navArgs()
     private lateinit var feed: FeedModel
+    private lateinit var chatId : String
 
     private val detailViewModel: DetailViewModel by viewModels()
     private val commentViewModel: CommentViewModel by viewModels()
     private val reportCommentViewModel: ReportCommentViewModel by viewModels()
+    private val chatViewModel : ChatViewModel by viewModels()
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
@@ -260,6 +263,7 @@ class DetailFragment : Fragment() {
 
                         is Result.Success -> {
                             feed = response.data
+                            chatId = chatViewModel.getChatId(feed.feedId)
                             Timber.i("HomeFragment", feed.toString())
                             initView(feed)
                             initToolbar(feed)
@@ -352,6 +356,7 @@ class DetailFragment : Fragment() {
             tvChatButton.setOnClickListener {
                 val intent = Intent(requireContext(), ChattingActivity::class.java)
                 intent.putExtra("feedId", feed.feedId)
+                intent.putExtra("chatId", chatId)
                 startActivity(intent)
             }
 

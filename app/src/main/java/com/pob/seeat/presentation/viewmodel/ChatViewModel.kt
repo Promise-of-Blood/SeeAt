@@ -54,13 +54,17 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    suspend fun sendMessage(targetUid: String, feedId: String, message: String, chatId: String) {
-        chatRepositoryImpl.sendMessage(
+    suspend fun sendMessage(targetUid: String, feedId: String, message: String, chatId: String): Boolean {
+        return chatRepositoryImpl.sendMessage(
             targetUid = targetUid,
             feedId = feedId,
             message = message,
             chatId = chatId
         )
+    }
+
+    suspend fun getChatId(feedId: String) : String {
+        return chatRepositoryImpl.getChatId(feedId = feedId)
     }
 
 }
