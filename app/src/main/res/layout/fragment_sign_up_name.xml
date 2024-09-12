@@ -24,6 +24,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <TextView
+        android:id="@+id/tv_skip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/signup_skip"
+        android:textColor="@color/primary"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tb_signup"
+        app:layout_constraintBottom_toBottomOf="@id/tb_signup"/>
+
     <ImageView
         android:id="@+id/iv_signup_background"
         android:layout_width="match_parent"
