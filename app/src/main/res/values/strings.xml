@@ -30,6 +30,7 @@
 
     <!-- SignUp Activity -->
     <string name="signup_title_tb">프로필 설정</string>
+    <string name="signup_skip">나중에 설정하기</string>
     <string name="signup_page1">1/3</string>
     <string name="signup_page2">2/3</string>
     <string name="signup_page3">3/3</string>
@@ -130,6 +131,10 @@
     <string name="dialog_my_comment_edit">수정</string>
     <string name="dialog_other_comment_report">신고</string>
     <string name="navigation_detail_image">이미지 확대 화면</string>
+    <string name="dialog_confirm_title">프로필 설정 취소</string>
+    <string name="dialog_confirm_content">이전에 기입한 정보가 저장되지 않습니다. \n나중에 설정하시겠습니까?</string>
+    <string name="dialog_btn_cancel">취소</string>
+    <string name="dialog_btn_confirm">확인</string>
 
     <!-- detail -->
     <string-array name="detail_spinner_string">
