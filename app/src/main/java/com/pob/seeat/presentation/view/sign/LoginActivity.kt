@@ -39,7 +39,6 @@ class LoginActivity : AppCompatActivity() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             GoogleAuthUtil.handleSignInResult(this, result.resultCode, result.data,
                 onSuccess = { uid, email, nickname ->
-
                         isOurFamily(
                             email,
                             {
@@ -51,7 +50,6 @@ class LoginActivity : AppCompatActivity() {
                                 navigateToSignUp(uid, email, nickname)
                             }
                         )
-
                 },
                 onFailure = {
                     Toast.makeText(this, "Google 로그인에 실패했습니다.", Toast.LENGTH_SHORT).show()
