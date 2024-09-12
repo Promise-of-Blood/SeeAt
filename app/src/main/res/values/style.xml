@@ -11,6 +11,13 @@
         <item name="android:textSize">14sp</item>
     </style>
 
+    <style name="dialog_button" parent="Widget.Material3.Button">
+        <item name="android:background">@color/primary</item>
+        <item name="backgroundTint">@color/primary</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:padding">8dp</item>
+    </style>
+
     <style name="signup_next_button" parent="Widget.Material3.Button">
         <item name="android:background">@color/primary</item>
         <item name="backgroundTint">@color/primary</item>

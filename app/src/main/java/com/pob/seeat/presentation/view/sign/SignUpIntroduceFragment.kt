@@ -18,6 +18,7 @@ import com.pob.seeat.databinding.FragmentSignUpIntroduceBinding
 import com.pob.seeat.databinding.FragmentSignUpNameBinding
 import com.pob.seeat.presentation.viewmodel.UserInfoViewModel
 import com.pob.seeat.utils.NotificationTokenUtils.getNotificationToken
+import com.pob.seeat.utils.dialog.Dialog.showProfileConfirmDialog
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -52,6 +53,16 @@ class SignUpIntroduceFragment : Fragment() {
     }
 
     private fun initView() = with(binding){
+        tvSkip.setOnClickListener {
+            showProfileConfirmDialog(
+                requireContext(),
+                onConfirm = {
+                    val intent = Intent(requireContext(),MainActivity::class.java)
+                    startActivity(intent)
+                }
+            )
+        }
+
         btnSignupNext.setOnClickListener {
             //클릭했을때 홈화면으로 넘어가게 + 한줄소개 저장
             val introduce = etvSignupIntroduce.text.toString()

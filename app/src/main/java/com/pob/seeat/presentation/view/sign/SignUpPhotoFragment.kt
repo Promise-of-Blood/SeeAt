@@ -17,6 +17,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
+import com.pob.seeat.MainActivity
 import com.pob.seeat.databinding.FragmentSignUpPhotoBinding
 import com.pob.seeat.presentation.viewmodel.UserInfoViewModel
 import com.pob.seeat.utils.ImageImplement.getCropOptions
@@ -25,6 +26,7 @@ import com.pob.seeat.utils.ImageImplement.registerImageCropper
 import com.pob.seeat.utils.ImageImplement.registerImagePicker
 import com.pob.seeat.utils.Utils.compressBitmapToUri
 import com.pob.seeat.utils.Utils.resizeImage
+import com.pob.seeat.utils.dialog.Dialog.showProfileConfirmDialog
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -81,6 +83,16 @@ class SignUpPhotoFragment : Fragment() {
     }
 
     private fun initView() = with(binding) {
+
+        tvSkip.setOnClickListener {
+            showProfileConfirmDialog(
+                requireContext(),
+                onConfirm = {
+                    val intent = Intent(requireContext(), MainActivity::class.java)
+                    startActivity(intent)
+                }
+            )
+        }
 
 
         btnSignupNext.setOnClickListener {
