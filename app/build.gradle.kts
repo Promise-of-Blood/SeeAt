@@ -7,6 +7,9 @@ plugins {
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.google.services)
     alias(libs.plugins.ksp)
+    id("com.google.dagger.hilt.android")
+    id("com.google.android.gms.oss-licenses-plugin")
+    id("androidx.navigation.safeargs.kotlin")
 }
 
 val properties = Properties().apply {
@@ -29,8 +32,21 @@ android {
         buildConfigField(
             "String",
             "KAKAO_APP_KEY",
-            properties["KAKAO_APP_KEY"] as String
+            "\"${properties["KAKAO_APP_KEY"]}\""
         )
+
+        buildConfigField(
+            "String",
+            "NAVER_CLIENT_SECRET",
+            "\"${properties["NAVER_CLIENT_SECRET"]}\""
+        )
+
+        buildConfigField(
+            "String",
+            "WEB_CLIENT_ID",
+            "\"${properties["WEB_CLIENT_ID"]}\""
+        )
+
     }
 
     buildTypes {
@@ -67,6 +83,9 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.navigation.fragment.ktx)
+    implementation(libs.androidx.navigation.ui.ktx)
+    implementation(libs.firebase.storage.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -93,6 +112,7 @@ dependencies {
 
     // glide
     implementation(libs.glide)
+    annotationProcessor(libs.glide.compiler)
 
     // kakao
     implementation(libs.kakao.maps)
@@ -101,4 +121,35 @@ dependencies {
     // naver
     implementation(libs.naver.login)
     implementation(libs.naver.map)
+    implementation(libs.play.services.location)
+
+    //google
+    implementation(libs.play.services.auth)
+
+    // oss
+    implementation(libs.play.services.oss.licenses)
+
+    // timber
+    implementation(libs.timber)
+
+    //image implement
+    implementation(libs.android.image.cropper)
+
+    // ViewPager2 Indicator
+    implementation(libs.circleindicator)
+
+    // PhotoView
+    implementation(libs.photoview)
+
+    implementation(libs.switchbutton.library)
+
+    // room
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.room.runtime)
+    annotationProcessor(libs.androidx.room.compiler)
+    ksp(libs.androidx.room.compiler)
+    testImplementation(libs.androidx.room.testing)
+
+    // pull to refresh
+    implementation(libs.androidx.swiperefreshlayout)
 }

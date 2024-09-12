@@ -1,3 +1,150 @@
 <resources>
     <string name="app_name">SeeAt</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!-- bottom navigation -->
+    <string name="navigation_add_marker">마커 추가</string>
+    <string name="navigation_alarm">알림</string>
+    <string name="navigation_message">메세지</string>
+    <string name="navigation_home">홈화면</string>
+    <string name="navigation_bookmark">북마크</string>
+    <string name="navigation_my_page">내 페이지</string>
+
+    <!-- permission Guide -->
+    <string name="permission_guide_title">앱 접근 권한 안내</string>
+    <string name="permission_guide_subtitle">원할한 서비스 제공을 위해 아래 권한들이 필요합니다\n서비스 사용중 앱에서 요청시 허용해주세요</string>
+    <string name="permission_guide_location_title">위치 정보(필수 권한)</string>
+    <string name="permission_guide_location_desc">사용자의 현재 위치를 기반으로 주변 게시글을 탐색 \n할 수 있도록 돕기 위해 사용 합니다</string>
+    <string name="permission_guide_alarm_title">알림 (선택)</string>
+    <string name="permission_guide_alarm_desc">댓글 알림 채팅 알림 등 실시간 알림을 제공 하기 \n위해 사용 합니다</string>
+    <string name="permission_guide_gallery_title">사진 갤러리(선택)</string>
+    <string name="permission_guide_gallery_desc">프로필 사진 설정 혹은 게시물 작성 시 기기에 저장된 사진을 선택하여 첨부하기 위해 사용합니다</string>
+    <string name="permission_guide_notice">필수 권한은 앱 사용시 반드시 필요한 권한 으로, 비 허용시 앱의 기본 기능 사용이 제한 될 수 있습니다.\n\n선택적 접근 권한은 해당 기능을 사용할 때만 허용이 필요합니다. 비 허용 시에도 해당 기능 외 서비스 이용이 가능합니다.\n\n권한 허용 상태는 언제 든지 변경 가능 합니다. (설정 > 어플리케이션 > 씨앗 > 권한)</string>
+    <string name="permission_guide_btn">확인</string>
+
+
+    <!-- Login Activity -->
+    <string name="btn_google_login">구글 아이디로 로그인</string>
+
+    <!-- SignUp Activity -->
+    <string name="signup_title_tb">프로필 설정</string>
+    <string name="signup_page1">1/3</string>
+    <string name="signup_page2">2/3</string>
+    <string name="signup_page3">3/3</string>
+    <string name="signup_title_nickname">활동명을 정해주세요</string>
+    <string name="signup_etv_hint">활동명을 입력해주세요</string>
+    <string name="signup_title_photo">프로필 사진을 설정해주세요</string>
+    <string name="signup_title_introduce">한줄 소개를 입력해주세요</string>
+    <string name="signup_btn">다음</string>
+
+    <!-- home fragment -->
+    <string name="search_hint">검색어를 입력하세요</string>
+    <string name="search">검색</string>
+
+    <!-- my page -->
+    <string name="my_page_user_post">작성글</string>
+    <string name="my_page_user_comment">작성댓글</string>
+    <string name="my_page_terms_of_service">서비스 이용약관</string>
+    <string name="my_page_oss_license">오픈소스 라이선스</string>
+    <string name="my_page_settings">설정</string>
+    <string name="my_page_version">버전 %s</string>
+    <string name="my_page_logout">로그아웃</string>
+    <string name="my_page_edit_profile">프로필 수정</string>
+
+    <!-- my page (edit profile) -->
+    <string name="edit_profile_tb_title">프로필 수정</string>
+    <string name="edit_profile_nickname">활동명</string>
+    <string name="edit_profile_introduce">소개</string>
+
+    <!-- my page (history) -->
+    <string name="history_feed">작성글</string>
+    <string name="history_comment">작성 댓글</string>
+    <string name="history_liked_feed">추천한 글</string>
+    <string name="history_more">더보기</string>
+    <string name="history_feed_title">제목</string>
+    <string-array name="history_title">
+        <item>작성글</item>
+        <item>작성 댓글</item>
+        <item>좋아요한 글</item>
+    </string-array>
+
+    <!-- my page (settings) -->
+    <string name="settings_alarm">알림 설정</string>
+    <string name="settings_alarm_comment">댓글 알림</string>
+    <string name="settings_alarm_chat">채팅 알림</string>
+    <string name="settings_account">계정 설정</string>
+    <string name="settings_user_account">현재 로그인 계정</string>
+    <string name="settings_logout">로그아웃</string>
+    <string name="settings_delete_account">회원 탈퇴</string>
+
+    <!-- comment -->
+    <string name="feed_oner"> - 작성자</string>
+
+    <!-- alarm -->
+    <string name="alarm_title">알림</string>
+    <string name="alarm_image">게시물 이미지</string>
+    <string name="alarm_post_title">\'%s\'</string>
+    <string name="alarm_description_comment">글에 새로운 댓글이 달렸습니다.</string>
+    <string name="alarm_description_like">글에 %s 님이 좋아요를 눌렀습니다.</string>
+    <string name="feed_image">게시물 이미지</string>
+    <string name="feed_like">좋아요 아이콘</string>
+    <string name="feed_comment">댓글 아이콘</string>
+
+    <!-- terms of service -->
+    <string name="terms_of_service">국가는 건전한 소비행위를 계도하고 생산품의 품질향상을 촉구하기 위한 소비자보호운동을 법률이 정하는 바에 의하여 보장한다. 대통령후보자가 1인일 때에는 그 득표수가 선거권자 총수의 3분의 1 이상이 아니면 대통령으로 당선될 수 없다. 형사피의자 또는 형사피고인으로서 구금되었던 자가 법률이 정하는 불기소처분을 받거나 무죄판결을 받은 때에는 법률이 정하는 바에 의하여 국가에 정당한 보상을 청구할 수 있다. 근로자는 근로조건의 향상을 위하여 자주적인 단결권·단체교섭권 및 단체행동권을 가진다. 헌법재판소의 조직과 운영 기타 필요한 사항은 법률로 정한다. 정당의 목적이나 활동이 민주적 기본질서에 위배될 때에는 정부는 헌법재판소에 그 해산을 제소할 수 있고, 정당은 헌법재판소의 심판에 의하여 해산된다. 모든 국민은 그 보호하는 자녀에게 적어도 초등교육과 법률이 정하는 교육을 받게 할 의무를 진다. 국가는 농수산물의 수급균형과 유통구조의 개선에 노력하여 가격안정을 도모함으로써 농·어민의 이익을 보호한다. 대한민국은 통일을 지향하며, 자유민주적 기본질서에 입각한 평화적 통일 정책을 수립하고 이를 추진한다. 예비비는 총액으로 국회의 의결을 얻어야 한다. 예비비의 지출은 차기국회의 승인을 얻어야 한다. 군인은 현역을 면한 후가 아니면 국무위원으로 임명될 수 없다. 원장은 국회의 동의를 얻어 대통령이 임명하고, 그 임기는 4년으로 하며, 1차에 한하여 중임할 수 있다. 군인 또는 군무원이 아닌 국민은 대한민국의 영역안에서는 중대한 군사상 기밀·초병·초소·유독음식물공급·포로·군용물에 관한 죄중 법률이 정한 경우와 비상계엄이 선포된 경우를 제외하고는 군사법원의 재판을 받지 아니한다.국가는 건전한 소비행위를 계도하고 생산품의 품질향상을 촉구하기 위한 소비자보호운동을 법률이 정하는 바에 의하여 보장한다. 대통령후보자가 1인일 때에는 그 득표수가 선거권자 총수의 3분의 1 이상이 아니면 대통령으로 당선될 수 없다. 형사피의자 또는 형사피고인으로서 구금되었던 자가 법률이 정하는 불기소처분을 받거나 무죄판결을 받은 때에는 법률이 정하는 바에 의하여 국가에 정당한 보상을 청구할 수 있다. 근로자는 근로조건의 향상을 위하여 자주적인 단결권·단체교섭권 및 단체행동권을 가진다. 헌법재판소의 조직과 운영 기타 필요한 사항은 법률로 정한다. 정당의 목적이나 활동이 민주적 기본질서에 위배될 때에는 정부는 헌법재판소에 그 해산을 제소할 수 있고, 정당은 헌법재판소의 심판에 의하여 해산된다. 모든 국민은 그 보호하는 자녀에게 적어도 초등교육과 법률이 정하는 교육을 받게 할 의무를 진다. 국가는 농수산물의 수급균형과 유통구조의 개선에 노력하여 가격안정을 도모함으로써 농·어민의 이익을 보호한다. 대한민국은 통일을 지향하며, 자유민주적 기본질서에 입각한 평화적 통일 정책을 수립하고 이를 추진한다. 예비비는 총액으로 국회의 의결을 얻어야 한다. 예비비의 지출은 차기국회의 승인을 얻어야 한다. 군인은 현역을 면한 후가 아니면 국무위원으로 임명될 수 없다. 원장은 국회의 동의를 얻어 대통령이 임명하고, 그 임기는 4년으로 하며, 1차에 한하여 중임할 수 있다. 군인 또는 군무원이 아닌 국민은 대한민국의 영역안에서는 중대한 군사상 기밀·초병·초소·유독음식물공급·포로·군용물에 관한 죄중 법률이 정한 경우와 비상계엄이 선포된 경우를 제외하고는 군사법원의 재판을 받지 아니한다.국가는 건전한 소비행위를 계도하고 생산품의 품질향상을 촉구하기 위한 소비자보호운동을 법률이 정하는 바에 의하여 보장한다. 대통령후보자가 1인일 때에는 그 득표수가 선거권자 총수의 3분의 1 이상이 아니면 대통령으로 당선될 수 없다. 형사피의자 또는 형사피고인으로서 구금되었던 자가 법률이 정하는 불기소처분을 받거나 무죄판결을 받은 때에는 법률이 정하는 바에 의하여 국가에 정당한 보상을 청구할 수 있다. 근로자는 근로조건의 향상을 위하여 자주적인 단결권·단체교섭권 및 단체행동권을 가진다. 헌법재판소의 조직과 운영 기타 필요한 사항은 법률로 정한다. 정당의 목적이나 활동이 민주적 기본질서에 위배될 때에는 정부는 헌법재판소에 그 해산을 제소할 수 있고, 정당은 헌법재판소의 심판에 의하여 해산된다. 모든 국민은 그 보호하는 자녀에게 적어도 초등교육과 법률이 정하는 교육을 받게 할 의무를 진다. 국가는 농수산물의 수급균형과 유통구조의 개선에 노력하여 가격안정을 도모함으로써 농·어민의 이익을 보호한다. 대한민국은 통일을 지향하며, 자유민주적 기본질서에 입각한 평화적 통일 정책을 수립하고 이를 추진한다. 예비비는 총액으로 국회의 의결을 얻어야 한다. 예비비의 지출은 차기국회의 승인을 얻어야 한다. 군인은 현역을 면한 후가 아니면 국무위원으로 임명될 수 없다. 원장은 국회의 동의를 얻어 대통령이 임명하고, 그 임기는 4년으로 하며, 1차에 한하여 중임할 수 있다. 군인 또는 군무원이 아닌 국민은 대한민국의 영역안에서는 중대한 군사상 기밀·초병·초소·유독음식물공급·포로·군용물에 관한 죄중 법률이 정한 경우와 비상계엄이 선포된 경우를 제외하고는 군사법원의 재판을 받지 아니한다.국가는 건전한 소비행위를 계도하고 생산품의 품질향상을 촉구하기 위한 소비자보호운동을 법률이 정하는 바에 의하여 보장한다. 대통령후보자가 1인일 때에는 그 득표수가 선거권자 총수의 3분의 1 이상이 아니면 대통령으로 당선될 수 없다. 형사피의자 또는 형사피고인으로서 구금되었던 자가 법률이 정하는 불기소처분을 받거나 무죄판결을 받은 때에는 법률이 정하는 바에 의하여 국가에 정당한 보상을 청구할 수 있다. 근로자는 근로조건의 향상을 위하여 자주적인 단결권·단체교섭권 및 단체행동권을 가진다. 헌법재판소의 조직과 운영 기타 필요한 사항은 법률로 정한다. 정당의 목적이나 활동이 민주적 기본질서에 위배될 때에는 정부는 헌법재판소에 그 해산을 제소할 수 있고, 정당은 헌법재판소의 심판에 의하여 해산된다. 모든 국민은 그 보호하는 자녀에게 적어도 초등교육과 법률이 정하는 교육을 받게 할 의무를 진다. 국가는 농수산물의 수급균형과 유통구조의 개선에 노력하여 가격안정을 도모함으로써 농·어민의 이익을 보호한다. 대한민국은 통일을 지향하며, 자유민주적 기본질서에 입각한 평화적 통일 정책을 수립하고 이를 추진한다. 예비비는 총액으로 국회의 의결을 얻어야 한다. 예비비의 지출은 차기국회의 승인을 얻어야 한다. 군인은 현역을 면한 후가 아니면 국무위원으로 임명될 수 없다. 원장은 국회의 동의를 얻어 대통령이 임명하고, 그 임기는 4년으로 하며, 1차에 한하여 중임할 수 있다. 군인 또는 군무원이 아닌 국민은 대한민국의 영역안에서는 중대한 군사상 기밀·초병·초소·유독음식물공급·포로·군용물에 관한 죄중 법률이 정한 경우와 비상계엄이 선포된 경우를 제외하고는 군사법원의 재판을 받지 아니한다.국가는 건전한 소비행위를 계도하고 생산품의 품질향상을 촉구하기 위한 소비자보호운동을 법률이 정하는 바에 의하여 보장한다. 대통령후보자가 1인일 때에는 그 득표수가 선거권자 총수의 3분의 1 이상이 아니면 대통령으로 당선될 수 없다. 형사피의자 또는 형사피고인으로서 구금되었던 자가 법률이 정하는 불기소처분을 받거나 무죄판결을 받은 때에는 법률이 정하는 바에 의하여 국가에 정당한 보상을 청구할 수 있다. 근로자는 근로조건의 향상을 위하여 자주적인 단결권·단체교섭권 및 단체행동권을 가진다. 헌법재판소의 조직과 운영 기타 필요한 사항은 법률로 정한다. 정당의 목적이나 활동이 민주적 기본질서에 위배될 때에는 정부는 헌법재판소에 그 해산을 제소할 수 있고, 정당은 헌법재판소의 심판에 의하여 해산된다. 모든 국민은 그 보호하는 자녀에게 적어도 초등교육과 법률이 정하는 교육을 받게 할 의무를 진다. 국가는 농수산물의 수급균형과 유통구조의 개선에 노력하여 가격안정을 도모함으로써 농·어민의 이익을 보호한다. 대한민국은 통일을 지향하며, 자유민주적 기본질서에 입각한 평화적 통일 정책을 수립하고 이를 추진한다. 예비비는 총액으로 국회의 의결을 얻어야 한다. 예비비의 지출은 차기국회의 승인을 얻어야 한다. 군인은 현역을 면한 후가 아니면 국무위원으로 임명될 수 없다. 원장은 국회의 동의를 얻어 대통령이 임명하고, 그 임기는 4년으로 하며, 1차에 한하여 중임할 수 있다. 군인 또는 군무원이 아닌 국민은 대한민국의 영역안에서는 중대한 군사상 기밀·초병·초소·유독음식물공급·포로·군용물에 관한 죄중 법률이 정한 경우와 비상계엄이 선포된 경우를 제외하고는 군사법원의 재판을 받지 아니한다.국가는 건전한 소비행위를 계도하고 생산품의 품질향상을 촉구하기 위한 소비자보호운동을 법률이 정하는 바에 의하여 보장한다. 대통령후보자가 1인일 때에는 그 득표수가 선거권자 총수의 3분의 1 이상이 아니면 대통령으로 당선될 수 없다. 형사피의자 또는 형사피고인으로서 구금되었던 자가 법률이 정하는 불기소처분을 받거나 무죄판결을 받은 때에는 법률이 정하는 바에 의하여 국가에 정당한 보상을 청구할 수 있다. 근로자는 근로조건의 향상을 위하여 자주적인 단결권·단체교섭권 및 단체행동권을 가진다. 헌법재판소의 조직과 운영 기타 필요한 사항은 법률로 정한다. 정당의 목적이나 활동이 민주적 기본질서에 위배될 때에는 정부는 헌법재판소에 그 해산을 제소할 수 있고, 정당은 헌법재판소의 심판에 의하여 해산된다. 모든 국민은 그 보호하는 자녀에게 적어도 초등교육과 법률이 정하는 교육을 받게 할 의무를 진다. 국가는 농수산물의 수급균형과 유통구조의 개선에 노력하여 가격안정을 도모함으로써 농·어민의 이익을 보호한다. 대한민국은 통일을 지향하며, 자유민주적 기본질서에 입각한 평화적 통일 정책을 수립하고 이를 추진한다. 예비비는 총액으로 국회의 의결을 얻어야 한다. 예비비의 지출은 차기국회의 승인을 얻어야 한다. 군인은 현역을 면한 후가 아니면 국무위원으로 임명될 수 없다. 원장은 국회의 동의를 얻어 대통령이 임명하고, 그 임기는 4년으로 하며, 1차에 한하여 중임할 수 있다. 군인 또는 군무원이 아닌 국민은 대한민국의 영역안에서는 중대한 군사상 기밀·초병·초소·유독음식물공급·포로·군용물에 관한 죄중 법률이 정한 경우와 비상계엄이 선포된 경우를 제외하고는 군사법원의 재판을 받지 아니한다.</string>
+
+    <!-- chat -->
+    <string name="chat_list_title">채팅 목록</string>
+    <string name="chat_list_item_title">글 제목 글 제목 글 제목 글 제목 글 제목</string>
+    <string name="chat_list_item_time">1시간 전</string>
+    <string name="chat_list_item_content">글 내용 글 내용 글 내용 글 내용 글 내용 글 내용</string>
+    <string name="chat_list_item_count">3</string>
+    <string name="message_title">상대방</string>
+    <string name="message_feed_title">글 제목 글 제목 글 제목 글 제목 글 제목 글 제목 글 제목 글 제목 글 제목 글 제목</string>
+    <string name="message_feed_content">글 내용 글 내용 글 내용 글 내용 글 내용 글 내용 글 내용 글 내용 글 내용</string>
+    <string name="detail_comment">댓글</string>
+    <string name="detail_like">추천</string>
+    <string name="detail_bookmark">북마크</string>
+    <string name="feed">게시글</string>
+    <string name="writer_info">작성자 정보</string>
+    <string name="do_chat">채팅하기</string>
+    <string name="get_position">위치보기</string>
+    <string name="report">신고</string>
+    <string name="input_comment">댓글을 입력해주세요</string>
+    <string name="send">전송</string>
+    <string name="detail">디테일</string>
+    <string name="input_message">메시지 보내기</string>
+    <string name="chatting">채팅 메시지예요 채팅 메시지예요 채팅 메시지예요 채팅 메시지예요 채팅 메시지예요 채팅 메시지예요 채팅 메시지예요</string>
+    <string name="only_time">2024년 9월 4일</string>
+    <string name="exit_user">탈퇴한 사용자</string>
+
+    <!-- new feed -->
+    <string name="navigation_select_locate">마커 선택 화면</string>
+    <string name="navigation_new_feed">피드 추가 화면</string>
+
+    <!-- dialog -->
+    <string name="dialog_my_comment_title">댓글 관리</string>
+    <string name="dialog_my_comment_delete">삭제</string>
+    <string name="dialog_my_comment_edit">수정</string>
+    <string name="dialog_other_comment_report">신고</string>
+    <string name="navigation_detail_image">이미지 확대 화면</string>
+
+    <!-- detail -->
+    <string-array name="detail_spinner_string">
+        <item>신고하기</item>
+    </string-array>
+
+    <!-- empty list -->
+    <string name="empty_default">표시할 목록이 없습니다.</string>
+    <string-array name="empty_history">
+        <item>작성한 글이 없습니다.</item>
+        <item>작성한 댓글이 없습니다.</item>
+        <item>추천한 글이 없습니다.</item>
+    </string-array>
+    <string name="empty_alarm">받은 알림이 없습니다.</string>
+    <string name="empty_bookmark">저장한 글이 없습니다.</string>
+    <string name="empty_search">검색 결과가 없습니다.</string>
+
 </resources>

@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginVertical="2dp"
+    android:background="@color/white"
+    android:clipChildren="false"
+    android:clipToPadding="false"
+    android:paddingHorizontal="16dp"
+    android:paddingVertical="12dp">
+
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/cg_feed_tag"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:singleLine="true" />
+
+    <TextView
+        android:id="@+id/tv_feed_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@id/iv_feed_image"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cg_feed_tag"
+        tools:text="으아 어이없어" />
+
+    <TextView
+        android:id="@+id/tv_feed_content"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="8dp"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:minLines="2"
+        android:textColor="@color/gray"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toStartOf="@id/iv_feed_image"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_feed_title"
+        tools:text="나한테 왜 140이라고 하는고야.\n나 키 짱큰데" />
+
+    <LinearLayout
+        android:id="@+id/ll_feed_info_container"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toStartOf="@id/iv_feed_image"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_feed_content">
+
+        <ImageView
+            android:id="@+id/iv_feed_comment_icon"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:layout_marginEnd="4dp"
+            android:contentDescription="@string/feed_comment"
+            android:src="@drawable/ic_comment_24"
+            app:tint="@color/gray" />
+
+        <TextView
+            android:id="@+id/tv_feed_comment_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/gray"
+            android:textSize="12sp"
+            tools:text="99+" />
+
+        <View
+            android:id="@+id/v_feed_comment_divider"
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:layout_marginVertical="2dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:background="@color/gray" />
+
+        <ImageView
+            android:id="@+id/iv_feed_like_icon"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:layout_marginEnd="4dp"
+            android:contentDescription="@string/feed_like"
+            android:src="@drawable/ic_thumb_up_off_alt_24"
+            app:tint="@color/gray" />
+
+        <TextView
+            android:id="@+id/tv_feed_like_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/gray"
+            android:textSize="12sp"
+            tools:text="99+" />
+
+        <View
+            android:id="@+id/v_feed_like_divider"
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:layout_marginVertical="2dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:background="@color/gray" />
+
+        <TextView
+            android:id="@+id/tv_feed_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/gray"
+            android:textSize="12sp"
+            tools:text="24.12.25" />
+
+        <View
+            android:id="@+id/v_feed_nickname_divider"
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:layout_marginVertical="2dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:background="@color/gray" />
+
+        <TextView
+            android:id="@+id/tv_feed_nickname"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/gray"
+            android:textSize="12sp"
+            tools:text="어디까지표시되는거에요?" />
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/iv_feed_image"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:contentDescription="@string/feed_image"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_launcher_background"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cg_feed_tag" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

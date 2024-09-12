@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".presentation.view.mypage.EditProfileActivity">
+
+    <Toolbar
+        android:id="@+id/tb_edit_profile"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:title="@string/edit_profile_tb_title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guide_line_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.1" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guide_line_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.35" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guide_line_vertical_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.1" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guide_line_vertical_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.9" />
+
+    <ImageView
+        android:id="@+id/iv_edit_profile_image"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/background_circle_green"
+        android:clipToOutline="true"
+        android:src="@drawable/ic_heart"
+        app:layout_constraintDimensionRatio="1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/guide_line_1"
+        app:layout_constraintWidth_percent=".35" />
+
+    <ImageView
+        android:id="@+id/pb_background"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:alpha=".5"
+        android:src="@drawable/background_circle_green"
+        app:layout_constraintDimensionRatio="1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/guide_line_1"
+        app:layout_constraintWidth_percent=".35"
+        app:tint="@color/gray" />
+
+    <ProgressBar
+        android:id="@+id/pb_edit_photo"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="@id/iv_edit_profile_image"
+        app:layout_constraintDimensionRatio="1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/iv_edit_profile_image"
+        app:layout_constraintWidth_percent="0.2" />
+
+    <ImageView
+        android:id="@+id/ic_camera"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/shape_radius_10"
+        android:backgroundTint="@color/primary"
+        android:padding="8dp"
+        android:src="@drawable/baseline_photo_camera_24"
+        app:layout_constraintBottom_toBottomOf="@id/iv_edit_profile_image"
+        app:layout_constraintEnd_toEndOf="@id/iv_edit_profile_image"
+        app:tint="@color/white" />
+
+    <TextView
+        android:id="@+id/tv_edit_nickname_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/edit_profile_nickname"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@id/guide_line_vertical_1"
+        app:layout_constraintTop_toTopOf="@id/guide_line_2" />
+
+    <EditText
+        android:id="@+id/etv_edit_nickname"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/background_etv"
+        android:padding="16dp"
+        app:layout_constraintEnd_toEndOf="@id/guide_line_vertical_2"
+        app:layout_constraintStart_toStartOf="@id/guide_line_vertical_1"
+        app:layout_constraintTop_toBottomOf="@id/tv_edit_nickname_title"
+        tools:text="갸륵명선" />
+
+    <TextView
+        android:id="@+id/tv_edit_introduce_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="@string/edit_profile_introduce"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@id/guide_line_vertical_1"
+        app:layout_constraintTop_toBottomOf="@id/etv_edit_nickname" />
+
+    <EditText
+        android:id="@+id/etv_edit_introduce"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/background_etv"
+        android:gravity="start"
+        android:padding="16dp"
+        android:textColor="@color/black"
+        app:layout_constraintEnd_toEndOf="@id/guide_line_vertical_2"
+        app:layout_constraintHeight_percent=".2"
+        app:layout_constraintStart_toStartOf="@id/guide_line_vertical_1"
+        app:layout_constraintTop_toBottomOf="@id/tv_edit_introduce_title"
+        tools:text="나 키 140 맞다. 인정!" />
+
+    <Button
+        android:id="@+id/btn_edit_finish"
+        style="@style/my_page_edit_profile"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
