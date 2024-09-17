@@ -39,7 +39,7 @@
                 android:src="@drawable/ic_location"
                 app:layout_constraintBottom_toTopOf="@id/ib_add_marker"
                 app:layout_constraintEnd_toEndOf="@id/ib_add_marker"
-                app:tint="@color/light_gray" />
+                app:tint="@color/primary" />
 
             <ImageButton
                 android:id="@+id/ib_add_marker"
