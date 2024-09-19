@@ -6,6 +6,7 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.pob.seeat.data.model.chat.ChatFeedInfoModel
 import com.pob.seeat.domain.model.CommentModel
 import com.pob.seeat.domain.model.FeedModel
@@ -22,6 +23,7 @@ class FeedRemote @Inject constructor(
         startAfter: String?
     ): List<FeedModel> {
         val feedDocuments = firestore.collection("feed")
+            .orderBy("date", Query.Direction.DESCENDING)
             .get()
             .await()
             .documents
