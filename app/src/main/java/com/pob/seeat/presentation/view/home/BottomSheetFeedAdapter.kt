@@ -132,7 +132,6 @@ class BottomSheetFeedAdapter(
             @Suppress("UNCHECKED_CAST")
             override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
                 if (searchQuery.all { it.value.isNullOrBlank() }) {
-                    handleEmptyFeedList(originalList.size)
                     updateMarker(originalList)
                     submitList(originalList)
                 } else {

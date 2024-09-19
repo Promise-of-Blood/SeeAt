@@ -35,7 +35,6 @@ import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.clustering.Clusterer
-import com.naver.maps.map.clustering.ClusteringKey
 import com.naver.maps.map.clustering.DefaultLeafMarkerUpdater
 import com.naver.maps.map.clustering.LeafMarkerInfo
 import com.naver.maps.map.overlay.Marker
@@ -45,8 +44,8 @@ import com.pob.seeat.R
 import com.pob.seeat.data.model.Result
 import com.pob.seeat.databinding.FragmentHomeBinding
 import com.pob.seeat.domain.model.FeedModel
+import com.pob.seeat.domain.model.ItemKey
 import com.pob.seeat.presentation.common.CustomDecoration
-import com.pob.seeat.presentation.service.NaverMapWrapper
 import com.pob.seeat.presentation.view.UiState
 import com.pob.seeat.presentation.viewmodel.HomeViewModel
 import com.pob.seeat.presentation.viewmodel.RestroomViewModel
@@ -63,15 +62,15 @@ class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
+    private var feedList: List<FeedModel> = emptyList()
+
     private val TAG = "PersistentActivity"
     private val restroomViewModel: RestroomViewModel by viewModels()
 
-    @Inject
-    lateinit var naverMapWrapper: NaverMapWrapper
-
+    // 맵 관련 변수
     private lateinit var naverMap: NaverMap
     private lateinit var locationSource: FusedLocationSource
-    private var isLocationTrackingEnabled = false
+    private var isLocationTrackingEnabled = true
     private var clusterer: Clusterer<ItemKey>? = null
 
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
@@ -92,22 +91,56 @@ class HomeFragment : Fragment() {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
     }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        Timber.d("onAttach")
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        Timber.d("onCreate")
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        Timber.d("onCreateView")
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initRestroomViewModel()
+        Timber.d("onViewCreated")
         initNaverMap()
+        initRestroomViewModel()
+        getFeed()
         initTagRecyclerView()
         initBottomSheet()
-        getFeed()
         initialSetting()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Timber.d("onResume")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Timber.d("onPause")
+        binding.etSearch.text?.clear()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        Timber.d("onDestroyView")
+        _binding = null
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Timber.d("onDestroy")
     }
 
     private fun initialSetting() {
@@ -139,21 +172,6 @@ class HomeFragment : Fragment() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        getFeed()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        binding.etSearch.text?.clear()
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
     private fun handleEmptyFeedList(size: Int) = with(binding) {
         if (size == 0) {
             tvBottomSheetPostListEmpty.visibility = View.VISIBLE
@@ -170,6 +188,10 @@ class HomeFragment : Fragment() {
         etSearch.clearFocus()
     }
 
+    /**
+     * 서버에 피드 리스트를 호출하는 함수
+     * 호출된 피드 리스트는 feedList에 저장
+     */
     private fun getFeed() = with(homeViewModel) {
 
         getFeedList()
@@ -185,11 +207,13 @@ class HomeFragment : Fragment() {
                         is Result.Loading -> {
                             Timber.tag("HomeFragment").d("Loading..")
                             binding.tvBottomSheetPostListEmpty.visibility = View.GONE
+                            binding.pbBottomSheetPostList.visibility = View.VISIBLE
                         }
 
                         is Result.Success -> {
-                            val feedList = response.data
-                            Timber.tag("HomeFragment").d("Result.Success: " + feedList.toString())
+                            feedList = response.data
+                            Timber.tag("HomeFragment Result")
+                                .d("Result.Success: " + feedList.toString())
                             bottomSheetFeedAdapter.submitList(feedList)
                             updateMarker(feedList)
                             if (feedList.isEmpty()) {
@@ -198,33 +222,19 @@ class HomeFragment : Fragment() {
                                     getString(R.string.empty_default)
                             } else {
                                 binding.tvBottomSheetPostListEmpty.visibility = View.GONE
+                                binding.pbBottomSheetPostList.visibility = View.GONE
                             }
-                            Timber.tag("HomeFragment").d(feedList.toString())
                         }
                     }
                 }
         }
     }
 
-    private class ItemKey(val id: String, private val position: LatLng) : ClusteringKey {
-        override fun getPosition() = position
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) return true
-            if (other == null || javaClass != other.javaClass) return false
-            val itemKey = other as ItemKey
-            return id == itemKey.id
-        }
-
-        override fun hashCode() = id.hashCode()
-    }
-
-
     /**
      * 모든 feed 도큐먼트를 가져와 해당 좌표값에 마커 생성
      * 클릭 시 로그로 정보확인 가능
      */
-    fun updateMarker(feedList: List<FeedModel>) {
+    private fun updateMarker(feedList: List<FeedModel>) {
         Timber.tag("HomeFragment").d("Enter UpdateMarker..")
         if (!::naverMap.isInitialized) {
             Timber.tag("HomeFragment").e("naverMap is not initialized")
@@ -254,10 +264,8 @@ class HomeFragment : Fragment() {
             .apply {
                 val keyTagMap = buildMap(listSize) {
                     repeat(listSize) { i ->
-                        Timber.tag("HomeFragment").d("FeedModel: ${feedList[i]}")
                         val latitude = feedList[i].location?.latitude
                         val longitude = feedList[i].location?.longitude
-                        Timber.tag("HomeFragment").d("Latitude: $latitude, Longitude: $longitude")
                         if (latitude != null && longitude != null) {
                             put(
                                 ItemKey(
@@ -318,43 +326,44 @@ class HomeFragment : Fragment() {
         locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
 
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as MapFragment
-        naverMapWrapper.initialize(mapFragment)
 
-        // StateFlow로 naverMap 객체를 구독하여 값이 설정되면 작업 처리
-        lifecycleScope.launchWhenStarted {
-            naverMapWrapper.getNaverMap().collect { naverMap ->
-                naverMap?.let {
-                    setupNaverMap(it)
-                }
-            }
+        mapFragment.getMapAsync { naverMap ->
+            Timber.d("Initialize Naver Map")
+            setupNaverMap(naverMap)
+            naverMap.locationTrackingMode = LocationTrackingMode.Follow
         }
 
         binding.apply {
             ibLocation.setOnClickListener {
-                if (naverMap != null) {
-                    isLocationTrackingEnabled = !isLocationTrackingEnabled
-                    Timber.tag("HomeFragment")
-                        .d("isLocationTrackingEnabled: " + isLocationTrackingEnabled)
-                    if (isLocationTrackingEnabled) {
-                        // 위치 추적 모드로 전환
-                        naverMap.locationTrackingMode = LocationTrackingMode.Follow
-                        ibLocation.imageTintList = ColorStateList.valueOf(
-                            ContextCompat.getColor(
-                                requireContext(),
-                                R.color.primary
-                            )
-                        )
-                    } else {
-                        // 위치 추적 모드 해제
-                        naverMap.locationTrackingMode = LocationTrackingMode.None
-                        ibLocation.imageTintList = ColorStateList.valueOf(
-                            ContextCompat.getColor(
-                                requireContext(),
-                                R.color.light_gray
-                            )
-                        )
-                    }
-                }
+                changeStatusLocationButton()
+            }
+        }
+    }
+
+    private fun changeStatusLocationButton() {
+        isLocationTrackingEnabled = !isLocationTrackingEnabled
+        Timber.tag("HomeFragment")
+            .d("isLocationTrackingEnabled: " + isLocationTrackingEnabled)
+
+        binding.apply {
+            if (isLocationTrackingEnabled) {
+                // 위치 추적 모드로 전환
+                naverMap.locationTrackingMode = LocationTrackingMode.Follow
+                ibLocation.imageTintList = ColorStateList.valueOf(
+                    getColor(
+                        requireContext(),
+                        R.color.primary
+                    )
+                )
+            } else {
+                // 위치 추적 모드 해제
+                naverMap.locationTrackingMode = LocationTrackingMode.NoFollow
+                ibLocation.imageTintList = ColorStateList.valueOf(
+                    getColor(
+                        requireContext(),
+                        R.color.light_gray
+                    )
+                )
             }
         }
     }
@@ -380,10 +389,17 @@ class HomeFragment : Fragment() {
         naverMap.addOnCameraChangeListener { reason, animated ->
             if (!isMoving) {
                 isMoving = true
-                Timber.tag("HomeFragment")
+                Timber
                     .d("카메라가 움직이고 있습니다. Reason: " + reason + ", Animated: " + animated)
+                if (binding.etSearch.isFocused) hideKeyboard()
+
+                // animated가 false (사용자가 직접 카메라를 조작) 일때
+                // 추적모드 끄기
+                if(!animated) {
+                    isLocationTrackingEnabled = true
+                    changeStatusLocationButton()
+                }
             }
-            if (binding.etSearch.isFocused) hideKeyboard()
         }
 
         // 카메라 움직임이 멈췄을 때 콜백을 받는 리스너 설정
@@ -400,14 +416,13 @@ class HomeFragment : Fragment() {
      * */
     private fun initTagRecyclerView() {
         // 태그 리스트 데이터 설정
-
         binding.apply {
             val adapter = TagAdapter(tagList)
             rvTagList.layoutManager =
                 LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
             rvTagList.adapter = adapter
 
-            val marginDecoration = MarginItemDecoration(16f.px) // 마진 설정
+            val marginDecoration = MarginItemDecoration(12f.px, 16f.px) // 마진 설정
             rvTagList.addItemDecoration(marginDecoration)
 
             // Handle Click Tag
@@ -660,18 +675,32 @@ class HomeFragment : Fragment() {
     }
 }
 
-class MarginItemDecoration(private val spaceHeight: Int) : RecyclerView.ItemDecoration() {
+class MarginItemDecoration(private val margin: Int, private val paddingSide: Int = 0) :
+    RecyclerView.ItemDecoration() {
     override fun getItemOffsets(
         outRect: Rect,
         view: View,
         parent: RecyclerView,
         state: RecyclerView.State
     ) {
-        with(outRect) {
-            if (parent.getChildAdapterPosition(view) == 0) {
-                left = spaceHeight // 첫 번째 아이템에는 왼쪽 마진을 추가
+        val position = parent.getChildAdapterPosition(view)
+        val itemCount = state.itemCount
+
+        when (position) {
+            0 -> {
+                // 첫 번째 아이템인 경우 시작 패딩 추가
+                outRect.left = paddingSide
             }
-            right = spaceHeight // 오른쪽 마진을 모든 아이템에 추가
+
+            itemCount - 1 -> {
+                // 마지막 아이템인 경우 끝 패딩 추가
+                outRect.right = paddingSide
+                outRect.left += margin
+            }
+
+            else -> {
+                outRect.left += margin
+            }
         }
     }
 }

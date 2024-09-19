@@ -6,16 +6,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.MapFragment
 import com.pob.seeat.R
-import com.pob.seeat.presentation.service.NaverMapWrapper
 import com.pob.seeat.databinding.FragmentSelectLocateBinding
 import com.pob.seeat.presentation.viewmodel.NewFeedViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class SelectLocateFragment : Fragment() {
@@ -25,9 +22,6 @@ class SelectLocateFragment : Fragment() {
     private var isMoving = false
 
     private val viewModel: NewFeedViewModel by activityViewModels()
-
-    @Inject
-    lateinit var naverMapWrapper: NaverMapWrapper  // NaverMapWrapper를 Hilt로 주입받음
 
     private lateinit var currentLatLng: LatLng
 
@@ -61,11 +55,9 @@ class SelectLocateFragment : Fragment() {
     private fun initNaverMap() {
         Timber.tag("SelectLocateFragment").d("initNaverMap")
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as MapFragment
-        naverMapWrapper.initialize(mapFragment)
 
         // StateFlow로 naverMap 객체를 구독하여 값이 설정되면 작업 처리
-        lifecycleScope.launchWhenResumed {
-            naverMapWrapper.getNaverMap().collect { naverMap ->
+        mapFragment.getMapAsync { naverMap ->
                 naverMap?.let {
                     Timber.tag("SelectLocateFragment").d("NaverMap 객체가 초기화되었습니다.")
                     naverMap.addOnCameraChangeListener { reason, animated ->
@@ -86,10 +78,9 @@ class SelectLocateFragment : Fragment() {
                             Timber.tag("SelectLocateFragment").d("맵 중앙 위치 %s", currentLatLng)
                         }
                     }
-                } ?: Timber.tag("SelectLocateFragment")
-                    .d("NaverMap 객체가 아직 null입니다.")  // NaverMap이 null일 때 로그 추가
+                }
             }
-        }
+
     }
 
     private fun floatingMarker(markerView: View, isFloating: Boolean) {
