@@ -24,6 +24,7 @@ import com.pob.seeat.utils.ImageImplement.launchImagePickerAndCrop
 import com.pob.seeat.utils.ImageImplement.registerImageCropper
 import com.pob.seeat.utils.ImageImplement.registerImagePicker
 import com.pob.seeat.utils.Utils.compressBitmapToUri
+import com.pob.seeat.utils.Utils.isValidNickname
 import com.pob.seeat.utils.Utils.resizeImage
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -96,6 +97,10 @@ class EditProfileActivity : AppCompatActivity() {
 
                     if (nickname.isBlank()) {
                         Toast.makeText(this@EditProfileActivity, "닉네임을 입력해주세요.", Toast.LENGTH_SHORT).show()
+                    }
+
+                    if (!nickname.isValidNickname()){
+                        Toast.makeText(this@EditProfileActivity, "유효하지 않은 닉네임입니다. 다시 확인해주세요", Toast.LENGTH_SHORT).show()
                     }
 
                     if (introduce.isBlank()) {
