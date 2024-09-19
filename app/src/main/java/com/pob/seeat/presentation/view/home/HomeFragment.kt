@@ -185,6 +185,7 @@ class HomeFragment : Fragment() {
                         is Result.Loading -> {
                             Timber.tag("HomeFragment").d("Loading..")
                             binding.tvBottomSheetPostListEmpty.visibility = View.GONE
+                            binding.pbBottomSheetPostList.visibility = View.VISIBLE
                         }
 
                         is Result.Success -> {
@@ -198,6 +199,7 @@ class HomeFragment : Fragment() {
                                     getString(R.string.empty_default)
                             } else {
                                 binding.tvBottomSheetPostListEmpty.visibility = View.GONE
+                                binding.pbBottomSheetPostList.visibility = View.GONE
                             }
                             Timber.tag("HomeFragment").d(feedList.toString())
                         }
