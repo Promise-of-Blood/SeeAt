@@ -1,15 +1,18 @@
 package com.pob.seeat.data.remote
 
 import android.util.Log
+import android.widget.Toast
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.GeoPoint
 import com.pob.seeat.data.model.chat.ChatFeedInfoModel
 import com.pob.seeat.domain.model.CommentModel
 import com.pob.seeat.domain.model.FeedModel
 import kotlinx.coroutines.tasks.await
+import timber.log.Timber
 import javax.inject.Inject
 
 class FeedRemote @Inject constructor(
@@ -83,7 +86,7 @@ class FeedRemote @Inject constructor(
         }
     }
 
-    suspend fun getUserByFeedId(feedId: String) : ChatFeedInfoModel {
+    suspend fun getUserByFeedId(feedId: String): ChatFeedInfoModel {
         val feedUserRef = firestore.collection("feed")
             .document(feedId)
             .get()
@@ -138,6 +141,25 @@ class FeedRemote @Inject constructor(
             .document(postId)
             .delete()
             .await()
+    }
+
+    override suspend fun editFeed(feedModel: FeedModel) {
+        val feedMap = mutableMapOf<String, Any>()
+
+        feedMap["content"] = feedModel.content
+        feedMap["contentImage"] = feedModel.contentImage
+        feedMap["location"] = feedModel.location ?: GeoPoint(0.0, 0.0)
+        feedMap["title"] = feedModel.title
+        feedMap["tagList"] = feedModel.tags
+
+        firestore.collection("feed")
+            .document(feedModel.feedId)
+            .update(feedMap)
+            .addOnCompleteListener {
+                if (it.isSuccessful) {
+                    Timber.i("업데이트 됨")
+                }
+            }
     }
 
 

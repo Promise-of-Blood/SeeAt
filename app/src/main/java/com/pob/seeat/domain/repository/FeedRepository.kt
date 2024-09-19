@@ -11,4 +11,5 @@ interface FeedRepository {
     suspend fun setLikePlus(feedId: String)
     suspend fun setLikeMinus(feedId: String)
     suspend fun removeFeed(feedId: String)
+    suspend fun editFeed(feedModel: FeedModel)
 }

@@ -69,4 +69,12 @@ class FeedRepositoryImpl @Inject constructor(
             Timber.i(e.toString())
         }
     }
+
+    override suspend fun editFeed(feedModel: FeedModel) {
+        try {
+            feedRemote.editFeed(feedModel)
+        } catch (e: Exception) {
+            Timber.i(e.toString())
+        }
+    }
 }
