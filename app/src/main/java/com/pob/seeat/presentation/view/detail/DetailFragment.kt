@@ -26,6 +26,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
@@ -88,7 +89,7 @@ class DetailFragment : Fragment() {
     private lateinit var feed: FeedModel
     private lateinit var chatId : String
 
-    private val detailViewModel: DetailViewModel by viewModels()
+    private val detailViewModel: DetailViewModel by activityViewModels()
     private val commentViewModel: CommentViewModel by viewModels()
     private val reportCommentViewModel: ReportCommentViewModel by viewModels()
     private val chatViewModel : ChatViewModel by viewModels()
@@ -144,6 +145,14 @@ class DetailFragment : Fragment() {
 
                 override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                     return when (menuItem.itemId) {
+
+                        R.id.feed_edit -> {
+
+                            findNavController().navigate(R.id.action_navigation_detail_to_navigation_detail_edit)
+
+                            true
+                        }
+
                         R.id.feed_remove -> {
 
                             detailViewModel.removeFeed(feed.feedId)
