@@ -4,6 +4,8 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import android.widget.Toast
@@ -24,6 +26,7 @@ import com.pob.seeat.utils.ImageImplement.launchImagePickerAndCrop
 import com.pob.seeat.utils.ImageImplement.registerImageCropper
 import com.pob.seeat.utils.ImageImplement.registerImagePicker
 import com.pob.seeat.utils.Utils.compressBitmapToUri
+import com.pob.seeat.utils.Utils.isValidNickname
 import com.pob.seeat.utils.Utils.resizeImage
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -84,6 +87,20 @@ class EditProfileActivity : AppCompatActivity() {
             launchImagePickerAndCrop(pickImageLauncher, cropImageLauncher)
         }
 
+        etvEditNickname.addTextChangedListener(object : TextWatcher{
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+            override fun afterTextChanged(s: Editable?) {
+                if(s.toString().contains("\\s".toRegex())){
+                    tvNicknameRule.visibility = View.VISIBLE
+                }else{
+                    tvNicknameRule.visibility = View.GONE
+                }
+            }
+        })
+
         btnEditFinish.setOnClickListener {
             when(userViewModel.profileUploadResult.value){
                 "LOADING" -> {
@@ -94,29 +111,33 @@ class EditProfileActivity : AppCompatActivity() {
                     val nickname = etvEditNickname.text.toString().trim()
                     val introduce = etvEditIntroduce.text.toString().trim()
 
-                    if (nickname.isBlank()) {
-                        Toast.makeText(this@EditProfileActivity, "닉네임을 입력해주세요.", Toast.LENGTH_SHORT).show()
+                    if(nickname.isValidNickname()){
+
+                        if (uid != null) {
+
+                            userViewModel.editProfile(uid, nickname, introduce)
+                            Toast.makeText(this@EditProfileActivity, "프로필 업데이트 완료", Toast.LENGTH_SHORT).show()
+
+                            val intent = Intent()
+                            intent.putExtra("updatedNickname", nickname)
+                            intent.putExtra("updatedIntroduce", introduce)
+
+                            setResult(Activity.RESULT_OK, intent)
+                            finish()
+
+                        } else {
+                            Toast.makeText(this@EditProfileActivity, "프로필 업데이트 실패", Toast.LENGTH_SHORT).show()
+                        }
+
+                    }else{
+                        Toast.makeText(this@EditProfileActivity, "유효하지 않은 닉네임입니다. 다시 확인해주세요", Toast.LENGTH_SHORT).show()
                     }
+
 
                     if (introduce.isBlank()) {
                         Toast.makeText(this@EditProfileActivity, "소개글을 입력해주세요.", Toast.LENGTH_SHORT).show()
                     }
 
-                    if (uid != null) {
-
-                        userViewModel.editProfile(uid, nickname, introduce)
-                        Toast.makeText(this@EditProfileActivity, "프로필 업데이트 완료", Toast.LENGTH_SHORT).show()
-
-                        val intent = Intent()
-                        intent.putExtra("updatedNickname", nickname)
-                        intent.putExtra("updatedIntroduce", introduce)
-
-                        setResult(Activity.RESULT_OK, intent)
-                        finish()
-
-                    } else {
-                        Toast.makeText(this@EditProfileActivity, "프로필 업데이트 실패", Toast.LENGTH_SHORT).show()
-                    }
                 }
                 else ->{
                     val uid = userViewModel.userInfo.value?.uid
