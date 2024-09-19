@@ -46,7 +46,6 @@ import com.pob.seeat.databinding.FragmentHomeBinding
 import com.pob.seeat.domain.model.FeedModel
 import com.pob.seeat.domain.model.ItemKey
 import com.pob.seeat.presentation.common.CustomDecoration
-import com.pob.seeat.presentation.service.NaverMapWrapper
 import com.pob.seeat.presentation.view.UiState
 import com.pob.seeat.presentation.viewmodel.HomeViewModel
 import com.pob.seeat.presentation.viewmodel.RestroomViewModel
@@ -67,9 +66,6 @@ class HomeFragment : Fragment() {
 
     private val TAG = "PersistentActivity"
     private val restroomViewModel: RestroomViewModel by viewModels()
-
-    @Inject
-    lateinit var naverMapWrapper: NaverMapWrapper
 
     // 맵 관련 변수
     private lateinit var naverMap: NaverMap
@@ -330,19 +326,9 @@ class HomeFragment : Fragment() {
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as MapFragment
 
         mapFragment.getMapAsync { naverMap ->
+            Timber.d("Initialize Naver Map")
             setupNaverMap(naverMap)
-        }
-        naverMapWrapper.initialize(mapFragment)
-
-        // StateFlow로 naverMap 객체를 구독하여 값이 설정되면 작업 처리
-        lifecycleScope.launchWhenStarted {
-            naverMapWrapper.getNaverMap().collect { naverMap ->
-                naverMap?.let {
-                    Timber.d("Initialize Naver Map")
-                    setupNaverMap(it)
-                    naverMap.locationTrackingMode = LocationTrackingMode.Follow
-                }
-            }
+            naverMap.locationTrackingMode = LocationTrackingMode.Follow
         }
 
         binding.apply {
@@ -421,11 +407,6 @@ class HomeFragment : Fragment() {
                 Timber.tag("HomeFragment").d("카메라 움직임이 멈췄습니다.")
             }
         }
-
-//        naverMap.addOnLocationChangeListener { location ->
-//            naverMapWrapper.setLocation(LatLng(location.latitude, location.longitude))
-//            Timber.tag("HomeFragment").d("위치가 변경되었습니다: $location")
-//        }
     }
 
     /**

@@ -31,7 +31,6 @@ import com.naver.maps.map.CameraPosition
 import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
 import com.pob.seeat.MainActivity
-import com.pob.seeat.presentation.service.NaverMapWrapper
 import com.pob.seeat.domain.model.TagModel
 import com.pob.seeat.presentation.viewmodel.NewFeedViewModel
 import com.pob.seeat.utils.GoogleAuthUtil.getUserUid
@@ -44,7 +43,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.Date
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class NewFeedFragment : Fragment() {
@@ -54,9 +52,6 @@ class NewFeedFragment : Fragment() {
     private val viewModel: NewFeedViewModel by activityViewModels()
 
     private lateinit var selectedMap: NaverMap
-
-    @Inject
-    lateinit var naverMapWrapper: NaverMapWrapper
 
     private var selectedTagList = emptyList<TagModel>()
     private var selectLocation: LatLng? = null
@@ -180,11 +175,9 @@ class NewFeedFragment : Fragment() {
 
     private fun initNaverMap() {
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as MapFragment
-        naverMapWrapper.initialize(mapFragment)
 
         // StateFlow로 naverMap 객체를 구독하여 값이 설정되면 작업 처리
-        lifecycleScope.launchWhenResumed {
-            naverMapWrapper.getNaverMap().collect { naverMap ->
+        mapFragment.getMapAsync { naverMap ->
                 selectedMap = naverMap!!
 
                 selectedMap.isIndoorEnabled = true
@@ -205,7 +198,7 @@ class NewFeedFragment : Fragment() {
                     findNavController().navigate(R.id.action_new_feed_to_select_locate)
                 }
             }
-        }
+
     }
 
     private fun updateSelectedTag() {
