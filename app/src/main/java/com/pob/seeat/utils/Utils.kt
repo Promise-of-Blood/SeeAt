@@ -9,6 +9,7 @@ import android.graphics.Matrix
 import android.media.ExifInterface
 import android.net.Uri
 import android.view.WindowManager
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowInsetsControllerCompat
 import com.google.firebase.Timestamp
@@ -182,4 +183,21 @@ object Utils {
         this.window.statusBarColor = Color.TRANSPARENT
         WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = true
     }
+
+
+    //유효성 검사
+    fun String.isValidNickname() : Boolean{
+        if(this.contains("\n") || this.contains("\r")||this.contains(" ")||this.contains("\\s.".toRegex()) ){
+            return false
+        }
+
+        if (this.length > 8 || this.isEmpty()){
+            return false
+        }
+
+        return true
+    }
+
+
+
 }

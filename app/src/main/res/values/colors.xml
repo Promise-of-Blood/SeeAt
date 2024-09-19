@@ -11,4 +11,5 @@
     <color name="light_tertiary">#E7FFF3</color>
     <color name="quaternary">#FF4Bff00</color>
     <color name="transparent">#00FFFFFF</color>
+    <color name="rule_red">#F44336</color>
 </resources>
