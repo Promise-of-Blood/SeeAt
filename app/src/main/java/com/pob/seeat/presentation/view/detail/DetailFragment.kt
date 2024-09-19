@@ -346,8 +346,13 @@ class DetailFragment : Fragment() {
             tvAddCommentButton.setOnClickListener {
                 val comment = binding.etAddComment.text.toString()
                 Log.d("댓글달기", "etAddComment.text : ${etAddComment.text.toString()}")
-                sendCommentToServer(comment)
-                hideKeyboard()
+
+                if(comment.isNullOrEmpty()){
+                    Toast.makeText(requireContext(), "댓글을 입력해주세요", Toast.LENGTH_SHORT).show()
+                }else{
+                    sendCommentToServer(comment)
+                    hideKeyboard()
+                }
             }
 
 
