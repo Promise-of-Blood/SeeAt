@@ -34,6 +34,10 @@ class UserInfoViewModel @Inject constructor(private val userInfoUseCases: UserIn
 
     private val storage = FirebaseStorage.getInstance().reference
 
+    fun giveToken(token: String){
+
+    }
+
     fun signUp(uid:String, email:String, nickname:String, profileUrl : String, introduce: String,token: String){
         val newUser = UserInfoModel(uid,email,nickname,profileUrl,introduce,token)
 
