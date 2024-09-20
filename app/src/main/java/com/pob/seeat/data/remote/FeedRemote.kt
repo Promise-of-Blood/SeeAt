@@ -1,16 +1,23 @@
 package com.pob.seeat.data.remote
 
 import android.util.Log
+import com.firebase.geofire.GeoFireUtils
+import com.firebase.geofire.GeoLocation
+import com.google.android.gms.tasks.Task
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.GeoPoint
 import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.QuerySnapshot
 import com.pob.seeat.data.model.chat.ChatFeedInfoModel
 import com.pob.seeat.domain.model.CommentModel
 import com.pob.seeat.domain.model.FeedModel
 import kotlinx.coroutines.tasks.await
+import timber.log.Timber
 import javax.inject.Inject
 
 class FeedRemote @Inject constructor(
@@ -18,36 +25,79 @@ class FeedRemote @Inject constructor(
 ) : GetFeedList, DetailFeed {
 
     override suspend fun getFeedList(
-        uid: String?,
-        limit: Long?,
-        startAfter: String?
+        centerLat: Double,
+        centerLng: Double,
+        radiusInKm: Double
     ): List<FeedModel> {
-        val feedDocuments = firestore.collection("feed")
-            .orderBy("date", Query.Direction.DESCENDING)
-            .get()
-            .await()
-            .documents
+        val center = GeoLocation(centerLat, centerLng)
+        val radiusInM = radiusInKm * 1000 // 반경을 미터로 변환
 
-        Log.d("FeedRemote", "getFeedList: $feedDocuments")
+        // GeoHash 쿼리로 GeoPoint 필드를 기준으로 필터링
+        val bounds = GeoFireUtils.getGeoHashQueryBounds(center, radiusInM)
+        val tasks = mutableListOf<Task<QuerySnapshot>>()
 
-        return feedDocuments.mapNotNull { documentSnapshot ->
-            val tagList = documentSnapshot.get("tagList") as? List<*>
+        // feed 컬렉션의 geoHash를 사용하여 각 범위에 대해 쿼리 생성 및 실행
+        for (b in bounds) {
+            val query = firestore.collection("feed")
+                .orderBy("geohash") // GeoHash 필드를 기준으로 정렬
+                .startAt(b.startHash)
+                .endAt(b.endHash)
 
-            documentSnapshot.toObject(FeedModel::class.java)?.copy(
-                feedId = documentSnapshot.id,
-                tags = tagList?.filterIsInstance<String>() ?: emptyList()
-            )?.run {
-                val nickname =
-                    (user as? DocumentReference)?.get()?.await()?.getString("nickname") ?: "탈퇴한 사용자"
+            Timber.d("Query: $query")
+            tasks.add(query.get())
+        }
 
-                // 로그로 nickname 값을 출력하여 확인
-                Log.d("FeedRemote", "Fetched nickname: $nickname for user: ${user?.id}")
+        Timber.d("Tasks: $tasks")
 
-                nickname?.let {
-                    copy(nickname = it)
-                } ?: this
+        // 모든 쿼리 결과를 비동기적으로 기다림
+        val results = Tasks.whenAllComplete(tasks).await()
+
+        val matchingFeeds = mutableListOf<FeedModel>()
+
+        for (task in tasks) {
+            val querySnapshot = task.result
+            if (querySnapshot != null) {
+                for (documentSnapshot in querySnapshot.documents) {
+                    val lat = documentSnapshot.getGeoPoint("location")?.latitude
+                    val lng = documentSnapshot.getGeoPoint("location")?.longitude
+
+                    Timber.d("documentSnapshot: $documentSnapshot")
+
+                    // 위치 정보가 있는 경우만 필터링
+                    if (lat != null && lng != null) {
+                        val docLocation = GeoLocation(lat, lng)
+                        val distanceInM = GeoFireUtils.getDistanceBetween(docLocation, center)
+
+                        // 반경 내에 있는 문서만 처리
+                        if (distanceInM <= radiusInM) {
+                            val tagList = documentSnapshot.get("tagList") as? List<*>
+
+                            val feedModel = documentSnapshot.toObject(FeedModel::class.java)?.copy(
+                                feedId = documentSnapshot.id,
+                                tags = tagList?.filterIsInstance<String>() ?: emptyList()
+                            )?.run {
+                                val nickname = (user as? DocumentReference)?.get()
+                                    ?.await()
+                                    ?.getString("nickname") ?: "탈퇴한 사용자"
+
+                                // 닉네임 확인
+                                Log.d("FeedRemote", "Fetched nickname: $nickname for user: ${user?.id}")
+
+                                nickname?.let {
+                                    copy(nickname = it)
+                                } ?: this
+                            }
+
+                            // 유효한 feedModel만 리스트에 추가
+                            feedModel?.let { matchingFeeds.add(it) }
+                        }
+                    }
+                }
             }
         }
+
+        Log.d("FeedRemote", "Filtered feeds: $matchingFeeds")
+        return matchingFeeds
     }
 
     override suspend fun getFeedById(postId: String): FeedModel? {
@@ -85,7 +135,7 @@ class FeedRemote @Inject constructor(
         }
     }
 
-    suspend fun getUserByFeedId(feedId: String) : ChatFeedInfoModel {
+    suspend fun getUserByFeedId(feedId: String): ChatFeedInfoModel {
         val feedUserRef = firestore.collection("feed")
             .document(feedId)
             .get()
