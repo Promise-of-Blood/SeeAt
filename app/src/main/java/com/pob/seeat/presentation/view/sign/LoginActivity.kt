@@ -20,6 +20,7 @@ import com.pob.seeat.databinding.ActivityLoginBinding
 import com.pob.seeat.presentation.view.PermissionGuideActivity
 import com.pob.seeat.presentation.viewmodel.UserInfoViewModel
 import com.pob.seeat.utils.GoogleAuthUtil
+import com.pob.seeat.utils.NotificationTokenUtils.getNotificationToken
 import com.pob.seeat.utils.NotificationTokenUtils.initNotificationToken
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -135,7 +136,8 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun navigateToSignUp(uid: String, email: String, nickname: String) {
-        userViewModel.signUp(uid, email, nickname, profileUrl = "", introduce = "", token = "")
+        val token = getNotificationToken()
+        userViewModel.signUp(uid, email, nickname, profileUrl = "", introduce = "", token = token)
         lifecycleScope.launch {
             withContext(Dispatchers.Main) {
                 val intent = Intent(this@LoginActivity, SignUpActivity::class.java).apply {
@@ -146,8 +148,6 @@ class LoginActivity : AppCompatActivity() {
                 startActivity(intent)
             }
         }
-
-
     }
 
     private fun isOurFamily(email: String, onUserExists: () -> Unit, onUserNotExist: () -> Unit) {

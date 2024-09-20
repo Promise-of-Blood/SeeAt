@@ -121,7 +121,7 @@ class EditProfileActivity : AppCompatActivity() {
                             val intent = Intent()
                             intent.putExtra("updatedNickname", nickname)
                             intent.putExtra("updatedIntroduce", introduce)
-
+                            intent.putExtra("updatedProfileUrl", profileImageUri.toString())
                             setResult(Activity.RESULT_OK, intent)
                             finish()
 
@@ -160,6 +160,7 @@ class EditProfileActivity : AppCompatActivity() {
                         val intent = Intent()
                         intent.putExtra("updatedNickname", nickname)
                         intent.putExtra("updatedIntroduce", introduce)
+                        intent.putExtra("updatedProfileUrl", profileImageUri.toString())
 
                         setResult(Activity.RESULT_OK, intent)
                         finish()
