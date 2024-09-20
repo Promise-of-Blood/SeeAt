@@ -79,10 +79,24 @@
         android:padding="16dp"
         android:background="@drawable/background_etv"
         tools:hint="구글에서 가져온 이름"
+        android:maxLength="8"
+        android:inputType="text"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
+
+    <TextView
+        android:id="@+id/tv_rule1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/signup_rule_1"
+        android:textColor="@color/rule_red"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toStartOf="@id/etv_signup_name"
+        app:layout_constraintTop_toBottomOf="@id/etv_signup_name"
+        android:visibility="gone"/>
+
 
     <Button
         android:id="@+id/btn_signup_next"

@@ -137,7 +137,7 @@ object GoogleAuthUtil {
                                     deleteUser(activity,uid)
                                 }else{
                                     Log.e("GoogleAuthUtil","프로필 사진 삭제 실패")
-                                    Toast.makeText(activity, "프로필이미지 삭제에 실패했습니다", Toast.LENGTH_SHORT).show()
+                                    deleteUser(activity,uid)
                                 }
                             }
                         } else {
@@ -152,7 +152,7 @@ object GoogleAuthUtil {
             }
         } else {
             Log.e("GoogleAuthUtil", "No current user found for deletion or UID is null.")
-            Toast.makeText(activity, "현재 로그인된 사용자를 찾을 수 없거나 UID가 없습니다.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(activity, "현재 로그인된 사용자를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show()
         }
     }
 

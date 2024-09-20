@@ -52,7 +52,7 @@
         android:layout_height="0dp"
         android:background="@drawable/background_circle_green"
         android:clipToOutline="true"
-        android:src="@drawable/ic_heart"
+        android:src="@drawable/baseline_person_24"
         app:layout_constraintDimensionRatio="1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -113,16 +113,29 @@
         android:layout_marginTop="16dp"
         android:background="@drawable/background_etv"
         android:padding="16dp"
+        android:maxLength="8"
+        android:inputType="text"
         app:layout_constraintEnd_toEndOf="@id/guide_line_vertical_2"
         app:layout_constraintStart_toStartOf="@id/guide_line_vertical_1"
         app:layout_constraintTop_toBottomOf="@id/tv_edit_nickname_title"
         tools:text="갸륵명선" />
 
     <TextView
+        android:id="@+id/tv_nickname_rule"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/signup_rule_1"
+        android:layout_marginTop="8dp"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/etv_edit_nickname"
+        app:layout_constraintStart_toStartOf="@id/etv_edit_nickname"
+        android:textColor="@color/rule_red"/>
+
+    <TextView
         android:id="@+id/tv_edit_introduce_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="48dp"
         android:text="@string/edit_profile_introduce"
         android:textColor="@color/black"
         android:textSize="16sp"
@@ -138,12 +151,16 @@
         android:background="@drawable/background_etv"
         android:gravity="start"
         android:padding="16dp"
+        android:maxLength="30"
         android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="@id/guide_line_vertical_2"
         app:layout_constraintHeight_percent=".2"
         app:layout_constraintStart_toStartOf="@id/guide_line_vertical_1"
         app:layout_constraintTop_toBottomOf="@id/tv_edit_introduce_title"
         tools:text="나 키 140 맞다. 인정!" />
+
+
+
 
     <Button
         android:id="@+id/btn_edit_finish"
