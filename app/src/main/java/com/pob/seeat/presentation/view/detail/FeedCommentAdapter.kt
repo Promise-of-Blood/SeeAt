@@ -51,11 +51,26 @@ class FeedCommentAdapter(
             viewModel.checkMyComment(uid)
             isOwnerComment(tvCommentFeedOner, uid, feedId)
             // UI 요소 초기화
-            Glide.with(itemView.context)
-                .load(item.userImage)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .skipMemoryCache(true)
-                .into(ivCommentItemUserImage)
+
+            val userRef = item.user
+
+            userRef?.get()?.addOnSuccessListener { snapshot->
+                if(snapshot != null && snapshot.exists()){
+                    val userImageUrl = snapshot.getString("profileUrl")
+
+                    if(!userImageUrl.isNullOrEmpty()){
+                        Glide.with(itemView.context)
+                            .load(userImageUrl)
+                            .diskCacheStrategy(DiskCacheStrategy.NONE)
+                            .skipMemoryCache(true)
+                            .into(ivCommentItemUserImage)
+                    }else{
+                        ivCommentItemUserImage.setImageResource(R.drawable.baseline_person_24)
+                    }
+                }
+            }
+
+
 
             tvCommentItemUsername.text = item.userNickname
             tvCommentItemTimeStamp.text = item.timeStamp?.toLocalDateTime()?.toKoreanDiffString()
