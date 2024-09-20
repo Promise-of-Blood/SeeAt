@@ -5,10 +5,12 @@ import android.animation.ValueAnimator
 import android.content.Context
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
+import android.graphics.PointF
 import android.graphics.Rect
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.DisplayMetrics
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -55,7 +57,10 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import javax.inject.Inject
+import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.sin
+import kotlin.math.sqrt
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
@@ -115,7 +120,6 @@ class HomeFragment : Fragment() {
         Timber.d("onViewCreated")
         initNaverMap()
         initRestroomViewModel()
-        getFeed()
         initTagRecyclerView()
         initBottomSheet()
         initialSetting()
@@ -145,6 +149,16 @@ class HomeFragment : Fragment() {
 
     private fun initialSetting() {
         binding.run {
+            // 피드 새로 고침
+            ibRefresh.setOnClickListener {
+                getFeed()
+            }
+
+            ibLocation.setOnClickListener {
+                changeStatusLocationButton()
+            }
+
+            // 마커 추가
             ibAddMarker.setOnClickListener {
                 findNavController().navigate(R.id.action_home_to_new_feed)
             }
@@ -193,8 +207,11 @@ class HomeFragment : Fragment() {
      * 호출된 피드 리스트는 feedList에 저장
      */
     private fun getFeed() = with(homeViewModel) {
+        val centerPoint = naverMap.cameraPosition.target
+        val radiusKm = getMapHeight()
 
-        getFeedList()
+        Timber.d("getFeed: ${centerPoint.latitude}, ${centerPoint.longitude}, $radiusKm ")
+        getFeedList(centerPoint.latitude, centerPoint.longitude, radiusKm)
 
         viewLifecycleOwner.lifecycleScope.launch {
             feedResponse.flowWithLifecycle(viewLifecycleOwner.lifecycle)
@@ -208,14 +225,24 @@ class HomeFragment : Fragment() {
                             Timber.tag("HomeFragment").d("Loading..")
                             binding.tvBottomSheetPostListEmpty.visibility = View.GONE
                             binding.pbBottomSheetPostList.visibility = View.VISIBLE
+                            binding.pbRefresh.visibility = View.VISIBLE
+                            binding.ibRefresh.imageTintList =
+                                ColorStateList.valueOf(getColor(requireContext(), R.color.white))
                         }
 
                         is Result.Success -> {
+                            binding.ibRefresh.imageTintList =
+                                ColorStateList.valueOf(getColor(requireContext(), R.color.primary))
+                            binding.pbRefresh.visibility = View.INVISIBLE
+
                             feedList = response.data
+
                             Timber.tag("HomeFragment Result")
                                 .d("Result.Success: " + feedList.toString())
+
                             bottomSheetFeedAdapter.submitList(feedList)
                             updateMarker(feedList)
+
                             if (feedList.isEmpty()) {
                                 binding.tvBottomSheetPostListEmpty.visibility = View.VISIBLE
                                 binding.tvBottomSheetPostListEmpty.text =
@@ -228,6 +255,45 @@ class HomeFragment : Fragment() {
                     }
                 }
         }
+    }
+
+    private fun getMapHeight(): Double {
+        fun haversine(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
+            val R = 6371.0 // 지구의 반지름(km)
+
+            val dLat = Math.toRadians(lat2 - lat1)
+            val dLon = Math.toRadians(lon2 - lon1)
+
+            val a = sin(dLat / 2) * sin(dLat / 2) +
+                    cos(Math.toRadians(lat1)) * cos(Math.toRadians(lat2)) *
+                    sin(dLon / 2) * sin(dLon / 2)
+
+            val c = 2 * atan2(sqrt(a), sqrt(1 - a))
+
+            return R * c // 두 좌표 사이의 거리(km 단위)
+        }
+
+        val projection = naverMap.projection
+        val screenWidth = homeViewModel.screenWidth!!.toDouble()
+        val screenHeight = homeViewModel.screenHeight!!.toDouble()
+
+        // ViewModel에 화면 크기 값 할당
+        val topPoint =
+            Pair((screenWidth * 0.5).toFloat(), (screenHeight * 0.05).toFloat())
+
+        val bottomPoint =
+            Pair((screenWidth * 0.5).toFloat(), (screenHeight * 0.85).toFloat())
+
+        val topLatLng = projection.fromScreenLocation(PointF(topPoint.first, topPoint.second))
+        val bottomLatLng =
+            projection.fromScreenLocation(PointF(bottomPoint.first, bottomPoint.second))
+
+        return haversine(
+            topLatLng.latitude,
+            topLatLng.longitude,
+            bottomLatLng.latitude,
+            bottomLatLng.longitude
+        )
     }
 
     /**
@@ -245,6 +311,7 @@ class HomeFragment : Fragment() {
         val listSize = feedList.size
 
         clusterer = Clusterer.Builder<ItemKey>()
+            .screenDistance(40.0)
             .leafMarkerUpdater(object : DefaultLeafMarkerUpdater() {
                 override fun updateLeafMarker(info: LeafMarkerInfo, marker: Marker) {
                     super.updateLeafMarker(info, marker)
@@ -322,14 +389,17 @@ class HomeFragment : Fragment() {
      *  TODO GPS 버튼 클릭, 위치 권한 미설정 시 재요청
      * */
     private fun initNaverMap() {
+        Timber.d("Initialize Naver Map")
         // 위치 소스 초기화
         locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
 
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as MapFragment
 
         mapFragment.getMapAsync { naverMap ->
-            Timber.d("Initialize Naver Map")
+            this.naverMap = naverMap
             setupNaverMap(naverMap)
+            getScreenSize()
+            getFeed()
             naverMap.locationTrackingMode = LocationTrackingMode.Follow
         }
 
@@ -337,6 +407,15 @@ class HomeFragment : Fragment() {
             ibLocation.setOnClickListener {
                 changeStatusLocationButton()
             }
+        }
+    }
+
+    private fun getScreenSize() {
+        if (homeViewModel.screenWidth == null || homeViewModel.screenHeight == null) {
+            val displayMetrics = DisplayMetrics()
+            requireActivity().windowManager.defaultDisplay.getMetrics(displayMetrics)
+            homeViewModel.screenWidth = displayMetrics.widthPixels
+            homeViewModel.screenHeight = displayMetrics.heightPixels
         }
     }
 
@@ -395,7 +474,7 @@ class HomeFragment : Fragment() {
 
                 // animated가 false (사용자가 직접 카메라를 조작) 일때
                 // 추적모드 끄기
-                if(!animated) {
+                if (reason == -1) {
                     isLocationTrackingEnabled = true
                     changeStatusLocationButton()
                 }
@@ -408,6 +487,10 @@ class HomeFragment : Fragment() {
                 isMoving = false
                 Timber.tag("HomeFragment").d("카메라 움직임이 멈췄습니다.")
             }
+        }
+
+        naverMap.setOnMapClickListener { point, coord ->
+            Timber.d("${coord.latitude}, ${coord.longitude}")
         }
     }
 
