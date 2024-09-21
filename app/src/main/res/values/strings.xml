@@ -4,6 +4,10 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+    <!-- common -->
+    <string name="common_more">더보기</string>
+    <string name="common_close">닫기</string>
+
     <!-- bottom navigation -->
     <string name="navigation_add_marker">마커 추가</string>
     <string name="navigation_alarm">알림</string>
@@ -63,7 +67,6 @@
     <string name="history_feed">작성글</string>
     <string name="history_comment">작성 댓글</string>
     <string name="history_liked_feed">추천한 글</string>
-    <string name="history_more">더보기</string>
     <string name="history_feed_title">제목</string>
     <string-array name="history_title">
         <item>작성글</item>
@@ -153,4 +156,19 @@
     <string name="empty_search">검색 결과가 없습니다.</string>
     <string name="empty_comment">등록된 댓글이 없습니다.</string>
 
+    <!-- admin -->
+    <string name="admin_title">관리자</string>
+    <string name="admin_tab_user">유저 관리</string>
+    <string name="admin_tab_report">신고 관리</string>
+    <string name="admin_profile_image">프로필 이미지</string>
+    <string name="admin_sort_option">정렬</string>
+    <string-array name="admin_sort">
+        <item>최신순</item>
+        <item>신고순</item>
+    </string-array>
+    <string-array name="admin_option">
+        <item>전체</item>
+        <item>댓글</item>
+        <item>게시글</item>
+    </string-array>
 </resources>
