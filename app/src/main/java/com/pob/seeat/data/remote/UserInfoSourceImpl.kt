@@ -6,7 +6,6 @@ import com.google.firebase.firestore.AggregateSource
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
 import com.pob.seeat.data.model.UserInfoData
-import com.pob.seeat.data.model.chat.ChatFeedInfoModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
@@ -22,8 +21,7 @@ class UserInfoSourceImpl @Inject constructor(
         firestore.collection("user").document(userInfoData.uid).set(userInfoData)
             .addOnSuccessListener {
                 Log.d("회원가입", "성공")
-            }
-            .addOnFailureListener { e ->
+            }.addOnFailureListener { e ->
                 Log.e("회원가입", "실패 ( 에러 : $e )")
             }
     }
@@ -41,12 +39,12 @@ class UserInfoSourceImpl @Inject constructor(
                     .get(AggregateSource.SERVER).await().count // 작성 댓글 수
             val myData = userRef.get().await() // 유저 정보
             emit(
-                myData.toObject<UserInfoData>()
-                    ?.copy(
-                        feedCount = feedCount,
-                        commentCount = commentCount,
-                        likedFeedList = likedFeedList
-                    )
+                myData.toObject<UserInfoData>()?.copy(
+                    feedCount = feedCount,
+                    commentCount = commentCount,
+                    likedFeedList = likedFeedList,
+                    isAdmin = checkIsAdmin(myData.id),
+                )
             )
         }
     }
@@ -72,12 +70,8 @@ class UserInfoSourceImpl @Inject constructor(
 
     override suspend fun createLikedFeed(userUid: String, feedUid: String) {
         try {
-            firestore.collection("user")
-                .document(userUid)
-                .collection("likedFeed")
-                .document(feedUid)
-                .set(mapOf("feed" to "/feed/$feedUid"))
-                .await()
+            firestore.collection("user").document(userUid).collection("likedFeed").document(feedUid)
+                .set(mapOf("feed" to "/feed/$feedUid")).await()
             Timber.tag("likedFeed 생성").i("성공)")
         } catch (e: Exception) {
             Timber.tag("likedFeed 생성").i("실패 ( 에러: $e)")
@@ -86,17 +80,25 @@ class UserInfoSourceImpl @Inject constructor(
 
     override suspend fun removeLikedFeed(userUid: String, feedUid: String) {
         try {
-            firestore.collection("user")
-                .document(userUid)
-                .collection("likedFeed")
-                .document(feedUid)
-                .delete()
-                .await()
+            firestore.collection("user").document(userUid).collection("likedFeed").document(feedUid)
+                .delete().await()
 
             Timber.tag("likedFeed 제거").i("제거 성공 $feedUid")
 
         } catch (e: Exception) {
             Timber.tag("likedFeed 제거").i("실패 ( 에러: $e)")
         }
+    }
+
+    override suspend fun getUserList(): List<UserInfoData> {
+        return firestore.collection("user").get().await().documents.mapNotNull { documentSnapshot ->
+            documentSnapshot.toObject<UserInfoData>()?.copy(
+                isAdmin = checkIsAdmin(documentSnapshot.id)
+            )
+        }.sortedByDescending { it.isAdmin }
+    }
+
+    private suspend fun checkIsAdmin(uid: String): Boolean {
+        return firestore.collection("admin").document(uid).get().await().exists()
     }
 }
