@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cl_comment_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:paddingHorizontal="16dp"
+    android:paddingVertical="12dp">
+
+    <TextView
+        android:id="@+id/tv_admin_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="@color/black"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_max="300dp"
+        tools:text="게시글 제목" />
+
+    <TextView
+        android:id="@+id/tv_admin_content"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="20dp"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:textColor="@color/black"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/ib_more"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_admin_title"
+        tools:text="게시글 내용게시글 내용게시글 내용게시글 내용게시글 내용게시글 내용게시글 내용" />
+
+    <ImageView
+        android:id="@+id/iv_admin_report"
+        android:layout_width="12dp"
+        android:layout_height="12dp"
+        android:layout_marginStart="8dp"
+        android:contentDescription="@string/admin_title"
+        android:src="@drawable/ic_siren"
+        app:layout_constraintBottom_toBottomOf="@id/tv_admin_title"
+        app:layout_constraintStart_toEndOf="@id/tv_admin_title"
+        app:layout_constraintTop_toTopOf="@id/tv_admin_title"
+        app:tint="@android:color/holo_red_light" />
+
+    <TextView
+        android:id="@+id/tv_admin_report"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:includeFontPadding="false"
+        android:textColor="@android:color/holo_red_light"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@id/iv_admin_report"
+        app:layout_constraintStart_toEndOf="@id/iv_admin_report"
+        app:layout_constraintTop_toTopOf="@id/iv_admin_report"
+        tools:text="5" />
+
+    <ImageButton
+        android:id="@+id/ib_more"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:background="@null"
+        android:contentDescription="@string/common_more"
+        android:src="@drawable/ic_arrow_right"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/gray" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
