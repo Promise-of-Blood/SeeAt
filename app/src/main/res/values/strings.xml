@@ -39,6 +39,7 @@
     <string name="signup_page2">2/3</string>
     <string name="signup_page3">3/3</string>
     <string name="signup_title_nickname">활동명을 정해주세요</string>
+    <string name="signup_rule_1">닉네임에 공백문자는 사용할 수 없습니다</string>
     <string name="signup_etv_hint">활동명을 입력해주세요</string>
     <string name="signup_title_photo">프로필 사진을 설정해주세요</string>
     <string name="signup_title_introduce">한줄 소개를 입력해주세요</string>
@@ -136,6 +137,8 @@
     <string name="navigation_detail_image">이미지 확대 화면</string>
     <string name="dialog_confirm_title">프로필 설정 취소</string>
     <string name="dialog_confirm_content">이전에 기입한 정보가 저장되지 않습니다. \n나중에 설정하시겠습니까?</string>
+    <string name="dialog_next_confirm_title">프로필 사진 설정</string>
+    <string name="dialog_next_confirm_content">아직 프로필 사진을 설정하지 않았습니다. 그냥 넘어가시겠습니까?</string>
     <string name="dialog_btn_cancel">취소</string>
     <string name="dialog_btn_confirm">확인</string>
 

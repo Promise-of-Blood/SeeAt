@@ -106,6 +106,7 @@ dependencies {
     // firebase
     implementation(platform(libs.firebase.bom))
     implementation(libs.bundles.firebase)
+    implementation (libs.geofire.android.common)
 
     // hilt
     implementation(libs.dagger.hilt.android)

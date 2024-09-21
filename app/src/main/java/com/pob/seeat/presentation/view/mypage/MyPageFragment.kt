@@ -48,11 +48,14 @@ class MyPageFragment : Fragment() {
             if (data != null) {
                 val updatedNickname = data.getStringExtra("updatedNickname")
                 val updatedIntroduce = data.getStringExtra("updatedIntroduce")
+                val updatedProfileUrl = data.getStringExtra("updatedProfileUrl")
+                Log.d("공명선", "$updatedProfileUrl")
 
                 if (updatedNickname != null && updatedIntroduce != null) {
 
                     binding.tvUserName.text = updatedNickname
                     binding.tvUserIntroduce.text = updatedIntroduce
+                    displayImage(updatedProfileUrl)
 
                     userViewModel.getUserInfo(uid!!)
                 } else {
@@ -178,9 +181,17 @@ class MyPageFragment : Fragment() {
         }
     }
 
-    private fun displayImage(imageUrl: String) {
+    private fun displayImage(imageUrl: String?) {
         if (isAdded) {
-            Glide.with(this).load(imageUrl).into(binding.ivProfileImage)
+            if (imageUrl != null) {
+                Glide.with(this)
+                    .load(imageUrl)
+                    .into(binding.ivProfileImage)
+            } else {
+                Glide.with(this)
+                    .load(R.drawable.baseline_person_24)
+                    .into(binding.ivProfileImage)
+            }
         }
     }
 
