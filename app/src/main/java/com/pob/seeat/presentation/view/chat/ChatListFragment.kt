@@ -75,7 +75,6 @@ class ChatListFragment : Fragment() {
             override fun onSet(photoUrl: String): RequestBuilder<Drawable> {
                 return Glide.with(requireContext()).load(photoUrl)
             }
-
         }
 //        chatListAdapter.submitList(ChatListDummyData.getDummyList())
     }

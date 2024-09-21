@@ -52,7 +52,7 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity> <!-- TODO 서비스가 백그라운드에서 심한 배터리 소모 및 발열 문제 발생 예상 근거 -->
+        </activity>
         <service
             android:name=".presentation.service.FirebaseMessagingService"
             android:exported="false">

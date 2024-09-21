@@ -116,7 +116,8 @@ class DetailFragment : Fragment() {
     ): View {
         _binding = FragmentDetailBinding.inflate(inflater, container, false)
         initDetailViewmodel()
-        (activity as MainActivity).setBottomNavigationVisibility(View.GONE)
+        if(activity is MainActivity)
+            (activity as MainActivity).setBottomNavigationVisibility(View.GONE)
         return binding.root
     }
 
@@ -751,6 +752,7 @@ class DetailFragment : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-        (activity as MainActivity).setBottomNavigationVisibility(View.VISIBLE)
+        if (activity is MainActivity)
+            (activity as MainActivity).setBottomNavigationVisibility(View.VISIBLE)
     }
 }

@@ -12,7 +12,6 @@ import com.pob.seeat.data.remote.chat.ChatsRemote
 import com.pob.seeat.data.remote.chat.MessagesRemote
 import com.pob.seeat.data.remote.chat.UsersRemote
 import com.pob.seeat.presentation.view.chat.items.ChattingUiItem
-import com.pob.seeat.utils.GoogleAuthUtil
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flatMapLatest
@@ -133,7 +132,7 @@ class ChatRepositoryImpl @Inject constructor(
 }
 
 fun MessagesInfoModel.toChattingUiItem(): ChattingUiItem {
-    val uid = GoogleAuthUtil.getUserUid()
+    val uid = FirebaseAuth.getInstance().currentUser?.uid
     return if (this.sender == uid) {
         ChattingUiItem.MyChatItem(
             message = this.message,
