@@ -2,6 +2,7 @@ package com.pob.seeat.presentation.view.admin.items
 
 import com.pob.seeat.domain.model.ReportedCommentModel
 import com.pob.seeat.domain.model.ReportedFeedModel
+import java.time.LocalDateTime
 
 sealed class AdminListItem {
     data class User(
@@ -18,6 +19,7 @@ sealed class AdminListItem {
         val feedTitle: String,
         val feedContent: String,
         val reportCount: Int,
+        val recentReportedAt: LocalDateTime,
         val viewType: AdminEnum = AdminEnum.FEED_REPORT,
     ) : AdminListItem()
 
@@ -25,6 +27,7 @@ sealed class AdminListItem {
         val commentId: String,
         val comment: String,
         val reportCount: Int,
+        val recentReportedAt: LocalDateTime,
         val viewType: AdminEnum = AdminEnum.COMMENT_REPORT,
     ) : AdminListItem()
 }
@@ -35,13 +38,15 @@ fun List<ReportedFeedModel>.toFeedAdminListItem() = map {
         feedTitle = it.feedTitle,
         feedContent = it.feedContent,
         reportCount = it.reportList.size,
+        recentReportedAt = it.reportList.first().reportedAt,
     )
 }
 
 fun List<ReportedCommentModel>.toCommentAdminListItem() = map {
     AdminListItem.CommentReport(
         commentId = it.commentId,
-        comment = it.comment ?: "",
+        comment = it.comment,
         reportCount = it.reportList.size,
+        recentReportedAt = it.reportList.first().reportedAt,
     )
 }

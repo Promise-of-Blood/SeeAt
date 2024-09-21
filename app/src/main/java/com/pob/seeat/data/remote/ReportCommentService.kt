@@ -33,12 +33,12 @@ class ReportCommentService @Inject constructor(private val firestore: FirebaseFi
             .orderBy("timeStamp", Query.Direction.DESCENDING).get().await()
             .mapNotNull { documentSnapshot ->
                 val result = documentSnapshot.toObject(ReportedCommentResponse::class.java)
-                val comment =
-                    commentDocumentsMap[result.commentId] ?: firestore.collection("comment")
-                        .document(result.commentId).get().await().also {
-                            commentDocumentsMap[result.commentId] = it
-                        }
-                result.copy(comment = comment.getString("comment"))
+                val comment = commentDocumentsMap[result.commentId] ?: firestore.collection("feed")
+                    .document(result.feedId).collection("comments").document(result.commentId).get()
+                    .await().also {
+                        commentDocumentsMap[result.commentId] = it
+                    }
+                result.copy(comment = comment.getString("comment") ?: "")
             }
     }
 }

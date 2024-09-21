@@ -5,7 +5,7 @@ import java.time.LocalDateTime
 data class ReportedCommentModel(
     val feedId: String = "",
     val commentId: String = "",
-    val comment: String? = null,
+    val comment: String = "",
     val reportedUserId: String = "",
     val reportList: List<ReportedInfoModel>,
 )

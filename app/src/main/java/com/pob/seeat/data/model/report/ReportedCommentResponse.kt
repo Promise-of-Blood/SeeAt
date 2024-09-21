@@ -8,5 +8,5 @@ data class ReportedCommentResponse(
     val reportedUserId: String = "",
     val reporterId: String = "",
     val timeStamp: Timestamp? = null,
-    val comment: String? = null
+    val comment: String = "",
 )
