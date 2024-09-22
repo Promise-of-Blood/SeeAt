@@ -43,6 +43,7 @@ import com.pob.seeat.utils.GoogleAuthUtil.getUserUid
 import com.pob.seeat.utils.Utils.compressBitmapToUri
 import com.pob.seeat.utils.Utils.px
 import com.pob.seeat.utils.Utils.resizeImage
+import com.pob.seeat.utils.Utils.tagList
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -171,40 +172,11 @@ class EditDetailFragment : Fragment() {
                     etContent.setText(feedModel.data.content)
 
                     chipGroup.removeAllViews()
-
-                    if (feedModel.data.tags.isEmpty()) {
-                        tvSelectTag.text = "태그를 선택해 주세요"
-                    } else {
-                        tvSelectTag.text = ""
-                        // tagList를 이용해 Chip을 동적으로 생성
-                        Timber.tag("NewFeedFragment").d("selectedTagList: ${feedModel.data.tags}")
-                        for (tag in feedModel.data.tags){
-
-                        }
-                        for (tag in selectedTagList) {
-                            val chip = Chip(context).apply {
-                                text = tag.tagName
-                                setChipIconResource(tag.tagImage)
-
-                                chipBackgroundColor = ContextCompat.getColorStateList(
-                                    context,
-                                    R.color.background_chip_background_selector
-                                )
-                                chipStrokeWidth = 0f
-                                chipIconSize = 16f.px.toFloat()
-                                chipCornerRadius = 32f.px.toFloat()
-                                chipStartPadding = 10f.px.toFloat()
-
-                                elevation = 2f.px.toFloat()
-
-                                isCheckable = false
-                                isClickable = false
-                            }
-
-                            // ChipGroup에 동적으로 Chip 추가
-                            chipGroup.addView(chip)
-                        }
+                    selectedTagList = tagList.filter { tagModel ->
+                        feedModel.data.tags.contains(tagModel.tagName)
                     }
+                    newFeedViewModel.updateSelectTagList(selectedTagList)
+
                 }
 
                 is Result.Error -> TODO()
