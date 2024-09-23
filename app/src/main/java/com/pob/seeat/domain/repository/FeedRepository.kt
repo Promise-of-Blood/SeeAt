@@ -1,6 +1,5 @@
 package com.pob.seeat.domain.repository
 
-import com.naver.maps.geometry.LatLng
 import com.pob.seeat.data.model.Result
 import com.pob.seeat.domain.model.FeedModel
 import kotlinx.coroutines.flow.Flow
