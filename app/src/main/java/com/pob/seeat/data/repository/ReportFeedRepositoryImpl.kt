@@ -29,4 +29,20 @@ class ReportFeedRepositoryImpl @Inject constructor(private val reportFeedRemote:
             emit(Result.Error(e.message ?: "An unknown error occurred"))
         }
     }
+
+    override suspend fun deleteReportedFeed(feedId: String) {
+        try {
+            reportFeedRemote.deleteReportedFeed(feedId)
+        } catch (e: Exception) {
+            Timber.e(e.toString())
+        }
+    }
+
+    override suspend fun deleteReportByFeedId(feedId: String) {
+        try {
+            reportFeedRemote.deleteReportByFeedId(feedId)
+        } catch (e: Exception) {
+            Timber.e(e.toString())
+        }
+    }
 }

@@ -35,4 +35,20 @@ class ReportCommentRepositoryImpl @Inject constructor(
                 emit(Result.Error(e.message ?: "An unknown error occurred"))
             }
         }
+
+    override suspend fun deleteReportedComment(feedId: String, commentId: String) {
+        try {
+            reportCommentService.deleteReportedComment(feedId, commentId)
+        } catch (e: Exception) {
+            Timber.e(e.toString())
+        }
+    }
+
+    override suspend fun deleteReportByCommentId(commentId: String) {
+        try {
+            reportCommentService.deleteReportByCommentId(commentId)
+        } catch (e: Exception) {
+            Timber.e(e.toString())
+        }
+    }
 }

@@ -15,4 +15,6 @@ interface ReportCommentRepository {
     )
 
     suspend fun getReportedCommentList(): Flow<Result<List<ReportedCommentResponse>>>
+    suspend fun deleteReportedComment(feedId: String, commentId: String)
+    suspend fun deleteReportByCommentId(commentId: String)
 }
