@@ -141,6 +141,10 @@
     <string name="dialog_next_confirm_content">아직 프로필 사진을 설정하지 않았습니다. 그냥 넘어가시겠습니까?</string>
     <string name="dialog_btn_cancel">취소</string>
     <string name="dialog_btn_confirm">확인</string>
+    <string name="dialog_reported_comment">삭제한 댓글은 복구되지 않습니다.\n정말로 삭제하시겠습니까?</string>
+    <string name="dialog_reported_feed">삭제한 게시글은 복구되지 않습니다.\n정말로 삭제하시겠습니까?</string>
+    <string name="dialog_ignore_reported_feed">선택한 게시글에 대한 모든 신고들이 삭제됩니다.\n정말로 무시하시겠습니까?</string>
+    <string name="dialog_ignore_reported_comment">선택한 댓글에 대한 모든 신고들이 삭제됩니다.\n정말로 무시하시겠습니까?</string>
 
     <!-- detail -->
     <string-array name="detail_spinner_string">
@@ -161,10 +165,14 @@
 
     <!-- admin -->
     <string name="admin_title">관리자</string>
+    <string name="admin_detail_title">게시글 상세</string>
     <string name="admin_tab_user">유저 관리</string>
     <string name="admin_tab_report">신고 관리</string>
     <string name="admin_profile_image">프로필 이미지</string>
     <string name="admin_sort_option">정렬</string>
+    <string name="admin_report_navigate">전체보기</string>
+    <string name="admin_report_ignore">무시하기</string>
+    <string name="admin_report_delete">삭제하기</string>
     <string-array name="admin_sort">
         <item>최신순</item>
         <item>신고순</item>

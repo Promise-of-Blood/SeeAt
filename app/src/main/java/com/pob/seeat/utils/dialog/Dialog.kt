@@ -6,6 +6,7 @@ import android.provider.Settings.Global.getString
 import android.text.Layout
 import android.view.LayoutInflater
 import android.view.View
+import android.view.WindowManager
 import android.widget.Button
 import android.widget.TextView
 import com.pob.seeat.R
@@ -50,8 +51,8 @@ object Dialog {
         dialog.show()
     }
 
-    fun showProfileConfirmDialog(context: Context, onConfirm: () -> Unit){
-        val dialogView : View = LayoutInflater.from(context).inflate(R.layout.confirm_dialog, null)
+    fun showProfileConfirmDialog(context: Context, onConfirm: () -> Unit) {
+        val dialogView: View = LayoutInflater.from(context).inflate(R.layout.confirm_dialog, null)
 
         val dialog = Dialog(context)
         dialog.setContentView(dialogView)
@@ -60,7 +61,7 @@ object Dialog {
         val confirmBtn = dialogView.findViewById<Button>(R.id.btn_confirm)
 
         val window = dialog.window
-        window?.setLayout(1000,615)
+        window?.setLayout(1000, 615)
 
         cancelBtn.setOnClickListener {
             dialog.dismiss()
@@ -73,14 +74,19 @@ object Dialog {
         dialog.show()
     }
 
-    fun showDialog(context: Context, titleText : String, contentText : String, onConfirm: () -> Unit){
-        val dialogView : View = LayoutInflater.from(context).inflate(R.layout.confirm_dialog, null)
+    fun showDialog(
+        context: Context,
+        titleText: String,
+        contentText: String,
+        onConfirm: () -> Unit
+    ) {
+        val dialogView: View = LayoutInflater.from(context).inflate(R.layout.confirm_dialog, null)
 
         val dialog = Dialog(context)
         dialog.setContentView(dialogView)
 
         val window = dialog.window
-        window?.setLayout(1000,615)
+        window?.setLayout(1000, WindowManager.LayoutParams.WRAP_CONTENT)
 
         val title = dialogView.findViewById<TextView>(R.id.tv_confirm_dialog_title)
         val content = dialogView.findViewById<TextView>(R.id.tv_confirm_dialog_content)
@@ -102,8 +108,6 @@ object Dialog {
         dialog.show()
 
     }
-
-
 
 
 }

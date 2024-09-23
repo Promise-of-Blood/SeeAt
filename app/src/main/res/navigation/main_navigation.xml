@@ -154,10 +154,15 @@
         <argument
             android:name="feedIdArg"
             app:argType="string" />
+        <argument
+            android:name="commentIdArg"
+            android:defaultValue=""
+            app:argType="string"
+            app:nullable="true" />
 
         <action
             android:id="@+id/action_detail_to_show_locate"
-            app:destination="@id/navigation_show_locate" >
+            app:destination="@id/navigation_show_locate">
             <argument
                 android:name="feedLatitude"
                 app:argType="float" />

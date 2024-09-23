@@ -4,10 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.chip.Chip
@@ -21,6 +23,7 @@ import com.pob.seeat.presentation.view.admin.adapter.AdminRecyclerViewAdapter
 import com.pob.seeat.presentation.view.admin.items.AdminListItem
 import com.pob.seeat.presentation.viewmodel.AdminReportViewModel
 import com.pob.seeat.utils.Utils.px
+import com.pob.seeat.utils.dialog.Dialog
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -30,8 +33,14 @@ class ReportListFragment : Fragment() {
     private var _binding: FragmentReportListBinding? = null
     private val binding get() = _binding!!
 
-    private val adminRecyclerViewAdapter by lazy { AdminRecyclerViewAdapter(::onClickListItem) }
     private val adminReportViewModel by viewModels<AdminReportViewModel>()
+    private val adminRecyclerViewAdapter by lazy {
+        AdminRecyclerViewAdapter(
+            ::onDelete,
+            ::onIgnore,
+            ::onNavigate,
+        )
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -45,6 +54,11 @@ class ReportListFragment : Fragment() {
         initView()
         initViewModel()
         initBottomSheet()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        adminReportViewModel.getReportedList()
     }
 
     override fun onDestroy() {
@@ -113,8 +127,73 @@ class ReportListFragment : Fragment() {
         }
     }
 
-    private fun onClickListItem(item: AdminListItem) {
-        // TODO: 상세 페이지로 이동
+    private fun onDelete(item: AdminListItem) {
+        when (item) {
+            is AdminListItem.FeedReport -> {
+                Dialog.showDialog(
+                    requireContext(),
+                    "게시글 삭제",
+                    getString(R.string.dialog_reported_feed),
+                ) {
+                    adminReportViewModel.deleteReportedFeed(item.feedId)
+                    Toast.makeText(requireContext(), "게시글이 삭제되었습니다.", Toast.LENGTH_SHORT).show()
+                    findNavController().popBackStack()
+                }
+            }
+
+            is AdminListItem.CommentReport -> {
+                Dialog.showDialog(
+                    requireContext(),
+                    "댓글 삭제",
+                    getString(R.string.dialog_reported_comment),
+                ) {
+                    adminReportViewModel.deleteReportedComment(item.feedId, item.commentId)
+                    Toast.makeText(requireContext(), "댓글이 삭제되었습니다.", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            else -> return
+        }
+    }
+
+    private fun onNavigate(item: AdminListItem) {
+        val feedId =
+            if (item is AdminListItem.FeedReport) item.feedId else if (item is AdminListItem.CommentReport) item.feedId else ""
+        val commentId = if (item is AdminListItem.CommentReport) item.commentId else ""
+        if (feedId.isEmpty()) {
+            Toast.makeText(requireContext(), "잘못된 접근입니다.", Toast.LENGTH_SHORT).show()
+        }
+        val action = ReportListFragmentDirections.actionReportListToFeedDetail(feedId, commentId)
+        findNavController().navigate(action)
+    }
+
+    private fun onIgnore(item: AdminListItem) {
+        when (item) {
+            is AdminListItem.FeedReport -> {
+                Dialog.showDialog(
+                    requireContext(),
+                    "게시글 신고 무시",
+                    getString(R.string.dialog_ignore_reported_feed),
+                ) {
+                    adminReportViewModel.ignoreReportedFeed(item.feedId)
+                    Toast.makeText(requireContext(), "신고를 무시했습니다.", Toast.LENGTH_SHORT).show()
+                    findNavController().popBackStack()
+                }
+            }
+
+            is AdminListItem.CommentReport -> {
+                Dialog.showDialog(
+                    requireContext(),
+                    "댓글 신고 무시",
+                    getString(R.string.dialog_ignore_reported_comment),
+                ) {
+                    adminReportViewModel.ignoreReportedComment(item.commentId)
+                    Toast.makeText(requireContext(), "신고를 무시했습니다.", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            else -> return
+        }
     }
 
     private fun ChipGroup.addOptions() {
