@@ -12,4 +12,5 @@
     <color name="quaternary">#FF4Bff00</color>
     <color name="transparent">#00FFFFFF</color>
     <color name="rule_red">#F44336</color>
+    <color name="admin_red">#FFCDC9</color>
 </resources>

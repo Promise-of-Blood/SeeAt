@@ -16,24 +16,28 @@ import com.pob.seeat.databinding.ItemAdminUserBinding
 import com.pob.seeat.presentation.common.ViewHolder
 import com.pob.seeat.presentation.view.admin.items.AdminEnum
 import com.pob.seeat.presentation.view.admin.items.AdminListItem
+import com.pob.seeat.utils.ToggleLayoutAnimation
 
-class AdminRecyclerViewAdapter(private val onClick: (AdminListItem) -> Unit = {}) :
-    ListAdapter<AdminListItem, ViewHolder<AdminListItem>>(object :
-        DiffUtil.ItemCallback<AdminListItem>() {
-        override fun areItemsTheSame(oldItem: AdminListItem, newItem: AdminListItem) = when {
-            oldItem is AdminListItem.User && newItem is AdminListItem.User -> oldItem.uid == newItem.uid
-            oldItem is AdminListItem.FeedReport && newItem is AdminListItem.FeedReport -> oldItem.feedId == newItem.feedId
-            oldItem is AdminListItem.CommentReport && newItem is AdminListItem.CommentReport -> oldItem.commentId == newItem.commentId
-            else -> false
-        }
+class AdminRecyclerViewAdapter(
+    private val onDelete: (AdminListItem) -> Unit = {},
+    private val onIgnore: (AdminListItem) -> Unit = {},
+    private val onNavigate: (AdminListItem) -> Unit = {},
+) : ListAdapter<AdminListItem, ViewHolder<AdminListItem>>(object :
+    DiffUtil.ItemCallback<AdminListItem>() {
+    override fun areItemsTheSame(oldItem: AdminListItem, newItem: AdminListItem) = when {
+        oldItem is AdminListItem.User && newItem is AdminListItem.User -> oldItem.uid == newItem.uid
+        oldItem is AdminListItem.FeedReport && newItem is AdminListItem.FeedReport -> oldItem.feedId == newItem.feedId
+        oldItem is AdminListItem.CommentReport && newItem is AdminListItem.CommentReport -> oldItem.commentId == newItem.commentId
+        else -> false
+    }
 
-        override fun areContentsTheSame(oldItem: AdminListItem, newItem: AdminListItem) = when {
-            oldItem is AdminListItem.User && newItem is AdminListItem.User -> oldItem == newItem
-            oldItem is AdminListItem.FeedReport && newItem is AdminListItem.FeedReport -> oldItem == newItem
-            oldItem is AdminListItem.CommentReport && newItem is AdminListItem.CommentReport -> oldItem == newItem
-            else -> false
-        }
-    }), Filterable {
+    override fun areContentsTheSame(oldItem: AdminListItem, newItem: AdminListItem) = when {
+        oldItem is AdminListItem.User && newItem is AdminListItem.User -> oldItem == newItem
+        oldItem is AdminListItem.FeedReport && newItem is AdminListItem.FeedReport -> oldItem == newItem
+        oldItem is AdminListItem.CommentReport && newItem is AdminListItem.CommentReport -> oldItem == newItem
+        else -> false
+    }
+}), Filterable {
 
     private var originalList: List<AdminListItem> = emptyList()
 
@@ -60,15 +64,16 @@ class AdminRecyclerViewAdapter(private val onClick: (AdminListItem) -> Unit = {}
                     LayoutInflater.from(
                         parent.context
                     ), parent, false
+                ),
+
                 )
-            )
 
             AdminEnum.FEED_REPORT -> FeedViewHolder(
                 ItemAdminFeedReportBinding.inflate(
                     LayoutInflater.from(
                         parent.context
                     ), parent, false
-                )
+                ), onDelete, onIgnore, onNavigate
             )
 
             AdminEnum.COMMENT_REPORT -> CommentViewHolder(
@@ -76,7 +81,7 @@ class AdminRecyclerViewAdapter(private val onClick: (AdminListItem) -> Unit = {}
                     LayoutInflater.from(
                         parent.context
                     ), parent, false
-                )
+                ), onDelete, onIgnore, onNavigate
             )
 
             else -> UserViewHolder(
@@ -90,7 +95,7 @@ class AdminRecyclerViewAdapter(private val onClick: (AdminListItem) -> Unit = {}
     }
 
     override fun onBindViewHolder(holder: ViewHolder<AdminListItem>, position: Int) {
-        holder.bind(getItem(position), onClick)
+        holder.bind(getItem(position))
     }
 
     class UserViewHolder(binding: ItemAdminUserBinding) : ViewHolder<AdminListItem>(binding.root) {
@@ -111,32 +116,76 @@ class AdminRecyclerViewAdapter(private val onClick: (AdminListItem) -> Unit = {}
         }
     }
 
-    class FeedViewHolder(binding: ItemAdminFeedReportBinding) :
-        ViewHolder<AdminListItem>(binding.root) {
+    class FeedViewHolder(
+        binding: ItemAdminFeedReportBinding,
+        private val onDelete: (AdminListItem) -> Unit,
+        private val onIgnore: (AdminListItem) -> Unit,
+        private val onNavigate: (AdminListItem) -> Unit,
+    ) : ViewHolder<AdminListItem>(binding.root) {
         private val title = binding.tvAdminTitle
         private val content = binding.tvAdminContent
         private val reportCount = binding.tvAdminReport
+        private val more = binding.ibMore
+        private val menu = binding.llAdminMenu
+        private val navigateButton = binding.btnReportDetailNavigate
+        private val ignoreButton = binding.btnReportDetailIgnore
+        private val deleteButton = binding.btnReportDetailDelete
 
         override fun bind(item: AdminListItem, onClick: (AdminListItem) -> Unit) {
             (item as AdminListItem.FeedReport).let {
                 title.text = item.feedTitle
                 content.text = item.feedContent
                 reportCount.text = item.reportCount.toString()
-                itemView.setOnClickListener { onClick(item) }
+                menu.visibility = View.GONE
+                more.rotation = 90f
+                navigateButton.setOnClickListener { onNavigate(item) }
+                ignoreButton.setOnClickListener { onIgnore(item) }
+                deleteButton.setOnClickListener { onDelete(item) }
+                itemView.setOnClickListener {
+                    if (menu.visibility == View.VISIBLE) {
+                        more.rotation = 90f
+                        ToggleLayoutAnimation.collapse(menu)
+                    } else {
+                        more.rotation = -90f
+                        ToggleLayoutAnimation.expand(menu)
+                    }
+                }
             }
         }
     }
 
-    class CommentViewHolder(binding: ItemAdminCommentReportBinding) :
-        ViewHolder<AdminListItem>(binding.root) {
+    class CommentViewHolder(
+        binding: ItemAdminCommentReportBinding,
+        private val onDelete: (AdminListItem) -> Unit,
+        private val onIgnore: (AdminListItem) -> Unit,
+        private val onNavigate: (AdminListItem) -> Unit,
+    ) : ViewHolder<AdminListItem>(binding.root) {
         private val content = binding.tvAdminContent
         private val reportCount = binding.tvAdminReport
+        private val more = binding.ibMore
+        private val menu = binding.llAdminMenu
+        private val navigateButton = binding.btnReportDetailNavigate
+        private val ignoreButton = binding.btnReportDetailIgnore
+        private val deleteButton = binding.btnReportDetailDelete
 
         override fun bind(item: AdminListItem, onClick: (AdminListItem) -> Unit) {
             (item as AdminListItem.CommentReport).let {
                 content.text = item.comment
                 reportCount.text = item.reportCount.toString()
-                itemView.setOnClickListener { onClick(item) }
+                menu.visibility = View.GONE
+                more.rotation = 90f
+                navigateButton.setOnClickListener { onNavigate(item) }
+                ignoreButton.setOnClickListener { onIgnore(item) }
+                deleteButton.setOnClickListener { onDelete(item) }
+                itemView.setOnClickListener {
+                    if (menu.visibility == View.VISIBLE) {
+                        more.rotation = 90f
+                        ToggleLayoutAnimation.collapse(menu)
+                    } else {
+                        more.rotation = -90f
+                        ToggleLayoutAnimation.expand(menu)
+                    }
+                }
             }
         }
     }

@@ -25,6 +25,7 @@ sealed class AdminListItem {
     ) : AdminListItem()
 
     data class CommentReport(
+        val feedId: String,
         val commentId: String,
         val comment: String,
         val reportCount: Int,
@@ -45,6 +46,7 @@ fun List<ReportedFeedModel>.toFeedAdminListItem() = map {
 
 fun List<ReportedCommentModel>.toCommentAdminListItem() = map {
     AdminListItem.CommentReport(
+        feedId = it.feedId,
         commentId = it.commentId,
         comment = it.comment,
         reportCount = it.reportList.size,

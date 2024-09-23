@@ -33,7 +33,6 @@
         android:maxLines="2"
         android:textColor="@color/black"
         android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/ib_more"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_admin_title"
@@ -70,10 +69,67 @@
         android:layout_height="16dp"
         android:background="@null"
         android:contentDescription="@string/common_more"
+        android:rotation="90"
         android:src="@drawable/ic_arrow_right"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/ll_admin_menu"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.5"
         app:tint="@color/gray" />
+
+    <LinearLayout
+        android:id="@+id/ll_admin_menu"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_admin_content">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_report_detail_navigate"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:layout_weight="1"
+            android:background="@drawable/background_corners_radius_10dp_gray_border"
+            android:stateListAnimator="@null"
+            android:text="@string/admin_report_navigate"
+            android:textColor="@color/gray"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_report_detail_ignore"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="12dp"
+            android:layout_weight="1"
+            android:background="@drawable/background_corners_radius_10dp_red_border"
+            android:drawableTint="@android:color/holo_red_light"
+            android:stateListAnimator="@null"
+            android:text="@string/admin_report_ignore"
+            android:textColor="@android:color/holo_red_light"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_report_detail_delete"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="12dp"
+            android:layout_weight="1"
+            android:background="@drawable/background_corners_radius_10dp_gray_border"
+            android:backgroundTint="@android:color/holo_red_light"
+            android:stateListAnimator="@null"
+            android:text="@string/admin_report_delete"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
