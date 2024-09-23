@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.bumptech.glide.Glide
@@ -79,20 +80,19 @@ class BookmarkAdapter(private val onClick: (BookmarkModel) -> Unit) :
             for (tag in tags.toTagList()) {
                 val chip = Chip(context).apply {
                     text = tag.tagName
-                    textSize = 12f
-                    textEndPadding = 4f.px.toFloat()
+                    textSize = 11f
                     setTextColor(AppCompatResources.getColorStateList(context, R.color.black))
 
                     setChipIconResource(tag.tagImage)
                     chipBackgroundColor =
                         AppCompatResources.getColorStateList(context, R.color.white)
-                    chipStrokeWidth = 0f
+                    chipStrokeWidth = 1f
+                    chipStrokeColor = AppCompatResources.getColorStateList(context, R.color.gray)
                     chipIconSize = 12f.px.toFloat()
                     chipMinHeight = 24f.px.toFloat()
                     chipCornerRadius = 32f.px.toFloat()
                     iconStartPadding = 4f.px.toFloat()
 
-                    elevation = 3f.px.toFloat()
                     rippleColor = null
                     isCheckable = false
                     isClickable = false
