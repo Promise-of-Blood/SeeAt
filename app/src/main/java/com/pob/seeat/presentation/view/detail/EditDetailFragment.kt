@@ -76,44 +76,11 @@ class EditDetailFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // TODO PickMultipleVisualMedia 에서 선택 갯수 제한은 API 33부터 지원, 수정 필요
-        // ActivityResultLauncher를 미리 등록
-        multipleImagePickerLauncher =
-            registerForActivityResult(ActivityResultContracts.PickMultipleVisualMedia(imageCount)) { uris ->
-                if (uris.isNotEmpty()) {
-                    uris.forEach { uri ->
-                        val resizedBitmap = resizeImage(requireContext(), uri)
+        setImagePicker()
 
-                        resizedBitmap.let {
-                            // Bitmap을 파일로 저장하고 Uri로 변환
-                            val resizedUri = compressBitmapToUri(requireContext(), it)
-
-                            resizedUri.let { uri ->
-                                uriList.add(uri)
-                            }
-                        }
-                    }
-
-                    // 이미지가 5개를 넘을 경우 초과된 부분 삭제
-                    if (uriList.size > 5) {
-                        val excess = uriList.size - 5
-                        repeat(excess) {
-                            uriList.removeLast()
-                        }
-                        Toast.makeText(
-                            requireContext(),
-                            "최대 5개의 이미지만 선택 가능합니다.",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-
-                    imageCount -= uris.size
-                    adapter.submitList(uriList.toList())
-                } else {
-                    Toast.makeText(requireContext(), "이미지가 선택되지 않았습니다.", Toast.LENGTH_SHORT).show()
-                }
-            }
     }
+
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -163,6 +130,8 @@ class EditDetailFragment : Fragment() {
         _binding = null
     }
 
+
+
     private fun initLoadFeedData() {
         val feedModel = detailViewModel.singleFeedResponse.value
         binding.apply {
@@ -176,13 +145,52 @@ class EditDetailFragment : Fragment() {
                         feedModel.data.tags.contains(tagModel.tagName)
                     }
                     newFeedViewModel.updateSelectTagList(selectedTagList)
-
                 }
 
                 is Result.Error -> TODO()
                 Result.Loading -> TODO()
             }
         }
+    }
+
+    private fun setImagePicker() {
+        // TODO PickMultipleVisualMedia 에서 선택 갯수 제한은 API 33부터 지원, 수정 필요
+        // ActivityResultLauncher를 미리 등록
+        multipleImagePickerLauncher =
+            registerForActivityResult(ActivityResultContracts.PickMultipleVisualMedia(imageCount)) { uris ->
+                if (uris.isNotEmpty()) {
+                    uris.forEach { uri ->
+                        val resizedBitmap = resizeImage(requireContext(), uri)
+
+                        resizedBitmap.let {
+                            // Bitmap을 파일로 저장하고 Uri로 변환
+                            val resizedUri = compressBitmapToUri(requireContext(), it)
+
+                            resizedUri.let { uri ->
+                                uriList.add(uri)
+                            }
+                        }
+                    }
+
+                    // 이미지가 5개를 넘을 경우 초과된 부분 삭제
+                    if (uriList.size > 5) {
+                        val excess = uriList.size - 5
+                        repeat(excess) {
+                            uriList.removeLast()
+                        }
+                        Toast.makeText(
+                            requireContext(),
+                            "최대 5개의 이미지만 선택 가능합니다.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+
+                    imageCount -= uris.size
+                    adapter.submitList(uriList.toList())
+                } else {
+                    Toast.makeText(requireContext(), "이미지가 선택되지 않았습니다.", Toast.LENGTH_SHORT).show()
+                }
+            }
     }
 
     private fun setSelectLocation() {
