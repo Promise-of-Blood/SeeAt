@@ -80,3 +80,35 @@ class ReportedFeedListUseCase @Inject constructor(
         }
     }
 }
+
+class DeleteReportedCommentUseCase @Inject constructor(
+    private val reportCommentRepository: ReportCommentRepository,
+) {
+    suspend operator fun invoke(feedId: String, commentId: String) {
+        reportCommentRepository.deleteReportedComment(feedId, commentId)
+    }
+}
+
+class DeleteReportedFeedUseCase @Inject constructor(
+    private val reportFeedRepository: ReportFeedRepository,
+) {
+    suspend operator fun invoke(feedId: String) {
+        reportFeedRepository.deleteReportedFeed(feedId)
+    }
+}
+
+class DeleteReportByCommentIdUseCase @Inject constructor(
+    private val reportCommentRepository: ReportCommentRepository,
+) {
+    suspend operator fun invoke(commentId: String) {
+        reportCommentRepository.deleteReportByCommentId(commentId)
+    }
+}
+
+class DeleteReportByFeedIdUseCase @Inject constructor(
+    private val reportFeedRepository: ReportFeedRepository,
+) {
+    suspend operator fun invoke(feedId: String) {
+        reportFeedRepository.deleteReportByFeedId(feedId)
+    }
+}

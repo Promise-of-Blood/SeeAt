@@ -3,6 +3,10 @@ package com.pob.seeat.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pob.seeat.data.model.Result
+import com.pob.seeat.domain.usecase.DeleteReportByCommentIdUseCase
+import com.pob.seeat.domain.usecase.DeleteReportByFeedIdUseCase
+import com.pob.seeat.domain.usecase.DeleteReportedCommentUseCase
+import com.pob.seeat.domain.usecase.DeleteReportedFeedUseCase
 import com.pob.seeat.domain.usecase.ReportedCommentListUseCase
 import com.pob.seeat.domain.usecase.ReportedFeedListUseCase
 import com.pob.seeat.presentation.view.admin.items.AdminListItem
@@ -18,6 +22,10 @@ import javax.inject.Inject
 class AdminReportViewModel @Inject constructor(
     private val reportedCommentListUseCase: ReportedCommentListUseCase,
     private val reportedFeedListUseCase: ReportedFeedListUseCase,
+    private val deleteReportedCommentUseCase: DeleteReportedCommentUseCase,
+    private val deleteReportedFeedUseCase: DeleteReportedFeedUseCase,
+    private val deleteReportByCommentIdUseCase: DeleteReportByCommentIdUseCase,
+    private val deleteReportByFeedIdUseCase: DeleteReportByFeedIdUseCase,
 ) : ViewModel() {
     var reportedList = MutableStateFlow<Result<List<AdminListItem>>>(Result.Loading)
         private set
@@ -50,6 +58,34 @@ class AdminReportViewModel @Inject constructor(
             }.collect {
                 reportedList.value = it
             }
+        }
+    }
+
+    fun deleteReportedComment(feedId: String, commentId: String) {
+        viewModelScope.launch {
+            deleteReportedCommentUseCase(feedId, commentId)
+            getReportedList()
+        }
+    }
+
+    fun deleteReportedFeed(feedId: String) {
+        viewModelScope.launch {
+            deleteReportedFeedUseCase(feedId)
+            getReportedList()
+        }
+    }
+
+    fun ignoreReportedComment(commentId: String) {
+        viewModelScope.launch {
+            deleteReportByCommentIdUseCase(commentId)
+            getReportedList()
+        }
+    }
+
+    fun ignoreReportedFeed(feedId: String) {
+        viewModelScope.launch {
+            deleteReportByFeedIdUseCase(feedId)
+            getReportedList()
         }
     }
 
