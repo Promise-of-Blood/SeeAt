@@ -116,7 +116,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginEnd="8dp"
             android:background="@drawable/background_corners_radius_8dp"
-            android:elevation="16dp"
+            android:elevation="8dp"
             android:hint="@string/search_hint"
             android:imeOptions="actionSearch"
             android:inputType="text"
@@ -135,8 +135,9 @@
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             android:background="@drawable/background_corners_radius_8dp"
+            android:backgroundTint="@color/primary"
             android:contentDescription="@string/search"
-            android:elevation="16dp"
+            android:elevation="8dp"
             android:maxHeight="48dp"
             android:padding="8dp"
             android:scaleType="fitCenter"
@@ -145,7 +146,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHeight_percent="0.40"
             app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/primary" />
+            app:tint="@color/white" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_tag_list"
