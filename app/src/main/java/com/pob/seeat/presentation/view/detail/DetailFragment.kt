@@ -61,6 +61,7 @@ import com.pob.seeat.presentation.viewmodel.CommentViewModel
 import com.pob.seeat.presentation.viewmodel.DetailViewModel
 import com.pob.seeat.presentation.viewmodel.ReportCommentViewModel
 import com.pob.seeat.utils.EventBus
+import com.pob.seeat.utils.Utils.calculateDistance
 import com.pob.seeat.utils.Utils.px
 import com.pob.seeat.utils.Utils.toKoreanDiffString
 import com.pob.seeat.utils.Utils.toLocalDateTime
@@ -72,11 +73,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.Locale
-import kotlin.math.asin
-import kotlin.math.cos
-import kotlin.math.pow
-import kotlin.math.sin
-import kotlin.math.sqrt
 
 @AndroidEntryPoint
 class DetailFragment : Fragment() {
@@ -598,30 +594,6 @@ class DetailFragment : Fragment() {
         }
     }
 
-    /**
-     * 두 GeoPoint간의 거리 계산
-     * @param myGeoPoint 현재 좌표 GeoPoint
-     * @param feedGeoPoint 계산하려는 좌표 GeoPoint
-     * @return 두 좌표간 거리가 미터단위로 Int로 반환됨
-     */
-    private fun calculateDistance(myGeoPoint: GeoPoint, feedGeoPoint: GeoPoint): Int {
-
-        val RR = 6372.8 * 1000
-
-        val myLatitude = myGeoPoint.latitude
-        val myLongitude = myGeoPoint.longitude
-        val feedLatitude = feedGeoPoint.latitude
-        val feedLongitude = feedGeoPoint.longitude
-
-        val dLat = Math.toRadians(feedLatitude - myLatitude)
-        val dLon = Math.toRadians(feedLongitude - myLongitude)
-        val a =
-            sin(dLat / 2).pow(2.0) + sin(dLon / 2).pow(2.0) * cos(Math.toRadians(myLatitude))
-        val c = 2 * asin(sqrt(a))
-
-        return (RR * c).toInt()
-
-    }
 
     private fun formatDistanceToString(meter: Int): String {
         return when {

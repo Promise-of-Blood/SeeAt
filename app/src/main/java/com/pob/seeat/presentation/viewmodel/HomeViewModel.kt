@@ -23,6 +23,8 @@ class HomeViewModel @Inject constructor(
     private val _unreadAlarmCount = MutableStateFlow<Result<Long>>(Result.Loading)
     val unreadAlarmCount: StateFlow<Result<Long>> = _unreadAlarmCount
 
+    var feedList: List<FeedModel> = emptyList()
+
     var screenWidth: Int? = null
     var screenHeight: Int? = null
 
