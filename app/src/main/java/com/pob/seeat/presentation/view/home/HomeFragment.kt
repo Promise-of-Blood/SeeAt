@@ -25,11 +25,12 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.Navigation
+import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.firebase.firestore.GeoPoint
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraAnimation
 import com.naver.maps.map.CameraUpdate
@@ -42,6 +43,7 @@ import com.naver.maps.map.clustering.LeafMarkerInfo
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.Overlay
 import com.naver.maps.map.util.FusedLocationSource
+import com.pob.seeat.MainActivity
 import com.pob.seeat.R
 import com.pob.seeat.data.model.Result
 import com.pob.seeat.databinding.FragmentHomeBinding
@@ -51,25 +53,19 @@ import com.pob.seeat.presentation.common.CustomDecoration
 import com.pob.seeat.presentation.view.UiState
 import com.pob.seeat.presentation.viewmodel.HomeViewModel
 import com.pob.seeat.presentation.viewmodel.RestroomViewModel
+import com.pob.seeat.utils.Utils.calculateDistance
 import com.pob.seeat.utils.Utils.px
 import com.pob.seeat.utils.Utils.tagList
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import kotlin.math.atan2
-import kotlin.math.cos
-import kotlin.math.sin
-import kotlin.math.sqrt
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
-    private var feedList: List<FeedModel> = emptyList()
-
-    private val TAG = "PersistentActivity"
     private val restroomViewModel: RestroomViewModel by viewModels()
 
     // 맵 관련 변수
@@ -81,6 +77,8 @@ class HomeFragment : Fragment() {
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
 
     private var isExpanded = false
+
+    private lateinit var navController: NavController
 
     private val homeViewModel: HomeViewModel by viewModels()
 
@@ -118,6 +116,7 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Timber.d("onViewCreated")
+        navController = findNavController()
         initNaverMap()
         initRestroomViewModel()
         initTagRecyclerView()
@@ -148,6 +147,8 @@ class HomeFragment : Fragment() {
     }
 
     private fun initialSetting() {
+
+
         binding.run {
             // 피드 새로 고침
             ibRefresh.setOnClickListener {
@@ -160,7 +161,9 @@ class HomeFragment : Fragment() {
 
             // 마커 추가
             ibAddMarker.setOnClickListener {
-                findNavController().navigate(R.id.action_home_to_new_feed)
+                val action = EmptyFragmentDirections.actionHomeToNewFeed()
+                navController.navigate(action)
+                (requireActivity() as MainActivity).showNavHostFragment(true)
             }
 
             // 검색
@@ -208,7 +211,7 @@ class HomeFragment : Fragment() {
      */
     private fun getFeed() = with(homeViewModel) {
         val centerPoint = naverMap.cameraPosition.target
-        val radiusKm = getMapHeight()
+        val radiusKm = getMapHeight() / 1000
 
         Timber.d("getFeed: ${centerPoint.latitude}, ${centerPoint.longitude}, $radiusKm ")
         getFeedList(centerPoint.latitude, centerPoint.longitude, radiusKm)
@@ -258,21 +261,6 @@ class HomeFragment : Fragment() {
     }
 
     private fun getMapHeight(): Double {
-        fun haversine(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
-            val R = 6371.0 // 지구의 반지름(km)
-
-            val dLat = Math.toRadians(lat2 - lat1)
-            val dLon = Math.toRadians(lon2 - lon1)
-
-            val a = sin(dLat / 2) * sin(dLat / 2) +
-                    cos(Math.toRadians(lat1)) * cos(Math.toRadians(lat2)) *
-                    sin(dLon / 2) * sin(dLon / 2)
-
-            val c = 2 * atan2(sqrt(a), sqrt(1 - a))
-
-            return R * c // 두 좌표 사이의 거리(km 단위)
-        }
-
         val projection = naverMap.projection
         val screenWidth = homeViewModel.screenWidth!!.toDouble()
         val screenHeight = homeViewModel.screenHeight!!.toDouble()
@@ -288,12 +276,10 @@ class HomeFragment : Fragment() {
         val bottomLatLng =
             projection.fromScreenLocation(PointF(bottomPoint.first, bottomPoint.second))
 
-        return haversine(
-            topLatLng.latitude,
-            topLatLng.longitude,
-            bottomLatLng.latitude,
-            bottomLatLng.longitude
-        )
+        return calculateDistance(
+            GeoPoint(topLatLng.latitude, topLatLng.longitude),
+            GeoPoint(bottomLatLng.latitude, bottomLatLng.longitude)
+        ).toDouble()
     }
 
     /**
@@ -351,15 +337,14 @@ class HomeFragment : Fragment() {
     }
 
     private fun clickMarker(model: FeedModel) {
-        Timber.tag("HomeFragment")
-            .d(
-                "%s%s",
-                "Marker Clicked: " + model.feedId + ", " + model.title + ", ",
-                model.content
-            )
+        Timber.d(
+            "%s%s",
+            "Marker Clicked: " + model.feedId + ", " + model.title + ", ",
+            model.content
+        )
         model.location.let {
             val cameraUpdate =
-                CameraUpdate.scrollAndZoomTo(LatLng(it!!.latitude, it.longitude), 14.0)
+                CameraUpdate.scrollAndZoomTo(LatLng(it!!.latitude - 0.001, it.longitude), 14.0)
                     .animate(CameraAnimation.Easing, 2000)
 
             naverMap.moveCamera(cameraUpdate)
@@ -401,12 +386,6 @@ class HomeFragment : Fragment() {
             getScreenSize()
             getFeed()
             naverMap.locationTrackingMode = LocationTrackingMode.Follow
-        }
-
-        binding.apply {
-            ibLocation.setOnClickListener {
-                changeStatusLocationButton()
-            }
         }
     }
 
@@ -583,7 +562,7 @@ class HomeFragment : Fragment() {
 
             /**
              * 바텀시트가 슬라이드 될 때마다 Y값을 계산해서 MapItem을 이동하는 코드
-             * 지속적이고 빠른 계산을 지속적으로 요구해 앱의 성능이 크게 저하됨
+             * 높이 계산을 빠르고 지속적으로 요구해 앱의 성능이 크게 저하됨
              * 다른 방법 시도 필요
              **/
 //            override fun onSlide(bottomSheet: View, slideOffset: Float) {
@@ -731,8 +710,9 @@ class HomeFragment : Fragment() {
     }
 
     private fun handleClickFeed(feedModel: FeedModel) {
-        val action = HomeFragmentDirections.actionNavigationHomeToNavigationDetail(feedModel.feedId)
-        view?.let { Navigation.findNavController(it).navigate(action) }
+        val action = EmptyFragmentDirections.actionNavigationHomeToNavigationDetail(feedModel.feedId)
+        navController.navigate(action)
+        (requireActivity() as MainActivity).showNavHostFragment(true)
     }
 
     private fun initRestroomViewModel() {

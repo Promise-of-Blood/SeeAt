@@ -12,7 +12,7 @@
         tools:layout="@layout/fragment_chat_list" />
     <fragment
         android:id="@+id/navigation_home"
-        android:name="com.pob.seeat.presentation.view.home.HomeFragment"
+        android:name="com.pob.seeat.presentation.view.home.EmptyFragment"
         android:label="@string/navigation_home"
         tools:layout="@layout/fragment_home">
         <action
