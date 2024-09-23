@@ -66,29 +66,15 @@
 
     </androidx.appcompat.widget.Toolbar>
 
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tl_admin"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:layoutAnimation="@null"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tb_admin"
-        app:tabIndicatorColor="@color/gray"
-        app:tabIndicatorFullWidth="true"
-        app:tabIndicatorHeight="1dp"
-        app:tabRippleColor="@color/transparent"
-        app:tabTextAppearance="@style/tab_text"
-        app:tabTextColor="@color/gray" />
-
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/vp_admin"
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fcv_admin"
+        android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tl_admin" />
+        app:layout_constraintTop_toBottomOf="@id/tb_admin"
+        app:navGraph="@navigation/admin_navigation" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
