@@ -35,11 +35,16 @@ class UserListFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val adminUserViewModel: AdminUserViewModel by viewModels()
-    private val adminRecyclerViewAdapter by lazy {
-        AdminRecyclerViewAdapter(onClick = ::onClickListItem)
-    }
-    private val bottomSheetAdapter by lazy {
-        AdminReportRecyclerViewAdapter()
+    private val adminRecyclerViewAdapter by lazy { AdminRecyclerViewAdapter(onClick = ::onClickListItem) }
+
+    private var _bottomSheetBinding: LayoutProfileBottomSheetBinding? = null
+    private val bottomSheetBinding get() = _bottomSheetBinding!!
+
+    private lateinit var bottomSheetDialog: BottomSheetDialog
+    private val bottomSheetRecyclerViewAdapter by lazy {
+        AdminReportRecyclerViewAdapter(
+            handleEmptyList = ::handleEmptyList
+        )
     }
 
     override fun onCreateView(
@@ -52,14 +57,13 @@ class UserListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initView()
-        initUserListViewModel()
-        initUserDetailViewModel()
-        initReportedListViewModel()
+        initViewModels()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        _bottomSheetBinding = null
     }
 
     private fun initView() = with(binding) {
@@ -77,6 +81,12 @@ class UserListFragment : Fragment() {
             adminUserViewModel.getUserList()
             srUserList.isRefreshing = false
         }
+    }
+
+    private fun initViewModels() {
+        initUserListViewModel()
+        initUserDetailViewModel()
+        initReportedListViewModel()
     }
 
     private fun initUserListViewModel() = with(adminUserViewModel) {
@@ -116,7 +126,8 @@ class UserListFragment : Fragment() {
             reportedList.collect { data ->
                 when (data) {
                     is Result.Success -> {
-
+                        bottomSheetRecyclerViewAdapter.submitList(data.data)
+                        bottomSheetRecyclerViewAdapter.setOriginalList(data.data)
                     }
 
                     is Result.Error -> Timber.tag(ADMIN_USER_TAG).e(data.message)
@@ -126,35 +137,28 @@ class UserListFragment : Fragment() {
         }
     }
 
-    private fun showBottomSheet(user: UserInfoModel) {
-        val bottomSheetView = LayoutProfileBottomSheetBinding.inflate(layoutInflater)
-        val bottomSheetDialog = BottomSheetDialog(requireContext())
-        bottomSheetDialog.setContentView(bottomSheetView.root)
-
-        val bottomSheet =
-            bottomSheetDialog.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
-        val bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet!!)
-        bottomSheetView.rvProfileReport.addOnScrollListener(object :
-            RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                bottomSheetBehavior.isDraggable = !recyclerView.canScrollVertically(-1)
-            }
-        })
-        bottomSheetDialog.setOnDismissListener {
-            val isAdminChecked = bottomSheetView.sbProfileToggleAdmin.isChecked
-            if (user.isAdmin != isAdminChecked) {
-                adminUserViewModel.updateIsAdmin(user.uid, isAdminChecked)
-            }
-            bottomSheetDialog.dismiss()
+    private fun onClickListItem(item: AdminListItem) {
+        (item as? AdminListItem.User)?.let {
+            adminUserViewModel.getUserDetail(item.uid)
+            adminUserViewModel.getReportedList(item.uid)
         }
-        bottomSheetView.apply {
+    }
+
+    private fun handleEmptyList(size: Int) = with(bottomSheetBinding) {
+        tvProfileEmpty.visibility = if (size > 0) View.GONE else View.VISIBLE
+    }
+
+    private fun showBottomSheet(user: UserInfoModel) {
+        if (_bottomSheetBinding == null) initBottomSheet()
+        bottomSheetBinding.apply {
             // 사용자 정보
             tvProfileNickname.text = user.nickname
             tvProfileEmail.text = user.email
             tvProfileIntroduce.text = user.introduce
             ivProfileBadge.visibility = if (user.isAdmin) View.VISIBLE else View.GONE
-            Glide.with(requireContext()).load(user.profileUrl).circleCrop().into(ivProfileImage)
+            Glide.with(requireContext())
+                .load(user.profileUrl.ifBlank { R.drawable.baseline_person_24 }).circleCrop()
+                .into(ivProfileImage)
             llProfileReportCount.visibility =
                 if (user.reportedCount > 0) View.VISIBLE else View.GONE
             tvProfileReportCount.text = getString(R.string.admin_report_count, user.reportedCount)
@@ -167,18 +171,56 @@ class UserListFragment : Fragment() {
             acbProfileDeleteUser.setOnClickListener { adminUserViewModel.deleteUser(user.uid) }
 
             // 사용자 신고 기록
-            rvProfileReport.adapter = bottomSheetAdapter
+            rvProfileReport.adapter = bottomSheetRecyclerViewAdapter
             rvProfileReport.layoutManager = LinearLayoutManager(requireContext())
             rvProfileReport.itemAnimator = null
         }
 
+        // 관리자 권한 업데이트
+        bottomSheetDialog.setOnDismissListener {
+            val isAdminChecked = bottomSheetBinding.sbProfileToggleAdmin.isChecked
+            if (user.isAdmin != isAdminChecked) {
+                adminUserViewModel.updateIsAdmin(user.uid, isAdminChecked)
+            }
+            bottomSheetDialog.dismiss()
+        }
         bottomSheetDialog.show()
     }
 
-    private fun onClickListItem(item: AdminListItem) {
-        (item as? AdminListItem.User)?.let {
-            adminUserViewModel.getUserDetail(item.uid)
-            adminUserViewModel.getReportedList(item.uid)
+    private fun initBottomSheet() {
+        _bottomSheetBinding = LayoutProfileBottomSheetBinding.inflate(layoutInflater)
+        bottomSheetDialog = BottomSheetDialog(requireContext())
+        bottomSheetDialog.setContentView(bottomSheetBinding.root)
+
+        // 스크롤 설정
+        val bottomSheet =
+            bottomSheetDialog.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
+        val bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet!!)
+        bottomSheetBinding.rvProfileReport.addOnScrollListener(object :
+            RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                bottomSheetBehavior.isDraggable = !recyclerView.canScrollVertically(-1)
+            }
+        })
+
+        // 리사이클러뷰 설정
+        bottomSheetBinding.rvProfileReport.apply {
+            adapter = bottomSheetRecyclerViewAdapter
+            layoutManager = LinearLayoutManager(requireContext())
+            itemAnimator = null
+            addItemDecoration(
+                CustomDecoration(
+                    1f, 24f, resources.getColor(R.color.light_gray, null)
+                )
+            )
+        }
+        bottomSheetBinding.rgProfileReport.setOnCheckedChangeListener { _, checked ->
+            when (checked) {
+                R.id.rb_profile_feed -> bottomSheetRecyclerViewAdapter.filter.filter("게시글")
+                R.id.rb_profile_comment -> bottomSheetRecyclerViewAdapter.filter.filter("댓글")
+                else -> bottomSheetRecyclerViewAdapter.filter.filter("전체")
+            }
         }
     }
 

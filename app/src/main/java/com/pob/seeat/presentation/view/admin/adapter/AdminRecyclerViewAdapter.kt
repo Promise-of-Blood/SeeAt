@@ -8,8 +8,7 @@ import android.widget.Filterable
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.CenterCrop
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.pob.seeat.R
 import com.pob.seeat.databinding.ItemAdminCommentReportBinding
 import com.pob.seeat.databinding.ItemAdminFeedReportBinding
 import com.pob.seeat.databinding.ItemAdminUserBinding
@@ -45,10 +44,6 @@ class AdminRecyclerViewAdapter(
 
     fun setOriginalList(list: List<AdminListItem>) {
         originalList = list
-    }
-
-    override fun submitList(list: List<AdminListItem>?) {
-        super.submitList(list)
     }
 
     override fun getItemViewType(position: Int) = when (getItem(position)) {
@@ -110,8 +105,9 @@ class AdminRecyclerViewAdapter(
                 nickname.text = item.nickname
                 email.text = item.email
                 adminIcon.visibility = if (item.isAdmin) View.VISIBLE else View.GONE
-                Glide.with(itemView.context).load(item.profileImage)
-                    .transform(CenterCrop(), RoundedCorners(100)).into(image)
+                Glide.with(itemView.context)
+                    .load(item.profileImage.ifBlank { R.drawable.baseline_person_24 }).circleCrop()
+                    .into(image)
                 itemView.setOnClickListener { onClick(item) }
             }
         }

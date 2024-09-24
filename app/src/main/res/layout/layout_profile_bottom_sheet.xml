@@ -27,12 +27,12 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="16dp"
+        android:background="@drawable/background_circle_green"
         android:contentDescription="@string/admin_profile_image"
         app:layout_constraintBottom_toBottomOf="@id/tv_profile_introduce"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/tv_profile_nickname"
-        tools:src="@drawable/background_circle_green" />
+        app:layout_constraintTop_toTopOf="@id/tv_profile_nickname" />
 
     <TextView
         android:id="@+id/tv_profile_nickname"
@@ -279,7 +279,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="16dp"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="12dp"
                     android:checkedButton="@id/rb_profile_all"
                     android:orientation="horizontal"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -337,14 +337,25 @@
             android:id="@+id/rv_profile_report"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginTop="12dp"
             android:orientation="vertical"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/rg_profile_report" />
+
+        <TextView
+            android:id="@+id/tv_profile_empty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/empty_default"
+            android:textColor="@color/gray"
+            android:textSize="14sp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/rv_profile_report"
+            app:layout_constraintEnd_toEndOf="@id/rv_profile_report"
+            app:layout_constraintStart_toStartOf="@id/rv_profile_report"
+            app:layout_constraintTop_toTopOf="@id/rv_profile_report" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

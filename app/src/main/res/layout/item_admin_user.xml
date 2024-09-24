@@ -13,12 +13,12 @@
         android:id="@+id/iv_admin_user_image"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:background="@drawable/background_circle_green"
         android:contentDescription="@string/admin_profile_image"
         app:layout_constraintBottom_toBottomOf="@id/tv_admin_user_email"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/tv_admin_user_nickname"
-        tools:src="@drawable/ic_launcher_background" />
+        app:layout_constraintTop_toTopOf="@id/tv_admin_user_nickname" />
 
     <TextView
         android:id="@+id/tv_admin_user_nickname"

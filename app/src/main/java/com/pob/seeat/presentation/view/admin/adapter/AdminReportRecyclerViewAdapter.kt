@@ -7,13 +7,15 @@ import android.widget.Filter
 import android.widget.Filterable
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
+import com.pob.seeat.databinding.ItemAdminCommentReportBinding
 import com.pob.seeat.databinding.ItemAdminFeedReportBinding
 import com.pob.seeat.presentation.common.ViewHolder
 import com.pob.seeat.presentation.view.admin.items.AdminEnum
 import com.pob.seeat.presentation.view.admin.items.AdminReportListItem
 
 class AdminReportRecyclerViewAdapter(
-    private val onClick: (AdminReportListItem) -> Unit = {}
+    private val onClick: (AdminReportListItem) -> Unit = {},
+    private val handleEmptyList: (Int) -> Unit = {},
 ) : ListAdapter<AdminReportListItem, ViewHolder<AdminReportListItem>>(object :
     DiffUtil.ItemCallback<AdminReportListItem>() {
     override fun areItemsTheSame(oldItem: AdminReportListItem, newItem: AdminReportListItem) =
@@ -30,6 +32,12 @@ class AdminReportRecyclerViewAdapter(
             else -> false
         }
 }), Filterable {
+
+    private var originalList: List<AdminReportListItem> = emptyList()
+
+    fun setOriginalList(list: List<AdminReportListItem>) {
+        originalList = list
+    }
 
     override fun getItemViewType(position: Int) = when (getItem(position)) {
         is AdminReportListItem.FeedReport -> AdminEnum.FEED_REPORT.viewType
@@ -48,8 +56,8 @@ class AdminReportRecyclerViewAdapter(
             ),
         )
 
-        AdminEnum.COMMENT_REPORT.viewType -> FeedReportViewHolder(
-            ItemAdminFeedReportBinding.inflate(
+        AdminEnum.COMMENT_REPORT.viewType -> CommentReportViewHolder(
+            ItemAdminCommentReportBinding.inflate(
                 LayoutInflater.from(
                     parent.context
                 ), parent, false
@@ -76,21 +84,60 @@ class AdminReportRecyclerViewAdapter(
         private val reportCount = binding.tvAdminReport
         private val more = binding.ibMore
         private val menu = binding.llAdminMenu
-        private val navigateButton = binding.btnReportDetailNavigate
-        private val ignoreButton = binding.btnReportDetailIgnore
-        private val deleteButton = binding.btnReportDetailDelete
 
         override fun bind(item: AdminReportListItem, onClick: (AdminReportListItem) -> Unit) {
             (item as AdminReportListItem.FeedReport).let {
-                title.text = "제목"
-                content.text = "내용"
-                reportCount.text = "123"
+                title.text = item.content?.title ?: ""
+                content.text = item.content?.content ?: ""
+                reportCount.text = item.reportedCount.toString()
                 menu.visibility = View.GONE
+                more.visibility = View.GONE
+            }
+        }
+    }
+
+    class CommentReportViewHolder(binding: ItemAdminCommentReportBinding) :
+        ViewHolder<AdminReportListItem>(binding.root) {
+        private val content = binding.tvAdminContent
+        private val reportCount = binding.tvAdminReport
+        private val more = binding.ibMore
+        private val menu = binding.llAdminMenu
+
+        override fun bind(item: AdminReportListItem, onClick: (AdminReportListItem) -> Unit) {
+            (item as AdminReportListItem.CommentReport).let {
+                content.text = item.content?.comment ?: ""
+                reportCount.text = item.reportedCount.toString()
+                menu.visibility = View.GONE
+                more.visibility = View.GONE
             }
         }
     }
 
     override fun getFilter(): Filter {
-        TODO("Not yet implemented")
+        return object : Filter() {
+            override fun performFiltering(constraint: CharSequence): FilterResults {
+                val charString = constraint.toString().trim()
+                return FilterResults().apply {
+                    values = filterByOption(charString, originalList)
+                }
+            }
+
+            @Suppress("UNCHECKED_CAST")
+            override fun publishResults(constraint: CharSequence, results: FilterResults) {
+                if (constraint.isBlank()) {
+                    handleEmptyList(originalList.size)
+                    submitList(originalList)
+                } else {
+                    handleEmptyList((results.values as? List<AdminReportListItem>)?.size ?: 0)
+                    submitList(results.values as? List<AdminReportListItem>)
+                }
+            }
+        }
+    }
+
+    private fun filterByOption(target: String, list: List<AdminReportListItem>) = when (target) {
+        "댓글" -> list.filterIsInstance<AdminReportListItem.CommentReport>()
+        "게시글" -> list.filterIsInstance<AdminReportListItem.FeedReport>()
+        else -> list
     }
 }
