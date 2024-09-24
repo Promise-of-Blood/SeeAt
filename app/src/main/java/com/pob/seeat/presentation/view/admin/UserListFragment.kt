@@ -62,8 +62,8 @@ class UserListFragment : Fragment(), Searchable {
         initViewModels()
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
+    override fun onDestroy() {
+        super.onDestroy()
         _binding = null
         _bottomSheetBinding = null
     }

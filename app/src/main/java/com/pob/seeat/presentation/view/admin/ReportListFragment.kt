@@ -41,7 +41,7 @@ class ReportListFragment : Fragment(), Searchable {
             ::onDelete,
             ::onIgnore,
             ::onNavigate,
-            ::handleEmptyList,
+//            ::handleEmptyList,
         )
     }
 
@@ -92,9 +92,10 @@ class ReportListFragment : Fragment(), Searchable {
                 when (data) {
                     is Result.Success -> {
                         binding.pbReportList.visibility = View.GONE
-                        handleEmptyList(data.data.size)
                         adminRecyclerViewAdapter.submitList(data.data)
                         adminRecyclerViewAdapter.setOriginalList(data.data)
+                        binding.rvReportList.visibility = View.VISIBLE
+                        handleEmptyList(data.data.size)
                     }
 
                     is Result.Error -> {
@@ -102,6 +103,7 @@ class ReportListFragment : Fragment(), Searchable {
                     }
 
                     is Result.Loading -> {
+                        binding.rvReportList.visibility = View.GONE
                         binding.pbReportList.visibility = View.VISIBLE
                     }
                 }

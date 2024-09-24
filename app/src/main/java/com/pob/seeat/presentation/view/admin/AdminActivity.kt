@@ -1,6 +1,7 @@
 package com.pob.seeat.presentation.view.admin
 
 import android.os.Bundle
+import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -18,8 +19,9 @@ class AdminActivity : AppCompatActivity() {
     private val onBackPressedCallback: OnBackPressedCallback =
         object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                if (findNavController(R.id.fcv_admin).currentDestination?.id == R.id.admin) finish()
-                else findNavController(R.id.fcv_admin).popBackStack()
+                val navController = getNavController() ?: return
+                if (navController.currentDestination?.id == R.id.admin) finish()
+                else navController.navigateUp()
             }
         }
 
@@ -52,10 +54,17 @@ class AdminActivity : AppCompatActivity() {
     }
 
     fun setNavigateButton(isBackButton: Boolean = true) = with(binding) {
+        ivAdminSearch.visibility = if (isBackButton) View.GONE else View.VISIBLE
         supportActionBar?.setDisplayHomeAsUpEnabled(isBackButton)
         tbAdmin.setNavigationOnClickListener {
-            findNavController(R.id.fcv_admin).popBackStack()
+            getNavController()?.navigateUp()
         }
+    }
+
+    private fun getNavController() = try {
+        binding.fcvAdmin.findNavController()
+    } catch (e: Exception) {
+        null
     }
 
     fun onClickSearchButton(onClick: () -> Unit) = with(binding) {

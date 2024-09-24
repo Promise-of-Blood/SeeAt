@@ -23,7 +23,7 @@ class AdminRecyclerViewAdapter(
     private val onDelete: (AdminListItem) -> Unit = {},
     private val onIgnore: (AdminListItem) -> Unit = {},
     private val onNavigate: (AdminListItem) -> Unit = {},
-    private val handleEmptyList: (size: Int) -> Unit = {},
+    private val handleEmptyList: (Int) -> Unit = {},
     private val onClick: (AdminListItem) -> Unit = {},
 ) : ListAdapter<AdminListItem, ViewHolder<AdminListItem>>(object :
     DiffUtil.ItemCallback<AdminListItem>() {
@@ -196,7 +196,6 @@ class AdminRecyclerViewAdapter(
     override fun getFilter(): Filter {
         return object : Filter() {
             override fun performFiltering(constraint: CharSequence): FilterResults {
-                val charString = constraint.toString().trim()
                 return FilterResults().apply {
                     values = if (searchQuery.all { it.value.isNullOrBlank() }) {
                         originalList
@@ -210,11 +209,11 @@ class AdminRecyclerViewAdapter(
 
             @Suppress("UNCHECKED_CAST")
             override fun publishResults(constraint: CharSequence, results: FilterResults) {
-                if (constraint.isBlank()) {
-                    handleEmptyList(originalList.size)
+                if (searchQuery.all { it.value.isNullOrBlank() }) {
+//                    handleEmptyList(originalList.size)
                     submitList(originalList)
                 } else {
-                    handleEmptyList((results.values as? List<AdminListItem>)?.size ?: 0)
+//                    handleEmptyList((results.values as? List<AdminListItem>)?.size ?: 0)
                     submitList(results.values as? List<AdminListItem>)
                 }
             }
@@ -236,14 +235,14 @@ class AdminRecyclerViewAdapter(
             if (target.all { it in 'a'..'z' || it in 'A'..'Z' }) {
                 val base = when (item) {
                     is AdminListItem.CommentReport -> item.comment
-                    is AdminListItem.FeedReport -> item.feedTitle.lowercase() + item.feedContent.lowercase()
+                    is AdminListItem.FeedReport -> item.feedTitle + item.feedContent
                     is AdminListItem.User -> item.nickname + item.email
                 }
                 base.contains(target.lowercase())
             } else {
                 val base = when (item) {
                     is AdminListItem.CommentReport -> item.comment
-                    is AdminListItem.FeedReport -> item.feedTitle.lowercase() + item.feedContent.lowercase()
+                    is AdminListItem.FeedReport -> item.feedTitle + item.feedContent
                     is AdminListItem.User -> item.nickname + item.email
                 }
                 KoreanMatcher.matchKoreanAndConsonant(base, target)

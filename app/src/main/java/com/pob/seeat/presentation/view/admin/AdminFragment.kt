@@ -35,6 +35,16 @@ class AdminFragment : Fragment() {
         initView()
     }
 
+    override fun onResume() {
+        super.onResume()
+        initView()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        binding.etAdminSearch.text?.clear()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
@@ -57,19 +67,24 @@ class AdminFragment : Fragment() {
             if (llAdminSearch.visibility == View.GONE) {
                 ToggleLayoutAnimation.expand(llAdminSearch)
                 Utils.showKeyboard(etAdminSearch)
-                etAdminSearch.requestFocus()
             } else {
                 ToggleLayoutAnimation.collapse(llAdminSearch)
                 Utils.hideKeyboard(etAdminSearch)
                 etAdminSearch.text?.clear()
             }
         }
+        etAdminSearch.setOnEditorActionListener { textView, _, _ ->
+            viewPagerAdapter.getFragment(vpAdmin.currentItem).let {
+                (it as Searchable).performSearch(AdminSearchTypeEnum.CONTENT, textView.text)
+            }
+            true
+        }
         etAdminSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
             override fun afterTextChanged(p0: Editable?) {}
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 ivAdminSearchClear.visibility = if (p0.isNullOrEmpty()) View.GONE else View.VISIBLE
-                viewPagerAdapter.fragments[vpAdmin.currentItem].let {
+                viewPagerAdapter.getFragment(vpAdmin.currentItem).let {
                     (it as Searchable).performSearch(AdminSearchTypeEnum.CONTENT, p0)
                 }
             }
@@ -77,9 +92,10 @@ class AdminFragment : Fragment() {
         vpAdmin.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
-                viewPagerAdapter.fragments[position].let {
-                    (it as Searchable).performSearch(
-                        AdminSearchTypeEnum.CONTENT, etAdminSearch.text
+                viewPagerAdapter.getFragment(position).let {
+                    if (it.isAdded && it is Searchable) it.performSearch(
+                        AdminSearchTypeEnum.CONTENT,
+                        etAdminSearch.text
                     )
                 }
             }
