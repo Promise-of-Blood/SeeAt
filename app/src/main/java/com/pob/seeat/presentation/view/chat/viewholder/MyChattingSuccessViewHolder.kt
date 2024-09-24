@@ -6,7 +6,10 @@ import com.pob.seeat.presentation.view.chat.items.ChattingUiItem
 class MyChattingSuccessViewHolder(private val binding: ItemChattingMessageMeBinding) : ChattingViewHolder(binding) {
     override fun bind(item: ChattingUiItem) {
         if (item is ChattingUiItem.MyChatItem) {
-            binding.tvMyChat.text = item.message
+            binding.apply {
+                tvMyChat.text = item.message
+                tvMyChatTimestamp.text = item.time
+            }
         }
     }
 }

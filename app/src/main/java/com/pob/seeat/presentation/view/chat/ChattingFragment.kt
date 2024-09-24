@@ -47,6 +47,7 @@ class ChattingFragment : Fragment() {
     private lateinit var chatRoomDb : ChatRoomDb
     var targetId: String = ""
     var chatId = "none"
+    private var targetName = "(알 수 없음)"
     lateinit var feedId : String
 //    private val args: ChattingFragmentArgs by navArgs()
 
@@ -60,6 +61,7 @@ class ChattingFragment : Fragment() {
     ): View {
         feedId = arguments?.getString("feedId") ?: ""
         chatId = arguments?.getString("chatId") ?: "none"
+        targetName = arguments?.getString("targetName") ?: "(알 수 없음)"
         chatRoomDb = ChatRoomDb.getDatabase(requireContext())
         _binding = FragmentChattingBinding.inflate(inflater, container, false)
         return binding.root
@@ -184,7 +186,7 @@ class ChattingFragment : Fragment() {
         println("feed data : $feed")
 //        cgMessageFeedTag.addFeedTags(feed.tags)
         toolbarMessage.apply {
-            title = feed.nickname
+            title = targetName
             setNavigationOnClickListener {
 //                findNavController(requireActivity(), R.id.fcv).popBackStack()
                 requireActivity().finish()

@@ -67,4 +67,14 @@ class ChatViewModel @Inject constructor(
         return chatRepositoryImpl.getChatId(feedId = feedId)
     }
 
+    suspend fun List<Result<ChattingUiItem>>.setTimeItem() : List<Result<ChattingUiItem>> {
+
+    }
+
+    suspend fun List<Result<ChattingUiItem>>.addedTimeItem(item: Result<ChattingUiItem>) : List<Result<ChattingUiItem>> {
+
+    }
+
+    fun compareTime(time1: String, time2: String) : Boolean = time1 == time2
+
 }

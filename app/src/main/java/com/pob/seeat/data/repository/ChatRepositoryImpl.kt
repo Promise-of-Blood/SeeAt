@@ -12,11 +12,14 @@ import com.pob.seeat.data.remote.chat.ChatsRemote
 import com.pob.seeat.data.remote.chat.MessagesRemote
 import com.pob.seeat.data.remote.chat.UsersRemote
 import com.pob.seeat.presentation.view.chat.items.ChattingUiItem
+import com.pob.seeat.utils.Utils.toLocalDateTime
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import timber.log.Timber
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 // TODO 구조 변경 해야 됨 -> 최대한 클린 아키텍처, SOLID 맞추게
 
@@ -136,12 +139,16 @@ fun MessagesInfoModel.toChattingUiItem(): ChattingUiItem {
     return if (this.sender == uid) {
         ChattingUiItem.MyChatItem(
             message = this.message,
-            time = this.timestamp.toString()
+            time = this.timestamp.toLocalDateTime().format(
+                DateTimeFormatter.ofPattern("a h:mm").withLocale(Locale.forLanguageTag("ko"))
+            )
         )
     } else {
         ChattingUiItem.YourChatItem(
             message = this.message,
-            time = this.timestamp.toString()
+            time = this.timestamp.toLocalDateTime().format(
+                DateTimeFormatter.ofPattern("a h:mm").withLocale(Locale.forLanguageTag("ko"))
+            )
         )
     }
 }

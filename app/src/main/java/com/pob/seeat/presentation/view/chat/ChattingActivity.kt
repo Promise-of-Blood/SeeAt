@@ -73,6 +73,7 @@ class ChattingActivity : AppCompatActivity() {
         val bundle = Bundle().apply {
             putString("feedId", feedId)
             putString("chatId", chatId)
+            putString("targetName", intent.getStringExtra("targetName"))
         }
         val navGraph = navController.navInflater.inflate(R.navigation.chat_navigation)
         navGraph.setStartDestination(R.id.fragment_chatting)

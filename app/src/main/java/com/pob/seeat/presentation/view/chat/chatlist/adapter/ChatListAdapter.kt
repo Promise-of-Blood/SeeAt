@@ -13,7 +13,7 @@ import com.pob.seeat.presentation.view.chat.chatlist.viewholder.SuccessViewHolde
 import com.pob.seeat.data.model.Result
 import com.pob.seeat.presentation.common.ViewHolder
 
-enum class ChatListUiState(val type: Int) {
+enum class ChatListResult(val type: Int) {
     SUCCESS(1), ERROR(2), LOADING(0)
 }
 
@@ -27,14 +27,14 @@ class ChatListAdapter : ListAdapter<Result<ChatListUiItem>, RecyclerView.ViewHol
         lateinit var binding : ViewBinding
         lateinit var holder : RecyclerView.ViewHolder
         when(viewType) {
-            ChatListUiState.SUCCESS.type -> {
+            ChatListResult.SUCCESS.type -> {
                 binding = ItemChatListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
                 holder = SuccessViewHolder(binding)
             }
-            ChatListUiState.ERROR.type -> {
+            ChatListResult.ERROR.type -> {
                 // TODO : 오류 창 만들기
             }
-            ChatListUiState.LOADING.type -> {
+            ChatListResult.LOADING.type -> {
                 // TODO : 로딩 창 만들기
             }
         }
@@ -51,9 +51,9 @@ class ChatListAdapter : ListAdapter<Result<ChatListUiItem>, RecyclerView.ViewHol
 
     override fun getItemViewType(position: Int): Int {
         return when (getItem(position)) {
-            is Result.Success -> ChatListUiState.SUCCESS.type
-            is Result.Error -> ChatListUiState.ERROR.type
-            is Result.Loading -> ChatListUiState.LOADING.type
+            is Result.Success -> ChatListResult.SUCCESS.type
+            is Result.Error -> ChatListResult.ERROR.type
+            is Result.Loading -> ChatListResult.LOADING.type
         }
     }
 
