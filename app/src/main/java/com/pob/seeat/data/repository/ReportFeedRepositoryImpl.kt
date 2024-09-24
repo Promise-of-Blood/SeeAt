@@ -1,6 +1,7 @@
 package com.pob.seeat.data.repository
 
 import com.pob.seeat.data.model.Result
+import com.pob.seeat.data.model.report.ReportedFeedHistoryResponse
 import com.pob.seeat.data.model.report.ReportedFeedResponse
 import com.pob.seeat.data.remote.ReportFeedRemote
 import com.pob.seeat.domain.model.FeedReportModel
@@ -29,6 +30,19 @@ class ReportFeedRepositoryImpl @Inject constructor(private val reportFeedRemote:
             emit(Result.Error(e.message ?: "An unknown error occurred"))
         }
     }
+
+    override suspend fun getReportedFeedList(uid: String): Flow<Result<List<ReportedFeedHistoryResponse>>> =
+        flow {
+            emit(Result.Loading)
+            try {
+                val deletedList = reportFeedRemote.getReportedFeedHistoryList(uid)
+                val reportedList = reportFeedRemote.getReportedFeedList(uid)
+                val combinedList = deletedList.plus(reportedList).sortedBy { it.timeStamp }
+                emit(Result.Success(combinedList))
+            } catch (e: Exception) {
+                emit(Result.Error(e.message ?: "An unknown error occurred"))
+            }
+        }
 
     override suspend fun deleteReportedFeed(feedId: String) {
         try {

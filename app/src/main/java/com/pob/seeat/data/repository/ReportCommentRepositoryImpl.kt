@@ -2,6 +2,7 @@ package com.pob.seeat.data.repository
 
 import com.google.firebase.Timestamp
 import com.pob.seeat.data.model.Result
+import com.pob.seeat.data.model.report.ReportedCommentHistoryResponse
 import com.pob.seeat.data.model.report.ReportedCommentResponse
 import com.pob.seeat.data.remote.ReportCommentService
 import com.pob.seeat.domain.model.CommentReportModel
@@ -32,6 +33,19 @@ class ReportCommentRepositoryImpl @Inject constructor(
                 emit(Result.Success(reportCommentService.getReportedCommentList()))
             } catch (e: Exception) {
                 Timber.tag("댓글 신고").e(e.toString())
+                emit(Result.Error(e.message ?: "An unknown error occurred"))
+            }
+        }
+
+    override suspend fun getReportedCommentList(uid: String): Flow<Result<List<ReportedCommentHistoryResponse>>> =
+        flow {
+            emit(Result.Loading)
+            try {
+                val deletedList = reportCommentService.getReportedCommentHistoryList(uid)
+                val reportedList = reportCommentService.getReportedCommentList(uid)
+                val combinedList = deletedList.plus(reportedList).sortedBy { it.timeStamp }
+                emit(Result.Success(combinedList))
+            } catch (e: Exception) {
                 emit(Result.Error(e.message ?: "An unknown error occurred"))
             }
         }

@@ -1,6 +1,8 @@
 package com.pob.seeat.domain.usecase
 
 import com.pob.seeat.data.model.Result
+import com.pob.seeat.data.model.report.ReportedCommentHistoryResponse
+import com.pob.seeat.data.model.report.ReportedFeedHistoryResponse
 import com.pob.seeat.domain.model.ReportedCommentModel
 import com.pob.seeat.domain.model.ReportedFeedModel
 import com.pob.seeat.domain.model.ReportedInfoModel
@@ -46,6 +48,14 @@ class ReportedCommentListUseCase @Inject constructor(
     }
 }
 
+class ReportedCommentHistoryListUseCase @Inject constructor(
+    private val reportCommentRepository: ReportCommentRepository,
+) {
+    suspend operator fun invoke(uid: String): Flow<Result<List<ReportedCommentHistoryResponse>>> {
+        return reportCommentRepository.getReportedCommentList(uid)
+    }
+}
+
 class ReportedFeedListUseCase @Inject constructor(
     private val reportFeedRepository: ReportFeedRepository,
 ) {
@@ -78,6 +88,14 @@ class ReportedFeedListUseCase @Inject constructor(
                 is Result.Loading -> Result.Loading
             }
         }
+    }
+}
+
+class ReportedFeedHistoryListUseCase @Inject constructor(
+    private val reportFeedRepository: ReportFeedRepository,
+) {
+    suspend operator fun invoke(uid: String): Flow<Result<List<ReportedFeedHistoryResponse>>> {
+        return reportFeedRepository.getReportedFeedList(uid)
     }
 }
 
