@@ -15,12 +15,10 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.chip.Chip
-import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.GeoPoint
@@ -38,7 +36,6 @@ import com.pob.seeat.presentation.view.feed.ImageUploadAdapter
 import com.pob.seeat.presentation.view.feed.NewFeedFragmentDirections
 import com.pob.seeat.presentation.view.feed.NewFeedModalBottomSheet
 import com.pob.seeat.presentation.viewmodel.DetailViewModel
-import com.pob.seeat.presentation.viewmodel.EditFeedViewModel
 import com.pob.seeat.presentation.viewmodel.NewFeedViewModel
 import com.pob.seeat.utils.GoogleAuthUtil.getUserUid
 import com.pob.seeat.utils.Utils.compressBitmapToUri
@@ -51,7 +48,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.util.Date
 
 @AndroidEntryPoint
 class EditDetailFragment : Fragment() {
@@ -72,6 +68,8 @@ class EditDetailFragment : Fragment() {
     private lateinit var multipleImagePickerLauncher: ActivityResultLauncher<PickVisualMediaRequest>
     private val uriList = mutableListOf<Uri>()
     private var imageCount = 5
+    private var isSetBeforeLocation = false
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -95,7 +93,8 @@ class EditDetailFragment : Fragment() {
         initLoadFeedData()
         initNaverMap()
         initialSetting()
-        setSelectLocation()
+//        setSelectLocation()
+        Timber.i("onViewCreated")
     }
 
     override fun onPause() {
@@ -109,12 +108,14 @@ class EditDetailFragment : Fragment() {
         requireActivity().window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
         Timber.tag("NewfeedFragment").d("onResume")
 
-//         좌표 선택 후 돌아오면 선택한 좌표값 가져오기
-        if (::selectedMap.isInitialized) {
-            Timber.tag("NewfeedFragment").d("map is initialized")
-            selectLocation = newFeedViewModel.selectLocation
-            setSelectLocation() // selectedMap이 초기화된 후에 위치 설정
-        }
+        Timber.i("selectLocation ViewModel ${newFeedViewModel.selectLocation}")
+        setSelectLocation()
+
+//        if (::selectedMap.isInitialized) {
+//            Timber.tag("NewfeedFragment").d("map is initialized")
+//            selectLocation = newFeedViewModel.selectLocation
+//            setSelectLocation() // selectedMap이 초기화된 후에 위치 설정
+//        }
     }
 
     override fun onDestroyView() {
@@ -143,6 +144,15 @@ class EditDetailFragment : Fragment() {
                         feedModel.data.tags.contains(tagModel.tagName)
                     }
                     newFeedViewModel.updateSelectTagList(selectedTagList)
+//                    feedModel.data.location?.let { location ->
+//                        Timber.i("init location $location")
+//                        newFeedViewModel.updateSelectLocation(
+//                            LatLng(
+//                                location.latitude,
+//                                location.longitude
+//                            )
+//                        )
+//                    }
                 }
 
                 is Result.Error -> TODO()
@@ -197,19 +207,22 @@ class EditDetailFragment : Fragment() {
         binding.apply {
 
             // TODO Resume 시 네이버 맵의 초기 좌표값을 selectLocation으로 설정
-            if (selectLocation != null) {
-                Timber.tag("NewfeedFragment").d("selectLocation is Not null: $selectLocation")
+            if (newFeedViewModel.selectLocation != null) {
                 tvMap.visibility = View.INVISIBLE
                 map.visibility = View.VISIBLE
                 CoroutineScope(Dispatchers.Main).launch {
                     // 5초 대기
                     delay(5000)
                     // NaverMap의 초기 카메라 위치를 설정 (카메라 이동 애니메이션 없이)
-                    val cameraPosition = CameraPosition(selectLocation!!, 16.0)
-                    selectedMap.cameraPosition = cameraPosition
+                    Timber.i("selectLocation coroutine ${newFeedViewModel.selectLocation}")
+                    newFeedViewModel.selectLocation?.let {
+                        val cameraPosition = CameraPosition(newFeedViewModel.selectLocation!!, 16.0)
+                        selectedMap.cameraPosition = cameraPosition
+                    }
                 }
             } else {
-                Timber.tag("NewfeedFragment").d("selectLocation is null: $selectLocation")
+                Timber.tag("NewfeedFragment")
+                    .d("selectLocation is null: ${newFeedViewModel.selectLocation}")
                 tvMap.visibility = View.VISIBLE
                 map.visibility = View.INVISIBLE
             }
@@ -219,26 +232,34 @@ class EditDetailFragment : Fragment() {
 
     private fun initNaverMap() {
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as MapFragment
+        Timber.tag("isSetBeforeLocation").i(isSetBeforeLocation.toString())
+        if (!isSetBeforeLocation) {
+            val feedModel = detailViewModel.singleFeedResponse.value
 
-        val feedModel = detailViewModel.singleFeedResponse.value
-        when (feedModel) {
-            is Result.Success -> {
-                val geoPoint = feedModel.data.location
-                if (geoPoint != null) {
-                    selectLocation = LatLng(geoPoint.latitude, geoPoint.longitude)
-                    Timber.tag("init location").i(selectLocation.toString())
+            when (feedModel) {
+                is Result.Success -> {
+                    val geoPoint = feedModel.data.location
+                    if (geoPoint != null) {
+                        newFeedViewModel.updateSelectLocation(
+                            LatLng(
+                                geoPoint.latitude,
+                                geoPoint.longitude
+                            )
+                        )
+                        Timber.tag("init location").i(selectLocation.toString())
+                    }
                 }
 
+                is Result.Error -> TODO()
+                is Result.Loading -> TODO()
             }
-
-            is Result.Error -> TODO()
-            is Result.Loading -> TODO()
+            isSetBeforeLocation = true
         }
 
 
         // StateFlow로 naverMap 객체를 구독하여 값이 설정되면 작업 처리
         mapFragment.getMapAsync { naverMap ->
-            selectedMap = naverMap!!
+            selectedMap = naverMap
 
             selectedMap.isIndoorEnabled = true
 
@@ -338,7 +359,6 @@ class EditDetailFragment : Fragment() {
                 }
             }
 
-            // Todo
             tvMap.setOnClickListener {
                 findNavController().navigate(R.id.action_navigation_detail_edit_to_navigation_select_locate)
             }
@@ -419,9 +439,15 @@ class EditDetailFragment : Fragment() {
                                         content = binding.etContent.text.toString(),
                                         like = beforeFeed.data.like,
                                         commentsCount = beforeFeed.data.commentsCount,
-                                        location = selectLocation?.let {
-                                            GeoPoint(it.latitude, it.longitude)
-                                        } ?: beforeFeed.data.location,
+                                        location = newFeedViewModel.selectLocation?.let {
+                                            GeoPoint(
+                                                it.latitude,
+                                                it.longitude
+                                            )
+                                        },
+//                                        selectLocation?.let {
+//                                            GeoPoint(it.latitude, it.longitude)
+//                                        } ?: beforeFeed.data.location,
                                         comments = beforeFeed.data.comments,
                                         tags = tagNameList,
                                         userImage = beforeFeed.data.userImage,
@@ -467,7 +493,7 @@ class EditDetailFragment : Fragment() {
         // title, content, selectLocation이 모두 유효한지 검사
         val title = binding.etTitle.text.toString().trim()
         val content = binding.etContent.text.toString().trim()
-        val location = selectLocation
+        val location = newFeedViewModel.selectLocation
 
         // 제목이 비어 있을 때
         if (uid == null) {

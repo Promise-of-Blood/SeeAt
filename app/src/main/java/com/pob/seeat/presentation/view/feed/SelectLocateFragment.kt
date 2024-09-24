@@ -46,6 +46,7 @@ class SelectLocateFragment : Fragment() {
             }
 
             tvConfirmLocate.setOnClickListener {
+                Timber.i("changed Location $currentLatLng")
                 viewModel.updateSelectLocation(currentLatLng)
                 requireActivity().onBackPressed()
             }
