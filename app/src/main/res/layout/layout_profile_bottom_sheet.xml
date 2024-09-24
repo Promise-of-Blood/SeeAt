@@ -346,16 +346,14 @@
 
         <TextView
             android:id="@+id/tv_profile_empty"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center|center_vertical"
             android:text="@string/empty_default"
             android:textColor="@color/gray"
             android:textSize="14sp"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="@id/rv_profile_report"
-            app:layout_constraintEnd_toEndOf="@id/rv_profile_report"
-            app:layout_constraintStart_toStartOf="@id/rv_profile_report"
-            app:layout_constraintTop_toTopOf="@id/rv_profile_report" />
+            android:visibility="visible"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
