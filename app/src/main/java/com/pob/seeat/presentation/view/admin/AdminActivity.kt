@@ -1,6 +1,7 @@
 package com.pob.seeat.presentation.view.admin
 
 import android.os.Bundle
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -14,6 +15,13 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class AdminActivity : AppCompatActivity() {
     private val binding by lazy { ActivityAdminBinding.inflate(layoutInflater) }
+    private val onBackPressedCallback: OnBackPressedCallback =
+        object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (findNavController(R.id.fcv_admin).currentDestination?.id == R.id.admin) finish()
+                else findNavController(R.id.fcv_admin).popBackStack()
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,7 +33,9 @@ class AdminActivity : AppCompatActivity() {
             insets
         }
         initView()
+        onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
     }
+
 
     private fun initView() = with(binding) {
         setSupportActionBar(tbAdmin)
@@ -41,8 +51,8 @@ class AdminActivity : AppCompatActivity() {
         ivAdminLogo.setOnClickListener { navController.navigate(R.id.admin) }
     }
 
-    fun setNavigateButton() = with(binding) {
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+    fun setNavigateButton(isBackButton: Boolean = true) = with(binding) {
+        supportActionBar?.setDisplayHomeAsUpEnabled(isBackButton)
         tbAdmin.setNavigationOnClickListener {
             findNavController(R.id.fcv_admin).popBackStack()
         }

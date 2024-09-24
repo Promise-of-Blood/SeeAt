@@ -35,6 +35,7 @@ class AdminFragment : Fragment() {
     }
 
     private fun initView() = with(binding) {
+        (activity as AdminActivity).setNavigateButton(false)
         vpAdmin.adapter = AdminViewPagerAdapter(requireActivity())
         TabLayoutMediator(tlAdmin, vpAdmin) { tab, position ->
             when (position) {
