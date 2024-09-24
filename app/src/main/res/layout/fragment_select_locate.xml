@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/cl_select_location"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
+    android:visibility="gone"
     tools:context=".presentation.view.feed.SelectLocateFragment">
 
     <androidx.appcompat.widget.Toolbar
@@ -46,6 +48,19 @@
         app:layout_constraintStart_toStartOf="parent"
         app:tint="@color/primary" />
 
+    <ImageButton
+        android:id="@+id/ib_location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:background="@drawable/background_corners_radius_32dp"
+        android:elevation="4dp"
+        android:padding="8dp"
+        android:src="@drawable/ic_location"
+        app:layout_constraintBottom_toTopOf="@id/tv_confirm_locate"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:tint="@color/light_gray" />
+
     <TextView
         android:id="@+id/tv_confirm_locate"
         style="@style/signup_next_button"
@@ -54,5 +69,6 @@
         android:gravity="center"
         android:text="위치 설정"
         app:layout_constraintBottom_toBottomOf="parent" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

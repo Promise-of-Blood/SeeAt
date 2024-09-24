@@ -90,13 +90,13 @@
                 app:layout_constraintBottom_toBottomOf="@id/ib_add_marker"
                 app:layout_constraintStart_toStartOf="parent" />
 
-            <com.naver.maps.map.widget.ScaleBarView
-                android:id="@+id/naver_scale_bar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                app:layout_constraintBottom_toBottomOf="@id/ib_add_marker"
-                app:layout_constraintStart_toEndOf="@id/naver_logo" />
+<!--            <com.naver.maps.map.widget.ScaleBarView-->
+<!--                android:id="@+id/naver_scale_bar"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginStart="16dp"-->
+<!--                app:layout_constraintBottom_toBottomOf="@id/ib_add_marker"-->
+<!--                app:layout_constraintStart_toEndOf="@id/naver_logo" />-->
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

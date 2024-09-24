@@ -17,7 +17,17 @@
         tools:layout="@layout/fragment_home">
         <action
             android:id="@+id/action_home_to_new_feed"
-            app:destination="@id/navigation_new_feed" />
+            app:destination="@id/navigation_new_feed" >
+            <argument
+                android:name="homeLatitude"
+                app:argType="float" />
+            <argument
+                android:name="homeLongitude"
+                app:argType="float" />
+            <argument
+                android:name="homeZoom"
+                app:argType="float" />
+        </action>
         <action
             android:id="@+id/action_navigation_home_to_navigation_detail"
             app:destination="@id/navigation_detail">
@@ -70,6 +80,15 @@
         android:name="com.pob.seeat.presentation.view.feed.NewFeedFragment"
         android:label="@string/navigation_add_marker"
         tools:layout="@layout/fragment_new_feed">
+        <argument
+            android:name="homeLatitude"
+            app:argType="float" />
+        <argument
+            android:name="homeLongitude"
+            app:argType="float" />
+        <argument
+            android:name="homeZoom"
+            app:argType="float" />
         <action
             android:id="@+id/action_new_feed_to_select_locate"
             app:destination="@id/navigation_select_locate" />
