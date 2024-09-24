@@ -33,10 +33,12 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.firebase.firestore.GeoPoint
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraAnimation
+import com.naver.maps.map.CameraPosition
 import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
+import com.naver.maps.map.NaverMapOptions
 import com.naver.maps.map.clustering.Clusterer
 import com.naver.maps.map.clustering.DefaultLeafMarkerUpdater
 import com.naver.maps.map.clustering.LeafMarkerInfo
@@ -161,7 +163,12 @@ class HomeFragment : Fragment() {
 
             // 마커 추가
             ibAddMarker.setOnClickListener {
-                val action = EmptyFragmentDirections.actionHomeToNewFeed()
+                val cameraPosition = naverMap.cameraPosition
+                val action = EmptyFragmentDirections.actionHomeToNewFeed(
+                    cameraPosition.target.latitude.toFloat(),
+                    cameraPosition.target.longitude.toFloat(),
+                    cameraPosition.zoom.toFloat()
+                )
                 navController.navigate(action)
                 (requireActivity() as MainActivity).showNavHostFragment(true)
             }
@@ -192,6 +199,7 @@ class HomeFragment : Fragment() {
     private fun handleEmptyFeedList(size: Int) = with(binding) {
         if (size == 0) {
             tvBottomSheetPostListEmpty.visibility = View.VISIBLE
+            pbBottomSheetPostList.visibility = View.GONE
             tvBottomSheetPostListEmpty.text = getString(R.string.empty_search)
         } else {
             tvBottomSheetPostListEmpty.visibility = View.GONE
@@ -248,6 +256,7 @@ class HomeFragment : Fragment() {
 
                             if (feedList.isEmpty()) {
                                 binding.tvBottomSheetPostListEmpty.visibility = View.VISIBLE
+                                binding.pbBottomSheetPostList.visibility = View.GONE
                                 binding.tvBottomSheetPostListEmpty.text =
                                     getString(R.string.empty_default)
                             } else {
@@ -378,14 +387,26 @@ class HomeFragment : Fragment() {
         // 위치 소스 초기화
         locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
 
-        val mapFragment = childFragmentManager.findFragmentById(R.id.map) as MapFragment
+        val options = NaverMapOptions()
+        (requireActivity() as MainActivity).getCurrentLocation { location ->
+            location?.let {
+                val currentLatLng = LatLng(location.latitude, location.longitude)
 
-        mapFragment.getMapAsync { naverMap ->
-            this.naverMap = naverMap
-            setupNaverMap(naverMap)
-            getScreenSize()
-            getFeed()
-            naverMap.locationTrackingMode = LocationTrackingMode.Follow
+                options
+                    .camera(CameraPosition(currentLatLng, 16.0))
+            }
+
+            val mapFragment = MapFragment.newInstance(options).also {
+                childFragmentManager.beginTransaction().add(R.id.map, it).commit()
+            }
+
+            mapFragment.getMapAsync { naverMap ->
+                this.naverMap = naverMap
+                setupNaverMap(naverMap)
+                getScreenSize()
+                getFeed()
+                naverMap.locationTrackingMode = LocationTrackingMode.Follow
+            }
         }
     }
 
@@ -440,8 +461,8 @@ class HomeFragment : Fragment() {
             isScaleBarEnabled = false
         }
 
-        val scaleBarView = binding.naverScaleBar
-        scaleBarView.map = naverMap
+//        val scaleBarView = binding.naverScaleBar
+//        scaleBarView.map = naverMap
 
         var isMoving = false
         naverMap.addOnCameraChangeListener { reason, animated ->
@@ -710,7 +731,8 @@ class HomeFragment : Fragment() {
     }
 
     private fun handleClickFeed(feedModel: FeedModel) {
-        val action = EmptyFragmentDirections.actionNavigationHomeToNavigationDetail(feedModel.feedId)
+        val action =
+            EmptyFragmentDirections.actionNavigationHomeToNavigationDetail(feedModel.feedId)
         navController.navigate(action)
         (requireActivity() as MainActivity).showNavHostFragment(true)
     }
