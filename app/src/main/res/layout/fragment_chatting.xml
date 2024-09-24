@@ -45,7 +45,8 @@
                 android:id="@+id/iv_message_feed"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:src="@mipmap/ic_main_icon"
+                android:src="@drawable/baseline_person_24"
+                android:background="@color/tertiary"
                 />
 
         </com.google.android.material.card.MaterialCardView>
@@ -155,7 +156,7 @@
                 android:hint="@string/input_message"
                 android:paddingHorizontal="4dp"
                 android:textColor="@color/black"
-                style="@style/body_p"
+                style="@style/body_l_p"
                 android:layout_marginStart="8dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
