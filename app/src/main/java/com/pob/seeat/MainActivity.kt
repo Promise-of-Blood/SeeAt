@@ -6,6 +6,7 @@ import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -16,6 +17,7 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.google.firebase.messaging.FirebaseMessaging
 import com.pob.seeat.databinding.ActivityMainBinding
+import com.pob.seeat.presentation.view.home.HomeFragment
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 
@@ -40,25 +42,43 @@ class MainActivity : AppCompatActivity() {
 
         askNotificationPermission()
         checkLocationPermission()
-
-        // 주제 정해서 보낼 수 있음
-//        Firebase.messaging.subscribeToTopic("weather")
-//            .addOnCompleteListener { task ->
-//                var msg = "Subscribed"
-//                if (!task.isSuccessful) {
-//                    msg = "Subscribe failed"
-//                }
-//                Timber.tag(TAG).d(msg)
-//                Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
-//            }
-
     }
 
     private fun initBottomNavigation() = with(binding) {
+        val homeFragment = HomeFragment() // HomeFragment의 인스턴스 생성
+
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.home_fragment, homeFragment) // nav_home_fragment를 HomeFragment로 대체
+            .commit()
+
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHostFragment.navController
+
         navMain.setupWithNavController(navController)
+        navMain.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.navigation_home -> {
+                    showNavHostFragment(false)
+                    navController.setGraph(R.navigation.main_navigation)
+                    navController.navigate(R.id.navigation_home)
+                    true
+                }
+                else -> {
+                    navController.navigate(item.itemId )
+                    showNavHostFragment(true)
+                    true
+                }
+            }
+        }
+    }
+
+    fun showNavHostFragment(isVisible: Boolean) {
+        if(isVisible) {
+            binding.navHostFragment.visibility = View.VISIBLE
+        } else {
+            binding.navHostFragment.visibility = View.INVISIBLE
+        }
     }
 
     /**

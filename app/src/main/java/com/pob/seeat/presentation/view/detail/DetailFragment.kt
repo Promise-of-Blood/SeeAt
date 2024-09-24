@@ -18,6 +18,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
@@ -61,6 +62,7 @@ import com.pob.seeat.presentation.viewmodel.CommentViewModel
 import com.pob.seeat.presentation.viewmodel.DetailViewModel
 import com.pob.seeat.presentation.viewmodel.ReportCommentViewModel
 import com.pob.seeat.utils.EventBus
+import com.pob.seeat.utils.Utils.calculateDistance
 import com.pob.seeat.utils.Utils.px
 import com.pob.seeat.utils.Utils.toKoreanDiffString
 import com.pob.seeat.utils.Utils.toLocalDateTime
@@ -72,11 +74,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.Locale
-import kotlin.math.asin
-import kotlin.math.cos
-import kotlin.math.pow
-import kotlin.math.sin
-import kotlin.math.sqrt
 
 @AndroidEntryPoint
 class DetailFragment : Fragment() {
@@ -281,7 +278,7 @@ class DetailFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             isBookmarked.flowWithLifecycle(viewLifecycleOwner.lifecycle).collect { isBookmarked ->
                 handleBookmark(isBookmarked)
-                binding.clBookmarkBtn.setOnClickListener {
+                binding.ivCommentBookmarkIcon.setOnClickListener {
                     if (::feed.isInitialized) {
                         if (detailViewModel.isBookmarked.value) {
                             detailViewModel.deleteBookmark(feed.feedId)
@@ -313,7 +310,7 @@ class DetailFragment : Fragment() {
             tvFeedTimeAgo.text = feed.date?.toLocalDateTime()?.toKoreanDiffString()
             tvFeedContent.text = feed.content
             tvFeedDetailLikeCount.text = feed.like.toString()
-            tvCommentCount.text = feed.commentsCount.toString()
+            tvCommentCount.text = "(" + feed.commentsCount.toString() + ")"
 
             initLocation()
 
@@ -331,9 +328,9 @@ class DetailFragment : Fragment() {
                 findNavController().navigate(R.id.action_detail_to_show_locate, bundle)
             }
 
-            setFeedLikeButton(clLikeBtn)
+            setFeedLikeButton(ivLikeIcon)
 
-            clLikeBtn.setOnClickListener {
+            ivLikeIcon.setOnClickListener {
                 detailViewModel.isLikedToggle(args.feedIdArg)
                 detailViewModel.modifyIsLiked(tvFeedDetailLikeCount.text.toString().toInt())
             }
@@ -347,8 +344,13 @@ class DetailFragment : Fragment() {
             tvAddCommentButton.setOnClickListener {
                 val comment = binding.etAddComment.text.toString()
                 Log.d("댓글달기", "etAddComment.text : ${etAddComment.text.toString()}")
-                sendCommentToServer(comment)
-                hideKeyboard()
+
+                if(comment.isNullOrEmpty()){
+                    Toast.makeText(requireContext(), "댓글을 입력해주세요", Toast.LENGTH_SHORT).show()
+                }else{
+                    sendCommentToServer(comment)
+                    hideKeyboard()
+                }
             }
 
 
@@ -473,27 +475,31 @@ class DetailFragment : Fragment() {
 
     private fun handleBookmark(isBookmarked: Boolean) = with(binding) {
         if (isBookmarked) {
-            tvBookmarkBtnText.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
-            ivBookmarkBtnIcon.imageTintList =
-                ContextCompat.getColorStateList(requireContext(), R.color.white)
-            ivBookmarkBtnIcon.setImageDrawable(
-                ContextCompat.getDrawable(
-                    requireContext(),
-                    R.drawable.ic_heart
-                )
-            )
-            clBookmarkBtn.setBackgroundResource(R.drawable.round_r4_primary)
+//            tvBookmarkBtnText.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+//            ivBookmarkBtnIcon.imageTintList =
+//                ContextCompat.getColorStateList(requireContext(), R.color.white)
+//            ivBookmarkBtnIcon.setImageDrawable(
+//                ContextCompat.getDrawable(
+//                    requireContext(),
+//                    R.drawable.ic_heart
+//                )
+//            )
+//            clBookmarkBtn.setBackgroundResource(R.drawable.round_r4_primary)
+            ivCommentBookmarkIcon.setImageResource(R.drawable.baseline_bookmark_24)
+
+
         } else {
-            tvBookmarkBtnText.setTextColor(ContextCompat.getColor(requireContext(), R.color.gray))
-            ivBookmarkBtnIcon.imageTintList =
-                ContextCompat.getColorStateList(requireContext(), R.color.gray)
-            ivBookmarkBtnIcon.setImageDrawable(
-                ContextCompat.getDrawable(
-                    requireContext(),
-                    R.drawable.ic_heart_outlined
-                )
-            )
-            clBookmarkBtn.setBackgroundResource(R.drawable.round_r4_border)
+//            tvBookmarkBtnText.setTextColor(ContextCompat.getColor(requireContext(), R.color.gray))
+//            ivBookmarkBtnIcon.imageTintList =
+//                ContextCompat.getColorStateList(requireContext(), R.color.gray)
+//            ivBookmarkBtnIcon.setImageDrawable(
+//                ContextCompat.getDrawable(
+//                    requireContext(),
+//                    R.drawable.ic_heart_outlined
+//                )
+//            )
+//            clBookmarkBtn.setBackgroundResource(R.drawable.round_r4_border)
+            ivCommentBookmarkIcon.setImageResource(R.drawable.baseline_bookmark_border_24)
         }
     }
 
@@ -521,18 +527,16 @@ class DetailFragment : Fragment() {
         }
     }
 
-    private fun setFeedLikeButton(clLikeBtn: ConstraintLayout) {
+    private fun setFeedLikeButton(clLikeBtn: ImageView) {
         viewLifecycleOwner.lifecycleScope.launch {
             detailViewModel.isLiked.collect { isLiked ->
                 when (isLiked) {
                     true -> {
-                        clLikeBtn.background =
-                            ContextCompat.getDrawable(requireContext(), R.drawable.round_r4_primary)
+                        clLikeBtn.setImageResource(R.drawable.ic_thumb_up_filled)
                     }
 
                     false -> {
-                        clLikeBtn.background =
-                            ContextCompat.getDrawable(requireContext(), R.drawable.round_r4_border)
+                        clLikeBtn.setImageResource(R.drawable.ic_thumb_up_off_alt_24)
                     }
                 }
             }
@@ -594,30 +598,6 @@ class DetailFragment : Fragment() {
         }
     }
 
-    /**
-     * 두 GeoPoint간의 거리 계산
-     * @param myGeoPoint 현재 좌표 GeoPoint
-     * @param feedGeoPoint 계산하려는 좌표 GeoPoint
-     * @return 두 좌표간 거리가 미터단위로 Int로 반환됨
-     */
-    private fun calculateDistance(myGeoPoint: GeoPoint, feedGeoPoint: GeoPoint): Int {
-
-        val RR = 6372.8 * 1000
-
-        val myLatitude = myGeoPoint.latitude
-        val myLongitude = myGeoPoint.longitude
-        val feedLatitude = feedGeoPoint.latitude
-        val feedLongitude = feedGeoPoint.longitude
-
-        val dLat = Math.toRadians(feedLatitude - myLatitude)
-        val dLon = Math.toRadians(feedLongitude - myLongitude)
-        val a =
-            sin(dLat / 2).pow(2.0) + sin(dLon / 2).pow(2.0) * cos(Math.toRadians(myLatitude))
-        val c = 2 * asin(sqrt(a))
-
-        return (RR * c).toInt()
-
-    }
 
     private fun formatDistanceToString(meter: Int): String {
         return when {

@@ -15,7 +15,6 @@ import com.naver.maps.map.NaverMapOptions
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.OverlayImage
 import com.pob.seeat.R
-import com.pob.seeat.presentation.service.NaverMapWrapper
 import com.pob.seeat.databinding.FragmentShowLocateBinding
 import com.pob.seeat.utils.Utils.px
 import dagger.hilt.android.AndroidEntryPoint
@@ -28,10 +27,6 @@ class ShowLocateFragment : Fragment() {
     private val binding get() = _binding!!
 
     val args: ShowLocateFragmentArgs by navArgs()
-
-    @Inject
-    lateinit var naverMapWrapper: NaverMapWrapper  // NaverMapWrapper를 Hilt로 주입받음
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -77,12 +72,6 @@ class ShowLocateFragment : Fragment() {
             marker.iconTintColor = resources.getColor(R.color.primary)
             marker.width = 42f.px
             marker.height = 42f.px
-        }
-        // StateFlow로 naverMap 객체를 구독하여 값이 설정되면 작업 처리
-        lifecycleScope.launchWhenResumed {
-            naverMapWrapper.getNaverMap().collect { naverMap ->
-
-            }
         }
     }
 

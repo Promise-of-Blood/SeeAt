@@ -9,9 +9,11 @@ import android.graphics.Matrix
 import android.media.ExifInterface
 import android.net.Uri
 import android.view.WindowManager
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowInsetsControllerCompat
 import com.google.firebase.Timestamp
+import com.google.firebase.firestore.GeoPoint
 import com.pob.seeat.R
 import com.pob.seeat.domain.model.TagModel
 import java.io.File
@@ -23,6 +25,10 @@ import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 import java.util.concurrent.TimeUnit
+import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.sin
+import kotlin.math.sqrt
 
 object Utils {
     /**
@@ -191,4 +197,42 @@ object Utils {
         this.window.statusBarColor = Color.TRANSPARENT
         WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = true
     }
+
+
+    //유효성 검사
+    fun String.isValidNickname() : Boolean{
+        if(this.contains("\n") || this.contains("\r")||this.contains(" ")||this.contains("\\s.".toRegex()) ){
+            return false
+        }
+
+        if (this.length > 8 || this.isEmpty()){
+            return false
+        }
+
+        return true
+    }
+
+    /**
+     * 두 GeoPoint간의 거리 계산
+     * @param firstPoint 첫번째 좌표 GeoPoint
+     * @param secondPoint 두번째 좌표 GeoPoint
+     * @return 두 좌표간 거리가 미터단위로 Int로 반환됨
+     */
+    fun calculateDistance(firstPoint: GeoPoint, secondPoint: GeoPoint): Int {
+        val R = 6371.0 * 1000 // 지구의 반지름(m)
+
+        val dLat = Math.toRadians(secondPoint.latitude - firstPoint.latitude)
+        val dLon = Math.toRadians(secondPoint.longitude - firstPoint.longitude) // 경도 차이 수정
+
+        val a = sin(dLat / 2) * sin(dLat / 2) +
+                cos(Math.toRadians(firstPoint.latitude)) * cos(Math.toRadians(secondPoint.latitude)) *
+                sin(dLon / 2) * sin(dLon / 2)
+
+        val c = 2 * atan2(sqrt(a), sqrt(1 - a))
+
+        return (R * c).toInt()
+    }
+
+
+
 }

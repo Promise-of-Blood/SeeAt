@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -71,25 +72,27 @@ class BottomSheetFeedAdapter(
             for (tag in tagLists) {
                 val chip = Chip(itemView.context).apply {
                     text = tag.tagName
+                    textSize = 11f
                     setChipIconResource(tag.tagImage)
 
                     chipBackgroundColor = ContextCompat.getColorStateList(context, R.color.white)
-                    chipStrokeWidth = 0f
-                    chipIconSize = 16f.px.toFloat()
+                    chipStrokeWidth = 1f
+                    chipStrokeColor = ContextCompat.getColorStateList(context,R.color.gray)
+                    chipIconSize = 12f.px.toFloat()
                     chipCornerRadius = 32f.px.toFloat()
                     chipStartPadding = 10f.px.toFloat()
 
-                    elevation = 2f.px.toFloat()
-
                     isCheckable = false
                     isClickable = false
+                    rippleColor = AppCompatResources.getColorStateList(context,R.color.transparent)
+
+
                 }
 
                 // ChipGroup에 동적으로 Chip 추가
                 chipsGroupMainFeed.addView(chip)
             }
         }
-
     }
 
     private var originalList: List<FeedModel> = emptyList()
@@ -132,7 +135,6 @@ class BottomSheetFeedAdapter(
             @Suppress("UNCHECKED_CAST")
             override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
                 if (searchQuery.all { it.value.isNullOrBlank() }) {
-                    handleEmptyFeedList(originalList.size)
                     updateMarker(originalList)
                     submitList(originalList)
                 } else {
