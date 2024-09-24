@@ -49,8 +49,6 @@ import timber.log.Timber
 @AndroidEntryPoint
 class ChattingActivity : AppCompatActivity() {
     private val binding by lazy { ActivityChattingBinding.inflate(layoutInflater) }
-    private val detailViewModel by viewModels<DetailViewModel>()
-    private val chatViewModel by viewModels<ChatViewModel>()
     var chatId = "none"
     lateinit var feedId : String
 

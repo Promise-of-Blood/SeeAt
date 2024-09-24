@@ -86,6 +86,7 @@ class ChattingFragment : Fragment() {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 chatViewModel.chatResult.collect {
                     Timber.tag("ChattingAddLog").d("chatResult : $it")
+
                     chattingAdapter.submitList(chatViewModel.chatResult.value)
 //                    chatRoomDb.chatDao().addChatMessage(chatId = chatId, message = it.message, sender = it.sender)
                 }

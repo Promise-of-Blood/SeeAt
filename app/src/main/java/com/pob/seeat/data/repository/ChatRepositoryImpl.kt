@@ -18,6 +18,8 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import timber.log.Timber
+import java.time.LocalDateTime
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
@@ -136,19 +138,16 @@ class ChatRepositoryImpl @Inject constructor(
 
 fun MessagesInfoModel.toChattingUiItem(): ChattingUiItem {
     val uid = FirebaseAuth.getInstance().currentUser?.uid
+    Timber.tag("nowTime").d(this.timestamp.toLocalDateTime().toString())
     return if (this.sender == uid) {
         ChattingUiItem.MyChatItem(
             message = this.message,
-            time = this.timestamp.toLocalDateTime().format(
-                DateTimeFormatter.ofPattern("a h:mm").withLocale(Locale.forLanguageTag("ko"))
-            )
+            time = this.timestamp.toLocalDateTime()
         )
     } else {
         ChattingUiItem.YourChatItem(
             message = this.message,
-            time = this.timestamp.toLocalDateTime().format(
-                DateTimeFormatter.ofPattern("a h:mm").withLocale(Locale.forLanguageTag("ko"))
-            )
+            time = this.timestamp.toLocalDateTime()
         )
     }
 }

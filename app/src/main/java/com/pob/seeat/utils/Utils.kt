@@ -19,6 +19,7 @@ import java.io.FileOutputStream
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 import java.util.concurrent.TimeUnit
@@ -99,6 +100,14 @@ object Utils {
 
     fun Timestamp.toLocalDateTime(): LocalDateTime {
         return LocalDateTime.ofInstant(this.toDate().toInstant(), ZoneId.systemDefault())
+    }
+
+    fun LocalDateTime.toKoreanDateHourMinute() : String {
+        return format(DateTimeFormatter.ofPattern("a h:mm").withLocale(Locale.forLanguageTag("ko")))
+    }
+
+    fun LocalDateTime.toKoreanDateYearMonthDay() : String {
+        return format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일").withLocale(Locale.forLanguageTag("ko")))
     }
 
     val tagList = listOf(
