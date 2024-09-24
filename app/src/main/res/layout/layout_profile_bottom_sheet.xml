@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/bottomSheetProfileLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background_bottom_sheet"
+    android:paddingBottom="16dp"
+    app:behavior_draggable="true"
+    app:behavior_hideable="true"
+    app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+
+    <View
+        android:id="@+id/v_top_bar"
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/gray_round_border_20"
+        android:backgroundTint="@color/light_gray"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/iv_profile_image"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="16dp"
+        android:contentDescription="@string/admin_profile_image"
+        app:layout_constraintBottom_toBottomOf="@id/tv_profile_introduce"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tv_profile_nickname"
+        tools:src="@drawable/background_circle_green" />
+
+    <TextView
+        android:id="@+id/tv_profile_nickname"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="32dp"
+        android:ellipsize="end"
+        android:maxWidth="250dp"
+        android:maxLines="1"
+        android:textColor="@color/black"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@id/iv_profile_image"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="닉네임" />
+
+    <ImageView
+        android:id="@+id/iv_profile_badge"
+        android:layout_width="12dp"
+        android:layout_height="12dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="16dp"
+        android:contentDescription="@string/admin_title"
+        android:src="@drawable/ic_admin"
+        app:layout_constraintBottom_toBottomOf="@id/tv_profile_nickname"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toEndOf="@id/tv_profile_nickname"
+        app:layout_constraintTop_toTopOf="@id/tv_profile_nickname"
+        app:tint="@color/primary" />
+
+    <TextView
+        android:id="@+id/tv_profile_email"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:layout_marginEnd="16dp"
+        android:maxLines="1"
+        android:textColor="@color/gray"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/tv_profile_nickname"
+        app:layout_constraintTop_toBottomOf="@id/tv_profile_nickname"
+        tools:text="user-1234@gmail.com" />
+
+    <TextView
+        android:id="@+id/tv_profile_introduce"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:layout_marginEnd="16dp"
+        android:maxLines="1"
+        android:textColor="@color/black"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/tv_profile_email"
+        app:layout_constraintTop_toBottomOf="@id/tv_profile_email"
+        tools:text="한 줄 소개" />
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="0dp"
+        android:layout_height="400dp"
+        android:layout_marginTop="12dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_profile_introduce">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:elevation="0dp"
+            android:stateListAnimator="@null">
+
+            <com.google.android.material.appbar.CollapsingToolbarLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                app:contentScrim="@color/white"
+                app:layout_scrollFlags="scroll|exitUntilCollapsed">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    android:paddingVertical="12dp">
+
+                    <LinearLayout
+                        android:id="@+id/ll_profile_report_count"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="16dp"
+                        android:background="@drawable/background_corners_radius_10dp_red_border"
+                        android:gravity="center|center_vertical"
+                        android:paddingVertical="12dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <ImageView
+                            android:id="@+id/iv_profile_report_count"
+                            android:layout_width="14dp"
+                            android:layout_height="14dp"
+                            android:contentDescription="@string/dialog_other_comment_report"
+                            android:src="@drawable/ic_siren"
+                            app:tint="@android:color/holo_red_light" />
+
+                        <TextView
+                            android:id="@+id/tv_profile_report_count"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="4dp"
+                            android:text="@string/admin_report_count"
+                            android:textColor="@android:color/holo_red_light"
+                            android:textSize="12sp"
+                            tools:text="총 n건의 신고를 받았습니다." />
+
+                    </LinearLayout>
+
+                    <View
+                        android:id="@+id/v_profile_divider_1"
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="12dp"
+                        android:background="@color/background_gray"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/ll_profile_report_count" />
+
+                    <TextView
+                        android:id="@+id/tv_profile_menu"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="12dp"
+                        android:ellipsize="end"
+                        android:text="@string/admin_menu_user"
+                        android:textColor="@color/gray"
+                        android:textSize="11sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/v_profile_divider_1"
+                        tools:text="사용자 관리" />
+
+                    <TextView
+                        android:id="@+id/tv_profile_toggle_admin"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:text="@string/admin_menu_is_admin"
+                        android:textColor="@color/black"
+                        android:textSize="14sp"
+                        app:layout_constraintBottom_toBottomOf="@id/sb_profile_toggle_admin"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/sb_profile_toggle_admin"
+                        tools:text="관리자 권한" />
+
+                    <com.kyleduo.switchbutton.SwitchButton
+                        android:id="@+id/sb_profile_toggle_admin"
+                        android:layout_width="wrap_content"
+                        android:layout_height="32dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="16dp"
+                        android:textColor="@drawable/selector_admin_toggle"
+                        android:textSize="12sp"
+                        app:kswBackDrawable="@drawable/selector_admin_toggle"
+                        app:kswBackRadius="10dp"
+                        app:kswTextOff="FALSE"
+                        app:kswTextOn="TRUE"
+                        app:kswThumbColor="@drawable/selector_admin_toggle"
+                        app:kswThumbMargin="2dp"
+                        app:kswThumbRadius="9dp"
+                        app:kswThumbRangeRatio="2"
+                        app:kswThumbWidth="50dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tv_profile_menu" />
+
+                    <TextView
+                        android:id="@+id/tv_profile_delete_user"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:text="@string/admin_menu_user_delete"
+                        android:textColor="@color/black"
+                        android:textSize="14sp"
+                        app:layout_constraintBottom_toBottomOf="@id/acb_profile_delete_user"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/acb_profile_delete_user"
+                        tools:text="계정 정보 삭제" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/acb_profile_delete_user"
+                        android:layout_width="wrap_content"
+                        android:layout_height="32dp"
+                        android:layout_marginTop="12dp"
+                        android:layout_marginEnd="16dp"
+                        android:background="@drawable/background_corners_radius_10dp_red_border"
+                        android:gravity="center|center_vertical"
+                        android:minWidth="0dp"
+                        android:minHeight="0dp"
+                        android:paddingHorizontal="12dp"
+                        android:stateListAnimator="@null"
+                        android:text="@string/admin_report_delete"
+                        android:textColor="@android:color/holo_red_light"
+                        android:textSize="12sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/sb_profile_toggle_admin" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:paddingBottom="12dp">
+
+                <View
+                    android:id="@+id/v_profile_divider_2"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:background="@color/background_gray"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tv_profile_report"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="12dp"
+                    android:ellipsize="end"
+                    android:text="@string/admin_menu_user_report"
+                    android:textColor="@color/gray"
+                    android:textSize="11sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/v_profile_divider_2"
+                    tools:text="사용자 신고 기록" />
+
+                <RadioGroup
+                    android:id="@+id/rg_profile_report"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="16dp"
+                    android:layout_marginTop="8dp"
+                    android:checkedButton="@id/rb_profile_all"
+                    android:orientation="horizontal"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_profile_report">
+
+                    <RadioButton
+                        android:id="@+id/rb_profile_all"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@color/white"
+                        android:button="@drawable/ic_empty"
+                        android:minWidth="0dp"
+                        android:minHeight="0dp"
+                        android:text="@string/admin_option_all"
+                        android:textColor="@color/stroke_option_chip"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <RadioButton
+                        android:id="@+id/rb_profile_feed"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:background="@color/white"
+                        android:button="@drawable/ic_empty"
+                        android:minWidth="0dp"
+                        android:minHeight="0dp"
+                        android:text="@string/admin_option_feed"
+                        android:textColor="@color/stroke_option_chip"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <RadioButton
+                        android:id="@+id/rb_profile_comment"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:background="@color/white"
+                        android:button="@drawable/ic_empty"
+                        android:minWidth="0dp"
+                        android:minHeight="0dp"
+                        android:text="@string/admin_option_comment"
+                        android:textColor="@color/stroke_option_chip"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                </RadioGroup>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_profile_report"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="12dp"
+            android:orientation="vertical"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/rg_profile_report" />
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

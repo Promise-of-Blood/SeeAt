@@ -169,10 +169,18 @@
     <string name="admin_tab_user">유저 관리</string>
     <string name="admin_tab_report">신고 관리</string>
     <string name="admin_profile_image">프로필 이미지</string>
-    <string name="admin_sort_option">정렬</string>
+    <string name="admin_sort_option">최신순</string>
     <string name="admin_report_navigate">전체보기</string>
     <string name="admin_report_ignore">무시하기</string>
     <string name="admin_report_delete">삭제하기</string>
+    <string name="admin_option_all">전체</string>
+    <string name="admin_option_feed">게시글</string>
+    <string name="admin_option_comment">댓글</string>
+    <string name="admin_menu_user">사용자 관리</string>
+    <string name="admin_menu_is_admin">관리자 권한</string>
+    <string name="admin_menu_user_delete">계정 정보 삭제</string>
+    <string name="admin_menu_user_report">사용자 신고 기록</string>
+    <string name="admin_report_count">총 %d건의 신고를 받았습니다.</string>
     <string-array name="admin_sort">
         <item>최신순</item>
         <item>신고순</item>

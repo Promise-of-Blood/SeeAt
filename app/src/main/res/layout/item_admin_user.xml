@@ -43,7 +43,7 @@
         android:contentDescription="@string/admin_title"
         android:src="@drawable/ic_admin"
         app:layout_constraintBottom_toBottomOf="@id/tv_admin_user_nickname"
-        app:layout_constraintEnd_toStartOf="@id/ib_more"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0"
         app:layout_constraintStart_toEndOf="@id/tv_admin_user_nickname"
         app:layout_constraintTop_toTopOf="@id/tv_admin_user_nickname"
@@ -58,21 +58,9 @@
         android:maxLines="1"
         android:textColor="@color/gray"
         android:textSize="12sp"
-        app:layout_constraintEnd_toStartOf="@id/ib_more"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/iv_admin_user_image"
         app:layout_constraintTop_toBottomOf="@id/tv_admin_user_nickname"
         tools:text="user-1234@gmail.com" />
-
-    <ImageButton
-        android:id="@+id/ib_more"
-        android:layout_width="16dp"
-        android:layout_height="16dp"
-        android:background="@null"
-        android:contentDescription="@string/common_more"
-        android:src="@drawable/ic_arrow_right"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/gray" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

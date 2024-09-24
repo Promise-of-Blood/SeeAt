@@ -54,10 +54,24 @@
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
+    <TextView
+        android:id="@+id/tv_report_list_empty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/empty_default"
+        android:textColor="@color/gray"
+        android:textSize="14sp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/sr_report_list"
+        app:layout_constraintEnd_toEndOf="@id/sr_report_list"
+        app:layout_constraintStart_toStartOf="@id/sr_report_list"
+        app:layout_constraintTop_toTopOf="@id/sr_report_list" />
+
     <ProgressBar
         android:id="@+id/pb_report_list"
         android:layout_width="40dp"
         android:layout_height="40dp"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/sr_report_list"
         app:layout_constraintEnd_toEndOf="@id/sr_report_list"
         app:layout_constraintStart_toStartOf="@id/sr_report_list"
