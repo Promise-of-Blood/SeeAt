@@ -1,50 +1,14 @@
 package com.pob.seeat.presentation.view.chat
 
-import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.fragment.app.commit
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.flowWithLifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.Navigation
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.bumptech.glide.Glide
-import com.google.android.material.chip.Chip
-import com.google.android.material.chip.ChipGroup
-import com.google.firebase.auth.FirebaseAuth
-import com.pob.seeat.MainActivity
 import com.pob.seeat.R
-import com.pob.seeat.data.database.chat.ChatRoomDb
-import com.pob.seeat.data.model.Result
 import com.pob.seeat.databinding.ActivityChattingBinding
-import com.pob.seeat.domain.model.FeedModel
-import com.pob.seeat.presentation.view.chat.adapter.ChattingAdapter
-import com.pob.seeat.presentation.view.detail.DetailFragment
-import com.pob.seeat.presentation.view.detail.DetailFragmentDirections
-import com.pob.seeat.presentation.view.home.HomeFragmentDirections
-import com.pob.seeat.presentation.viewmodel.ChatViewModel
-import com.pob.seeat.presentation.viewmodel.DetailViewModel
-import com.pob.seeat.utils.Utils.px
-import com.pob.seeat.utils.Utils.setStatusBarColor
-import com.pob.seeat.utils.Utils.toTagList
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import timber.log.Timber
 
 @AndroidEntryPoint
 class ChattingActivity : AppCompatActivity() {
