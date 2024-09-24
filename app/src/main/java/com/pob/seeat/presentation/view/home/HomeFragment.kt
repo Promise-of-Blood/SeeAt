@@ -44,6 +44,7 @@ import com.naver.maps.map.clustering.DefaultLeafMarkerUpdater
 import com.naver.maps.map.clustering.LeafMarkerInfo
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.Overlay
+import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.FusedLocationSource
 import com.pob.seeat.MainActivity
 import com.pob.seeat.R
@@ -62,6 +63,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import kotlin.random.Random
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
@@ -310,16 +312,39 @@ class HomeFragment : Fragment() {
             .leafMarkerUpdater(object : DefaultLeafMarkerUpdater() {
                 override fun updateLeafMarker(info: LeafMarkerInfo, marker: Marker) {
                     super.updateLeafMarker(info, marker)
-                    marker.icon = Marker.DEFAULT_ICON
 
-                    marker.onClickListener = Overlay.OnClickListener {
-                        // ItemKey의 id를 통해 feedList에서 FeedModel을 가져옴
-                        val feedModel = feedList.find { it.feedId == (info.key as ItemKey).id }
-                        feedModel?.let { model ->
+                    // FeedModel을 가져옴
+                    val feedModel = feedList.find { it.feedId == (info.key as ItemKey).id }
+
+                    // feedModel의 like 수에 따라 마커 아이콘 설정
+                    feedModel?.let { model ->
+                        // 마커 아이콘 좋아요 수 별로 결정
+                        val likeCount = model.like
+//                        marker.icon = when {
+//                            likeCount >= 100 -> OverlayImage.fromResource(R.drawable.ic_tree)
+//                            likeCount >= 50 -> OverlayImage.fromResource(R.drawable.ic_growing_sprout)
+//                            likeCount >= 10 -> OverlayImage.fromResource(R.drawable.ic_sprout)
+//                            likeCount >= 1 -> OverlayImage.fromResource(R.drawable.ic_growing_seed)
+//                            else -> OverlayImage.fromResource(R.drawable.ic_seed)
+//                        }
+
+                        // 마커 아이콘 랜덤 적용
+                        marker.icon = when (Random.nextInt(5)) {
+                            0 -> OverlayImage.fromResource(R.drawable.ic_tree)              // 나무
+                            1 -> OverlayImage.fromResource(R.drawable.ic_growing_sprout)    // 조금 자란 새싹
+                            2 -> OverlayImage.fromResource(R.drawable.ic_sprout)            // 새싹
+                            3 -> OverlayImage.fromResource(R.drawable.ic_growing_seed)   // 싹튼 씨앗
+                            else -> OverlayImage.fromResource(R.drawable.ic_seed)           // 씨앗
+                        }
+
+
+                        // 마커 클릭 이벤트 설정
+                        marker.onClickListener = Overlay.OnClickListener {
+                            // 마커 클릭 시 FeedModel을 사용한 작업 처리
                             clickMarker(model)
-                        } ?: Timber.tag("HomeFragment").e("FeedModel not found for marker")
-                        true
-                    }
+                            true
+                        }
+                    } ?: Timber.tag("HomeFragment").e("FeedModel not found for marker")
                 }
             })
             .build()
@@ -459,7 +484,11 @@ class HomeFragment : Fragment() {
             isZoomControlEnabled = false
             isTiltGesturesEnabled = false
             isScaleBarEnabled = false
+            isIndoorLevelPickerEnabled = false
         }
+
+        val indoorView = binding.naverIndoorLevelPicker
+        indoorView.map = naverMap
 
 //        val scaleBarView = binding.naverScaleBar
 //        scaleBarView.map = naverMap
