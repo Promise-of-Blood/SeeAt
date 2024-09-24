@@ -28,7 +28,6 @@ import com.pob.seeat.databinding.ActivityChattingBinding
 import com.pob.seeat.databinding.FragmentChattingBinding
 import com.pob.seeat.domain.model.FeedModel
 import com.pob.seeat.presentation.view.chat.adapter.ChattingAdapter
-import com.pob.seeat.presentation.view.home.HomeFragmentDirections
 import com.pob.seeat.presentation.viewmodel.ChatViewModel
 import com.pob.seeat.presentation.viewmodel.DetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
