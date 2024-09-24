@@ -353,8 +353,7 @@ class DetailFragment : Fragment() {
                 }
             }
 
-
-
+            if(feed.user?.id == FirebaseAuth.getInstance().currentUser?.uid) tvChatButton.visibility = View.GONE
 
             tvChatButton.setOnClickListener {
                 val intent = Intent(requireContext(), ChattingActivity::class.java)
