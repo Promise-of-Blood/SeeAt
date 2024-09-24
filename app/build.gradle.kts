@@ -154,6 +154,7 @@ dependencies {
     annotationProcessor(libs.androidx.room.compiler)
     ksp(libs.androidx.room.compiler)
     testImplementation(libs.androidx.room.testing)
+    implementation(libs.androidx.room.paging)
 
     // pull to refresh
     implementation(libs.androidx.swiperefreshlayout)

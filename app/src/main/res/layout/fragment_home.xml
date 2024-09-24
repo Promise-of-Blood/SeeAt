@@ -90,13 +90,21 @@
                 app:layout_constraintBottom_toBottomOf="@id/ib_add_marker"
                 app:layout_constraintStart_toStartOf="parent" />
 
-            <com.naver.maps.map.widget.ScaleBarView
-                android:id="@+id/naver_scale_bar"
+            <com.naver.maps.map.widget.IndoorLevelPickerView
+                android:id="@+id/naver_indoor_level_picker"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                app:layout_constraintBottom_toBottomOf="@id/ib_add_marker"
-                app:layout_constraintStart_toEndOf="@id/naver_logo" />
+                android:layout_marginBottom="16dp"
+                app:layout_constraintStart_toStartOf="@id/naver_logo"
+                app:layout_constraintBottom_toTopOf="@id/naver_logo"/>
+
+<!--            <com.naver.maps.map.widget.ScaleBarView-->
+<!--                android:id="@+id/naver_scale_bar"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginStart="16dp"-->
+<!--                app:layout_constraintBottom_toBottomOf="@id/ib_add_marker"-->
+<!--                app:layout_constraintStart_toEndOf="@id/naver_logo" />-->
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

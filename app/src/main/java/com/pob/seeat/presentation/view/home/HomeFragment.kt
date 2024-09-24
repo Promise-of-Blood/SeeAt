@@ -33,15 +33,18 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.firebase.firestore.GeoPoint
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraAnimation
+import com.naver.maps.map.CameraPosition
 import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
+import com.naver.maps.map.NaverMapOptions
 import com.naver.maps.map.clustering.Clusterer
 import com.naver.maps.map.clustering.DefaultLeafMarkerUpdater
 import com.naver.maps.map.clustering.LeafMarkerInfo
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.Overlay
+import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.FusedLocationSource
 import com.pob.seeat.MainActivity
 import com.pob.seeat.R
@@ -60,6 +63,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import kotlin.random.Random
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
@@ -161,7 +165,12 @@ class HomeFragment : Fragment() {
 
             // 마커 추가
             ibAddMarker.setOnClickListener {
-                val action = EmptyFragmentDirections.actionHomeToNewFeed()
+                val cameraPosition = naverMap.cameraPosition
+                val action = EmptyFragmentDirections.actionHomeToNewFeed(
+                    cameraPosition.target.latitude.toFloat(),
+                    cameraPosition.target.longitude.toFloat(),
+                    cameraPosition.zoom.toFloat()
+                )
                 navController.navigate(action)
                 (requireActivity() as MainActivity).showNavHostFragment(true)
             }
@@ -192,6 +201,7 @@ class HomeFragment : Fragment() {
     private fun handleEmptyFeedList(size: Int) = with(binding) {
         if (size == 0) {
             tvBottomSheetPostListEmpty.visibility = View.VISIBLE
+            pbBottomSheetPostList.visibility = View.GONE
             tvBottomSheetPostListEmpty.text = getString(R.string.empty_search)
         } else {
             tvBottomSheetPostListEmpty.visibility = View.GONE
@@ -248,6 +258,7 @@ class HomeFragment : Fragment() {
 
                             if (feedList.isEmpty()) {
                                 binding.tvBottomSheetPostListEmpty.visibility = View.VISIBLE
+                                binding.pbBottomSheetPostList.visibility = View.GONE
                                 binding.tvBottomSheetPostListEmpty.text =
                                     getString(R.string.empty_default)
                             } else {
@@ -301,16 +312,39 @@ class HomeFragment : Fragment() {
             .leafMarkerUpdater(object : DefaultLeafMarkerUpdater() {
                 override fun updateLeafMarker(info: LeafMarkerInfo, marker: Marker) {
                     super.updateLeafMarker(info, marker)
-                    marker.icon = Marker.DEFAULT_ICON
 
-                    marker.onClickListener = Overlay.OnClickListener {
-                        // ItemKey의 id를 통해 feedList에서 FeedModel을 가져옴
-                        val feedModel = feedList.find { it.feedId == (info.key as ItemKey).id }
-                        feedModel?.let { model ->
+                    // FeedModel을 가져옴
+                    val feedModel = feedList.find { it.feedId == (info.key as ItemKey).id }
+
+                    // feedModel의 like 수에 따라 마커 아이콘 설정
+                    feedModel?.let { model ->
+                        // 마커 아이콘 좋아요 수 별로 결정
+                        val likeCount = model.like
+//                        marker.icon = when {
+//                            likeCount >= 100 -> OverlayImage.fromResource(R.drawable.ic_tree)
+//                            likeCount >= 50 -> OverlayImage.fromResource(R.drawable.ic_growing_sprout)
+//                            likeCount >= 10 -> OverlayImage.fromResource(R.drawable.ic_sprout)
+//                            likeCount >= 1 -> OverlayImage.fromResource(R.drawable.ic_growing_seed)
+//                            else -> OverlayImage.fromResource(R.drawable.ic_seed)
+//                        }
+
+                        // 마커 아이콘 랜덤 적용
+                        marker.icon = when (Random.nextInt(5)) {
+                            0 -> OverlayImage.fromResource(R.drawable.ic_tree)              // 나무
+                            1 -> OverlayImage.fromResource(R.drawable.ic_growing_sprout)    // 조금 자란 새싹
+                            2 -> OverlayImage.fromResource(R.drawable.ic_sprout)            // 새싹
+                            3 -> OverlayImage.fromResource(R.drawable.ic_growing_seed)   // 싹튼 씨앗
+                            else -> OverlayImage.fromResource(R.drawable.ic_seed)           // 씨앗
+                        }
+
+
+                        // 마커 클릭 이벤트 설정
+                        marker.onClickListener = Overlay.OnClickListener {
+                            // 마커 클릭 시 FeedModel을 사용한 작업 처리
                             clickMarker(model)
-                        } ?: Timber.tag("HomeFragment").e("FeedModel not found for marker")
-                        true
-                    }
+                            true
+                        }
+                    } ?: Timber.tag("HomeFragment").e("FeedModel not found for marker")
                 }
             })
             .build()
@@ -378,14 +412,26 @@ class HomeFragment : Fragment() {
         // 위치 소스 초기화
         locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
 
-        val mapFragment = childFragmentManager.findFragmentById(R.id.map) as MapFragment
+        val options = NaverMapOptions()
+        (requireActivity() as MainActivity).getCurrentLocation { location ->
+            location?.let {
+                val currentLatLng = LatLng(location.latitude, location.longitude)
 
-        mapFragment.getMapAsync { naverMap ->
-            this.naverMap = naverMap
-            setupNaverMap(naverMap)
-            getScreenSize()
-            getFeed()
-            naverMap.locationTrackingMode = LocationTrackingMode.Follow
+                options
+                    .camera(CameraPosition(currentLatLng, 16.0))
+            }
+
+            val mapFragment = MapFragment.newInstance(options).also {
+                childFragmentManager.beginTransaction().add(R.id.map, it).commit()
+            }
+
+            mapFragment.getMapAsync { naverMap ->
+                this.naverMap = naverMap
+                setupNaverMap(naverMap)
+                getScreenSize()
+                getFeed()
+                naverMap.locationTrackingMode = LocationTrackingMode.Follow
+            }
         }
     }
 
@@ -438,10 +484,14 @@ class HomeFragment : Fragment() {
             isZoomControlEnabled = false
             isTiltGesturesEnabled = false
             isScaleBarEnabled = false
+            isIndoorLevelPickerEnabled = false
         }
 
-        val scaleBarView = binding.naverScaleBar
-        scaleBarView.map = naverMap
+        val indoorView = binding.naverIndoorLevelPicker
+        indoorView.map = naverMap
+
+//        val scaleBarView = binding.naverScaleBar
+//        scaleBarView.map = naverMap
 
         var isMoving = false
         naverMap.addOnCameraChangeListener { reason, animated ->
@@ -710,7 +760,8 @@ class HomeFragment : Fragment() {
     }
 
     private fun handleClickFeed(feedModel: FeedModel) {
-        val action = EmptyFragmentDirections.actionNavigationHomeToNavigationDetail(feedModel.feedId)
+        val action =
+            EmptyFragmentDirections.actionNavigationHomeToNavigationDetail(feedModel.feedId)
         navController.navigate(action)
         (requireActivity() as MainActivity).showNavHostFragment(true)
     }

@@ -4,6 +4,7 @@ import android.Manifest
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.content.pm.PackageManager
+import android.location.Location
 import android.os.Build
 import android.os.Bundle
 import android.view.View
@@ -15,6 +16,8 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.firebase.messaging.FirebaseMessaging
 import com.pob.seeat.databinding.ActivityMainBinding
 import com.pob.seeat.presentation.view.home.HomeFragment
@@ -27,8 +30,11 @@ class MainActivity : AppCompatActivity() {
 
     private val LOCATION_PERMISSION_REQUEST_CODE = 1001
 
+    lateinit var fusedLocationClient: FusedLocationProviderClient
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         setContentView(binding.root)
 
@@ -48,7 +54,7 @@ class MainActivity : AppCompatActivity() {
         val homeFragment = HomeFragment() // HomeFragment의 인스턴스 생성
 
         supportFragmentManager.beginTransaction()
-            .replace(R.id.home_fragment, homeFragment) // nav_home_fragment를 HomeFragment로 대체
+            .replace(R.id.home_fragment, homeFragment)
             .commit()
 
         val navHostFragment =
@@ -80,6 +86,23 @@ class MainActivity : AppCompatActivity() {
             binding.navHostFragment.visibility = View.INVISIBLE
         }
     }
+
+    fun getCurrentLocation(callback: (Location?) -> Unit) {
+        try {
+            fusedLocationClient.lastLocation
+                .addOnSuccessListener { location: Location? ->
+                    callback(location)
+                }
+                .addOnFailureListener { exception ->
+                    Timber.tag("SelectLocateFragment").e(exception, "위치 정보를 가져오는 중 에러 발생")
+                    callback(null)
+                }
+        } catch (e: SecurityException) {
+            Timber.tag("SelectLocateFragment").e(e, "위치 권한이 없습니다.")
+            callback(null)
+        }
+    }
+
 
     /**
      * Bottom Navigation의 Visibility를 설정합니다.

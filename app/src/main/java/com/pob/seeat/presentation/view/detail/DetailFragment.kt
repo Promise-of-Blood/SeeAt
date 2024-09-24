@@ -634,8 +634,7 @@ class DetailFragment : Fragment() {
                     if (feedModel.commentId == args.commentIdArg) {
                         // 신고된 댓글인 경우
                         commentViewModel.deleteReportedComment(
-                            feedModel.feedId,
-                            feedModel.commentId
+                            feedModel.feedId, feedModel.commentId
                         )
                     } else {
                         // 일반 댓글인 경우
