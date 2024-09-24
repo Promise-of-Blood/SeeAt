@@ -147,12 +147,12 @@ class FeedRemote @Inject constructor(
 
     override suspend fun editFeed(feedModel: FeedModel) {
         val feedMap = mutableMapOf<String, Any>()
-
         feedMap["content"] = feedModel.content
         feedMap["contentImage"] = feedModel.contentImage
         feedMap["location"] = feedModel.location ?: GeoPoint(0.0, 0.0)
         feedMap["title"] = feedModel.title
         feedMap["tagList"] = feedModel.tags
+        Timber.tag("FeedRemote").i("feedMap: $feedMap")
 
         firestore.collection("feed")
             .document(feedModel.feedId)
@@ -160,6 +160,10 @@ class FeedRemote @Inject constructor(
             .addOnCompleteListener {
                 if (it.isSuccessful) {
                     Timber.i("업데이트 됨")
+                } else if (it.isCanceled) {
+                    Timber.i("취소됨")
+                } else {
+                    Timber.i("else")
                 }
             }
     }

@@ -32,6 +32,7 @@ import com.pob.seeat.MainActivity
 import com.pob.seeat.R
 import com.pob.seeat.data.model.Result
 import com.pob.seeat.databinding.FragmentEditDetailBinding
+import com.pob.seeat.domain.model.FeedModel
 import com.pob.seeat.domain.model.TagModel
 import com.pob.seeat.presentation.view.feed.ImageUploadAdapter
 import com.pob.seeat.presentation.view.feed.NewFeedFragmentDirections
@@ -57,7 +58,6 @@ class EditDetailFragment : Fragment() {
     private var _binding: FragmentEditDetailBinding? = null
     private val binding get() = _binding!!
 
-    private val editViewModel: EditFeedViewModel by viewModels()
     private val detailViewModel: DetailViewModel by activityViewModels()
     private val newFeedViewModel: NewFeedViewModel by activityViewModels()
 
@@ -79,7 +79,6 @@ class EditDetailFragment : Fragment() {
         setImagePicker()
 
     }
-
 
 
     override fun onCreateView(
@@ -129,7 +128,6 @@ class EditDetailFragment : Fragment() {
         (activity as MainActivity).setBottomNavigationVisibility(View.VISIBLE)
         _binding = null
     }
-
 
 
     private fun initLoadFeedData() {
@@ -368,6 +366,9 @@ class EditDetailFragment : Fragment() {
     }
 
     private fun uploadFeed() {
+        val beforeFeed = detailViewModel.singleFeedResponse.value
+
+
         if (checkException()) {
             Timber.tag("NewFeed").d("Upload Feed")
             val firestore = FirebaseFirestore.getInstance()
@@ -392,53 +393,73 @@ class EditDetailFragment : Fragment() {
             // 이미지 업로드 후 처리
             newFeedViewModel.uploadFeedImageList(uriList, feedId)
 
-            // ViewModel에서 이미지 업로드 결과를 확인
-            viewLifecycleOwner.lifecycleScope.launch {
-                newFeedViewModel.feedImageUploadResult.collect { result ->
-                    when (result) {
-                        "SUCCESS" -> {
-                            Log.d(
-                                "NewFeedFragment",
-                                "contentImage: ${newFeedViewModel.feedImageList}"
-                            )
-                            // 이미지 업로드가 성공했을 때, contentImage 필드에 추가
-                            val feedData: HashMap<String, Any> = hashMapOf(
-                                "title" to binding.etTitle.text.toString(),
-                                "content" to binding.etContent.text.toString(),
-                                "date" to Timestamp(Date()),
-                                "tagList" to tagNameList,
-                                "location" to GeoPoint(
-                                    selectLocation!!.latitude,
-                                    selectLocation!!.longitude
-                                ),
-                                "like" to 0,
-                                "commentsCount" to 0,
-                                "user" to userDocRef,
-                                "contentImage" to newFeedViewModel.feedImageList // 이미지 리스트 추가
-                            )
+            when (beforeFeed) {
+                is Result.Success -> {
+                    viewLifecycleOwner.lifecycleScope.launch {
+                        newFeedViewModel.feedImageUploadResult.collect { result ->
+                            when (result) {
+                                "SUCCESS" -> {
+                                    Log.d(
+                                        "NewFeedFragment",
+                                        "contentImage: ${newFeedViewModel.feedImageList}"
+                                    )
 
-                            // 피드 데이터를 업로드
-                            newFeedViewModel.uploadFeed(feedData, feedId)
+                                    // 피드 데이터를 업로드
+                                    val tagNameList = if (selectedTagList.isEmpty()) {
+                                        listOf("기타")
+                                    } else {
+                                        selectedTagList.map { it.tagName }
+                                    }
 
-                            // 업로드 완료 후 ProgressBar를 숨김
-                            binding.clProgress.visibility = View.GONE
-                            Toast.makeText(context, "업로드 성공", Toast.LENGTH_SHORT).show()
-                            requireActivity().onBackPressed()
-                        }
+                                    val feedModel = FeedModel(
+                                        feedId = beforeFeed.data.feedId,
+                                        user = beforeFeed.data.user,
+                                        nickname = beforeFeed.data.nickname,
+                                        title = binding.etTitle.text.toString(),
+                                        content = binding.etContent.text.toString(),
+                                        like = beforeFeed.data.like,
+                                        commentsCount = beforeFeed.data.commentsCount,
+                                        location = selectLocation?.let {
+                                            GeoPoint(it.latitude, it.longitude)
+                                        } ?: beforeFeed.data.location,
+                                        comments = beforeFeed.data.comments,
+                                        tags = tagNameList,
+                                        userImage = beforeFeed.data.userImage,
+                                        contentImage = newFeedViewModel.feedImageList
+                                    )
+                                    Timber.tag("editFeedRemote").i("editFragment: $feedModel")
 
-                        "ERROR" -> {
-                            // 업로드 실패 시 ProgressBar 숨김 및 오류 메시지 출력
-                            binding.clProgress.visibility = View.GONE
-                            Toast.makeText(context, "이미지 업로드 실패", Toast.LENGTH_SHORT).show()
-                        }
+                                    detailViewModel.editFeed(feedModel)
 
-                        "LOADING" -> {
-                            // 업로드 중에는 ProgressBar를 계속 표시
-                            binding.clProgress.visibility = View.VISIBLE
+
+                                    // 업로드 완료 후 ProgressBar를 숨김
+                                    binding.clProgress.visibility = View.GONE
+                                    Toast.makeText(context, "수정 성공", Toast.LENGTH_SHORT).show()
+                                    requireActivity().onBackPressed()
+                                }
+
+                                "ERROR" -> {
+                                    // 업로드 실패 시 ProgressBar 숨김 및 오류 메시지 출력
+                                    binding.clProgress.visibility = View.GONE
+                                    Toast.makeText(context, "이미지 업로드 실패", Toast.LENGTH_SHORT).show()
+                                }
+
+                                "LOADING" -> {
+                                    // 업로드 중에는 ProgressBar를 계속 표시
+                                    binding.clProgress.visibility = View.VISIBLE
+                                }
+                            }
                         }
                     }
                 }
+
+                is Result.Error -> TODO()
+                Result.Loading -> TODO()
             }
+
+
+            // ViewModel에서 이미지 업로드 결과를 확인
+
         }
     }
 

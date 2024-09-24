@@ -73,6 +73,7 @@ class FeedRepositoryImpl @Inject constructor(
     override suspend fun editFeed(feedModel: FeedModel) {
         try {
             feedRemote.editFeed(feedModel)
+            Timber.tag("editFeedRemote").i("feedMap: $feedModel")
         } catch (e: Exception) {
             Timber.i(e.toString())
         }

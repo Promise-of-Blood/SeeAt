@@ -34,6 +34,7 @@ class DetailViewModel @Inject constructor(
     private val reportFeedUseCase: ReportFeedUseCase,
     private val firebaseAuth: FirebaseAuth,
     private val removeFeedUseCase: RemoveFeedUseCase,
+    private val editFeedUseCase: EditFeedUseCase
 ) : ViewModel() {
 
     private val _userInfo = MutableStateFlow<UserInfoModel?>(null)
@@ -138,6 +139,19 @@ class DetailViewModel @Inject constructor(
     fun removeFeed(feedId: String) {
         viewModelScope.launch {
             removeFeedUseCase(feedId)
+        }
+    }
+
+    fun editFeed(feedModel: FeedModel) {
+        viewModelScope.launch {
+
+            try {
+                Timber.tag("editFeedRemote").i("feedMap: $feedModel")
+                editFeedUseCase(feedModel)
+            } catch (e: Exception) {
+                Timber.e(e, "Error occurred in editFeed")
+            }
+
         }
     }
 
