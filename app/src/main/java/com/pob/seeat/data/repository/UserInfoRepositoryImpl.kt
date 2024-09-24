@@ -56,4 +56,12 @@ class UserInfoRepositoryImpl @Inject constructor(private val source: UserInfoSou
             emit(Result.Error(e.message ?: "An unknown error occurred"))
         }
     }
+
+    override suspend fun updateIsAdmin(uid: String, isAdmin: Boolean) {
+        source.updateIsAdmin(uid, isAdmin)
+    }
+
+    override suspend fun deleteAllUserInfo(uid: String) {
+        source.deleteAllUserInfo(uid)
+    }
 }

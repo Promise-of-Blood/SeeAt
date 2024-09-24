@@ -13,8 +13,8 @@ data class UserInfoModel(
     val commentCount: Long = 0,
     val likedFeedList: List<String> = emptyList(),
     val isAdmin: Boolean = false,
+    val reportedCount: Long = 0,
 )
-
 
 fun UserInfoModel.toUserInfo(): UserInfoData {
     return UserInfoData(
@@ -28,5 +28,6 @@ fun UserInfoModel.toUserInfo(): UserInfoData {
         commentCount = this.commentCount,
         likedFeedList = this.likedFeedList,
         isAdmin = this.isAdmin,
+        reportedCount = this.reportedCount,
     )
 }

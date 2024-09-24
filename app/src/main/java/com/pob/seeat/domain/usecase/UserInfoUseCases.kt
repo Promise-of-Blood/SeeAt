@@ -61,3 +61,15 @@ class RemoveLikedFeed(private val repository: UserInfoRepository) {
 class GetUserListUseCase @Inject constructor(private val repository: UserInfoRepository) {
     suspend operator fun invoke() = repository.getUserList()
 }
+
+class UpdateIsAdminUseCase @Inject constructor(private val repository: UserInfoRepository) {
+    suspend operator fun invoke(uid: String, isAdmin: Boolean) {
+        repository.updateIsAdmin(uid, isAdmin)
+    }
+}
+
+class DeleteAllUserInfoUseCase @Inject constructor(private val repository: UserInfoRepository) {
+    suspend operator fun invoke(uid: String) {
+        repository.deleteAllUserInfo(uid)
+    }
+}
