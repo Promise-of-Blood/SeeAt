@@ -30,6 +30,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.GeoPoint
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraPosition
+import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.NaverMapOptions
@@ -72,8 +73,17 @@ class NewFeedFragment : Fragment(), OnLocationSelectedListener {
             map.visibility = View.VISIBLE
             ivMarker.visibility = View.VISIBLE
             ivMarkerShadow.visibility = View.VISIBLE
+
+            binding.clSelectLocate.bringToFront()
+            binding.selectLocationFragment.bringToFront()
         }
-        initNaverMap(location)
+
+        if(::selectedMap.isInitialized) {
+            val cameraUpdate = CameraUpdate.scrollTo(location)
+            selectedMap.moveCamera(cameraUpdate)
+        } else {
+            initNaverMap(location)
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -151,25 +161,6 @@ class NewFeedFragment : Fragment(), OnLocationSelectedListener {
         _binding = null
     }
 
-//    fun setSelectLocation() {
-//        Timber.tag("NewfeedFragment").d("Start setSelectLocation")
-//        binding.apply {
-//            // TODO Resume 시 네이버 맵의 초기 좌표값을 selectLocation으로 설정
-//            if (selectLocation != null) {
-//                Timber.tag("NewfeedFragment").d("selectLocation is Not null: $selectLocation")
-//                map.visibility = View.VISIBLE
-//                // NaverMap의 초기 카메라 위치를 설정 (카메라 이동 애니메이션 없이)
-//                val cameraPosition = CameraPosition(selectLocation!!, 16.0)
-//                selectedMap.cameraPosition = cameraPosition
-//
-//            } else {
-//                Timber.tag("NewfeedFragment").d("selectLocation is null: $selectLocation")
-//                map.visibility = View.GONE
-//            }
-//        }
-//    }
-
-
     private fun initNaverMap(location: LatLng) {
         selectLocation = location
 
@@ -183,7 +174,7 @@ class NewFeedFragment : Fragment(), OnLocationSelectedListener {
         // StateFlow로 naverMap 객체를 구독하여 값이 설정되면 작업 처리
         mapFragment.getMapAsync { naverMap ->
             Timber.d("NaverMap Async")
-            selectedMap = naverMap!!
+            selectedMap = naverMap
 
             selectedMap.isIndoorEnabled = true
 
@@ -208,7 +199,7 @@ class NewFeedFragment : Fragment(), OnLocationSelectedListener {
             chipGroup.removeAllViews()
 
             // tagList를 이용해 Chip을 동적으로 생성
-            Timber.tag("NewFeedFragment").d("selectedTagList: $selectedTagList")
+            Timber.d("selectedTagList: $selectedTagList")
             for (tag in selectedTagList) {
                 val chip = Chip(context).apply {
                     text = tag.tagName
@@ -290,6 +281,9 @@ class NewFeedFragment : Fragment(), OnLocationSelectedListener {
             clSelectLocate.setOnClickListener {
                 binding.selectLocationFragment.findViewById<View>(R.id.cl_select_location).visibility =
                     View.VISIBLE
+                if(binding.map.visibility == View.VISIBLE) {
+                    binding.map.visibility = View.INVISIBLE
+                }
             }
 
             llTag.setOnClickListener {
