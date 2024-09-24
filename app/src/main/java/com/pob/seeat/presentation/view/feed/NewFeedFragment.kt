@@ -12,11 +12,13 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.chip.Chip
 import com.pob.seeat.R
@@ -30,6 +32,7 @@ import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraPosition
 import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
+import com.naver.maps.map.NaverMapOptions
 import com.pob.seeat.MainActivity
 import com.pob.seeat.domain.model.TagModel
 import com.pob.seeat.presentation.viewmodel.NewFeedViewModel
@@ -37,17 +40,17 @@ import com.pob.seeat.utils.GoogleAuthUtil.getUserUid
 import com.pob.seeat.utils.Utils.compressBitmapToUri
 import com.pob.seeat.utils.Utils.px
 import com.pob.seeat.utils.Utils.resizeImage
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.Date
 
 @AndroidEntryPoint
-class NewFeedFragment : Fragment() {
+class NewFeedFragment : Fragment(), OnLocationSelectedListener {
+
     private var _binding: FragmentNewFeedBinding? = null
     private val binding get() = _binding!!
+
+    private val args: NewFeedFragmentArgs by navArgs()
 
     private val viewModel: NewFeedViewModel by activityViewModels()
 
@@ -62,6 +65,16 @@ class NewFeedFragment : Fragment() {
     private lateinit var multipleImagePickerLauncher: ActivityResultLauncher<PickVisualMediaRequest>
     private val uriList = mutableListOf<Uri>()
     private var imageCount = 5
+
+    override fun onLocationSelected(location: LatLng) {
+        Timber.d("onLocationSelected: $location")
+        binding.apply {
+            map.visibility = View.VISIBLE
+            ivMarker.visibility = View.VISIBLE
+            ivMarkerShadow.visibility = View.VISIBLE
+        }
+        initNaverMap(location)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -90,7 +103,11 @@ class NewFeedFragment : Fragment() {
                         repeat(excess) {
                             uriList.removeLast()
                         }
-                        Toast.makeText(requireContext(), "최대 5개의 이미지만 선택 가능합니다.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            requireContext(),
+                            "최대 5개의 이미지만 선택 가능합니다.",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
 
                     imageCount -= uris.size
@@ -112,28 +129,14 @@ class NewFeedFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initNaverMap()
         initialSetting()
     }
 
 
     override fun onPause() {
         super.onPause()
-        Timber.tag("NewfeedFragment").d("onPause")
+        Timber.d("onPause")
         requireActivity().window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
-    }
-
-    override fun onResume() {
-        super.onResume()
-        requireActivity().window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
-        Timber.tag("NewfeedFragment").d("onResume")
-
-        // 좌표 선택 후 돌아오면 선택한 좌표값 가져오기
-        if (::selectedMap.isInitialized) {
-            Timber.tag("NewfeedFragment").d("map is initialized")
-            selectLocation = viewModel.selectLocation
-            setSelectLocation() // selectedMap이 초기화된 후에 위치 설정
-        }
     }
 
     override fun onDestroyView() {
@@ -142,62 +145,60 @@ class NewFeedFragment : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.d("NewfeedFragment", "onDestroy")
+        Timber.d("onDestroy")
         viewModel.selectLocation = null
         (activity as MainActivity).setBottomNavigationVisibility(View.VISIBLE)
         _binding = null
     }
 
-    private fun setSelectLocation() {
-        Timber.tag("NewfeedFragment").d("Start setSelectLocation")
-        binding.apply {
+//    fun setSelectLocation() {
+//        Timber.tag("NewfeedFragment").d("Start setSelectLocation")
+//        binding.apply {
+//            // TODO Resume 시 네이버 맵의 초기 좌표값을 selectLocation으로 설정
+//            if (selectLocation != null) {
+//                Timber.tag("NewfeedFragment").d("selectLocation is Not null: $selectLocation")
+//                map.visibility = View.VISIBLE
+//                // NaverMap의 초기 카메라 위치를 설정 (카메라 이동 애니메이션 없이)
+//                val cameraPosition = CameraPosition(selectLocation!!, 16.0)
+//                selectedMap.cameraPosition = cameraPosition
+//
+//            } else {
+//                Timber.tag("NewfeedFragment").d("selectLocation is null: $selectLocation")
+//                map.visibility = View.GONE
+//            }
+//        }
+//    }
 
-            // TODO Resume 시 네이버 맵의 초기 좌표값을 selectLocation으로 설정
-            if (selectLocation != null) {
-                Timber.tag("NewfeedFragment").d("selectLocation is Not null: $selectLocation")
-                tvMap.visibility = View.INVISIBLE
-                map.visibility = View.VISIBLE
-                CoroutineScope(Dispatchers.Main).launch {
-                    // 5초 대기
-                    delay(5000)
-                    // NaverMap의 초기 카메라 위치를 설정 (카메라 이동 애니메이션 없이)
-                    val cameraPosition = CameraPosition(selectLocation!!, 16.0)
-                    selectedMap.cameraPosition = cameraPosition
-                }
-            } else {
-                Timber.tag("NewfeedFragment").d("selectLocation is null: $selectLocation")
-                tvMap.visibility = View.VISIBLE
-                map.visibility = View.INVISIBLE
-            }
+
+    private fun initNaverMap(location: LatLng) {
+        selectLocation = location
+
+        val options = NaverMapOptions()
+            .camera(CameraPosition(location, 16.0))
+
+        val mapFragment = MapFragment.newInstance(options).also {
+            childFragmentManager.beginTransaction().add(R.id.map, it).commit()
         }
-    }
-
-
-    private fun initNaverMap() {
-        val mapFragment = childFragmentManager.findFragmentById(R.id.map) as MapFragment
 
         // StateFlow로 naverMap 객체를 구독하여 값이 설정되면 작업 처리
         mapFragment.getMapAsync { naverMap ->
-                selectedMap = naverMap!!
+            Timber.d("NaverMap Async")
+            selectedMap = naverMap!!
 
-                selectedMap.isIndoorEnabled = true
+            selectedMap.isIndoorEnabled = true
 
-                val uiSettings = selectedMap.uiSettings
-                uiSettings.apply {
-                    isLocationButtonEnabled = false
-                    isCompassEnabled = false
-                    isZoomControlEnabled = false
-                    isTiltGesturesEnabled = false
-                    isScaleBarEnabled = false
-                    isZoomGesturesEnabled = false
-                    isScrollGesturesEnabled = false
-                    isIndoorLevelPickerEnabled = false
-                }
-
-                selectedMap.setOnMapClickListener { point, coord ->
-                    findNavController().navigate(R.id.action_new_feed_to_select_locate)
-                }
+            val uiSettings = selectedMap.uiSettings
+            uiSettings.apply {
+                isLocationButtonEnabled = false
+                isCompassEnabled = false
+                isZoomControlEnabled = false
+                isTiltGesturesEnabled = false
+                isScaleBarEnabled = false
+                isZoomGesturesEnabled = false
+                isScrollGesturesEnabled = false
+                isIndoorLevelPickerEnabled = false
             }
+        }
 
     }
 
@@ -206,41 +207,49 @@ class NewFeedFragment : Fragment() {
             // ChipGroup 초기화 (기존 Chip 제거)
             chipGroup.removeAllViews()
 
-            if (selectedTagList.isEmpty()) {
-                tvSelectTag.text = "태그를 선택해 주세요"
-            } else {
-                tvSelectTag.text = ""
-                // tagList를 이용해 Chip을 동적으로 생성
-                Timber.tag("NewFeedFragment").d("selectedTagList: $selectedTagList")
-                for (tag in selectedTagList) {
-                    val chip = Chip(context).apply {
-                        text = tag.tagName
-                        setChipIconResource(tag.tagImage)
+            // tagList를 이용해 Chip을 동적으로 생성
+            Timber.tag("NewFeedFragment").d("selectedTagList: $selectedTagList")
+            for (tag in selectedTagList) {
+                val chip = Chip(context).apply {
+                    text = tag.tagName
+                    setChipIconResource(tag.tagImage)
 
-                        chipBackgroundColor = ContextCompat.getColorStateList(
-                            context,
-                            R.color.background_chip_background_selector
-                        )
-                        chipStrokeWidth = 0f
-                        chipIconSize = 16f.px.toFloat()
-                        chipCornerRadius = 32f.px.toFloat()
-                        chipStartPadding = 10f.px.toFloat()
+                    chipBackgroundColor =
+                        AppCompatResources.getColorStateList(context, R.color.white)
 
-                        elevation = 2f.px.toFloat()
+                    chipStrokeWidth = 1f
+                    chipStrokeColor = ContextCompat.getColorStateList(context, R.color.gray)
+                    chipIconSize = 16f.px.toFloat()
+                    chipCornerRadius = 32f.px.toFloat()
+                    chipStartPadding = 10f.px.toFloat()
 
-                        isCheckable = false
-                        isClickable = false
-                    }
+                    rippleColor = AppCompatResources.getColorStateList(context, R.color.transparent)
 
-                    // ChipGroup에 동적으로 Chip 추가
-                    chipGroup.addView(chip)
+                    isCheckable = false
+                    isClickable = false
                 }
+
+                // ChipGroup에 동적으로 Chip 추가
+                chipGroup.addView(chip)
             }
+
         }
     }
 
     private fun initialSetting() {
         binding.apply {
+            val bundle = Bundle().apply {
+                putFloat("homeLatitude", args.homeLatitude)  // 예시 값
+                putFloat("homeLongitude", args.homeLongitude)  // 예시 값
+                putFloat("homeZoom", args.homeZoom)  // 예시 값
+            }
+
+            val selectLocationFragment = SelectLocateFragment().apply {
+                arguments = bundle
+            }
+            childFragmentManager.beginTransaction()
+                .replace(R.id.select_location_fragment, selectLocationFragment)
+                .commit()
 
             toolbarMessage.setNavigationOnClickListener {
                 requireActivity().onBackPressedDispatcher.onBackPressed()
@@ -278,11 +287,12 @@ class NewFeedFragment : Fragment() {
                 }
             }
 
-            tvMap.setOnClickListener {
-                findNavController().navigate(R.id.action_new_feed_to_select_locate)
+            clSelectLocate.setOnClickListener {
+                binding.selectLocationFragment.findViewById<View>(R.id.cl_select_location).visibility =
+                    View.VISIBLE
             }
 
-            tvSelectTag.setOnClickListener {
+            llTag.setOnClickListener {
                 val modal = NewFeedModalBottomSheet()
                 modal.setStyle(
                     DialogFragment.STYLE_NORMAL,
@@ -341,7 +351,10 @@ class NewFeedFragment : Fragment() {
                                 "content" to binding.etContent.text.toString(),
                                 "date" to Timestamp(Date()),
                                 "tagList" to tagNameList,
-                                "location" to GeoPoint(selectLocation!!.latitude, selectLocation!!.longitude),
+                                "location" to GeoPoint(
+                                    selectLocation!!.latitude,
+                                    selectLocation!!.longitude
+                                ),
                                 "like" to 0,
                                 "commentsCount" to 0,
                                 "user" to userDocRef,
@@ -356,11 +369,13 @@ class NewFeedFragment : Fragment() {
                             Toast.makeText(context, "업로드 성공", Toast.LENGTH_SHORT).show()
                             requireActivity().onBackPressed()
                         }
+
                         "ERROR" -> {
                             // 업로드 실패 시 ProgressBar 숨김 및 오류 메시지 출력
                             binding.clProgress.visibility = View.GONE
                             Toast.makeText(context, "이미지 업로드 실패", Toast.LENGTH_SHORT).show()
                         }
+
                         "LOADING" -> {
                             // 업로드 중에는 ProgressBar를 계속 표시
                             binding.clProgress.visibility = View.VISIBLE
