@@ -15,6 +15,8 @@ import com.pob.seeat.databinding.ItemAdminUserBinding
 import com.pob.seeat.presentation.common.ViewHolder
 import com.pob.seeat.presentation.view.admin.items.AdminEnum
 import com.pob.seeat.presentation.view.admin.items.AdminListItem
+import com.pob.seeat.presentation.view.admin.items.AdminSearchTypeEnum
+import com.pob.seeat.utils.KoreanMatcher
 import com.pob.seeat.utils.ToggleLayoutAnimation
 
 class AdminRecyclerViewAdapter(
@@ -41,6 +43,10 @@ class AdminRecyclerViewAdapter(
 }), Filterable {
 
     private var originalList: List<AdminListItem> = emptyList()
+    private val searchQuery = hashMapOf<AdminSearchTypeEnum, CharSequence?>(
+        AdminSearchTypeEnum.CONTENT to null,
+        AdminSearchTypeEnum.OPTION to null,
+    )
 
     fun setOriginalList(list: List<AdminListItem>) {
         originalList = list
@@ -192,7 +198,13 @@ class AdminRecyclerViewAdapter(
             override fun performFiltering(constraint: CharSequence): FilterResults {
                 val charString = constraint.toString().trim()
                 return FilterResults().apply {
-                    values = filterByOption(charString, originalList)
+                    values = if (searchQuery.all { it.value.isNullOrBlank() }) {
+                        originalList
+                    } else {
+                        val optionFiltered = filterByOption(originalList)
+                        val contentFiltered = filterByContent(optionFiltered)
+                        contentFiltered
+                    }
                 }
             }
 
@@ -209,10 +221,34 @@ class AdminRecyclerViewAdapter(
         }
     }
 
-    private fun filterByOption(target: String, list: List<AdminListItem>) = when (target) {
-        "댓글" -> list.filterIsInstance<AdminListItem.CommentReport>()
-        "게시글" -> list.filterIsInstance<AdminListItem.FeedReport>()
-        else -> list
+    private fun filterByOption(list: List<AdminListItem>): List<AdminListItem> {
+        val target = searchQuery[AdminSearchTypeEnum.OPTION].toString()
+        return when (target) {
+            "댓글" -> list.filterIsInstance<AdminListItem.CommentReport>()
+            "게시글" -> list.filterIsInstance<AdminListItem.FeedReport>()
+            else -> list
+        }
+    }
+
+    private fun filterByContent(list: List<AdminListItem>): List<AdminListItem> {
+        val target = searchQuery[AdminSearchTypeEnum.CONTENT].toString()
+        return if (target.isNotBlank() && target != "null") list.filter { item ->
+            if (target.all { it in 'a'..'z' || it in 'A'..'Z' }) {
+                val base = when (item) {
+                    is AdminListItem.CommentReport -> item.comment
+                    is AdminListItem.FeedReport -> item.feedTitle.lowercase() + item.feedContent.lowercase()
+                    is AdminListItem.User -> item.nickname + item.email
+                }
+                base.contains(target.lowercase())
+            } else {
+                val base = when (item) {
+                    is AdminListItem.CommentReport -> item.comment
+                    is AdminListItem.FeedReport -> item.feedTitle.lowercase() + item.feedContent.lowercase()
+                    is AdminListItem.User -> item.nickname + item.email
+                }
+                KoreanMatcher.matchKoreanAndConsonant(base, target)
+            }
+        } else list
     }
 
     fun sortByOption(option: String) {
@@ -223,5 +259,10 @@ class AdminRecyclerViewAdapter(
 
             else -> submitList(originalList)
         }
+    }
+
+    fun performSearch(type: AdminSearchTypeEnum, query: CharSequence?) {
+        searchQuery[type] = query
+        filter.filter(query)
     }
 }

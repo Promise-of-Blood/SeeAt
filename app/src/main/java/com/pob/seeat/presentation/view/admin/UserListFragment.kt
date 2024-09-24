@@ -21,7 +21,9 @@ import com.pob.seeat.presentation.common.CustomDecoration
 import com.pob.seeat.presentation.view.UiState
 import com.pob.seeat.presentation.view.admin.adapter.AdminRecyclerViewAdapter
 import com.pob.seeat.presentation.view.admin.adapter.AdminReportRecyclerViewAdapter
+import com.pob.seeat.presentation.view.admin.adapter.Searchable
 import com.pob.seeat.presentation.view.admin.items.AdminListItem
+import com.pob.seeat.presentation.view.admin.items.AdminSearchTypeEnum
 import com.pob.seeat.presentation.viewmodel.AdminUserViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -30,7 +32,7 @@ import timber.log.Timber
 private const val ADMIN_USER_TAG = "관리자 유저 목록"
 
 @AndroidEntryPoint
-class UserListFragment : Fragment() {
+class UserListFragment : Fragment(), Searchable {
     private var _binding: FragmentUserListBinding? = null
     private val binding get() = _binding!!
 
@@ -66,6 +68,10 @@ class UserListFragment : Fragment() {
         _bottomSheetBinding = null
     }
 
+    override fun performSearch(type: AdminSearchTypeEnum, query: CharSequence?) {
+        adminRecyclerViewAdapter.performSearch(type, query)
+    }
+
     private fun initView() = with(binding) {
         rvUserList.apply {
             adapter = adminRecyclerViewAdapter
@@ -96,6 +102,7 @@ class UserListFragment : Fragment() {
                     is Result.Success -> {
                         binding.pbUserList.visibility = View.GONE
                         adminRecyclerViewAdapter.submitList(data.data)
+                        adminRecyclerViewAdapter.setOriginalList(data.data)
                     }
 
                     is Result.Error -> Timber.tag(ADMIN_USER_TAG).e(data.message)

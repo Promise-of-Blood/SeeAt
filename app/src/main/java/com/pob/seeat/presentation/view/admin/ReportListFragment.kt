@@ -20,7 +20,9 @@ import com.pob.seeat.databinding.FragmentReportListBinding
 import com.pob.seeat.databinding.LayoutSortOptionBottomSheetBinding
 import com.pob.seeat.presentation.common.CustomDecoration
 import com.pob.seeat.presentation.view.admin.adapter.AdminRecyclerViewAdapter
+import com.pob.seeat.presentation.view.admin.adapter.Searchable
 import com.pob.seeat.presentation.view.admin.items.AdminListItem
+import com.pob.seeat.presentation.view.admin.items.AdminSearchTypeEnum
 import com.pob.seeat.presentation.viewmodel.AdminReportViewModel
 import com.pob.seeat.utils.Utils.px
 import com.pob.seeat.utils.dialog.Dialog
@@ -29,7 +31,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 @AndroidEntryPoint
-class ReportListFragment : Fragment() {
+class ReportListFragment : Fragment(), Searchable {
     private var _binding: FragmentReportListBinding? = null
     private val binding get() = _binding!!
 
@@ -60,6 +62,10 @@ class ReportListFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
+    }
+
+    override fun performSearch(type: AdminSearchTypeEnum, query: CharSequence?) {
+        adminRecyclerViewAdapter.performSearch(type, query)
     }
 
     private fun initView() = with(binding) {
@@ -220,7 +226,7 @@ class ReportListFragment : Fragment() {
                 isClickable = true
             }
             chip.setOnClickListener {
-                adminRecyclerViewAdapter.filter.filter(option)
+                adminRecyclerViewAdapter.performSearch(AdminSearchTypeEnum.OPTION, option)
             }
             this.addView(chip)
         }

@@ -28,8 +28,9 @@
 
             <ImageView
                 android:id="@+id/iv_admin_logo"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:contentDescription="@string/app_name"
                 android:scaleType="fitCenter"
                 android:src="@drawable/ic_main_icon"
                 app:showAsAction="always|collapseActionView" />
@@ -45,13 +46,13 @@
                 android:textStyle="bold"
                 app:showAsAction="always|collapseActionView" />
 
-            <SearchView
+            <ImageView
                 android:id="@+id/iv_admin_search"
-                android:layout_width="0dp"
+                android:layout_width="30dp"
                 android:layout_height="30dp"
-                android:layout_weight="1"
-                android:searchIcon="@drawable/ic_search_24dp"
-                app:actionViewClass="androidx.appcompat.widget.SearchView"
+                android:contentDescription="@string/search"
+                android:padding="1dp"
+                android:src="@drawable/ic_search_24dp"
                 app:showAsAction="always|collapseActionView" />
 
             <ImageView
@@ -59,6 +60,7 @@
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:layout_marginStart="8dp"
+                android:contentDescription="@string/common_close"
                 android:src="@drawable/ic_close_no_background"
                 app:showAsAction="always" />
 

@@ -57,4 +57,8 @@ class AdminActivity : AppCompatActivity() {
             findNavController(R.id.fcv_admin).popBackStack()
         }
     }
+
+    fun onClickSearchButton(onClick: () -> Unit) = with(binding) {
+        ivAdminSearch.setOnClickListener { onClick() }
+    }
 }
