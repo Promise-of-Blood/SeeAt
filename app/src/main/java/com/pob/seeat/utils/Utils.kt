@@ -118,13 +118,13 @@ object Utils {
 
     val tagList = listOf(
         TagModel("전체", R.drawable.ic_map),
-        TagModel("맛집 추천", R.drawable.ic_soup),
+        TagModel("맛집", R.drawable.ic_soup),
         TagModel("모임", R.drawable.ic_group),
         TagModel("술 친구", R.drawable.ic_beer_strok),
         TagModel("운동 친구", R.drawable.ic_gym),
         TagModel("스터디", R.drawable.ic_pencil),
         TagModel("분실물", R.drawable.ic_lost_item),
-        TagModel("정보공유", R.drawable.ic_info),
+        TagModel("정보", R.drawable.ic_info),
         TagModel("질문", R.drawable.ic_question),
         TagModel("산책", R.drawable.ic_paw),
         TagModel("밥친구", R.drawable.ic_restaurant),
