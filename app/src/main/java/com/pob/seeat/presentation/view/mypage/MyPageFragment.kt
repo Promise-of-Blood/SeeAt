@@ -139,10 +139,10 @@ class MyPageFragment : Fragment() {
         }
 
         tvMyPageVersion.setOnClickListener {
-            when ((easterEgg) % 3) {
-                0 -> toast("IDKOS : 난 너무 잘생겼어")
-                1 -> toast("IDKOS : 날 보면 볼수록 너무 좋아")
-                2 -> toast("IDKOS : 거울이 나의 삶의 낙이야")
+            when ((easterEgg) % 10) {
+                7 -> toast("IDKOS : 난 너무 잘생겼어")
+                8 -> toast("IDKOS : 날 보면 볼수록 너무 좋아")
+                9 -> toast("IDKOS : 거울이 나의 삶의 낙이야")
             }
             _easterEgg++
         }

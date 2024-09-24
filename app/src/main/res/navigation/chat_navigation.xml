@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/chat_navigation">
+
+    <fragment
+        android:id="@+id/fragment_chatting"
+        android:name="com.pob.seeat.presentation.view.chat.ChattingFragment"
+        android:label="ChattingFragment"
+        tools:layout="@layout/fragment_chatting" >
+
+        <argument
+            android:name="feedIdArg"
+            app:argType="string" />
+
+        <argument
+            android:name="chatIdArg"
+            app:argType="string" />
+
+        <action android:id="@+id/action_chatting_to_detail"
+            app:destination="@id/fragment_detail">
+
+            <argument
+                android:name="feedIdArg"
+                app:argType="string" />
+
+        </action>
+
+        <action android:id="@+id/action_chatting"
+            app:destination="@id/fragment_chatting">
+            <argument
+                android:name="feedIdArg"
+                app:argType="string" />
+
+            <argument
+                android:name="chatIdArg"
+                app:argType="string" />
+        </action>
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/fragment_detail"
+        android:name="com.pob.seeat.presentation.view.detail.DetailFragment"
+        android:label="DetailFragment"
+        tools:layout="@layout/fragment_detail">
+
+        <argument
+            android:name="feedIdArg"
+            app:argType="string" />
+
+    </fragment>
+
+</navigation>

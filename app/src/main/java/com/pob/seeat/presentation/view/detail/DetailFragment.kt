@@ -18,6 +18,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
@@ -112,7 +113,8 @@ class DetailFragment : Fragment() {
     ): View {
         _binding = FragmentDetailBinding.inflate(inflater, container, false)
         initDetailViewmodel()
-        (activity as MainActivity).setBottomNavigationVisibility(View.GONE)
+        if(activity is MainActivity)
+            (activity as MainActivity).setBottomNavigationVisibility(View.GONE)
         return binding.root
     }
 
@@ -276,7 +278,7 @@ class DetailFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             isBookmarked.flowWithLifecycle(viewLifecycleOwner.lifecycle).collect { isBookmarked ->
                 handleBookmark(isBookmarked)
-                binding.clBookmarkBtn.setOnClickListener {
+                binding.ivCommentBookmarkIcon.setOnClickListener {
                     if (::feed.isInitialized) {
                         if (detailViewModel.isBookmarked.value) {
                             detailViewModel.deleteBookmark(feed.feedId)
@@ -308,7 +310,7 @@ class DetailFragment : Fragment() {
             tvFeedTimeAgo.text = feed.date?.toLocalDateTime()?.toKoreanDiffString()
             tvFeedContent.text = feed.content
             tvFeedDetailLikeCount.text = feed.like.toString()
-            tvCommentCount.text = feed.commentsCount.toString()
+            tvCommentCount.text = "(" + feed.commentsCount.toString() + ")"
 
             initLocation()
 
@@ -326,9 +328,9 @@ class DetailFragment : Fragment() {
                 findNavController().navigate(R.id.action_detail_to_show_locate, bundle)
             }
 
-            setFeedLikeButton(clLikeBtn)
+            setFeedLikeButton(ivLikeIcon)
 
-            clLikeBtn.setOnClickListener {
+            ivLikeIcon.setOnClickListener {
                 detailViewModel.isLikedToggle(args.feedIdArg)
                 detailViewModel.modifyIsLiked(tvFeedDetailLikeCount.text.toString().toInt())
             }
@@ -473,27 +475,31 @@ class DetailFragment : Fragment() {
 
     private fun handleBookmark(isBookmarked: Boolean) = with(binding) {
         if (isBookmarked) {
-            tvBookmarkBtnText.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
-            ivBookmarkBtnIcon.imageTintList =
-                ContextCompat.getColorStateList(requireContext(), R.color.white)
-            ivBookmarkBtnIcon.setImageDrawable(
-                ContextCompat.getDrawable(
-                    requireContext(),
-                    R.drawable.ic_heart
-                )
-            )
-            clBookmarkBtn.setBackgroundResource(R.drawable.round_r4_primary)
+//            tvBookmarkBtnText.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+//            ivBookmarkBtnIcon.imageTintList =
+//                ContextCompat.getColorStateList(requireContext(), R.color.white)
+//            ivBookmarkBtnIcon.setImageDrawable(
+//                ContextCompat.getDrawable(
+//                    requireContext(),
+//                    R.drawable.ic_heart
+//                )
+//            )
+//            clBookmarkBtn.setBackgroundResource(R.drawable.round_r4_primary)
+            ivCommentBookmarkIcon.setImageResource(R.drawable.baseline_bookmark_24)
+
+
         } else {
-            tvBookmarkBtnText.setTextColor(ContextCompat.getColor(requireContext(), R.color.gray))
-            ivBookmarkBtnIcon.imageTintList =
-                ContextCompat.getColorStateList(requireContext(), R.color.gray)
-            ivBookmarkBtnIcon.setImageDrawable(
-                ContextCompat.getDrawable(
-                    requireContext(),
-                    R.drawable.ic_heart_outlined
-                )
-            )
-            clBookmarkBtn.setBackgroundResource(R.drawable.round_r4_border)
+//            tvBookmarkBtnText.setTextColor(ContextCompat.getColor(requireContext(), R.color.gray))
+//            ivBookmarkBtnIcon.imageTintList =
+//                ContextCompat.getColorStateList(requireContext(), R.color.gray)
+//            ivBookmarkBtnIcon.setImageDrawable(
+//                ContextCompat.getDrawable(
+//                    requireContext(),
+//                    R.drawable.ic_heart_outlined
+//                )
+//            )
+//            clBookmarkBtn.setBackgroundResource(R.drawable.round_r4_border)
+            ivCommentBookmarkIcon.setImageResource(R.drawable.baseline_bookmark_border_24)
         }
     }
 
@@ -521,18 +527,16 @@ class DetailFragment : Fragment() {
         }
     }
 
-    private fun setFeedLikeButton(clLikeBtn: ConstraintLayout) {
+    private fun setFeedLikeButton(clLikeBtn: ImageView) {
         viewLifecycleOwner.lifecycleScope.launch {
             detailViewModel.isLiked.collect { isLiked ->
                 when (isLiked) {
                     true -> {
-                        clLikeBtn.background =
-                            ContextCompat.getDrawable(requireContext(), R.drawable.round_r4_primary)
+                        clLikeBtn.setImageResource(R.drawable.ic_thumb_up_filled)
                     }
 
                     false -> {
-                        clLikeBtn.background =
-                            ContextCompat.getDrawable(requireContext(), R.drawable.round_r4_border)
+                        clLikeBtn.setImageResource(R.drawable.ic_thumb_up_off_alt_24)
                     }
                 }
             }
@@ -728,6 +732,7 @@ class DetailFragment : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-        (activity as MainActivity).setBottomNavigationVisibility(View.VISIBLE)
+        if (activity is MainActivity)
+            (activity as MainActivity).setBottomNavigationVisibility(View.VISIBLE)
     }
 }
