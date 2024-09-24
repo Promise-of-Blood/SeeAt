@@ -22,6 +22,8 @@ class AdminRecyclerViewAdapter(
     private val onDelete: (AdminListItem) -> Unit = {},
     private val onIgnore: (AdminListItem) -> Unit = {},
     private val onNavigate: (AdminListItem) -> Unit = {},
+    private val handleEmptyList: (size: Int) -> Unit = {},
+    private val onClick: (AdminListItem) -> Unit = {},
 ) : ListAdapter<AdminListItem, ViewHolder<AdminListItem>>(object :
     DiffUtil.ItemCallback<AdminListItem>() {
     override fun areItemsTheSame(oldItem: AdminListItem, newItem: AdminListItem) = when {
@@ -65,8 +67,7 @@ class AdminRecyclerViewAdapter(
                         parent.context
                     ), parent, false
                 ),
-
-                )
+            )
 
             AdminEnum.FEED_REPORT -> FeedViewHolder(
                 ItemAdminFeedReportBinding.inflate(
@@ -95,7 +96,7 @@ class AdminRecyclerViewAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder<AdminListItem>, position: Int) {
-        holder.bind(getItem(position))
+        holder.bind(getItem(position), onClick)
     }
 
     class UserViewHolder(binding: ItemAdminUserBinding) : ViewHolder<AdminListItem>(binding.root) {
@@ -202,8 +203,10 @@ class AdminRecyclerViewAdapter(
             @Suppress("UNCHECKED_CAST")
             override fun publishResults(constraint: CharSequence, results: FilterResults) {
                 if (constraint.isBlank()) {
+                    handleEmptyList(originalList.size)
                     submitList(originalList)
                 } else {
+                    handleEmptyList((results.values as? List<AdminListItem>)?.size ?: 0)
                     submitList(results.values as? List<AdminListItem>)
                 }
             }

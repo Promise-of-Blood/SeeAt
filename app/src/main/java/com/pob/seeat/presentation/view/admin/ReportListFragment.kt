@@ -17,7 +17,7 @@ import com.google.android.material.chip.ChipGroup
 import com.pob.seeat.R
 import com.pob.seeat.data.model.Result
 import com.pob.seeat.databinding.FragmentReportListBinding
-import com.pob.seeat.databinding.LayoutBottomSheetBinding
+import com.pob.seeat.databinding.LayoutSortOptionBottomSheetBinding
 import com.pob.seeat.presentation.common.CustomDecoration
 import com.pob.seeat.presentation.view.admin.adapter.AdminRecyclerViewAdapter
 import com.pob.seeat.presentation.view.admin.items.AdminListItem
@@ -39,6 +39,7 @@ class ReportListFragment : Fragment() {
             ::onDelete,
             ::onIgnore,
             ::onNavigate,
+            ::handleEmptyList,
         )
     }
 
@@ -54,11 +55,6 @@ class ReportListFragment : Fragment() {
         initView()
         initViewModel()
         initBottomSheet()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        adminReportViewModel.getReportedList()
     }
 
     override fun onDestroy() {
@@ -90,6 +86,7 @@ class ReportListFragment : Fragment() {
                 when (data) {
                     is Result.Success -> {
                         binding.pbReportList.visibility = View.GONE
+                        handleEmptyList(data.data.size)
                         adminRecyclerViewAdapter.submitList(data.data)
                         adminRecyclerViewAdapter.setOriginalList(data.data)
                     }
@@ -107,7 +104,7 @@ class ReportListFragment : Fragment() {
     }
 
     private fun initBottomSheet() = with(binding) {
-        val bottomSheetView = LayoutBottomSheetBinding.inflate(layoutInflater)
+        val bottomSheetView = LayoutSortOptionBottomSheetBinding.inflate(layoutInflater)
         val bottomSheetDialog = BottomSheetDialog(requireContext())
         val sortOptions = resources.getStringArray(R.array.admin_sort)
 
@@ -116,6 +113,7 @@ class ReportListFragment : Fragment() {
             listOf(tvOption1, tvOption2).forEachIndexed { index, button ->
                 button.text = sortOptions[index]
                 button.setOnClickListener {
+                    cReportSort.text = sortOptions[index]
                     adminRecyclerViewAdapter.sortByOption(sortOptions[index])
                     bottomSheetDialog.hide()
                 }
@@ -125,6 +123,10 @@ class ReportListFragment : Fragment() {
         cReportSort.setOnClickListener {
             bottomSheetDialog.show()
         }
+    }
+
+    private fun handleEmptyList(size: Int) = with(binding) {
+        tvReportListEmpty.visibility = if (size == 0) View.VISIBLE else View.GONE
     }
 
     private fun onDelete(item: AdminListItem) {
@@ -217,7 +219,9 @@ class ReportListFragment : Fragment() {
                 isCheckable = true
                 isClickable = true
             }
-            chip.setOnClickListener { adminRecyclerViewAdapter.filter.filter(option) }
+            chip.setOnClickListener {
+                adminRecyclerViewAdapter.filter.filter(option)
+            }
             this.addView(chip)
         }
         this.check(this.getChildAt(1).id)
