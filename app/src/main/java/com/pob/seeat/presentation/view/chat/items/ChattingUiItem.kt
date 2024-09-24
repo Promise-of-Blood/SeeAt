@@ -6,13 +6,13 @@ import java.util.UUID
 sealed class ChattingUiItem {
     abstract val id: String
     data class MyChatItem(
-        override val id: String = UUID.randomUUID().toString(),
+        override val id: String,
         val message: String,
         val time: LocalDateTime,
         val isShowTime : Boolean = true,
     ) : ChattingUiItem()
     data class YourChatItem(
-        override val id: String = UUID.randomUUID().toString(),
+        override val id: String,
         val message: String,
         val time: LocalDateTime,
         val isShowTime : Boolean = true,

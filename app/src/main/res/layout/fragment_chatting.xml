@@ -44,7 +44,9 @@
             <ImageView
                 android:id="@+id/iv_message_feed"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:src="@mipmap/ic_main_icon"
+                />
 
         </com.google.android.material.card.MaterialCardView>
 

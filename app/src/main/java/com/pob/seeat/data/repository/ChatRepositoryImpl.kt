@@ -141,11 +141,13 @@ fun MessagesInfoModel.toChattingUiItem(): ChattingUiItem {
     Timber.tag("nowTime").d(this.timestamp.toLocalDateTime().toString())
     return if (this.sender == uid) {
         ChattingUiItem.MyChatItem(
+            id = this.messageId,
             message = this.message,
             time = this.timestamp.toLocalDateTime()
         )
     } else {
         ChattingUiItem.YourChatItem(
+            id = this.messageId,
             message = this.message,
             time = this.timestamp.toLocalDateTime()
         )
