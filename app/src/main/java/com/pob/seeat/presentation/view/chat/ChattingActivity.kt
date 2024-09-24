@@ -31,7 +31,6 @@ import com.pob.seeat.domain.model.FeedModel
 import com.pob.seeat.presentation.view.chat.adapter.ChattingAdapter
 import com.pob.seeat.presentation.view.detail.DetailFragment
 import com.pob.seeat.presentation.view.detail.DetailFragmentDirections
-import com.pob.seeat.presentation.view.home.HomeFragmentDirections
 import com.pob.seeat.presentation.viewmodel.ChatViewModel
 import com.pob.seeat.presentation.viewmodel.DetailViewModel
 import com.pob.seeat.utils.Utils.px

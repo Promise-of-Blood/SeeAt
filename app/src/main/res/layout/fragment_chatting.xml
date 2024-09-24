@@ -57,8 +57,7 @@
             android:maxEms="12"
             android:maxLines="1"
             android:text="@string/message_feed_title"
-            android:textColor="@color/black"
-            android:textSize="16sp"
+            style="@style/body_b_p"
             app:layout_constraintStart_toEndOf="@id/cv_message_feed"
             app:layout_constraintTop_toTopOf="@id/cv_message_feed"
             />
@@ -81,7 +80,7 @@
             android:maxLines="2"
             android:text="@string/message_feed_content"
             android:textColor="@color/light_gray"
-            android:textSize="12sp"
+            style="@style/description_p"
             app:layout_constraintStart_toStartOf="@id/tv_message_feed_title"
             app:layout_constraintTop_toBottomOf="@id/tv_message_feed_title"
             app:layout_constraintBottom_toBottomOf="@id/cv_message_feed"
@@ -118,7 +117,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.75" />
+            app:layout_constraintGuide_percent="0.8" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="0dp"
@@ -137,8 +136,8 @@
 
             <ImageView
                 android:id="@+id/iv_chatting_add"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
                 android:layout_marginStart="8dp"
                 android:src="@drawable/ic_add_24"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -154,6 +153,8 @@
                 android:hint="@string/input_message"
                 android:paddingHorizontal="4dp"
                 android:textColor="@color/black"
+                style="@style/body_p"
+                android:layout_marginStart="8dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/iv_chatting_add"
@@ -161,15 +162,17 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <androidx.appcompat.widget.AppCompatButton
+        <ImageButton
             android:id="@+id/btn_chatting_send"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="50dp"
             android:layout_margin="6dp"
             android:background="@drawable/background_btn_chatting"
             android:elevation="10dp"
             android:text="@string/send"
             android:textColor="@color/white"
+            android:src="@drawable/baseline_send_24"
+            app:tint="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/guideline_chatting_input"

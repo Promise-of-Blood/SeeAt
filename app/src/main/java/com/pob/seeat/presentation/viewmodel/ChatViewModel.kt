@@ -68,6 +68,11 @@ class ChatViewModel @Inject constructor(
                 var prevMessageTime = LocalDateTime.of(1900, 1, 1, 0, 0, 0)
                 newMessage.flowOn(Dispatchers.IO).collectLatest {
                     val list = _chatResult.value.toMutableList()
+                    if(list.lastOrNull() is Result.Success) {
+                        val tempData = (list.lastOrNull() as Result.Success<ChattingUiItem>).data
+                        if(tempData is ChattingUiItem.MyChatItem) prevMessageTime = tempData.time
+                        else if(tempData is ChattingUiItem.YourChatItem) prevMessageTime = tempData.time
+                    }
                     Timber.tag("Subscribe Message ViewModel Before").d(it.toString())
                     Timber.tag("Subscribe Message ViewModel Before").d("list : $list")
                     Timber.tag("Subscribe Message ViewModel Before").d("chatResult : ${_chatResult.value}")

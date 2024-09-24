@@ -19,6 +19,7 @@
         android:backgroundTint="#ECECEC"
         android:paddingHorizontal="20dp"
         android:paddingVertical="12dp"
+        style="@style/chat_message"
         />
 
     <TextView
@@ -30,7 +31,7 @@
         android:text="@string/timestamp"
         android:textColor="@color/gray"
         android:layout_marginStart="8dp"
-        android:textSize="10sp"
+        style="@style/chat_timestamp"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
