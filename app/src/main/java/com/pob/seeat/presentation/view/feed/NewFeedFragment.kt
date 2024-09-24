@@ -20,6 +20,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.firebase.geofire.GeoFireUtils
+import com.firebase.geofire.GeoLocation
 import com.google.android.material.chip.Chip
 import com.pob.seeat.R
 import com.pob.seeat.databinding.FragmentNewFeedBinding
@@ -78,7 +80,7 @@ class NewFeedFragment : Fragment(), OnLocationSelectedListener {
             binding.selectLocationFragment.bringToFront()
         }
 
-        if(::selectedMap.isInitialized) {
+        if (::selectedMap.isInitialized) {
             val cameraUpdate = CameraUpdate.scrollTo(location)
             selectedMap.moveCamera(cameraUpdate)
         } else {
@@ -281,7 +283,7 @@ class NewFeedFragment : Fragment(), OnLocationSelectedListener {
             clSelectLocate.setOnClickListener {
                 binding.selectLocationFragment.findViewById<View>(R.id.cl_select_location).visibility =
                     View.VISIBLE
-                if(binding.map.visibility == View.VISIBLE) {
+                if (binding.map.visibility == View.VISIBLE) {
                     binding.map.visibility = View.INVISIBLE
                 }
             }
@@ -339,16 +341,21 @@ class NewFeedFragment : Fragment(), OnLocationSelectedListener {
                     when (result) {
                         "SUCCESS" -> {
                             Log.d("NewFeedFragment", "contentImage: ${viewModel.feedImageList}")
+
+                            val lat = selectLocation!!.latitude
+                            val lng = selectLocation!!.longitude
+
+                            val geohash = GeoFireUtils.getGeoHashForLocation(
+                                GeoLocation(lat, lng)
+                            )
                             // 이미지 업로드가 성공했을 때, contentImage 필드에 추가
                             val feedData: HashMap<String, Any> = hashMapOf(
                                 "title" to binding.etTitle.text.toString(),
                                 "content" to binding.etContent.text.toString(),
                                 "date" to Timestamp(Date()),
                                 "tagList" to tagNameList,
-                                "location" to GeoPoint(
-                                    selectLocation!!.latitude,
-                                    selectLocation!!.longitude
-                                ),
+                                "location" to GeoPoint(lat, lng),
+                                "geohash" to geohash,
                                 "like" to 0,
                                 "commentsCount" to 0,
                                 "user" to userDocRef,
