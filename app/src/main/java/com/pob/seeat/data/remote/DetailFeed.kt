@@ -7,4 +7,5 @@ interface DetailFeed {
     suspend fun updateLikePlus(postId: String)
     suspend fun updateLikeMinus(postId: String)
     suspend fun removeFeed(postId: String)
+    suspend fun editFeed(feedModel: FeedModel)
 }

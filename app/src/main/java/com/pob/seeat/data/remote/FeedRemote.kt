@@ -5,6 +5,7 @@ import com.firebase.geofire.GeoFireUtils
 import com.firebase.geofire.GeoLocation
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
+import android.widget.Toast
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldPath
@@ -190,6 +191,29 @@ class FeedRemote @Inject constructor(
             .document(postId)
             .delete()
             .await()
+    }
+
+    override suspend fun editFeed(feedModel: FeedModel) {
+        val feedMap = mutableMapOf<String, Any>()
+        feedMap["content"] = feedModel.content
+        feedMap["contentImage"] = feedModel.contentImage
+        feedMap["location"] = feedModel.location ?: GeoPoint(0.0, 0.0)
+        feedMap["title"] = feedModel.title
+        feedMap["tagList"] = feedModel.tags
+        Timber.tag("FeedRemote").i("feedMap: $feedMap")
+
+        firestore.collection("feed")
+            .document(feedModel.feedId)
+            .update(feedMap)
+            .addOnCompleteListener {
+                if (it.isSuccessful) {
+                    Timber.i("업데이트 됨")
+                } else if (it.isCanceled) {
+                    Timber.i("취소됨")
+                } else {
+                    Timber.i("else")
+                }
+            }
     }
 
 

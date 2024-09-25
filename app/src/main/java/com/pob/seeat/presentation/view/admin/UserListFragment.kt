@@ -1,7 +1,9 @@
 package com.pob.seeat.presentation.view.admin
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
@@ -133,6 +135,7 @@ class UserListFragment : Fragment(), Searchable {
             reportedList.collect { data ->
                 when (data) {
                     is Result.Success -> {
+                        handleEmptyList(data.data.size)
                         bottomSheetRecyclerViewAdapter.submitList(data.data)
                         bottomSheetRecyclerViewAdapter.setOriginalList(data.data)
                     }
@@ -151,8 +154,9 @@ class UserListFragment : Fragment(), Searchable {
         }
     }
 
-    private fun handleEmptyList(size: Int) = with(bottomSheetBinding) {
-        tvProfileEmpty.visibility = if (size > 0) View.GONE else View.VISIBLE
+    private fun handleEmptyList(size: Int) {
+        if (_bottomSheetBinding == null) initBottomSheet()
+        bottomSheetBinding.tvProfileEmpty.visibility = if (size > 0) View.GONE else View.VISIBLE
     }
 
     private fun showBottomSheet(user: UserInfoModel) {
@@ -194,6 +198,7 @@ class UserListFragment : Fragment(), Searchable {
         bottomSheetDialog.show()
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun initBottomSheet() {
         _bottomSheetBinding = LayoutProfileBottomSheetBinding.inflate(layoutInflater)
         bottomSheetDialog = BottomSheetDialog(requireContext())
@@ -203,30 +208,42 @@ class UserListFragment : Fragment(), Searchable {
         val bottomSheet =
             bottomSheetDialog.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
         val bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet!!)
-        bottomSheetBinding.rvProfileReport.addOnScrollListener(object :
-            RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                bottomSheetBehavior.isDraggable = !recyclerView.canScrollVertically(-1)
+        bottomSheetBinding.apply {
+            rvProfileReport.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    super.onScrolled(recyclerView, dx, dy)
+                    // 리사이클러뷰 목록의 최상단일 때 bottomSheet 드래그 가능
+                    bottomSheetBehavior.isDraggable = !recyclerView.canScrollVertically(-1)
+                }
+            })
+            ablProfileLayout.addOnOffsetChangedListener { _, verticalOffset ->
+                // collapse 상태가 아닐 때만 bottomSheet 드래그 가능
+                bottomSheetBehavior.isDraggable = verticalOffset == 0
             }
-        })
+            clProfileLayout.setOnTouchListener { _, event ->
+                if (event.action == MotionEvent.ACTION_DOWN) bottomSheetBehavior.isDraggable = true
+                false
+            }
+        }
 
         // 리사이클러뷰 설정
-        bottomSheetBinding.rvProfileReport.apply {
-            adapter = bottomSheetRecyclerViewAdapter
-            layoutManager = LinearLayoutManager(requireContext())
-            itemAnimator = null
-            addItemDecoration(
-                CustomDecoration(
-                    1f, 24f, resources.getColor(R.color.light_gray, null)
+        bottomSheetBinding.apply {
+            rvProfileReport.apply {
+                adapter = bottomSheetRecyclerViewAdapter
+                layoutManager = LinearLayoutManager(requireContext())
+                itemAnimator = null
+                addItemDecoration(
+                    CustomDecoration(
+                        1f, 24f, resources.getColor(R.color.light_gray, null)
+                    )
                 )
-            )
-        }
-        bottomSheetBinding.rgProfileReport.setOnCheckedChangeListener { _, checked ->
-            when (checked) {
-                R.id.rb_profile_feed -> bottomSheetRecyclerViewAdapter.filter.filter("게시글")
-                R.id.rb_profile_comment -> bottomSheetRecyclerViewAdapter.filter.filter("댓글")
-                else -> bottomSheetRecyclerViewAdapter.filter.filter("전체")
+            }
+            rgProfileReport.setOnCheckedChangeListener { _, checked ->
+                when (checked) {
+                    R.id.rb_profile_feed -> bottomSheetRecyclerViewAdapter.filter.filter("게시글")
+                    R.id.rb_profile_comment -> bottomSheetRecyclerViewAdapter.filter.filter("댓글")
+                    else -> bottomSheetRecyclerViewAdapter.filter.filter("전체")
+                }
             }
         }
     }
