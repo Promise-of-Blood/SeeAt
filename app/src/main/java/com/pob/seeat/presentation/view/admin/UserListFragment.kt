@@ -133,6 +133,7 @@ class UserListFragment : Fragment(), Searchable {
             reportedList.collect { data ->
                 when (data) {
                     is Result.Success -> {
+                        handleEmptyList(data.data.size)
                         bottomSheetRecyclerViewAdapter.submitList(data.data)
                         bottomSheetRecyclerViewAdapter.setOriginalList(data.data)
                     }
@@ -151,8 +152,9 @@ class UserListFragment : Fragment(), Searchable {
         }
     }
 
-    private fun handleEmptyList(size: Int) = with(bottomSheetBinding) {
-        tvProfileEmpty.visibility = if (size > 0) View.GONE else View.VISIBLE
+    private fun handleEmptyList(size: Int) {
+        if (_bottomSheetBinding == null) initBottomSheet()
+        bottomSheetBinding.tvProfileEmpty.visibility = if (size > 0) View.GONE else View.VISIBLE
     }
 
     private fun showBottomSheet(user: UserInfoModel) {
@@ -207,9 +209,14 @@ class UserListFragment : Fragment(), Searchable {
             RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
+                // 리사이클러뷰 목록의 최상단일 때 bottomSheet 드래그 가능
                 bottomSheetBehavior.isDraggable = !recyclerView.canScrollVertically(-1)
             }
         })
+        bottomSheetBinding.ablProfileLayout.addOnOffsetChangedListener { _, verticalOffset ->
+            // collapse 상태가 아닐 때만 bottomSheet 드래그 가능
+            bottomSheetBehavior.isDraggable = verticalOffset == 0
+        }
 
         // 리사이클러뷰 설정
         bottomSheetBinding.rvProfileReport.apply {
