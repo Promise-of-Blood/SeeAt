@@ -12,6 +12,7 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.pob.seeat.domain.model.CommentModel
 import com.pob.seeat.domain.usecase.CommentUseCases
+import com.pob.seeat.domain.usecase.DeleteReportedCommentUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,8 +24,10 @@ import kotlinx.parcelize.RawValue
 import javax.inject.Inject
 
 @HiltViewModel
-class CommentViewModel @Inject constructor(private val commentUseCases: CommentUseCases) :
-    ViewModel() {
+class CommentViewModel @Inject constructor(
+    private val commentUseCases: CommentUseCases,
+    private val deleteReportedCommentUseCase: DeleteReportedCommentUseCase,
+) : ViewModel() {
     private val _comments = MutableStateFlow<List<CommentModel>>(emptyList())
     val comments: StateFlow<List<CommentModel>> get() = _comments
 
@@ -40,6 +43,9 @@ class CommentViewModel @Inject constructor(private val commentUseCases: CommentU
     private val _isOwnerCommentComplete = MutableStateFlow(false)
     val isOwnerCommentComplete: StateFlow<Boolean> get() = _isOwnerCommentComplete
 
+    private val _highlightComment = MutableStateFlow("")
+    val highlightComment: StateFlow<String> get() = _highlightComment
+
     fun addComment(
         feedId: String = "",
         commentId: String = "",
@@ -51,14 +57,7 @@ class CommentViewModel @Inject constructor(private val commentUseCases: CommentU
         userNickname: String = ""
     ) {
         val newComment = CommentModel(
-            feedId,
-            commentId,
-            user,
-            comment,
-            likeCount,
-            timeStamp,
-            userImage,
-            userNickname
+            feedId, commentId, user, comment, likeCount, timeStamp, userImage, userNickname
         )
 
         viewModelScope.launch {
@@ -72,10 +71,8 @@ class CommentViewModel @Inject constructor(private val commentUseCases: CommentU
     }
 
     suspend fun updateCommentCountPlus(postId: String) {
-        FirebaseFirestore.getInstance().collection("feed")
-            .document(postId)
-            .update("commentsCount", FieldValue.increment(1))
-            .await()
+        FirebaseFirestore.getInstance().collection("feed").document(postId)
+            .update("commentsCount", FieldValue.increment(1)).await()
     }
 
 
@@ -87,10 +84,8 @@ class CommentViewModel @Inject constructor(private val commentUseCases: CommentU
     }
 
     suspend fun updateCommentCountMinus(postId: String) {
-        FirebaseFirestore.getInstance().collection("feed")
-            .document(postId)
-            .update("commentsCount", FieldValue.increment(-1))
-            .await()
+        FirebaseFirestore.getInstance().collection("feed").document(postId)
+            .update("commentsCount", FieldValue.increment(-1)).await()
     }
 
     fun checkMyComment(commentUserUid: String) {
@@ -138,20 +133,18 @@ class CommentViewModel @Inject constructor(private val commentUseCases: CommentU
 //    }
 
     fun editComment(
-        feedId: String = "",
-        commentId: String = "",
-        comment: String = ""
-    ){
+        feedId: String = "", commentId: String = "", comment: String = ""
+    ) {
         viewModelScope.launch {
-            getComment(feedId,commentId)
+            getComment(feedId, commentId)
             val editedComment = selectedComment.value
-            if(editedComment!= null){
+            if (editedComment != null) {
                 editedComment.copy(
                     comment = comment
                 )
                 updateComment(editedComment)
-            }else{
-                Log.d("edit","댓글정보 찾을 수 없음")
+            } else {
+                Log.d("edit", "댓글정보 찾을 수 없음")
             }
         }
     }
@@ -182,12 +175,19 @@ class CommentViewModel @Inject constructor(private val commentUseCases: CommentU
                     Log.d("CommentViewModel", "댓글 삭제됨: ${_comments.value.size}")
                 }
             } catch (e: Exception) {
-                Log.e("댓글삭제오류","댓글 삭제 중 오류 발생 : ${e.message}")
+                Log.e("댓글삭제오류", "댓글 삭제 중 오류 발생 : ${e.message}")
                 Toast.makeText(context, "댓글 삭제에 실패했습니다 다시 한 번 시도해주세요", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
+    fun deleteReportedComment(feedId: String, commentId: String) {
+        viewModelScope.launch {
+            deleteReportedCommentUseCase(feedId, commentId)
+            updateCommentCountMinus(feedId)
+            fetchComments(feedId)
+        }
+    }
 
     fun updateComment(commentModel: CommentModel) {
         viewModelScope.launch {
@@ -202,4 +202,7 @@ class CommentViewModel @Inject constructor(private val commentUseCases: CommentU
         }
     }
 
+    fun highlightComment(commentId: String) {
+        _highlightComment.value = commentId
+    }
 }

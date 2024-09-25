@@ -22,7 +22,7 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.MenuProvider
@@ -56,6 +56,7 @@ import com.pob.seeat.domain.model.CommentModel
 import com.pob.seeat.domain.model.FeedModel
 import com.pob.seeat.domain.model.FeedReportModel
 import com.pob.seeat.domain.model.toBookmarkEntity
+import com.pob.seeat.presentation.view.admin.AdminActivity
 import com.pob.seeat.presentation.view.chat.ChattingActivity
 import com.pob.seeat.presentation.viewmodel.ChatViewModel
 import com.pob.seeat.presentation.viewmodel.CommentViewModel
@@ -67,6 +68,7 @@ import com.pob.seeat.utils.Utils.px
 import com.pob.seeat.utils.Utils.toKoreanDiffString
 import com.pob.seeat.utils.Utils.toLocalDateTime
 import com.pob.seeat.utils.Utils.toTagList
+import com.pob.seeat.utils.dialog.Dialog
 import com.pob.seeat.utils.dialog.Dialog.showCommentDialog
 import com.pob.seeat.utils.dialog.Dialog.showReportDialog
 import dagger.hilt.android.AndroidEntryPoint
@@ -83,20 +85,18 @@ class DetailFragment : Fragment() {
 
     val args: DetailFragmentArgs by navArgs()
     private lateinit var feed: FeedModel
-    private lateinit var chatId : String
+    private lateinit var chatId: String
 
     private val detailViewModel: DetailViewModel by viewModels()
     private val commentViewModel: CommentViewModel by viewModels()
     private val reportCommentViewModel: ReportCommentViewModel by viewModels()
-    private val chatViewModel : ChatViewModel by viewModels()
+    private val chatViewModel: ChatViewModel by viewModels()
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     private val feedCommentAdapter: FeedCommentAdapter by lazy {
         FeedCommentAdapter(
-            commentViewModel,
-            ::handleClickFeed,
-            ::onLongClicked
+            commentViewModel, ::handleClickFeed, ::onLongClicked
         )
     }
 
@@ -108,23 +108,59 @@ class DetailFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentDetailBinding.inflate(inflater, container, false)
         initDetailViewmodel()
-        if(activity is MainActivity)
-            (activity as MainActivity).setBottomNavigationVisibility(View.GONE)
+        if (activity is MainActivity) (activity as MainActivity).setBottomNavigationVisibility(View.GONE)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         getFeed()
-        setupUI(view, binding.tvAddCommentButton)
+        if (activity !is AdminActivity) setupUI(view, binding.tvAddCommentButton)
+        if (activity is AdminActivity) setupAdminUI()
         initCommentRecyclerView()
         Timber.i(args.feedIdArg)
         initCommentViewModel()
+    }
+
+    private fun setupAdminUI() = with(binding) {
+        (activity as AdminActivity).setNavigateButton()
+        binding.root.fitsSystemWindows = false
+        tbFeed.visibility = View.GONE
+
+        if (args.commentIdArg.isNullOrBlank()) {
+            tvAddCommentButton.visibility = View.GONE
+            etAddComment.visibility = View.GONE
+            btnAdminDelete.visibility = View.VISIBLE
+            btnAdminDelete.setOnClickListener {
+                Dialog.showDialog(
+                    requireContext(),
+                    "게시글 삭제",
+                    getString(R.string.dialog_reported_feed),
+                ) {
+                    pbDetail.visibility = View.VISIBLE
+                    detailViewModel.deleteReportedFeed(args.feedIdArg)
+                    pbDetail.visibility = View.GONE
+                    Toast.makeText(requireContext(), "게시글이 삭제되었습니다.", Toast.LENGTH_SHORT).show()
+                    findNavController().popBackStack()
+                }
+            }
+        } else {
+            commentViewModel.highlightComment(args.commentIdArg ?: "")
+            feedCommentAdapter.setIsAdmin(true)
+            clCommentLayout.visibility = View.GONE
+            rvCommentList.viewTreeObserver.addOnGlobalLayoutListener {
+                val position =
+                    feedCommentAdapter.getHighlightCommentPosition(args.commentIdArg ?: "")
+                val scrollY =
+                    rvCommentList.top + (rvCommentList.layoutManager?.findViewByPosition(position)?.top
+                        ?: 0)
+                scrollView2.scrollTo(0, scrollY)
+            }
+        }
     }
 
     private fun initToolbar(feed: FeedModel) {
@@ -174,26 +210,19 @@ class DetailFragment : Fragment() {
                             // 신고하기
                             if (reportedUserId != null) {
                                 val reportFeed = FeedReportModel(
-                                    loginUserId,
-                                    reportedUserId,
-                                    feed.feedId,
-                                    Timestamp.now()
+                                    loginUserId, reportedUserId, feed.feedId, Timestamp.now()
                                 )
                                 detailViewModel.addReportFeed(reportFeed)
                                 Toast.makeText(
-                                    requireContext(),
-                                    "게시물이 신고되었습니다.",
-                                    Toast.LENGTH_SHORT
-                                )
-                                    .show()
+                                    requireContext(), "게시물이 신고되었습니다.", Toast.LENGTH_SHORT
+                                ).show()
 
                             } else {
                                 Toast.makeText(
                                     requireContext(),
                                     "신고를 접수하는데 실패했습니다. 다시 시도해주세요.",
                                     Toast.LENGTH_SHORT
-                                )
-                                    .show()
+                                ).show()
                             }
                             true
                         }
@@ -264,8 +293,7 @@ class DetailFragment : Fragment() {
                             chatId = chatViewModel.getChatId(feed.feedId)
                             Timber.i("HomeFragment", feed.toString())
                             initView(feed)
-                            initToolbar(feed)
-
+                            if (activity !is AdminActivity) initToolbar(feed)
                         }
                     }
                 }
@@ -302,9 +330,7 @@ class DetailFragment : Fragment() {
         binding.run {
             tvWriterUsername.text = feed.nickname
 
-            Glide.with(requireContext())
-                .load(feed.userImage)
-                .into(ivWriterImage)
+            Glide.with(requireContext()).load(feed.userImage).into(ivWriterImage)
 
             tvFeedTitle.text = feed.title
             tvFeedTimeAgo.text = feed.date?.toLocalDateTime()?.toKoreanDiffString()
@@ -345,9 +371,9 @@ class DetailFragment : Fragment() {
                 val comment = binding.etAddComment.text.toString()
                 Log.d("댓글달기", "etAddComment.text : ${etAddComment.text.toString()}")
 
-                if(comment.isNullOrEmpty()){
+                if (comment.isNullOrEmpty()) {
                     Toast.makeText(requireContext(), "댓글을 입력해주세요", Toast.LENGTH_SHORT).show()
-                }else{
+                } else {
                     sendCommentToServer(comment)
                     hideKeyboard()
                 }
@@ -377,17 +403,14 @@ class DetailFragment : Fragment() {
 
     private fun initLocation() {
 
-        fusedLocationClient =
-            LocationServices.getFusedLocationProviderClient(requireContext())
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
 
         when (PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.checkSelfPermission(requireContext(), ACCESS_FINE_LOCATION)
-            -> {
+            ActivityCompat.checkSelfPermission(requireContext(), ACCESS_FINE_LOCATION) -> {
                 requestFineLocation()
             }
 
-            ActivityCompat.checkSelfPermission(requireContext(), ACCESS_COARSE_LOCATION)
-            -> {
+            ActivityCompat.checkSelfPermission(requireContext(), ACCESS_COARSE_LOCATION) -> {
                 requestCoarseLocation()
             }
 
@@ -402,14 +425,11 @@ class DetailFragment : Fragment() {
     @SuppressLint("MissingPermission")
     private fun requestFineLocation() {
         val locationRequest = LocationRequest.Builder(
-            Priority.PRIORITY_HIGH_ACCURACY,
-            10000
-        ).setMaxUpdates(1)
-            .build()
+            Priority.PRIORITY_HIGH_ACCURACY, 10000
+        ).setMaxUpdates(1).build()
 
         fusedLocationClient.requestLocationUpdates(
-            locationRequest,
-            object : LocationCallback() {
+            locationRequest, object : LocationCallback() {
                 override fun onLocationResult(locationResult: LocationResult) {
                     if (_binding == null) return
                     val location = locationResult.lastLocation
@@ -423,8 +443,7 @@ class DetailFragment : Fragment() {
                     }
                     fusedLocationClient.removeLocationUpdates(this)
                 }
-            },
-            Looper.getMainLooper()
+            }, Looper.getMainLooper()
         )
     }
 
@@ -432,15 +451,11 @@ class DetailFragment : Fragment() {
     private fun requestCoarseLocation() {
 
         val locationRequest = LocationRequest.Builder(
-            Priority.PRIORITY_BALANCED_POWER_ACCURACY,
-            10000
-        ).setWaitForAccurateLocation(true)
-            .setMaxUpdates(1)
-            .build()
+            Priority.PRIORITY_BALANCED_POWER_ACCURACY, 10000
+        ).setWaitForAccurateLocation(true).setMaxUpdates(1).build()
 
         fusedLocationClient.requestLocationUpdates(
-            locationRequest,
-            object : LocationCallback() {
+            locationRequest, object : LocationCallback() {
                 override fun onLocationResult(locationResult: LocationResult) {
                     if (_binding == null) return
                     val location = locationResult.lastLocation
@@ -454,8 +469,7 @@ class DetailFragment : Fragment() {
                     }
                     fusedLocationClient.removeLocationUpdates(this)
                 }
-            },
-            Looper.getMainLooper()
+            }, Looper.getMainLooper()
         )
     }
 
@@ -577,19 +591,21 @@ class DetailFragment : Fragment() {
         for (tag in tagLists) {
             val chip = Chip(context).apply {
                 text = tag.tagName
+                textSize = 12f
                 setChipIconResource(tag.tagImage)
 
-                chipBackgroundColor =
-                    ContextCompat.getColorStateList(context, R.color.white)
-                chipStrokeWidth = 0f
-                chipIconSize = 16f.px.toFloat()
+                chipBackgroundColor = ContextCompat.getColorStateList(context, R.color.white)
+                chipStrokeWidth = 1f
+                chipStrokeColor = ContextCompat.getColorStateList(context, R.color.gray)
+                chipIconSize = 12f.px.toFloat()
                 chipCornerRadius = 32f.px.toFloat()
                 chipStartPadding = 10f.px.toFloat()
 
-                elevation = 2f.px.toFloat()
+                elevation = 1f.px.toFloat()
 
                 isCheckable = false
                 isClickable = false
+                rippleColor = AppCompatResources.getColorStateList(context, R.color.transparent)
             }
 
             // ChipGroup에 동적으로 Chip 추가
@@ -611,41 +627,51 @@ class DetailFragment : Fragment() {
     }
 
     private fun onLongClicked(feedModel: CommentModel) {
+        if (activity is AdminActivity) {
+            showCommentDialog(requireContext()) {
+                Dialog.showDialog(
+                    requireContext(),
+                    "댓글 삭제",
+                    getString(R.string.dialog_reported_comment),
+                ) {
+                    if (feedModel.commentId == args.commentIdArg) {
+                        // 신고된 댓글인 경우
+                        commentViewModel.deleteReportedComment(
+                            feedModel.feedId, feedModel.commentId
+                        )
+                    } else {
+                        // 일반 댓글인 경우
+                        commentViewModel.deleteComment(feedModel, requireContext())
+                    }
+                    Toast.makeText(requireContext(), "댓글이 삭제되었습니다.", Toast.LENGTH_SHORT).show()
+                }
+            }
+            return
+        }
+
         val currentUid = FirebaseAuth.getInstance().currentUser?.uid
         if (feedModel.user?.id == currentUid) {
-            showCommentDialog(
-                requireContext(),
-                onDelete = {
-                    commentViewModel.deleteComment(feedModel, requireContext())
-                    commentViewModel.fetchComments(args.feedIdArg)
-                }
-            )
+            showCommentDialog(requireContext(), onDelete = {
+                commentViewModel.deleteComment(feedModel, requireContext())
+                commentViewModel.fetchComments(args.feedIdArg)
+            })
         } else {
-            showReportDialog(
-                requireContext(),
-                onReport = {
-                    val reportedUserUid = feedModel.user?.id
-                    val timeStamp = Timestamp.now()
-                    if (reportedUserUid != null) {
-                        reportCommentViewModel.sendReport(
-                            feedModel.user.id,
-                            feedModel.feedId,
-                            feedModel.commentId,
-                            timeStamp
-                        )
-                        Toast.makeText(
-                            requireContext(),
-                            "신고가 정상적으로 접수 되었습니다. 감사합니다.",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    } else {
-                        Toast.makeText(
-                            requireContext(),
-                            "신고를 접수하는데 실패했습니다. 다시 시도해주세요",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                })
+            showReportDialog(requireContext(), onReport = {
+                val reportedUserUid = feedModel.user?.id
+                val timeStamp = Timestamp.now()
+                if (reportedUserUid != null) {
+                    reportCommentViewModel.sendReport(
+                        feedModel.user.id, feedModel.feedId, feedModel.commentId, timeStamp
+                    )
+                    Toast.makeText(
+                        requireContext(), "신고가 정상적으로 접수 되었습니다. 감사합니다.", Toast.LENGTH_SHORT
+                    ).show()
+                } else {
+                    Toast.makeText(
+                        requireContext(), "신고를 접수하는데 실패했습니다. 다시 시도해주세요", Toast.LENGTH_SHORT
+                    ).show()
+                }
+            })
         }
     }
 
@@ -731,7 +757,6 @@ class DetailFragment : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-        if (activity is MainActivity)
-            (activity as MainActivity).setBottomNavigationVisibility(View.VISIBLE)
+        if (activity is MainActivity) (activity as MainActivity).setBottomNavigationVisibility(View.VISIBLE)
     }
 }

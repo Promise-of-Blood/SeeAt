@@ -110,7 +110,7 @@ class ChattingFragment : Fragment() {
     }
 
     fun addDatabase(chatList: List<Result<ChattingUiItem>>) {
-        // TODO 여러 명일 때는 방식을 변경해야 할 필요가 있음
+        // TODO 레포지토리로 옮겨야 함, 여러 명일 때는 방식을 변경해야 할 필요가 있음
         CoroutineScope(Dispatchers.IO).launch {
             for(chat in chatList) {
                 if(chat is Result.Success) {

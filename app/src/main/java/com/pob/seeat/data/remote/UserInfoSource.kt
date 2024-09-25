@@ -13,4 +13,7 @@ interface UserInfoSource {
     suspend fun getUserInfoByEmail(email: String): Flow<UserInfoData?>
     suspend fun createLikedFeed(uid: String, feedUid: String)
     suspend fun removeLikedFeed(uid: String, feedUid: String)
+    suspend fun getUserList(): List<UserInfoData>
+    suspend fun updateIsAdmin(uid: String, isAdmin: Boolean)
+    suspend fun deleteAllUserInfo(uid: String)
 }

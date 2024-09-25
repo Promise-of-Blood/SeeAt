@@ -8,8 +8,9 @@ import android.graphics.Color
 import android.graphics.Matrix
 import android.media.ExifInterface
 import android.net.Uri
+import android.view.View
 import android.view.WindowManager
-import android.widget.TextView
+import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowInsetsControllerCompat
 import com.google.firebase.Timestamp
@@ -108,12 +109,14 @@ object Utils {
         return LocalDateTime.ofInstant(this.toDate().toInstant(), ZoneId.systemDefault())
     }
 
-    fun LocalDateTime.toKoreanDateHourMinute() : String {
+    fun LocalDateTime.toKoreanDateHourMinute(): String {
         return format(DateTimeFormatter.ofPattern("a h:mm").withLocale(Locale.forLanguageTag("ko")))
     }
 
-    fun LocalDateTime.toKoreanDateYearMonthDay() : String {
-        return format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일").withLocale(Locale.forLanguageTag("ko")))
+    fun LocalDateTime.toKoreanDateYearMonthDay(): String {
+        return format(
+            DateTimeFormatter.ofPattern("yyyy년 MM월 dd일").withLocale(Locale.forLanguageTag("ko"))
+        )
     }
 
     val tagList = listOf(
@@ -200,12 +203,12 @@ object Utils {
 
 
     //유효성 검사
-    fun String.isValidNickname() : Boolean{
-        if(this.contains("\n") || this.contains("\r")||this.contains(" ")||this.contains("\\s.".toRegex()) ){
+    fun String.isValidNickname(): Boolean {
+        if (this.contains("\n") || this.contains("\r") || this.contains(" ") || this.contains("\\s.".toRegex())) {
             return false
         }
 
-        if (this.length > 8 || this.isEmpty()){
+        if (this.length > 8 || this.isEmpty()) {
             return false
         }
 
@@ -233,6 +236,21 @@ object Utils {
         return (R * c).toInt()
     }
 
+    /**
+     * 키보드를 숨깁니다.
+     * */
+    fun hideKeyboard(view: View) {
+        val inputMethodManager =
+            view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
+    }
 
-
+    /**
+     * 키보드를 표시합니다.
+     * */
+    fun showKeyboard(view: View) {
+        val inputMethodManager =
+            view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
+    }
 }
