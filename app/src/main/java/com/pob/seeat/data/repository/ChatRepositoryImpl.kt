@@ -1,6 +1,8 @@
 package com.pob.seeat.data.repository
 
 import com.google.firebase.auth.FirebaseAuth
+import com.pob.seeat.data.database.chat.ChatEntity
+import com.pob.seeat.data.database.chat.ChatRoomDb
 import com.pob.seeat.domain.repository.ChatRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -13,10 +15,13 @@ import com.pob.seeat.data.remote.chat.MessagesRemote
 import com.pob.seeat.data.remote.chat.UsersRemote
 import com.pob.seeat.presentation.view.chat.items.ChattingUiItem
 import com.pob.seeat.utils.Utils.toLocalDateTime
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -48,6 +53,7 @@ class ChatRepositoryImpl @Inject constructor(
                     lastMessage = message,
                     whenLast = System.currentTimeMillis(),
                     userList = listOf(uid, targetUid),
+                    sender = uid,
                 )
             )
             Timber.tag("sendMessage's base chatId").d("chatId $chatId")
@@ -61,6 +67,7 @@ class ChatRepositoryImpl @Inject constructor(
                     lastMessage = message,
                     whenLast = System.currentTimeMillis(),
                     userList = listOf(uid, targetUid),
+                    sender = uid,
                 ), chatId = mutableChatId
             )
         }
@@ -133,6 +140,23 @@ class ChatRepositoryImpl @Inject constructor(
     override suspend fun getChatId(feedId: String): String {
         return usersRemote.getChatId(userId = uid, feedId = feedId)
     }
+
+//    fun addDatabase(chatList: List<Result<ChattingUiItem>>) {
+//        // TODO 레포지토리로 옮겨야 함, 여러 명일 때는 방식을 변경해야 할 필요가 있음
+//        val chatRoomDb = ChatRoomDb.getDatabase()
+//        CoroutineScope(Dispatchers.IO).launch {
+//            for(chat in chatList) {
+//                if(chat is Result.Success) {
+//                    if(chat.data is ChattingUiItem.MyChatItem) chatRoomDb.chatDao().addChatMessage(
+//                        ChatEntity(messageId = chat.data.id, chatId = chatId, message = chat.data.message, sender = uid)
+//                    )
+//                    else if(chat.data is ChattingUiItem.YourChatItem) chatRoomDb.chatDao().addChatMessage(
+//                        ChatEntity(messageId = chat.data.id, chatId = chatId, message = chat.data.message, sender = targetId)
+//                    )
+//                }
+//            }
+//        }
+//    }
 
 }
 
