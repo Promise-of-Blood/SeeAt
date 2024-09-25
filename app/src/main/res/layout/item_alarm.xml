@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginVertical="2dp"
     tools:context=".presentation.view.alarm.AlarmFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -38,8 +37,22 @@
         android:id="@+id/cl_alarm_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/alarm_unread"
         android:paddingHorizontal="16dp"
         android:paddingVertical="12dp">
+
+        <ImageView
+            android:id="@+id/tv_alarm_is_new"
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:layout_marginEnd="8dp"
+            android:contentDescription="@string/alarm_title"
+            android:src="@drawable/background_circle_green"
+            app:layout_constraintBottom_toBottomOf="@id/tv_alarm_title"
+            app:layout_constraintEnd_toStartOf="@id/tv_alarm_title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/primary" />
 
         <TextView
             android:id="@+id/tv_alarm_title"
@@ -48,25 +61,12 @@
             android:ellipsize="end"
             android:maxLines="1"
             android:textColor="@color/black"
-            android:textSize="16sp"
+            android:textSize="14sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toStartOf="@id/iv_alarm_image"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@id/tv_alarm_is_new"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="'으아 어이없어'" />
-
-        <TextView
-            android:id="@+id/tv_alarm_description"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:textColor="@color/black"
-            android:textSize="14sp"
-            app:layout_constraintEnd_toStartOf="@id/iv_alarm_image"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_alarm_title"
-            tools:text="글에 새로운 댓글이 달렸습니다." />
+            tools:text="으아 어이없어" />
 
         <TextView
             android:id="@+id/tv_alarm_content"
@@ -75,11 +75,11 @@
             android:layout_marginTop="4dp"
             android:ellipsize="end"
             android:maxLines="1"
-            android:textColor="@color/gray"
+            android:textColor="@color/alarm_description"
             android:textSize="14sp"
             app:layout_constraintEnd_toStartOf="@id/iv_alarm_image"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_alarm_description"
+            app:layout_constraintStart_toStartOf="@id/tv_alarm_is_new"
+            app:layout_constraintTop_toBottomOf="@id/tv_alarm_title"
             tools:text="나 공명선인데 나 140 맞다" />
 
         <TextView
@@ -89,10 +89,10 @@
             android:layout_marginTop="4dp"
             android:ellipsize="end"
             android:maxLines="1"
-            android:textColor="@color/gray"
+            android:textColor="@color/alarm_description"
             android:textSize="12sp"
             app:layout_constraintEnd_toStartOf="@id/iv_alarm_image"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toStartOf="@id/tv_alarm_is_new"
             app:layout_constraintTop_toBottomOf="@id/tv_alarm_content"
             tools:text="2분전" />
 
