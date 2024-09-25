@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat.getColor
-import androidx.fragment.app.activityViewModels
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraPosition
 import com.naver.maps.map.LocationTrackingMode
@@ -20,7 +19,6 @@ import com.naver.maps.map.util.FusedLocationSource
 import com.pob.seeat.MainActivity
 import com.pob.seeat.R
 import com.pob.seeat.databinding.FragmentSelectLocateBinding
-import com.pob.seeat.presentation.viewmodel.NewFeedViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 
@@ -39,8 +37,6 @@ class SelectLocateFragment : Fragment() {
 
     private var isLocationTrackingEnabled = false
 
-    private val viewModel: NewFeedViewModel by activityViewModels()
-
     private lateinit var currentLatLng: LatLng
 
     private var locationSelectedListener: OnLocationSelectedListener? = null
@@ -58,6 +54,7 @@ class SelectLocateFragment : Fragment() {
             initLatitude = it.getFloat("homeLatitude")
             initLongitude = it.getFloat("homeLongitude")
             initZoom = it.getFloat("homeZoom")
+            Timber.d("init: $initLatitude, $initLongitude, $initZoom")
         } ?: run{
             (requireActivity() as MainActivity).getCurrentLocation { location ->
                 initLatitude = location!!.latitude.toFloat()
@@ -77,6 +74,7 @@ class SelectLocateFragment : Fragment() {
     }
 
     private fun initialSetting() {
+        Timber.d("initialSetting")
         binding.apply {
             toolbarMessage.setNavigationOnClickListener {
                 clSelectLocation.visibility = View.GONE
@@ -151,6 +149,8 @@ class SelectLocateFragment : Fragment() {
         val options = NaverMapOptions()
 
         // 현재 위치를 LatLng 객체로 생성
+        Timber.d("initNaverMap: $initLatitude, $initLongitude, $initZoom")
+
         val homeLatLng = LatLng(initLatitude!!.toDouble(), initLongitude!!.toDouble())
 
         // NaverMapOptions에 CameraPosition 설정

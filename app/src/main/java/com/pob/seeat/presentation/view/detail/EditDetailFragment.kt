@@ -24,6 +24,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.GeoPoint
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraPosition
+import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
 import com.pob.seeat.MainActivity
@@ -35,6 +36,7 @@ import com.pob.seeat.domain.model.TagModel
 import com.pob.seeat.presentation.view.feed.ImageUploadAdapter
 import com.pob.seeat.presentation.view.feed.NewFeedFragmentDirections
 import com.pob.seeat.presentation.view.feed.NewFeedModalBottomSheet
+import com.pob.seeat.presentation.view.feed.OnLocationSelectedListener
 import com.pob.seeat.presentation.view.feed.SelectLocateFragment
 import com.pob.seeat.presentation.viewmodel.DetailViewModel
 import com.pob.seeat.presentation.viewmodel.NewFeedViewModel
@@ -51,7 +53,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 @AndroidEntryPoint
-class EditDetailFragment : Fragment() {
+class EditDetailFragment : Fragment(), OnLocationSelectedListener {
     private var _binding: FragmentEditDetailBinding? = null
     private val binding get() = _binding!!
 
@@ -70,6 +72,20 @@ class EditDetailFragment : Fragment() {
     private val uriList = mutableListOf<Uri>()
     private var imageCount = 5
     private var isSetBeforeLocation = false
+
+    override fun onLocationSelected(location: LatLng) {
+        Timber.d("onLocationSelected: $location")
+        binding.apply {
+            map.visibility = View.VISIBLE
+            ivMarker.visibility = View.VISIBLE
+            ivMarkerShadow.visibility = View.VISIBLE
+        }
+
+        if (::selectedMap.isInitialized) {
+            val cameraUpdate = CameraUpdate.scrollTo(location)
+            selectedMap.moveCamera(cameraUpdate)
+        }
+    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -273,9 +289,9 @@ class EditDetailFragment : Fragment() {
             }
 
             selectedMap.setOnMapClickListener { point, coord ->
-                findNavController().navigate(R.id.action_navigation_detail_edit_to_navigation_select_locate)
+                binding.cvEditSelectLocationFragment.findViewById<View>(R.id.cl_select_location).visibility =
+                    View.VISIBLE
             }
-
         }
     }
 
@@ -393,9 +409,6 @@ class EditDetailFragment : Fragment() {
             }
 
             tvMap.setOnClickListener {
-
-                binding.cvEditSelectLocationFragment.findViewById<View>(R.id.cl_select_location).visibility =
-                    View.VISIBLE
 //                if (binding.map.visibility == View.VISIBLE) {
 //                    binding.map.visibility = View.INVISIBLE
 //                }

@@ -75,9 +75,6 @@ class NewFeedFragment : Fragment(), OnLocationSelectedListener {
             map.visibility = View.VISIBLE
             ivMarker.visibility = View.VISIBLE
             ivMarkerShadow.visibility = View.VISIBLE
-
-            binding.clSelectLocate.bringToFront()
-            binding.selectLocationFragment.bringToFront()
         }
 
         if (::selectedMap.isInitialized) {
