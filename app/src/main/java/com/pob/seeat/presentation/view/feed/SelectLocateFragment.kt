@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat.getColor
-import androidx.fragment.app.activityViewModels
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraPosition
 import com.naver.maps.map.LocationTrackingMode
@@ -35,6 +34,7 @@ class SelectLocateFragment : Fragment() {
     private lateinit var naverMap: NaverMap
     private lateinit var locationSource: FusedLocationSource
     private var isMoving = false
+
     private var isLocationTrackingEnabled = false
 
     private lateinit var currentLatLng: LatLng
@@ -54,6 +54,7 @@ class SelectLocateFragment : Fragment() {
             initLatitude = it.getFloat("homeLatitude")
             initLongitude = it.getFloat("homeLongitude")
             initZoom = it.getFloat("homeZoom")
+            Timber.d("init: $initLatitude, $initLongitude, $initZoom")
         } ?: run{
             (requireActivity() as MainActivity).getCurrentLocation { location ->
                 initLatitude = location!!.latitude.toFloat()
@@ -73,6 +74,7 @@ class SelectLocateFragment : Fragment() {
     }
 
     private fun initialSetting() {
+        Timber.d("initialSetting")
         binding.apply {
             toolbarMessage.setNavigationOnClickListener {
                 clSelectLocation.visibility = View.GONE
@@ -82,6 +84,11 @@ class SelectLocateFragment : Fragment() {
                 locationSelectedListener?.onLocationSelected(currentLatLng)
                 clSelectLocation.visibility = View.GONE
             }
+//            tvConfirmLocate.setOnClickListener {
+//                Timber.i("changed Location $currentLatLng")
+//                viewModel.updateSelectLocation(currentLatLng)
+//                requireActivity().onBackPressed()
+//            }
 
             ibLocation.setOnClickListener {
                 changeStatusLocationButton()
@@ -105,6 +112,7 @@ class SelectLocateFragment : Fragment() {
             }
         )
     }
+
 
     private fun changeStatusLocationButton() {
         isLocationTrackingEnabled = !isLocationTrackingEnabled
@@ -141,7 +149,9 @@ class SelectLocateFragment : Fragment() {
         val options = NaverMapOptions()
 
         // 현재 위치를 LatLng 객체로 생성
-        val homeLatLng = LatLng(initLatitude!!.toDouble(), initLongitude!!.toDouble(),)
+        Timber.d("initNaverMap: $initLatitude, $initLongitude, $initZoom")
+
+        val homeLatLng = LatLng(initLatitude!!.toDouble(), initLongitude!!.toDouble())
 
         // NaverMapOptions에 CameraPosition 설정
         options
@@ -222,3 +232,4 @@ class SelectLocateFragment : Fragment() {
         locationSelectedListener = null
     }
 }
+

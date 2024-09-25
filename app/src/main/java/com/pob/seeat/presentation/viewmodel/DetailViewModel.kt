@@ -10,6 +10,7 @@ import com.pob.seeat.domain.model.FeedReportModel
 import com.pob.seeat.domain.model.UserInfoModel
 import com.pob.seeat.domain.repository.FeedRepository
 import com.pob.seeat.domain.usecase.DeleteBookmarkUseCase
+import com.pob.seeat.domain.usecase.EditFeedUseCase
 import com.pob.seeat.domain.usecase.DeleteReportedFeedUseCase
 import com.pob.seeat.domain.usecase.IsBookmarkedUseCase
 import com.pob.seeat.domain.usecase.RemoveFeedUseCase
@@ -34,6 +35,7 @@ class DetailViewModel @Inject constructor(
     private val reportFeedUseCase: ReportFeedUseCase,
     private val firebaseAuth: FirebaseAuth,
     private val removeFeedUseCase: RemoveFeedUseCase,
+    private val editFeedUseCase: EditFeedUseCase,
     private val deleteReportedFeedUseCase: DeleteReportedFeedUseCase,
 ) : ViewModel() {
 
@@ -141,6 +143,20 @@ class DetailViewModel @Inject constructor(
             removeFeedUseCase(feedId)
         }
     }
+
+    fun editFeed(feedModel: FeedModel) {
+        viewModelScope.launch {
+
+            try {
+                Timber.tag("editFeedRemote").i("feedMap: $feedModel")
+                editFeedUseCase(feedModel)
+            } catch (e: Exception) {
+                Timber.e(e, "Error occurred in editFeed")
+            }
+
+        }
+    }
+
 
     fun deleteReportedFeed(feedId: String) {
         viewModelScope.launch {

@@ -163,6 +163,7 @@
     <string name="empty_bookmark">저장한 글이 없습니다.</string>
     <string name="empty_search">검색 결과가 없습니다.</string>
     <string name="empty_comment">등록된 댓글이 없습니다.</string>
+    <string name="detail_edit">게시글 수정</string>
 
     <!-- admin -->
     <string name="admin_title">관리자</string>
