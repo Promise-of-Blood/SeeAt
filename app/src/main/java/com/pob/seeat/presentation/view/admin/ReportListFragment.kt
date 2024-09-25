@@ -41,7 +41,6 @@ class ReportListFragment : Fragment(), Searchable {
             ::onDelete,
             ::onIgnore,
             ::onNavigate,
-//            ::handleEmptyList,
         )
     }
 
@@ -95,7 +94,6 @@ class ReportListFragment : Fragment(), Searchable {
                         adminRecyclerViewAdapter.submitList(data.data)
                         adminRecyclerViewAdapter.setOriginalList(data.data)
                         binding.rvReportList.visibility = View.VISIBLE
-                        handleEmptyList(data.data.size)
                     }
 
                     is Result.Error -> {
@@ -131,10 +129,6 @@ class ReportListFragment : Fragment(), Searchable {
         cReportSort.setOnClickListener {
             bottomSheetDialog.show()
         }
-    }
-
-    private fun handleEmptyList(size: Int) = with(binding) {
-        tvReportListEmpty.visibility = if (size == 0) View.VISIBLE else View.GONE
     }
 
     private fun onDelete(item: AdminListItem) {

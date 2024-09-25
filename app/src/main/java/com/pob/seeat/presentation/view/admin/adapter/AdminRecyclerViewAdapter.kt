@@ -23,7 +23,6 @@ class AdminRecyclerViewAdapter(
     private val onDelete: (AdminListItem) -> Unit = {},
     private val onIgnore: (AdminListItem) -> Unit = {},
     private val onNavigate: (AdminListItem) -> Unit = {},
-    private val handleEmptyList: (Int) -> Unit = {},
     private val onClick: (AdminListItem) -> Unit = {},
 ) : ListAdapter<AdminListItem, ViewHolder<AdminListItem>>(object :
     DiffUtil.ItemCallback<AdminListItem>() {
@@ -210,10 +209,8 @@ class AdminRecyclerViewAdapter(
             @Suppress("UNCHECKED_CAST")
             override fun publishResults(constraint: CharSequence, results: FilterResults) {
                 if (searchQuery.all { it.value.isNullOrBlank() }) {
-//                    handleEmptyList(originalList.size)
                     submitList(originalList)
                 } else {
-//                    handleEmptyList((results.values as? List<AdminListItem>)?.size ?: 0)
                     submitList(results.values as? List<AdminListItem>)
                 }
             }
