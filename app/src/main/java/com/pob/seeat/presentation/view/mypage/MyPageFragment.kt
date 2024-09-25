@@ -9,8 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.content.res.AppCompatResources.getDrawable
-import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -23,6 +21,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.pob.seeat.BuildConfig
 import com.pob.seeat.R
 import com.pob.seeat.databinding.FragmentMyPageBinding
+import com.pob.seeat.presentation.view.admin.AdminActivity
 import com.pob.seeat.presentation.view.mypage.settings.SettingsActivity
 import com.pob.seeat.presentation.viewmodel.MyPageSharedViewModel
 import com.pob.seeat.presentation.viewmodel.UserInfoViewModel
@@ -50,7 +49,7 @@ class MyPageFragment : Fragment() {
                 val updatedNickname = data.getStringExtra("updatedNickname")
                 val updatedIntroduce = data.getStringExtra("updatedIntroduce")
                 val updatedProfileUrl = data.getStringExtra("updatedProfileUrl")
-                Log.d("공명선","$updatedProfileUrl")
+                Log.d("공명선", "$updatedProfileUrl")
 
                 if (updatedNickname != null && updatedIntroduce != null) {
 
@@ -73,8 +72,7 @@ class MyPageFragment : Fragment() {
 
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentMyPageBinding.inflate(inflater, container, false)
         return binding.root
@@ -138,6 +136,10 @@ class MyPageFragment : Fragment() {
             GoogleAuthUtil.googleLogout(requireActivity())
         }
 
+        mbMyPageAdmin.setOnClickListener {
+            startActivity(Intent(requireContext(), AdminActivity::class.java))
+        }
+
         tvMyPageVersion.setOnClickListener {
             when ((easterEgg) % 10) {
                 7 -> toast("IDKOS : 난 너무 잘생겼어")
@@ -170,6 +172,7 @@ class MyPageFragment : Fragment() {
                         tvUserIntroduce.text = userInfo.introduce
                         tvUserPostNum.text = userInfo.feedCount.toFormatShortenedString()
                         tvUserCommentNum.text = userInfo.commentCount.toFormatShortenedString()
+                        mbMyPageAdmin.visibility = if (userInfo.isAdmin) View.VISIBLE else View.GONE
                     }
                 } else {
                     Log.e("MyPageFragment", "UserInfo is null")
@@ -180,16 +183,15 @@ class MyPageFragment : Fragment() {
 
     private fun displayImage(imageUrl: String?) {
         if (isAdded) {
-            if(imageUrl != null){
+            if (imageUrl != null) {
                 Glide.with(this)
                     .load(imageUrl)
                     .into(binding.ivProfileImage)
-            }else{
+            } else {
                 Glide.with(this)
                     .load(R.drawable.baseline_person_24)
                     .into(binding.ivProfileImage)
             }
-
         }
     }
 

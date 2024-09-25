@@ -17,7 +17,7 @@
         tools:layout="@layout/fragment_home">
         <action
             android:id="@+id/action_home_to_new_feed"
-            app:destination="@id/navigation_new_feed" >
+            app:destination="@id/navigation_new_feed">
             <argument
                 android:name="homeLatitude"
                 app:argType="float" />
@@ -173,10 +173,15 @@
         <argument
             android:name="feedIdArg"
             app:argType="string" />
+        <argument
+            android:name="commentIdArg"
+            android:defaultValue=""
+            app:argType="string"
+            app:nullable="true" />
 
         <action
             android:id="@+id/action_detail_to_show_locate"
-            app:destination="@id/navigation_show_locate" >
+            app:destination="@id/navigation_show_locate">
             <argument
                 android:name="feedLatitude"
                 app:argType="float" />
