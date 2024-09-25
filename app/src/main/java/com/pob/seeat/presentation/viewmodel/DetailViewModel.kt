@@ -11,6 +11,7 @@ import com.pob.seeat.domain.model.UserInfoModel
 import com.pob.seeat.domain.repository.FeedRepository
 import com.pob.seeat.domain.usecase.DeleteBookmarkUseCase
 import com.pob.seeat.domain.usecase.EditFeedUseCase
+import com.pob.seeat.domain.usecase.DeleteReportedFeedUseCase
 import com.pob.seeat.domain.usecase.IsBookmarkedUseCase
 import com.pob.seeat.domain.usecase.RemoveFeedUseCase
 import com.pob.seeat.domain.usecase.ReportFeedUseCase
@@ -34,7 +35,8 @@ class DetailViewModel @Inject constructor(
     private val reportFeedUseCase: ReportFeedUseCase,
     private val firebaseAuth: FirebaseAuth,
     private val removeFeedUseCase: RemoveFeedUseCase,
-    private val editFeedUseCase: EditFeedUseCase
+    private val editFeedUseCase: EditFeedUseCase,
+    private val deleteReportedFeedUseCase: DeleteReportedFeedUseCase,
 ) : ViewModel() {
 
     private val _userInfo = MutableStateFlow<UserInfoModel?>(null)
@@ -156,4 +158,9 @@ class DetailViewModel @Inject constructor(
     }
 
 
+    fun deleteReportedFeed(feedId: String) {
+        viewModelScope.launch {
+            deleteReportedFeedUseCase(feedId)
+        }
+    }
 }

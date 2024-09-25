@@ -20,24 +20,22 @@ class HomeViewModel @Inject constructor(
     private val _feedResponse = MutableStateFlow<Result<List<FeedModel>>>(Result.Loading)
     val feedResponse: StateFlow<Result<List<FeedModel>>> = _feedResponse
 
-    private val _singleFeedResponse = MutableStateFlow<Result<FeedModel>>(Result.Loading)
-    val singleFeedResponse: StateFlow<Result<FeedModel>> = _singleFeedResponse
-
     private val _unreadAlarmCount = MutableStateFlow<Result<Long>>(Result.Loading)
     val unreadAlarmCount: StateFlow<Result<Long>> = _unreadAlarmCount
 
-    fun getFeedList() {
-        viewModelScope.launch {
-            feedRepository.getFeedList().collect { uiState ->
-                _feedResponse.value = uiState
-            }
-        }
-    }
+    var feedList: List<FeedModel> = emptyList()
 
-    fun getFeedById(feedId: String) {
+    var screenWidth: Int? = null
+    var screenHeight: Int? = null
+
+    fun getFeedList(
+        centerLat: Double,
+        centerLng: Double,
+        radiusInKm: Double
+    ) {
         viewModelScope.launch {
-            feedRepository.getFeed(feedId).collect { uiState ->
-                _singleFeedResponse.value = uiState
+            feedRepository.getFeedList(centerLat, centerLng, radiusInKm).collect { uiState ->
+                _feedResponse.value = uiState
             }
         }
     }

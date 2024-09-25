@@ -76,6 +76,10 @@ android {
     }
 }
 
+ksp {
+    arg("room.schemaLocation", "${projectDir}/schemas")
+}
+
 dependencies {
 
     implementation(libs.androidx.core.ktx)
@@ -102,6 +106,7 @@ dependencies {
     // firebase
     implementation(platform(libs.firebase.bom))
     implementation(libs.bundles.firebase)
+    implementation (libs.geofire.android.common)
 
     // hilt
     implementation(libs.dagger.hilt.android)
@@ -149,6 +154,7 @@ dependencies {
     annotationProcessor(libs.androidx.room.compiler)
     ksp(libs.androidx.room.compiler)
     testImplementation(libs.androidx.room.testing)
+    implementation(libs.androidx.room.paging)
 
     // pull to refresh
     implementation(libs.androidx.swiperefreshlayout)

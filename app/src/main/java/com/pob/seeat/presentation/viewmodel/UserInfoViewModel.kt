@@ -38,7 +38,7 @@ class UserInfoViewModel @Inject constructor(private val userInfoUseCases: UserIn
         val newUser = UserInfoModel(uid,email,nickname,profileUrl,introduce,token)
 
         viewModelScope.launch {
-            userInfoUseCases.createUserInfoUseCase.execute(newUser)
+            createUserInfo(newUser)
         }
     }
 

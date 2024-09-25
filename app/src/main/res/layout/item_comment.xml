@@ -14,6 +14,7 @@
         android:layout_height="wrap_content"
         app:cardCornerRadius="50dp"
         app:cardElevation="0dp"
+        app:cardBackgroundColor="@color/primary"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -31,7 +32,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:maxLines="1"
-        android:textStyle="bold"
+        style="@style/body_b_p"
         android:textColor="@color/black"
         app:layout_constraintStart_toEndOf="@id/cv_comment_item_user_image_layout"
         app:layout_constraintTop_toTopOf="@id/cv_comment_item_user_image_layout"
@@ -47,6 +48,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/tv_comment_item_username"
         app:layout_constraintTop_toBottomOf="@id/tv_comment_item_username"
+        style="@style/body_l_p"
         tools:text="나 공명선인데 140 맞다 나 공명선인데 140 맞다 나 공명선인데 140 맞다 나 공명선인데 140 맞다" />
 
     <TextView
@@ -55,6 +57,7 @@
         android:layout_height="wrap_content"
         android:textColor="@color/gray"
         tools:text="24년9월23일"
+        style="@style/body_l_p"
         android:layout_marginStart="8dp"
         app:layout_constraintTop_toTopOf="@id/tv_comment_item_username"
         app:layout_constraintStart_toEndOf="@id/tv_comment_item_username"/>

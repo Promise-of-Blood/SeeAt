@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -45,6 +46,7 @@ class BottomSheetFeedAdapter(
         override fun onBind(item: FeedModel) = with(binding) {
 
             if (item.contentImage.isNotEmpty()) {
+                ivPostMainImage.visibility = View.VISIBLE
                 Glide.with(itemView.context).load(item.contentImage[0]).into(ivPostMainImage)
             } else {
                 ivPostMainImage.visibility = View.GONE
@@ -71,25 +73,27 @@ class BottomSheetFeedAdapter(
             for (tag in tagLists) {
                 val chip = Chip(itemView.context).apply {
                     text = tag.tagName
+                    textSize = 12f
                     setChipIconResource(tag.tagImage)
 
                     chipBackgroundColor = ContextCompat.getColorStateList(context, R.color.white)
-                    chipStrokeWidth = 0f
-                    chipIconSize = 16f.px.toFloat()
+                    chipStrokeWidth = 1f
+                    chipStrokeColor = ContextCompat.getColorStateList(context,R.color.gray)
+                    chipIconSize = 12f.px.toFloat()
                     chipCornerRadius = 32f.px.toFloat()
                     chipStartPadding = 10f.px.toFloat()
 
-                    elevation = 2f.px.toFloat()
+                    elevation = 1f.px.toFloat()
 
                     isCheckable = false
                     isClickable = false
+                    rippleColor = AppCompatResources.getColorStateList(context,R.color.transparent)
                 }
 
                 // ChipGroup에 동적으로 Chip 추가
                 chipsGroupMainFeed.addView(chip)
             }
         }
-
     }
 
     private var originalList: List<FeedModel> = emptyList()

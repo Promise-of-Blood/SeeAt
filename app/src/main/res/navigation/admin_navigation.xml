@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/admin_navigation"
+    app:startDestination="@+id/admin">
+
+    <fragment
+        android:id="@+id/admin"
+        android:name="com.pob.seeat.presentation.view.admin.AdminFragment"
+        android:label="@string/admin_title"
+        tools:layout="@layout/fragment_admin">
+        <action
+            android:id="@+id/action_report_list_to_feed_detail"
+            app:destination="@id/feed_detail">
+            <argument
+                android:name="feedIdArg"
+                app:argType="string" />
+        </action>
+    </fragment>
+
+    <fragment
+        android:id="@+id/report_list"
+        android:name="com.pob.seeat.presentation.view.admin.ReportListFragment"
+        android:label="@string/admin_title"
+        tools:layout="@layout/fragment_report_list">
+        <action
+            android:id="@+id/action_report_list_to_feed_detail"
+            app:destination="@id/feed_detail">
+            <argument
+                android:name="feedIdArg"
+                app:argType="string" />
+            <argument
+                android:name="commentIdArg"
+                android:defaultValue=""
+                app:argType="string"
+                app:nullable="true" />
+        </action>
+    </fragment>
+
+    <fragment
+        android:id="@+id/feed_detail"
+        android:name="com.pob.seeat.presentation.view.detail.DetailFragment"
+        android:label="@string/admin_detail_title"
+        tools:layout="@layout/fragment_detail">
+        <argument
+            android:name="feedIdArg"
+            app:argType="string" />
+        <argument
+            android:name="commentIdArg"
+            android:defaultValue=""
+            app:argType="string"
+            app:nullable="true" />
+        <action
+            android:id="@+id/action_detail_to_show_locate"
+            app:destination="@id/navigation_show_locate">
+            <argument
+                android:name="feedLatitude"
+                app:argType="float" />
+            <argument
+                android:name="feedLongitude"
+                app:argType="float" />
+        </action>
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_show_locate"
+        android:name="com.pob.seeat.presentation.view.detail.ShowLocateFragment"
+        android:label="위치 보기"
+        tools:layout="@layout/fragment_show_locate">
+        <argument
+            android:name="feedLatitude"
+            app:argType="float" />
+        <argument
+            android:name="feedLongitude"
+            app:argType="float" />
+    </fragment>
+
+</navigation>

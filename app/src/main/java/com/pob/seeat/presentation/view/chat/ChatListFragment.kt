@@ -14,6 +14,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
 import com.pob.seeat.databinding.FragmentChatListBinding
+import com.pob.seeat.presentation.view.UiState
 import com.pob.seeat.presentation.view.chat.chatlist.adapter.ChatListAdapter
 import com.pob.seeat.presentation.view.chat.items.ChatListUiItem
 import com.pob.seeat.presentation.viewmodel.ChatListViewModel
@@ -68,6 +69,7 @@ class ChatListFragment : Fragment() {
                 val intent = Intent(requireContext(), ChattingActivity::class.java)
                 intent.putExtra("feedId", item.feedFrom)
                 intent.putExtra("chatId", item.id)
+                intent.putExtra("targetName", item.person)
                 startActivity(intent)
             }
         }
@@ -75,7 +77,6 @@ class ChatListFragment : Fragment() {
             override fun onSet(photoUrl: String): RequestBuilder<Drawable> {
                 return Glide.with(requireContext()).load(photoUrl)
             }
-
         }
 //        chatListAdapter.submitList(ChatListDummyData.getDummyList())
     }

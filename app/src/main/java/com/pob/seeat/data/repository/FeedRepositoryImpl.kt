@@ -13,10 +13,10 @@ class FeedRepositoryImpl @Inject constructor(
     private val feedRemote: FeedRemote
 ) : FeedRepository {
 
-    override suspend fun getFeedList(): Flow<Result<List<FeedModel>>> = flow {
+    override suspend fun getFeedList(centerLat: Double, centerLng: Double, radiusInKm: Double): Flow<Result<List<FeedModel>>> = flow {
         emit(Result.Loading)
         try {
-            val posts = feedRemote.getFeedList()
+            val posts = feedRemote.getFeedList(centerLat, centerLng, radiusInKm)
             emit(Result.Success(posts))
         } catch (e: Exception) {
             emit(Result.Error(e.message ?: "An unknown error occurred"))
