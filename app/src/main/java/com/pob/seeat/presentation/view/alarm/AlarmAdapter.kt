@@ -25,22 +25,23 @@ class AlarmAdapter(private val onClick: (AlarmModel) -> Unit) :
     class Holder(binding: ItemAlarmBinding) : ViewHolder<AlarmModel>(binding.root) {
         private val container = binding.clAlarmContainer
         private val title = binding.tvAlarmTitle
-        private val description = binding.tvAlarmDescription
         private val content = binding.tvAlarmContent
         private val time = binding.tvAlarmTime
         private val image = binding.ivAlarmImage
+        private val isNewIcon = binding.tvAlarmIsNew
 
         override fun bind(
             item: AlarmModel, onClick: (AlarmModel) -> Unit
         ) {
             content.visibility = View.VISIBLE
-            description.text = itemView.context.getString(R.string.alarm_description_comment)
-            title.text = itemView.context.getString(R.string.alarm_post_title, item.feedTitle)
+//            title.text = itemView.context.getString(R.string.alarm_post_title, item.feedTitle)
+            title.text = item.feedTitle
             content.text = item.content
             time.text = item.createdAt?.toKoreanDiffString() ?: ""
+            isNewIcon.visibility = if (item.isRead) View.GONE else View.VISIBLE
             container.apply {
                 val bgColor =
-                    itemView.context.getColor(if (item.isRead) R.color.white else R.color.light_tertiary)
+                    itemView.context.getColor(if (item.isRead) R.color.alarm_read else R.color.alarm_unread)
                 setBackgroundColor(bgColor)
                 setOnClickListener { onClick(item) }
             }
