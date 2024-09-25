@@ -115,7 +115,7 @@
     <string name="feed">게시글</string>
     <string name="writer_info">작성자 정보</string>
     <string name="do_chat">채팅하기</string>
-    <string name="get_position">위치보기</string>
+    <string name="get_position"><u>위치보기</u></string>
     <string name="report">신고</string>
     <string name="input_comment">댓글을 입력해주세요</string>
     <string name="send">전송</string>

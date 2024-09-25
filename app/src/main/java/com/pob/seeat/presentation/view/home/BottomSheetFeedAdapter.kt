@@ -46,6 +46,7 @@ class BottomSheetFeedAdapter(
         override fun onBind(item: FeedModel) = with(binding) {
 
             if (item.contentImage.isNotEmpty()) {
+                ivPostMainImage.visibility = View.VISIBLE
                 Glide.with(itemView.context).load(item.contentImage[0]).into(ivPostMainImage)
             } else {
                 ivPostMainImage.visibility = View.GONE
@@ -72,7 +73,7 @@ class BottomSheetFeedAdapter(
             for (tag in tagLists) {
                 val chip = Chip(itemView.context).apply {
                     text = tag.tagName
-                    textSize = 11f
+                    textSize = 12f
                     setChipIconResource(tag.tagImage)
 
                     chipBackgroundColor = ContextCompat.getColorStateList(context, R.color.white)
@@ -82,11 +83,11 @@ class BottomSheetFeedAdapter(
                     chipCornerRadius = 32f.px.toFloat()
                     chipStartPadding = 10f.px.toFloat()
 
+                    elevation = 1f.px.toFloat()
+
                     isCheckable = false
                     isClickable = false
                     rippleColor = AppCompatResources.getColorStateList(context,R.color.transparent)
-
-
                 }
 
                 // ChipGroup에 동적으로 Chip 추가

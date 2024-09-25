@@ -22,6 +22,7 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.MenuProvider
@@ -591,18 +592,21 @@ class DetailFragment : Fragment() {
         for (tag in tagLists) {
             val chip = Chip(context).apply {
                 text = tag.tagName
+                textSize = 12f
                 setChipIconResource(tag.tagImage)
 
                 chipBackgroundColor = ContextCompat.getColorStateList(context, R.color.white)
-                chipStrokeWidth = 0f
-                chipIconSize = 16f.px.toFloat()
+                chipStrokeWidth = 1f
+                chipStrokeColor = ContextCompat.getColorStateList(context, R.color.gray)
+                chipIconSize = 12f.px.toFloat()
                 chipCornerRadius = 32f.px.toFloat()
                 chipStartPadding = 10f.px.toFloat()
 
-                elevation = 2f.px.toFloat()
+                elevation = 1f.px.toFloat()
 
                 isCheckable = false
                 isClickable = false
+                rippleColor = AppCompatResources.getColorStateList(context, R.color.transparent)
             }
 
             // ChipGroup에 동적으로 Chip 추가
