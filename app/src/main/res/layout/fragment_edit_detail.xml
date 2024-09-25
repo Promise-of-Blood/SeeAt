@@ -201,10 +201,10 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_progress"
-        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#88000000">
+        android:background="#88000000"
+        android:visibility="gone">
 
         <ProgressBar
             android:layout_width="100dp"
@@ -216,5 +216,10 @@
             app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/cv_edit_select_location_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

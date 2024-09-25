@@ -35,6 +35,7 @@ import com.pob.seeat.domain.model.TagModel
 import com.pob.seeat.presentation.view.feed.ImageUploadAdapter
 import com.pob.seeat.presentation.view.feed.NewFeedFragmentDirections
 import com.pob.seeat.presentation.view.feed.NewFeedModalBottomSheet
+import com.pob.seeat.presentation.view.feed.SelectLocateFragment
 import com.pob.seeat.presentation.viewmodel.DetailViewModel
 import com.pob.seeat.presentation.viewmodel.NewFeedViewModel
 import com.pob.seeat.utils.GoogleAuthUtil.getUserUid
@@ -91,7 +92,7 @@ class EditDetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initLoadFeedData()
-        initNaverMap()
+        initDetailNaverMap()
         initialSetting()
 //        setSelectLocation()
         Timber.i("onViewCreated")
@@ -224,7 +225,7 @@ class EditDetailFragment : Fragment() {
     }
 
 
-    private fun initNaverMap() {
+    private fun initDetailNaverMap() {
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as MapFragment
         Timber.tag("isSetBeforeLocation").i(isSetBeforeLocation.toString())
         if (!isSetBeforeLocation) {
@@ -240,6 +241,8 @@ class EditDetailFragment : Fragment() {
                                 geoPoint.longitude
                             )
                         )
+
+
                         Timber.tag("init location").i(selectLocation.toString())
                     }
                 }
@@ -317,6 +320,42 @@ class EditDetailFragment : Fragment() {
     private fun initialSetting() {
         binding.apply {
 
+            val feedModel = detailViewModel.singleFeedResponse.value
+
+            when (feedModel) {
+                is Result.Success -> {
+                    val bundle = Bundle().apply {
+                        feedModel.data.location?.latitude?.let { it1 ->
+                            putFloat(
+                                "homeLatitude",
+                                it1.toFloat()
+                            )
+                        }  // 예시 값
+                        feedModel.data.location?.longitude?.let { it1 ->
+                            putFloat(
+                                "homeLongitude",
+                                it1.toFloat()
+                            )
+                        }  // 예시 값
+                        putFloat("homeZoom", 14F)  // 예시 값
+                    }
+                    Timber.i("bundel = $bundle")
+
+                    val selectLocationFragment = SelectLocateFragment().apply {
+                        arguments = bundle
+                    }
+
+                    Timber.tag("editDetailFragment")
+                        .i(" arguments of selctLocationFragment = ${selectLocationFragment.arguments}")
+                    childFragmentManager.beginTransaction()
+                        .replace(R.id.cv_edit_select_location_fragment, selectLocationFragment)
+                        .commit()
+                }
+
+                is Result.Error -> TODO()
+                Result.Loading -> TODO()
+            }
+
             toolbarMessage.setNavigationOnClickListener {
                 requireActivity().onBackPressedDispatcher.onBackPressed()
             }
@@ -354,7 +393,12 @@ class EditDetailFragment : Fragment() {
             }
 
             tvMap.setOnClickListener {
-                findNavController().navigate(R.id.action_navigation_detail_edit_to_navigation_select_locate)
+
+                binding.cvEditSelectLocationFragment.findViewById<View>(R.id.cl_select_location).visibility =
+                    View.VISIBLE
+//                if (binding.map.visibility == View.VISIBLE) {
+//                    binding.map.visibility = View.INVISIBLE
+//                }
             }
 
             tvSelectTag.setOnClickListener {

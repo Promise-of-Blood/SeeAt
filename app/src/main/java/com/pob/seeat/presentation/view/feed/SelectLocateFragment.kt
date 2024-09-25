@@ -86,6 +86,11 @@ class SelectLocateFragment : Fragment() {
                 locationSelectedListener?.onLocationSelected(currentLatLng)
                 clSelectLocation.visibility = View.GONE
             }
+//            tvConfirmLocate.setOnClickListener {
+//                Timber.i("changed Location $currentLatLng")
+//                viewModel.updateSelectLocation(currentLatLng)
+//                requireActivity().onBackPressed()
+//            }
 
             ibLocation.setOnClickListener {
                 changeStatusLocationButton()
@@ -110,10 +115,7 @@ class SelectLocateFragment : Fragment() {
         )
     }
 
-            tvConfirmLocate.setOnClickListener {
-                Timber.i("changed Location $currentLatLng")
-                viewModel.updateSelectLocation(currentLatLng)
-                requireActivity().onBackPressed()
+
     private fun changeStatusLocationButton() {
         isLocationTrackingEnabled = !isLocationTrackingEnabled
         Timber.tag("HomeFragment")
@@ -149,7 +151,7 @@ class SelectLocateFragment : Fragment() {
         val options = NaverMapOptions()
 
         // 현재 위치를 LatLng 객체로 생성
-        val homeLatLng = LatLng(initLatitude!!.toDouble(), initLongitude!!.toDouble(),)
+        val homeLatLng = LatLng(initLatitude!!.toDouble(), initLongitude!!.toDouble())
 
         // NaverMapOptions에 CameraPosition 설정
         options
@@ -230,3 +232,4 @@ class SelectLocateFragment : Fragment() {
         locationSelectedListener = null
     }
 }
+
