@@ -111,7 +111,6 @@ class EditDetailFragment : Fragment(), OnLocationSelectedListener {
         initLoadFeedData()
         initDetailNaverMap()
         initialSetting()
-//        setSelectLocation()
         Timber.i("onViewCreated")
     }
 
@@ -409,12 +408,6 @@ class EditDetailFragment : Fragment(), OnLocationSelectedListener {
                 }
             }
 
-            tvMap.setOnClickListener {
-//                if (binding.map.visibility == View.VISIBLE) {
-//                    binding.map.visibility = View.INVISIBLE
-//                }
-            }
-
             tvSelectTag.setOnClickListener {
                 val modal = NewFeedModalBottomSheet()
                 modal.setStyle(
@@ -517,10 +510,6 @@ class EditDetailFragment : Fragment(), OnLocationSelectedListener {
                 is Result.Error -> Timber.i("이전 디테일 페이지 데이터 에러")
                 Result.Loading -> Timber.i("이전 디테일 페이지 데이터 로딩중")
             }
-
-
-            // ViewModel에서 이미지 업로드 결과를 확인
-
         }
     }
 
