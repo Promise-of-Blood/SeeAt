@@ -110,12 +110,6 @@ class EditDetailFragment : Fragment() {
 
         Timber.i("selectLocation ViewModel ${newFeedViewModel.selectLocation}")
         setSelectLocation()
-
-//        if (::selectedMap.isInitialized) {
-//            Timber.tag("NewfeedFragment").d("map is initialized")
-//            selectLocation = newFeedViewModel.selectLocation
-//            setSelectLocation() // selectedMap이 초기화된 후에 위치 설정
-//        }
     }
 
     override fun onDestroyView() {
@@ -144,15 +138,6 @@ class EditDetailFragment : Fragment() {
                         feedModel.data.tags.contains(tagModel.tagName)
                     }
                     newFeedViewModel.updateSelectTagList(selectedTagList)
-//                    feedModel.data.location?.let { location ->
-//                        Timber.i("init location $location")
-//                        newFeedViewModel.updateSelectLocation(
-//                            LatLng(
-//                                location.latitude,
-//                                location.longitude
-//                            )
-//                        )
-//                    }
                 }
 
                 is Result.Error -> TODO()
@@ -166,17 +151,26 @@ class EditDetailFragment : Fragment() {
         // ActivityResultLauncher를 미리 등록
         multipleImagePickerLauncher =
             registerForActivityResult(ActivityResultContracts.PickMultipleVisualMedia(imageCount)) { uris ->
+                Timber.i(uris.toString())
                 if (uris.isNotEmpty()) {
                     uris.forEach { uri ->
-                        val resizedBitmap = resizeImage(requireContext(), uri)
+                        try {
 
-                        resizedBitmap.let {
-                            // Bitmap을 파일로 저장하고 Uri로 변환
-                            val resizedUri = compressBitmapToUri(requireContext(), it)
+                            val resizedBitmap = resizeImage(requireContext(), uri)
 
-                            resizedUri.let { uri ->
-                                uriList.add(uri)
-                            }
+                            resizedBitmap?.let {
+                                // Bitmap을 파일로 저장하고 Uri로 변환
+                                val resizedUri = compressBitmapToUri(requireContext(), it)
+
+                                resizedUri?.let { uri ->
+                                    uriList.add(uri)
+                                }
+                            } ?: Timber.e("Uri is not found $uri")
+                        } catch (e: Exception) {
+                            Timber.e(e, "image exception $uri")
+                            Toast.makeText(requireContext(), "이미지 처리중 오류", Toast.LENGTH_SHORT)
+                                .show()
+
                         }
                     }
 
@@ -391,30 +385,15 @@ class EditDetailFragment : Fragment() {
 
         if (checkException()) {
             Timber.tag("NewFeed").d("Upload Feed")
-            val firestore = FirebaseFirestore.getInstance()
-
-            // 새로운 피드 ID 생성
-            val feedId = firestore.collection("feed").document().id
-
-            // 태그 리스트 생성
-            val tagNameList = if (selectedTagList.isEmpty()) {
-                listOf("기타")
-            } else {
-                selectedTagList.map { it.tagName }
-            }
-
-            val userDocRef: DocumentReference = firestore
-                .collection("user")
-                .document(uid!!)
 
             // 업로드 중에는 ProgressBar를 표시
             binding.clProgress.visibility = View.VISIBLE
 
-            // 이미지 업로드 후 처리
-            newFeedViewModel.uploadFeedImageList(uriList, feedId)
-
             when (beforeFeed) {
                 is Result.Success -> {
+
+                    newFeedViewModel.uploadFeedImageList(uriList, beforeFeed.data.feedId)
+
                     viewLifecycleOwner.lifecycleScope.launch {
                         newFeedViewModel.feedImageUploadResult.collect { result ->
                             when (result) {
@@ -423,6 +402,7 @@ class EditDetailFragment : Fragment() {
                                         "NewFeedFragment",
                                         "contentImage: ${newFeedViewModel.feedImageList}"
                                     )
+
 
                                     // 피드 데이터를 업로드
                                     val tagNameList = if (selectedTagList.isEmpty()) {
@@ -445,9 +425,6 @@ class EditDetailFragment : Fragment() {
                                                 it.longitude
                                             )
                                         },
-//                                        selectLocation?.let {
-//                                            GeoPoint(it.latitude, it.longitude)
-//                                        } ?: beforeFeed.data.location,
                                         comments = beforeFeed.data.comments,
                                         tags = tagNameList,
                                         userImage = beforeFeed.data.userImage,
@@ -479,8 +456,8 @@ class EditDetailFragment : Fragment() {
                     }
                 }
 
-                is Result.Error -> TODO()
-                Result.Loading -> TODO()
+                is Result.Error -> Timber.i("이전 디테일 페이지 데이터 에러")
+                Result.Loading -> Timber.i("이전 디테일 페이지 데이터 로딩중")
             }
 
 
