@@ -120,13 +120,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@color/white"
-                    android:paddingVertical="12dp">
+                    android:paddingBottom="12dp">
 
                     <LinearLayout
                         android:id="@+id/ll_profile_report_count"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="16dp"
+                        android:layout_marginTop="12dp"
                         android:background="@drawable/background_corners_radius_10dp_red_border"
                         android:gravity="center|center_vertical"
                         android:paddingVertical="12dp"
