@@ -13,4 +13,8 @@
     <color name="transparent">#00FFFFFF</color>
     <color name="rule_red">#F44336</color>
     <color name="admin_red">#FFF1F0</color>
+    <color name="alarm_read">#FFFFFFFF</color>
+    <color name="alarm_unread">#E9F6F1</color>
+    <color name="alarm_new">#FF2ECC87</color>
+    <color name="alarm_description">#575757</color>
 </resources>
