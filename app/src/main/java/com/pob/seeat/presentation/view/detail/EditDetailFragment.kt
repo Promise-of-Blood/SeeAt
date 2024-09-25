@@ -75,6 +75,7 @@ class EditDetailFragment : Fragment(), OnLocationSelectedListener {
 
     override fun onLocationSelected(location: LatLng) {
         Timber.d("onLocationSelected: $location")
+        newFeedViewModel.updateSelectLocation(location)
         binding.apply {
             map.visibility = View.VISIBLE
             ivMarker.visibility = View.VISIBLE
