@@ -22,16 +22,20 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.pob.seeat.R
+import com.pob.seeat.data.database.chat.ChatEntity
 import com.pob.seeat.data.database.chat.ChatRoomDb
 import com.pob.seeat.data.model.Result
 import com.pob.seeat.databinding.ActivityChattingBinding
 import com.pob.seeat.databinding.FragmentChattingBinding
 import com.pob.seeat.domain.model.FeedModel
 import com.pob.seeat.presentation.view.chat.adapter.ChattingAdapter
+import com.pob.seeat.presentation.view.chat.items.ChattingUiItem
 import com.pob.seeat.presentation.viewmodel.ChatViewModel
 import com.pob.seeat.presentation.viewmodel.DetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -48,6 +52,7 @@ class ChattingFragment : Fragment() {
     var chatId = "none"
     private var targetName = "(알 수 없음)"
     lateinit var feedId : String
+    var uid : String = ""
 //    private val args: ChattingFragmentArgs by navArgs()
 
     private var _binding : FragmentChattingBinding? = null
@@ -61,7 +66,7 @@ class ChattingFragment : Fragment() {
         feedId = arguments?.getString("feedId") ?: ""
         chatId = arguments?.getString("chatId") ?: "none"
         targetName = arguments?.getString("targetName") ?: "(알 수 없음)"
-        chatRoomDb = ChatRoomDb.getDatabase(requireContext())
+        uid = FirebaseAuth.getInstance().currentUser?.uid ?: ""
         _binding = FragmentChattingBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -83,20 +88,40 @@ class ChattingFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                chatViewModel.chatResult.collect {
-                    Timber.tag("ChattingAddLog").d("chatResult : $it")
+                chatViewModel.chatResult.collect { chatList ->
+                    Timber.tag("ChattingAddLog").d("chatResult : $chatList")
 
-                    chattingAdapter.submitList(chatViewModel.chatResult.value)
-//                    chatRoomDb.chatDao().addChatMessage(chatId = chatId, message = it.message, sender = it.sender)
+                    chattingAdapter.submitList(chatViewModel.chatResult.value) {
+                        binding.rvMessage.scrollToPosition(chattingAdapter.itemCount - 1)
+                        Timber.tag("moveScroll").d("moveScroll is On")
+                    }
+
                 }
             }
         }
-        // TODO 디테일로 가기 (프래그먼트로 바꾸고, 내비게이션 추가해서?)
+
         binding.clFeedInfo.setOnClickListener {
             val action = ChattingFragmentDirections.actionChattingToDetail(feedId)
             binding.root.findNavController().navigate(action)
         }
     }
+
+//    fun addDatabase(chatList: List<Result<ChattingUiItem>>) {
+//        // TODO 레포지토리로 옮겨야 함, 여러 명일 때는 방식을 변경해야 할 필요가 있음
+//        val chatRoomDb = ChatRoomDb.getDatabase()
+//        CoroutineScope(Dispatchers.IO).launch {
+//            for(chat in chatList) {
+//                if(chat is Result.Success) {
+//                    if(chat.data is ChattingUiItem.MyChatItem) chatRoomDb.chatDao().addChatMessage(
+//                        ChatEntity(messageId = chat.data.id, chatId = chatId, message = chat.data.message, sender = uid)
+//                    )
+//                    else if(chat.data is ChattingUiItem.YourChatItem) chatRoomDb.chatDao().addChatMessage(
+//                        ChatEntity(messageId = chat.data.id, chatId = chatId, message = chat.data.message, sender = targetId)
+//                    )
+//                }
+//            }
+//        }
+//    }
 
     private fun setSendMessage() {
 
@@ -186,7 +211,7 @@ class ChattingFragment : Fragment() {
         println("feed data : $feed")
 //        cgMessageFeedTag.addFeedTags(feed.tags)
         toolbarMessage.apply {
-            title = targetName
+            title = if(targetName == "(알 수 없음)") feed.nickname else targetName
             setNavigationOnClickListener {
 //                findNavController(requireActivity(), R.id.fcv).popBackStack()
                 requireActivity().finish()
@@ -194,10 +219,18 @@ class ChattingFragment : Fragment() {
         }
         tvMessageFeedTitle.text = feed.title
         tvMessageFeedContent.text = feed.content
-        feed.contentImage.getOrNull(0)?.let {
-            Glide.with(requireContext())
-                .load(it)
-                .into(ivMessageFeed)
+        if(feed.contentImage == emptyList<String>()) {
+            feed.userImage.let {
+                Glide.with(requireContext())
+                    .load(it)
+                    .into(ivMessageFeed)
+            }
+        } else {
+            feed.contentImage.getOrNull(0)?.let {
+                Glide.with(requireContext())
+                    .load(it)
+                    .into(ivMessageFeed)
+            }
         }
         targetId = feed.user?.id.toString()
     }

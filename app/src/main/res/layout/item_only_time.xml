@@ -8,13 +8,18 @@
         android:id="@+id/tv_only_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/light_gray"
+        android:textColor="#B2B2B2"
         android:text="@string/only_time"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginVertical="16dp"
+        style="@style/chat_item_timestamp"
+        android:translationZ="1dp"
+        android:background="@drawable/background_only_time"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="4dp"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

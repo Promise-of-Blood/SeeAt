@@ -35,6 +35,7 @@ class ChatsRemote {
             for(user in chat.userList) {
                 child("users").child(user).setValue(true)
             }
+            child("sender").setValue(chat.sender)
         }
     }
 
@@ -47,6 +48,7 @@ class ChatsRemote {
             for(user in chat.userList) {
                 child("users").child(user).setValue(true)
             }
+            child("sender").setValue(chat.sender)
         }
     }
 
@@ -58,7 +60,8 @@ class ChatsRemote {
                         feedFrom = it.child("feedFrom").value.toString(),
                         lastMessage = it.child("lastMessage").value.toString(),
                         whenLast = it.child("whenLast").value as Long,
-                        userList = (it.child("users").value as Map<String, Boolean>).keys.toList()
+                        userList = (it.child("users").value as Map<String, Boolean>).keys.toList(),
+                        sender = it.child("sender").value.toString()
                     )
                 )
             }
@@ -78,7 +81,8 @@ class ChatsRemote {
                                     feedFrom = snapshot.child("feedFrom").value.toString(),
                                     lastMessage = snapshot.child("lastMessage").value.toString(),
                                     whenLast = snapshot.child("whenLast").value as Long,
-                                    userList = usersMap.keys.toList()
+                                    userList = usersMap.keys.toList(),
+                                    sender = snapshot.child("sender").value.toString()
                                 )
                             )
                         )

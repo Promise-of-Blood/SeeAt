@@ -102,13 +102,13 @@
 
     <!-- chat -->
     <string name="chat_list_title">채팅 목록</string>
-    <string name="chat_list_item_title">글 제목 글 제목 글 제목 글 제목 글 제목</string>
+    <string name="chat_list_item_title">채팅 제목</string>
     <string name="chat_list_item_time">1시간 전</string>
-    <string name="chat_list_item_content">글 내용 글 내용 글 내용 글 내용 글 내용 글 내용</string>
+    <string name="chat_list_item_content">채팅 내용</string>
     <string name="chat_list_item_count">3</string>
     <string name="message_title">상대방</string>
-    <string name="message_feed_title">글 제목 글 제목 글 제목 글 제목 글 제목 글 제목 글 제목 글 제목 글 제목 글 제목</string>
-    <string name="message_feed_content">글 내용 글 내용 글 내용 글 내용 글 내용 글 내용 글 내용 글 내용 글 내용</string>
+    <string name="message_feed_title">글 제목</string>
+    <string name="message_feed_content">글 내용</string>
     <string name="detail_comment">댓글</string>
     <string name="detail_like">추천</string>
     <string name="detail_bookmark">북마크</string>

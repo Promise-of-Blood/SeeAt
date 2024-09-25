@@ -17,6 +17,7 @@ import com.pob.seeat.data.model.Result
 class ChattingAdapter : ListAdapter<Result<ChattingUiItem>, ChattingViewHolder>(
     ChattingDiffUtil()
 ) {
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChattingViewHolder {
         val chattingViewType = ChattingViewType.entries.find { it.viewType == viewType } ?: ChattingViewType.EMPTY
         return when(chattingViewType) {
