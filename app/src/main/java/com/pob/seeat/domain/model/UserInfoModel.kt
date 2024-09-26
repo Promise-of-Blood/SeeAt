@@ -14,6 +14,8 @@ data class UserInfoModel(
     val likedFeedList: List<String> = emptyList(),
     val isAdmin: Boolean = false,
     val reportedCount: Long = 0,
+    val isCommentNotiOn : Boolean = true,
+    val isChatNotiOn : Boolean = true,
 )
 
 fun UserInfoModel.toUserInfo(): UserInfoData {
@@ -29,5 +31,7 @@ fun UserInfoModel.toUserInfo(): UserInfoData {
         likedFeedList = this.likedFeedList,
         isAdmin = this.isAdmin,
         reportedCount = this.reportedCount,
+        isCommentNotiOn = this.isCommentNotiOn,
+        isChatNotiOn = this.isChatNotiOn,
     )
 }

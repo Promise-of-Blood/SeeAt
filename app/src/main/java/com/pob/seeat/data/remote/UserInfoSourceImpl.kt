@@ -162,4 +162,20 @@ class UserInfoSourceImpl @Inject constructor(
     suspend fun getUserDetail(uid: String): UserInfoData {
         return firestore.collection("user").document(uid).get().await().toObject<UserInfoData>()!!
     }
+
+    override suspend fun switchChatNotiOn(uid: String, isOn: Boolean) {
+        firestore.collection("user").document(uid).update("chatNotiOn", isOn)
+    }
+
+    override suspend fun switchCommentNotiOn(uid: String, isOn: Boolean) {
+        firestore.collection("user").document(uid).update("commentNotiOn", isOn)
+    }
+
+    override suspend fun getChatNotiOn(uid: String): Boolean {
+        return firestore.collection("user").document(uid).get().await().getBoolean("chatNotiOn") ?: true
+    }
+
+    override suspend fun getCommentNotiOn(uid: String): Boolean {
+        return firestore.collection("user").document(uid).get().await().getBoolean("commentNotiOn") ?: true
+    }
 }

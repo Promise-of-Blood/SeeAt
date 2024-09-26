@@ -8,16 +8,27 @@ import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
+import com.google.firebase.auth.FirebaseAuth
 import com.pob.seeat.R
+import com.pob.seeat.data.remote.UserInfoSource
+import com.pob.seeat.data.remote.UserInfoSourceImpl
 import com.pob.seeat.databinding.ActivitySettingsBinding
 import com.pob.seeat.presentation.view.sign.LoginActivity
+import com.pob.seeat.presentation.viewmodel.SettingViewModel
 import com.pob.seeat.utils.GoogleAuthUtil
 import com.pob.seeat.utils.GoogleAuthUtil.getUserEmail
 import com.pob.seeat.utils.GoogleAuthUtil.reAuthentification
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
+import timber.log.Timber
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class SettingsActivity : AppCompatActivity() {
 
     private val binding: ActivitySettingsBinding by lazy {
@@ -25,6 +36,8 @@ class SettingsActivity : AppCompatActivity() {
             layoutInflater
         )
     }
+
+    private val settingViewModel by viewModels<SettingViewModel>()
 
     private lateinit var googleSignInLauncher: ActivityResultLauncher<Intent>
 
@@ -76,6 +89,25 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         tbSetting.setNavigationOnClickListener { finish() }
+
+        lifecycleScope.launch {
+            switchChat.isChecked = settingViewModel.getChatNotiOn()
+            switchComment.isChecked = settingViewModel.getCommentNotiOn()
+        }
+
+        switchChat.setOnCheckedChangeListener { _, isChecked ->
+            Timber.tag("switchChat").d("isChecked : $isChecked")
+            lifecycleScope.launch {
+                settingViewModel.switchChatNotiOn(isChecked)
+            }
+        }
+
+        switchComment.setOnCheckedChangeListener { _, isChecked ->
+            Timber.tag("switchComment").d("isChecked : $isChecked")
+            lifecycleScope.launch {
+                settingViewModel.switchCommentNotiOn(isChecked)
+            }
+        }
     }
 
 
