@@ -128,6 +128,16 @@ class HomeFragment : Fragment() {
         initialSetting()
     }
 
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        Timber.d("onViewStateRestored")
+    }
+
+    override fun onStart() {
+        super.onStart()
+        Timber.d("onStart")
+    }
+
     override fun onResume() {
         super.onResume()
         Timber.d("onResume")
@@ -139,6 +149,11 @@ class HomeFragment : Fragment() {
         binding.etSearch.text?.clear()
     }
 
+    override fun onStop() {
+        super.onStop()
+        Timber.d("onStop")
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         Timber.d("onDestroyView")
@@ -148,6 +163,11 @@ class HomeFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         Timber.d("onDestroy")
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        Timber.d("onDetach")
     }
 
     private fun initialSetting() {

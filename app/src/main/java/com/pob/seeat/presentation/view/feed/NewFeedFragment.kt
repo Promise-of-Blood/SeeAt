@@ -229,9 +229,9 @@ class NewFeedFragment : Fragment(), OnLocationSelectedListener {
     private fun initialSetting() {
         binding.apply {
             val bundle = Bundle().apply {
-                putFloat("homeLatitude", args.homeLatitude)  // 예시 값
-                putFloat("homeLongitude", args.homeLongitude)  // 예시 값
-                putFloat("homeZoom", args.homeZoom)  // 예시 값
+                putFloat("homeLatitude", args.homeLatitude)
+                putFloat("homeLongitude", args.homeLongitude)
+                putFloat("homeZoom", args.homeZoom)
             }
 
             val selectLocationFragment = SelectLocateFragment().apply {

@@ -64,17 +64,18 @@
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
-                <androidx.appcompat.widget.AppCompatEditText
-                    android:id="@+id/et_title"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:background="@drawable/background_edit_text"
-                    android:defaultFocusHighlightEnabled="true"
-                    android:hint="제목을 작성해 주세요."
-                    android:padding="12dp"
-                    android:textColorHighlight="@color/primary"
-                    android:textSize="14sp" />
+                    <androidx.appcompat.widget.AppCompatEditText
+                        android:id="@+id/et_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/background_edit_text"
+                        android:defaultFocusHighlightEnabled="true"
+                        android:hint="제목을 작성해 주세요."
+                        android:maxLength="100"
+                        android:maxLines="1"
+                        android:padding="12dp"
+                        android:textColorHighlight="@color/primary"
+                        android:textSize="14sp" />
 
             </LinearLayout>
 
