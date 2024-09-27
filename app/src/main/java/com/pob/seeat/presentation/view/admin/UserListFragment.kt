@@ -6,6 +6,8 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -27,6 +29,8 @@ import com.pob.seeat.presentation.view.admin.adapter.Searchable
 import com.pob.seeat.presentation.view.admin.items.AdminListItem
 import com.pob.seeat.presentation.view.admin.items.AdminSearchTypeEnum
 import com.pob.seeat.presentation.viewmodel.AdminUserViewModel
+import com.pob.seeat.utils.GoogleAuthUtil
+import com.pob.seeat.utils.dialog.Dialog
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -50,6 +54,8 @@ class UserListFragment : Fragment(), Searchable {
             handleEmptyList = ::handleEmptyList
         )
     }
+
+    private val currentUserUid by lazy { GoogleAuthUtil.getUserUid() }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -179,7 +185,23 @@ class UserListFragment : Fragment(), Searchable {
             sbProfileToggleAdmin.setOnCheckedChangeListener { _, isChecked ->
                 ivProfileBadge.visibility = if (isChecked) View.VISIBLE else View.GONE
             }
-            acbProfileDeleteUser.setOnClickListener { adminUserViewModel.deleteUser(user.uid) }
+            acbProfileDeleteUserDisabled.isVisible = user.uid == currentUserUid
+            acbProfileDeleteUser.setOnClickListener {
+                Dialog.showDialog(
+                    requireContext(),
+                    "사용자 계정 삭제",
+                    getString(R.string.dialog_delete_user),
+                ) {
+                    pbProfile.visibility = View.VISIBLE
+                    adminUserViewModel.deleteUser(
+                        user.uid, ::onUserDeleteSuccess, ::onUserDeleteFailure
+                    )
+                }
+            }
+            acbProfileDeleteUserDisabled.setOnClickListener {
+                Toast.makeText(requireContext(), "현재 로그인 한 계정은 삭제할 수 없습니다.", Toast.LENGTH_SHORT)
+                    .show()
+            }
 
             // 사용자 신고 기록
             rvProfileReport.adapter = bottomSheetRecyclerViewAdapter
@@ -247,6 +269,16 @@ class UserListFragment : Fragment(), Searchable {
             }
         }
     }
+
+    private fun onUserDeleteSuccess(message: String) {
+        bottomSheetDialog.dismiss()
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun onUserDeleteFailure(message: String) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+    }
+
 
     companion object {
         @JvmStatic

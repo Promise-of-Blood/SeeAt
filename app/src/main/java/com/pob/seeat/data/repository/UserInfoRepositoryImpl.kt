@@ -61,7 +61,13 @@ class UserInfoRepositoryImpl @Inject constructor(private val source: UserInfoSou
         source.updateIsAdmin(uid, isAdmin)
     }
 
-    override suspend fun deleteAllUserInfo(uid: String) {
-        source.deleteAllUserInfo(uid)
+    override suspend fun deleteAllUserInfo(uid: String): Flow<Result<String>> = flow {
+        emit(Result.Loading)
+        try {
+            source.deleteAllUserInfo(uid)
+            emit(Result.Success("계정 정보를 성공적으로 삭제했습니다."))
+        } catch (e: Exception) {
+            emit(Result.Error(e.message ?: "계정을 삭제하지 못했습니다."))
+        }
     }
 }
