@@ -154,6 +154,11 @@ class HomeFragment : Fragment() {
         Timber.d("onStop")
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        Timber.d("onSaveInstanceState")
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         Timber.d("onDestroyView")
@@ -356,7 +361,6 @@ class HomeFragment : Fragment() {
                             3 -> OverlayImage.fromResource(R.drawable.ic_growing_seed)   // 싹튼 씨앗
                             else -> OverlayImage.fromResource(R.drawable.ic_seed)           // 씨앗
                         }
-
 
                         // 마커 클릭 이벤트 설정
                         marker.onClickListener = Overlay.OnClickListener {
