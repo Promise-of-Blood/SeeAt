@@ -110,7 +110,6 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
-
     private fun navigateToLoginScreen() {
         Toast.makeText(this, "회원탈퇴가 완료되었습니다.", Toast.LENGTH_SHORT).show()
         val intent = Intent(this, LoginActivity::class.java)

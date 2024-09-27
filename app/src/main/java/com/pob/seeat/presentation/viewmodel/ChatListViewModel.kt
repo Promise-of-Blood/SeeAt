@@ -29,11 +29,6 @@ class ChatListViewModel @Inject constructor(
     suspend fun receiveChatList() {
         newChat = chatListRepositoryImpl.receiveChatList()
         viewModelScope.launch {
-            launch {
-                chatList.collect { collected ->
-                    Timber.d("chatListCollect? : $collected")
-                }
-            }
             newChat.flowOn(Dispatchers.IO).collectLatest { chat ->
                 val list = _chatList.value.toList()
                 val updatedList = list.toMutableList()
