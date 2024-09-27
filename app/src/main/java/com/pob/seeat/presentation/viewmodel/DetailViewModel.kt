@@ -56,9 +56,9 @@ class DetailViewModel @Inject constructor(
     fun modifyIsLiked(count: Int) {
         viewModelScope.launch {
             if (isLiked.value) {
-                EventBus.post(count - 1)
-            } else {
                 EventBus.post(count + 1)
+            } else {
+                EventBus.post(count - 1)
             }
 
         }
@@ -92,6 +92,7 @@ class DetailViewModel @Inject constructor(
             when (isLiked.value) {
                 true -> {
                     if (uid != null) {
+                        _isLiked.value = false
                         userInfoUseCases.removeLikedFeed.execute(uid, feedUid)
                         feedRepository.setLikeMinus(feedUid)
                     } else {
@@ -101,6 +102,7 @@ class DetailViewModel @Inject constructor(
 
                 false -> {
                     if (uid != null) {
+                        _isLiked.value = true
                         userInfoUseCases.createLikedFeed.execute(uid, feedUid)
                         feedRepository.setLikePlus(feedUid)
                     } else {
@@ -108,7 +110,7 @@ class DetailViewModel @Inject constructor(
                     }
                 }
             }
-            _isLiked.value = !isLiked.value
+
         }
     }
 

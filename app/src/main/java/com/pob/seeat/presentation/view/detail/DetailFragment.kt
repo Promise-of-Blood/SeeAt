@@ -295,6 +295,7 @@ class DetailFragment : Fragment() {
 
                         is Result.Loading -> {
                             Timber.i("HomeFragment", "Loading..")
+                            // ToDo
                         }
 
                         is Result.Success -> {
@@ -345,6 +346,7 @@ class DetailFragment : Fragment() {
             tvFeedTimeAgo.text = feed.date?.toLocalDateTime()?.toKoreanDiffString()
             tvFeedContent.text = feed.content
             tvFeedDetailLikeCount.text = feed.like.toString()
+            Timber.i("feed.like ${feed.like}")
             tvCommentCount.text = "(" + feed.commentsCount.toString() + ")"
 
             initLocation()
@@ -366,8 +368,10 @@ class DetailFragment : Fragment() {
             setFeedLikeButton(ivLikeIcon)
 
             ivLikeIcon.setOnClickListener {
-                detailViewModel.isLikedToggle(args.feedIdArg)
-                detailViewModel.modifyIsLiked(tvFeedDetailLikeCount.text.toString().toInt())
+                viewLifecycleOwner.lifecycleScope.launch {
+                    detailViewModel.isLikedToggle(args.feedIdArg)
+                    detailViewModel.modifyIsLiked(tvFeedDetailLikeCount.text.toString().toInt())
+                }
             }
 
             viewLifecycleOwner.lifecycleScope.launch {
@@ -388,7 +392,8 @@ class DetailFragment : Fragment() {
                 }
             }
 
-            if(feed.user?.id == FirebaseAuth.getInstance().currentUser?.uid) tvChatButton.visibility = View.GONE
+            if (feed.user?.id == FirebaseAuth.getInstance().currentUser?.uid) tvChatButton.visibility =
+                View.GONE
 
             tvChatButton.setOnClickListener {
                 val intent = Intent(requireContext(), ChattingActivity::class.java)
@@ -525,33 +530,28 @@ class DetailFragment : Fragment() {
         }
     }
 
-    private fun changeDP(value: Int): Int {
-        val displayMetrics = resources.displayMetrics
-        val dp = Math.round(value * displayMetrics.density)
-        return dp
-    }
-
-    private fun setLikeCount() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            detailViewModel.isLiked.collect { isLiked ->
-                val currentLikeCount =
-                    binding.tvFeedDetailLikeCount.text.toString().toIntOrNull() ?: 0
-
-                val newCount = if (isLiked) {
-                    currentLikeCount + 1
-                } else {
-                    currentLikeCount - 1
-                }
-
-                binding.tvFeedDetailLikeCount.text = newCount.toString()
-
-            }
-        }
-    }
+//    private fun setLikeCount() {
+//        viewLifecycleOwner.lifecycleScope.launch {
+//            detailViewModel.isLiked.collect { isLiked ->
+//                val currentLikeCount =
+//                    binding.tvFeedDetailLikeCount.text.toString().toIntOrNull() ?: 0
+//
+//                val newCount = if (isLiked) {
+//                    currentLikeCount + 1
+//                } else {
+//                    currentLikeCount - 1
+//                }
+//
+//                binding.tvFeedDetailLikeCount.text = newCount.toString()
+//
+//            }
+//        }
+//    }
 
     private fun setFeedLikeButton(clLikeBtn: ImageView) {
         viewLifecycleOwner.lifecycleScope.launch {
             detailViewModel.isLiked.collect { isLiked ->
+                Timber.i("isLiked in like btn $isLiked")
                 when (isLiked) {
                     true -> {
                         clLikeBtn.setImageResource(R.drawable.ic_thumb_up_filled)

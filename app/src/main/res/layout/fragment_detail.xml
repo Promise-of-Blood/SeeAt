@@ -329,7 +329,7 @@
                     app:layout_constraintBottom_toBottomOf="@id/iv_like_icon"
                     app:layout_constraintEnd_toStartOf="@id/divider_vertical_icon"
                     app:layout_constraintTop_toTopOf="@id/iv_like_icon"
-                    tools:text="1" />
+                    tools:text="0" />
 
                 <View
                     android:id="@+id/divider_vertical_icon"
