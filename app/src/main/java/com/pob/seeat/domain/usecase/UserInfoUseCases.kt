@@ -1,8 +1,10 @@
 package com.pob.seeat.domain.usecase
 
 
+import com.pob.seeat.data.model.Result
 import com.pob.seeat.domain.model.UserInfoModel
 import com.pob.seeat.domain.repository.UserInfoRepository
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import javax.inject.Inject
 
@@ -69,7 +71,7 @@ class UpdateIsAdminUseCase @Inject constructor(private val repository: UserInfoR
 }
 
 class DeleteAllUserInfoUseCase @Inject constructor(private val repository: UserInfoRepository) {
-    suspend operator fun invoke(uid: String) {
-        repository.deleteAllUserInfo(uid)
+    suspend operator fun invoke(uid: String): Flow<Result<String>> {
+        return repository.deleteAllUserInfo(uid)
     }
 }
