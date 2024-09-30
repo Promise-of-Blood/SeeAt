@@ -87,6 +87,7 @@ class BottomSheetFeedAdapter(
                     chipCornerRadius = 32f.px.toFloat()
                     chipStartPadding = 10f.px.toFloat()
 
+
                     elevation = 1f.px.toFloat()
 
                     isCheckable = false

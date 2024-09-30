@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:clipToPadding="false"
-    android:paddingVertical="12dp">
+    android:paddingVertical="10dp">
 
     <ImageView
         android:id="@+id/iv_post_main_image"
@@ -14,6 +14,7 @@
         android:layout_height="0dp"
         android:background="@drawable/background_corners_radius_16dp"
         android:clipToOutline="true"
+        android:layout_marginTop="10dp"
         android:scaleType="fitCenter"
         android:src="@drawable/ic_beer"
         app:layout_constraintBottom_toBottomOf="@id/tv_post_content"
