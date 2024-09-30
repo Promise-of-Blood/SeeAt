@@ -8,6 +8,8 @@ import android.content.res.ColorStateList
 import android.graphics.PointF
 import android.graphics.Rect
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.DisplayMetrics
@@ -18,6 +20,8 @@ import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.app.ActivityCompat.finishAffinity
@@ -69,7 +73,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import kotlin.random.Random
 
 private const val BACK_PRESSED_DURATION = 2_000L // 2000ms
 
@@ -277,7 +280,10 @@ class HomeFragment : Fragment() {
 
             if (currentLocation != null) {
                 Timber.d("getFeed: ${centerPoint.latitude}, ${centerPoint.longitude}, $radiusKm ")
-                getFeedList(centerPoint.latitude, centerPoint.longitude, currentLocation, radiusKm)
+                // date, distance, like
+                getFeedList(
+                    centerPoint.latitude, centerPoint.longitude, currentLocation, radiusKm, "date"
+                )
             } else {
                 // 현재 위치를 가져올 수 없는 경우 처리
                 Timber.e("현재 위치를 가져올 수 없습니다.")
@@ -296,12 +302,14 @@ class HomeFragment : Fragment() {
                         binding.pbRefresh.visibility = View.VISIBLE
                         binding.ibRefresh.imageTintList =
                             ColorStateList.valueOf(getColor(requireContext(), R.color.white))
+                        binding.pbLoading.visibility = View.VISIBLE
                     }
 
                     is Result.Success -> {
                         binding.ibRefresh.imageTintList =
                             ColorStateList.valueOf(getColor(requireContext(), R.color.primary))
                         binding.pbRefresh.visibility = View.INVISIBLE
+                        binding.pbLoading.visibility = View.GONE
 
                         feedList = response.data
 
@@ -309,6 +317,9 @@ class HomeFragment : Fragment() {
                             .d("Result.Success: " + feedList.toString())
 
                         bottomSheetFeedAdapter.submitList(feedList)
+                        Handler(Looper.getMainLooper()).postDelayed(
+                            Runnable { binding.rvBottomSheetPostList.scrollToPosition(0) }, 300
+                        )
                         bottomSheetFeedAdapter.setOriginalList(feedList)
                         updateMarker(feedList)
 
@@ -319,7 +330,7 @@ class HomeFragment : Fragment() {
                             bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
                         } else {
                             binding.tvBottomSheetPostListEmpty.visibility = View.GONE
-                            bottomSheetBehavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
+//                            bottomSheetBehavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
                         }
                     }
                 }
@@ -609,11 +620,31 @@ class HomeFragment : Fragment() {
 
         binding.rvBottomSheetPostList.adapter = bottomSheetFeedAdapter
         binding.rvBottomSheetPostList.layoutManager = LinearLayoutManager(requireContext())
+        binding.rvBottomSheetPostList.itemAnimator = null
         binding.rvBottomSheetPostList.addItemDecoration(
             CustomDecoration(
                 1f, 0f, getColor(requireContext(), R.color.light_gray)
             )
         )
+        binding.sBottomSheetSort.adapter = ArrayAdapter.createFromResource(
+            requireContext(),
+            R.array.home_sort_options,
+            android.R.layout.simple_spinner_dropdown_item
+        )
+        binding.sBottomSheetSort.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                    when (p2) {
+                        0 -> homeViewModel.sortFeedList("date")
+                        1 -> homeViewModel.sortFeedList("like")
+                        2 -> homeViewModel.sortFeedList("distance")
+                    }
+                }
+
+                override fun onNothingSelected(p0: AdapterView<*>?) {
+                    TODO("Not yet implemented")
+                }
+            }
 
         bottomSheetBehavior.addBottomSheetCallback(object :
             BottomSheetBehavior.BottomSheetCallback() {
@@ -731,6 +762,10 @@ class HomeFragment : Fragment() {
 
                     // viewTopBar의 투명도를 서서히 줄여서 보이지 않게 함
                     viewTopBar.animate().alpha(0f).setDuration(300).start()
+
+                    // 정렬 spinner 표시
+                    sBottomSheetSort.animate().alpha(1f).setDuration(300).start()
+                    sBottomSheetSort.visibility = View.VISIBLE
                 }
             }
 
@@ -743,6 +778,10 @@ class HomeFragment : Fragment() {
                     persistentBottomSheet.setBackgroundResource(R.drawable.white_round_top_border_20)
 
                     viewTopBar.animate().alpha(1f).setDuration(300).start()
+
+                    // 정렬 spinner 숨기기
+                    sBottomSheetSort.animate().alpha(0f).setDuration(300).start()
+                    sBottomSheetSort.visibility = View.GONE
                 }
             }
 

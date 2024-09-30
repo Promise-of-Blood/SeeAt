@@ -28,8 +28,8 @@
             android:layout_height="0dp"
             android:layout_marginBottom="70dp"
             android:clipToPadding="false"
-            app:layout_constraintHeight_percent="0.5"
-            app:layout_constraintBottom_toBottomOf="parent">
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHeight_percent="0.5">
 
             <ImageButton
                 android:id="@+id/ib_refresh"
@@ -39,8 +39,8 @@
                 android:background="@drawable/background_corners_radius_32dp"
                 android:elevation="4dp"
                 android:padding="8dp"
-                android:visibility="visible"
                 android:src="@drawable/ic_refresh"
+                android:visibility="visible"
                 app:layout_constraintBottom_toTopOf="@id/ib_location"
                 app:layout_constraintEnd_toEndOf="@id/ib_location"
                 app:tint="@color/primary" />
@@ -49,14 +49,14 @@
                 android:id="@+id/pb_refresh"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
+                android:indeterminateTint="@color/primary"
                 android:padding="10dp"
                 android:translationZ="8dp"
-                android:indeterminateTint="@color/primary"
                 android:visibility="visible"
-                app:layout_constraintTop_toTopOf="@id/ib_refresh"
                 app:layout_constraintBottom_toBottomOf="@id/ib_refresh"
+                app:layout_constraintEnd_toEndOf="@id/ib_refresh"
                 app:layout_constraintStart_toStartOf="@id/ib_refresh"
-                app:layout_constraintEnd_toEndOf="@id/ib_refresh"/>
+                app:layout_constraintTop_toTopOf="@id/ib_refresh" />
 
             <ImageButton
                 android:id="@+id/ib_location"
@@ -98,16 +98,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                app:layout_constraintStart_toStartOf="@id/naver_logo"
-                app:layout_constraintBottom_toTopOf="@id/naver_logo"/>
+                app:layout_constraintBottom_toTopOf="@id/naver_logo"
+                app:layout_constraintStart_toStartOf="@id/naver_logo" />
 
-<!--            <com.naver.maps.map.widget.ScaleBarView-->
-<!--                android:id="@+id/naver_scale_bar"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_marginStart="16dp"-->
-<!--                app:layout_constraintBottom_toBottomOf="@id/ib_add_marker"-->
-<!--                app:layout_constraintStart_toEndOf="@id/naver_logo" />-->
+            <!--            <com.naver.maps.map.widget.ScaleBarView-->
+            <!--                android:id="@+id/naver_scale_bar"-->
+            <!--                android:layout_width="wrap_content"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:layout_marginStart="16dp"-->
+            <!--                app:layout_constraintBottom_toBottomOf="@id/ib_add_marker"-->
+            <!--                app:layout_constraintStart_toEndOf="@id/naver_logo" />-->
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -173,27 +173,27 @@
             tools:itemCount="1"
             tools:listitem="@layout/item_tag" />
 
-<!--        <TextView-->
-<!--            android:id="@+id/tv_search_current_location"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginBottom="4dp"-->
-<!--            android:background="@drawable/background_corners_radius_32dp"-->
-<!--            android:backgroundTint="@color/white"-->
-<!--            android:drawablePadding="2dp"-->
-<!--            android:elevation="4dp"-->
-<!--            android:textSize="12sp"-->
-<!--            android:gravity="center"-->
-<!--            android:paddingHorizontal="8dp"-->
-<!--            android:paddingVertical="6dp"-->
-<!--            android:text="현 지도에서 검색하기"-->
-<!--            android:textColor="@color/primary"-->
-<!--            app:drawableStartCompat="@drawable/ic_refresh"-->
-<!--            app:drawableTint="@color/primary"-->
-<!--            app:layout_constraintBottom_toBottomOf="parent"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintTop_toBottomOf="@id/rv_tag_list" />-->
+        <!--        <TextView-->
+        <!--            android:id="@+id/tv_search_current_location"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:layout_marginBottom="4dp"-->
+        <!--            android:background="@drawable/background_corners_radius_32dp"-->
+        <!--            android:backgroundTint="@color/white"-->
+        <!--            android:drawablePadding="2dp"-->
+        <!--            android:elevation="4dp"-->
+        <!--            android:textSize="12sp"-->
+        <!--            android:gravity="center"-->
+        <!--            android:paddingHorizontal="8dp"-->
+        <!--            android:paddingVertical="6dp"-->
+        <!--            android:text="현 지도에서 검색하기"-->
+        <!--            android:textColor="@color/primary"-->
+        <!--            app:drawableStartCompat="@drawable/ic_refresh"-->
+        <!--            app:drawableTint="@color/primary"-->
+        <!--            app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--            app:layout_constraintEnd_toEndOf="parent"-->
+        <!--            app:layout_constraintStart_toStartOf="parent"-->
+        <!--            app:layout_constraintTop_toBottomOf="@id/rv_tag_list" />-->
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -223,6 +223,16 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <Spinner
+            android:id="@+id/s_bottom_sheet_sort"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:alpha="0"
+            android:paddingVertical="8dp"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <TextView
             android:id="@+id/tv_bottom_sheet_post_list_empty"
             android:layout_width="wrap_content"
@@ -239,13 +249,25 @@
             android:id="@+id/rv_bottom_sheet_post_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="28dp"
             app:layout_constrainedHeight="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/view_top_bar"
             app:layout_constraintVertical_bias="0" />
+
+        <ProgressBar
+            android:id="@+id/pb_loading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminateTint="@color/primary"
+            android:padding="10dp"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/view_top_bar" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

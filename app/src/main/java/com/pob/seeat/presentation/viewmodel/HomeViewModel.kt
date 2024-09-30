@@ -25,6 +25,7 @@ class HomeViewModel @Inject constructor(
     val unreadAlarmCount: StateFlow<Result<Long>> = _unreadAlarmCount
 
     var feedList: List<FeedModel> = emptyList()
+    private var recentQueryOption = hashMapOf<String, Any>()
 
     var screenWidth: Int? = null
     var screenHeight: Int? = null
@@ -33,10 +34,34 @@ class HomeViewModel @Inject constructor(
         centerLat: Double,
         centerLng: Double,
         userLocation: GeoPoint,
-        radiusInKm: Double
+        radiusInKm: Double,
+        sortBy: String,
     ) {
         viewModelScope.launch {
-            feedRepository.getFeedList(centerLat, centerLng, userLocation, radiusInKm).collect { uiState ->
+            feedRepository.getFeedList(
+                centerLat, centerLng, userLocation, radiusInKm, sortBy
+            ).collect { uiState ->
+                _feedResponse.value = uiState
+            }
+            recentQueryOption = hashMapOf(
+                "centerLat" to centerLat,
+                "centerLng" to centerLng,
+                "userLocation" to userLocation,
+                "radiusInKm" to radiusInKm,
+                "sortBy" to sortBy,
+            )
+        }
+    }
+
+    fun sortFeedList(sortBy: String) {
+        viewModelScope.launch {
+            feedRepository.getFeedList(
+                recentQueryOption["centerLat"] as Double,
+                recentQueryOption["centerLng"] as Double,
+                recentQueryOption["userLocation"] as GeoPoint,
+                recentQueryOption["radiusInKm"] as Double,
+                sortBy,
+            ).collect { uiState ->
                 _feedResponse.value = uiState
             }
         }

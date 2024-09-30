@@ -27,7 +27,8 @@ class FeedRemote @Inject constructor(
         centerLat: Double,
         centerLng: Double,
         userLocation: GeoPoint,
-        radiusInKm: Double
+        radiusInKm: Double,
+        sortBy: String, // date, distance, like
     ): List<FeedModel> {
         val center = GeoLocation(centerLat, centerLng)
         val radiusInM = radiusInKm * 1000 // 반경을 미터로 변환
@@ -38,10 +39,13 @@ class FeedRemote @Inject constructor(
 
         // feed 컬렉션의 geoHash를 사용하여 각 범위에 대해 쿼리 생성 및 실행
         for (b in bounds) {
-            val query = firestore.collection("feed")
-                .orderBy("geohash") // GeoHash 필드를 기준으로 정렬
-                .startAt(b.startHash)
-                .endAt(b.endHash)
+            val query = firestore.collection("feed").orderBy("geohash") // GeoHash 필드를 기준으로 정렬
+                .apply {
+                    when (sortBy) {
+                        "date" -> orderBy("date")
+                        "like" -> orderBy("like")
+                    }
+                }.startAt(b.startHash).endAt(b.endHash)
 
             Timber.d("Query: $query")
             tasks.add(query.get())
@@ -71,8 +75,7 @@ class FeedRemote @Inject constructor(
 
                         // 실제 사용자 위치와의 거리
                         val userDistance = GeoFireUtils.getDistanceBetween(
-                            docLocation,
-                            GeoLocation(userLocation.latitude, userLocation.longitude)
+                            docLocation, GeoLocation(userLocation.latitude, userLocation.longitude)
                         )
 
                         // 반경 내에 있는 문서만 처리
@@ -87,8 +90,7 @@ class FeedRemote @Inject constructor(
                                 tags = tagList?.filterIsInstance<String>() ?: emptyList(),
                                 distance = userDistance.toInt()
                             )?.run {
-                                val nickname = (user as? DocumentReference)?.get()
-                                    ?.await()
+                                val nickname = (user as? DocumentReference)?.get()?.await()
                                     ?.getString("nickname") ?: "탈퇴한 사용자"
 
                                 nickname?.let {
@@ -105,14 +107,18 @@ class FeedRemote @Inject constructor(
         }
 
         Log.d("FeedRemote", "Filtered feeds: $matchingFeeds")
+
+        when (sortBy) {
+            "date" -> matchingFeeds.sortByDescending { it.date }
+            "like" -> matchingFeeds.sortByDescending { it.like }
+            "distance" -> matchingFeeds.sortBy { it.distance }
+        }
+
         return matchingFeeds
     }
 
     override suspend fun getFeedById(postId: String, userLocation: GeoPoint): FeedModel? {
-        val documentSnapshot = firestore.collection("feed")
-            .document(postId)
-            .get()
-            .await()
+        val documentSnapshot = firestore.collection("feed").document(postId).get().await()
         val commentsSnapshot =
             firestore.collection("feed").document(postId).collection("comments").get().await()
         val comments =
@@ -155,11 +161,8 @@ class FeedRemote @Inject constructor(
     }
 
     suspend fun getUserByFeedId(feedId: String): ChatFeedInfoModel {
-        val feedUserRef = firestore.collection("feed")
-            .document(feedId)
-            .get()
-            .await()
-            .getDocumentReference("user")
+        val feedUserRef =
+            firestore.collection("feed").document(feedId).get().await().getDocumentReference("user")
         return ChatFeedInfoModel(
             nickname = feedUserRef?.get()?.await()?.getString("nickname") ?: "(알 수 없음)",
             profileUrl = feedUserRef?.get()?.await()?.getString("profileUrl"),
@@ -172,9 +175,8 @@ class FeedRemote @Inject constructor(
 
         // ID 리스트를 10개씩 나눠서 여러 쿼리 실행 (whereIn은 한 번에 10개씩 가져올 수 있음)
         feedIdList.chunked(10).forEach { idsChunk ->
-            val querySnapshot = feedCollection
-                .whereIn(FieldPath.documentId(), idsChunk)
-                .get().await()
+            val querySnapshot =
+                feedCollection.whereIn(FieldPath.documentId(), idsChunk).get().await()
             feedDocuments.addAll(querySnapshot.documents)
         }
         return feedDocuments.mapNotNull { documentSnapshot ->
@@ -191,24 +193,17 @@ class FeedRemote @Inject constructor(
     }
 
     override suspend fun updateLikePlus(postId: String) {
-        firestore.collection("feed")
-            .document(postId)
-            .update("like", FieldValue.increment(1))
+        firestore.collection("feed").document(postId).update("like", FieldValue.increment(1))
             .await()
     }
 
     override suspend fun updateLikeMinus(postId: String) {
-        firestore.collection("feed")
-            .document(postId)
-            .update("like", FieldValue.increment(-1))
+        firestore.collection("feed").document(postId).update("like", FieldValue.increment(-1))
             .await()
     }
 
     override suspend fun removeFeed(postId: String) {
-        firestore.collection("feed")
-            .document(postId)
-            .delete()
-            .await()
+        firestore.collection("feed").document(postId).delete().await()
     }
 
     override suspend fun editFeed(feedModel: FeedModel) {
@@ -220,9 +215,7 @@ class FeedRemote @Inject constructor(
         feedMap["tagList"] = feedModel.tags
         Timber.tag("FeedRemote").i("feedMap: $feedMap")
 
-        firestore.collection("feed")
-            .document(feedModel.feedId)
-            .update(feedMap)
+        firestore.collection("feed").document(feedModel.feedId).update(feedMap)
             .addOnCompleteListener {
                 if (it.isSuccessful) {
                     Timber.i("업데이트 됨")
