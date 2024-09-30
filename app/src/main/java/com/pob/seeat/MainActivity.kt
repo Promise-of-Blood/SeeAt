@@ -9,13 +9,14 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -48,20 +49,19 @@ class MainActivity : AppCompatActivity() {
             Timber.tag("token").d(it)
         }
 
-        askNotificationPermission()
-        checkLocationPermission()
+//        askNotificationPermission()
+//        checkLocationPermission()
     }
 
     private fun initBottomNavigation() = with(binding) {
         val homeFragment = HomeFragment() // HomeFragment의 인스턴스 생성
 
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.home_fragment, homeFragment)
-            .commit()
+        supportFragmentManager.beginTransaction().replace(R.id.home_fragment, homeFragment).commit()
 
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHostFragment.navController
+        val navOptions = NavOptions.Builder().setPopUpTo(R.id.navigation_home, true).build()
 
         navMain.setupWithNavController(navController)
         navMain.setOnItemSelectedListener { item ->
@@ -69,7 +69,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.navigation_home -> {
                     showNavHostFragment(false)
                     navController.setGraph(R.navigation.main_navigation)
-                    navController.navigate(R.id.navigation_home)
+                    navController.navigate(R.id.navigation_home, null, navOptions)
                     true
                 }
 
@@ -92,14 +92,12 @@ class MainActivity : AppCompatActivity() {
 
     fun getCurrentLocation(callback: (Location?) -> Unit) {
         try {
-            fusedLocationClient.lastLocation
-                .addOnSuccessListener { location: Location? ->
-                    callback(location)
-                }
-                .addOnFailureListener { exception ->
-                    Timber.tag("SelectLocateFragment").e(exception, "위치 정보를 가져오는 중 에러 발생")
-                    callback(null)
-                }
+            fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+                callback(location)
+            }.addOnFailureListener { exception ->
+                Timber.tag("SelectLocateFragment").e(exception, "위치 정보를 가져오는 중 에러 발생")
+                callback(null)
+            }
         } catch (e: SecurityException) {
             Timber.tag("SelectLocateFragment").e(e, "위치 권한이 없습니다.")
             callback(null)
@@ -156,33 +154,29 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun checkLocationPermission() {
-        if (ActivityCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION)
-            != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(
                 this, ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(
-                    this,
-                    ACCESS_FINE_LOCATION
+                    this, ACCESS_FINE_LOCATION
                 )
             ) {
                 // 권한이 없을 경우 권한 요청
                 Toast.makeText(this, "앱 실행을 위해서는 권한을 설정해야 합니다.", Toast.LENGTH_SHORT).show()
                 ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(
-                        ACCESS_FINE_LOCATION,
-                        ACCESS_COARSE_LOCATION
-                    ),
-                    LOCATION_PERMISSION_REQUEST_CODE
+                    this, arrayOf(
+                        ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION
+                    ), LOCATION_PERMISSION_REQUEST_CODE
                 )
             } else {
                 // 권한 요청
                 ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(
-                        ACCESS_FINE_LOCATION,
-                        ACCESS_COARSE_LOCATION
+                    this, arrayOf(
+                        ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION
                     ), LOCATION_PERMISSION_REQUEST_CODE
                 )
             }
