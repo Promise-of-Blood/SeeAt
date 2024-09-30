@@ -15,6 +15,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.tabs.TabLayoutMediator
 import com.google.firebase.storage.FirebaseStorage
@@ -168,6 +169,7 @@ class MyPageFragment : Fragment() {
                         }.addOnFailureListener { _ ->
                             Log.e("Image Load Error", "이미지 Url 가져오는데 실패")
                         }
+                        pbMyPage.visibility = View.GONE
                         tvUserName.text = userInfo.nickname
                         tvUserIntroduce.text = userInfo.introduce
                         tvUserPostNum.text = userInfo.feedCount.toFormatShortenedString()
@@ -175,6 +177,7 @@ class MyPageFragment : Fragment() {
                         mbMyPageAdmin.visibility = if (userInfo.isAdmin) View.VISIBLE else View.GONE
                     }
                 } else {
+                    binding.pbMyPage.visibility = View.VISIBLE
                     Log.e("MyPageFragment", "UserInfo is null")
                 }
             }
@@ -184,12 +187,17 @@ class MyPageFragment : Fragment() {
     private fun displayImage(imageUrl: String?) {
         if (isAdded) {
             if (imageUrl != null) {
-                Glide.with(this)
-                    .load(imageUrl)
+                Glide.with(this).load(imageUrl).preload()
+                Glide.with(this).load(imageUrl).into(binding.ivProfileImage)
+                Glide.with(this).load(imageUrl).onlyRetrieveFromCache(true)
+                    .into(binding.ivProfileImage)
+                Glide.with(this).load(imageUrl).skipMemoryCache(true)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(binding.ivProfileImage)
             } else {
                 Glide.with(this)
                     .load(R.drawable.baseline_person_24)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(binding.ivProfileImage)
             }
         }
