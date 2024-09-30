@@ -33,7 +33,7 @@ class ChatListViewModel @Inject constructor(
     suspend fun receiveChatList() {
         newChat = chatListRepositoryImpl.receiveChatList()
         val endLoadingDelayJob = viewModelScope.async<Boolean> {
-            delay(5000)
+            delay(2000)
             true
         }
         var isLoading = true
