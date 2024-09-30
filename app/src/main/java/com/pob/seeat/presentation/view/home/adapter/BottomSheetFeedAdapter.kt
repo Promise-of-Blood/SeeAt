@@ -82,7 +82,7 @@ class BottomSheetFeedAdapter(
 
                     chipBackgroundColor = ContextCompat.getColorStateList(context, R.color.white)
                     chipStrokeWidth = 1f
-                    chipStrokeColor = ContextCompat.getColorStateList(context,R.color.gray_light)
+                    chipStrokeColor = ContextCompat.getColorStateList(context, R.color.gray_light)
                     chipIconSize = 12f.px.toFloat()
                     chipCornerRadius = 32f.px.toFloat()
                     chipStartPadding = 10f.px.toFloat()
@@ -91,7 +91,7 @@ class BottomSheetFeedAdapter(
 
                     isCheckable = false
                     isClickable = false
-                    rippleColor = AppCompatResources.getColorStateList(context,R.color.transparent)
+                    rippleColor = AppCompatResources.getColorStateList(context, R.color.transparent)
                 }
 
                 // ChipGroup에 동적으로 Chip 추가
@@ -106,9 +106,12 @@ class BottomSheetFeedAdapter(
         SearchType.TAG to null,
     )
 
+    fun setOriginalList(list: List<FeedModel>) {
+        originalList = list
+    }
+
     override fun submitList(list: List<FeedModel>?) {
         super.submitList(list)
-        originalList = originalList.ifEmpty { list ?: emptyList() }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder<FeedModel> {

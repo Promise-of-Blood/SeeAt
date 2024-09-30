@@ -309,6 +309,7 @@ class HomeFragment : Fragment() {
                             .d("Result.Success: " + feedList.toString())
 
                         bottomSheetFeedAdapter.submitList(feedList)
+                        bottomSheetFeedAdapter.setOriginalList(feedList)
                         updateMarker(feedList)
 
                         if (feedList.isEmpty()) {
