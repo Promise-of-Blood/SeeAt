@@ -16,7 +16,7 @@
         android:clipToOutline="true"
         android:scaleType="fitCenter"
         android:src="@drawable/ic_beer"
-        app:layout_constraintBottom_toBottomOf="@id/cl_post_bottom_layout"
+        app:layout_constraintBottom_toBottomOf="@id/tv_post_content"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/chips_group_main_feed" />
@@ -63,10 +63,9 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_post_bottom_layout"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        app:layout_constraintEnd_toEndOf="@id/chips_group_main_feed"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_post_content">
 
@@ -127,26 +126,60 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:text="2" />
 
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <TextView
+            android:id="@+id/tv_feed_distance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="2dp"
+            android:includeFontPadding="false"
+            android:textColor="@color/gray"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/tv_feed_km"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="16" />
+
+        <TextView
+            android:id="@+id/tv_feed_km"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:includeFontPadding="false"
+            android:textColor="@color/gray"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/view_distance_divider"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="km" />
+
         <View
-            android:id="@+id/view_post_time_divider"
+            android:id="@+id/view_distance_divider"
             android:layout_width="1dp"
             android:layout_height="15dp"
-            android:layout_marginStart="8dp"
+            android:layout_marginEnd="4dp"
             android:background="@color/gray"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@id/tv_post_like_count"
+            app:layout_constraintEnd_toStartOf="@id/tv_post_time_ago"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/tv_post_time_ago"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
+            android:layout_marginEnd="4dp"
             android:includeFontPadding="false"
             android:textColor="@color/gray"
             android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@id/view_post_time_divider"
+            app:layout_constraintEnd_toStartOf="@id/view_post_name_divider"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="20 분전" />
 
@@ -154,17 +187,16 @@
             android:id="@+id/view_post_name_divider"
             android:layout_width="1dp"
             android:layout_height="15dp"
-            android:layout_marginStart="8dp"
+            android:layout_marginEnd="4dp"
             android:background="@color/gray"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@id/tv_post_time_ago"
+            app:layout_constraintEnd_toStartOf="@id/tv_post_username"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/tv_post_username"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
             android:ellipsize="end"
             android:includeFontPadding="false"
             android:maxLines="1"
@@ -172,12 +204,9 @@
             android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/view_post_name_divider"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="아이디" />
 
-
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
