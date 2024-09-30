@@ -125,6 +125,8 @@
     <string name="only_time">2024년 9월 4일</string>
     <string name="exit_user">탈퇴한 사용자</string>
     <string name="timestamp">오전 12:00</string>
+    <string name="chat_list_error_content">알 수 없는 오류입니다. 다시 시도해주세요.</string>
+    <string name="chat_list_empty_content">아직 채팅이 없어요. 게시글에서 채팅을 시작해보세요!</string>
 
     <!-- new feed -->
     <string name="navigation_select_locate">마커 선택 화면</string>

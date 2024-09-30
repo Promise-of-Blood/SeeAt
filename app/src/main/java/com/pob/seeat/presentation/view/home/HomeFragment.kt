@@ -373,22 +373,22 @@ class HomeFragment : Fragment() {
                     feedModel?.let { model ->
                         // 마커 아이콘 좋아요 수 별로 결정
                         val likeCount = model.like
-//                        marker.icon = when {
-//                            likeCount >= 100 -> OverlayImage.fromResource(R.drawable.ic_tree)
-//                            likeCount >= 50 -> OverlayImage.fromResource(R.drawable.ic_growing_sprout)
-//                            likeCount >= 10 -> OverlayImage.fromResource(R.drawable.ic_sprout)
-//                            likeCount >= 1 -> OverlayImage.fromResource(R.drawable.ic_growing_seed)
-//                            else -> OverlayImage.fromResource(R.drawable.ic_seed)
-//                        }
+                        marker.icon = when {
+                            likeCount >= 100 -> OverlayImage.fromResource(R.drawable.ic_tree)
+                            likeCount >= 50 -> OverlayImage.fromResource(R.drawable.ic_growing_sprout)
+                            likeCount >= 10 -> OverlayImage.fromResource(R.drawable.ic_sprout)
+                            likeCount >= 1 -> OverlayImage.fromResource(R.drawable.ic_growing_seed)
+                            else -> OverlayImage.fromResource(R.drawable.ic_seed)
+                        }
 
                         // 마커 아이콘 랜덤 적용
-                        marker.icon = when (Random.nextInt(5)) {
-                            0 -> OverlayImage.fromResource(R.drawable.ic_tree)              // 나무
-                            1 -> OverlayImage.fromResource(R.drawable.ic_growing_sprout)    // 조금 자란 새싹
-                            2 -> OverlayImage.fromResource(R.drawable.ic_sprout)            // 새싹
-                            3 -> OverlayImage.fromResource(R.drawable.ic_growing_seed)   // 싹튼 씨앗
-                            else -> OverlayImage.fromResource(R.drawable.ic_seed)           // 씨앗
-                        }
+//                        marker.icon = when (Random.nextInt(5)) {
+//                            0 -> OverlayImage.fromResource(R.drawable.ic_tree)              // 나무
+//                            1 -> OverlayImage.fromResource(R.drawable.ic_growing_sprout)    // 조금 자란 새싹
+//                            2 -> OverlayImage.fromResource(R.drawable.ic_sprout)            // 새싹
+//                            3 -> OverlayImage.fromResource(R.drawable.ic_growing_seed)   // 싹튼 씨앗
+//                            else -> OverlayImage.fromResource(R.drawable.ic_seed)           // 씨앗
+//                        }
 
                         // 마커 클릭 이벤트 설정
                         marker.onClickListener = Overlay.OnClickListener {
