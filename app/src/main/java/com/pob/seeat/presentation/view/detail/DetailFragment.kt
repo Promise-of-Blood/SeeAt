@@ -124,6 +124,21 @@ class DetailFragment : Fragment() {
         initCommentRecyclerView()
         Timber.i(args.feedIdArg)
         initCommentViewModel()
+        initRefresh()
+
+    }
+
+    private fun initRefresh() {
+        binding.apply {
+            // 어느정도 스와이프 했을때 새로고침 할지 픽셀단위
+            swipeRefreshDetail.setDistanceToTriggerSync(1000)
+
+            swipeRefreshDetail.setOnRefreshListener {
+                initDetailViewmodel()
+                Timber.i("refresh")
+                swipeRefreshDetail.isRefreshing = false
+            }
+        }
     }
 
     private fun setupAdminUI() = with(binding) {
@@ -301,7 +316,8 @@ class DetailFragment : Fragment() {
 
                         is Result.Loading -> {
                             Timber.i("HomeFragment", "Loading..")
-                            // ToDo
+                            binding.pbDetail.visibility = View.VISIBLE
+                            binding.swipeRefreshDetail.visibility = View.GONE
                         }
 
                         is Result.Success -> {
@@ -311,7 +327,7 @@ class DetailFragment : Fragment() {
                             initView(feed)
                             if (activity !is AdminActivity) initToolbar(feed)
                             binding.pbDetail.visibility = View.GONE
-                            binding.scrollView2.visibility = View.VISIBLE
+                            binding.swipeRefreshDetail.visibility = View.VISIBLE
                         }
                     }
                 }
