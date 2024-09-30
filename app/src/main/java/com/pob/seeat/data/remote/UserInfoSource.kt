@@ -16,4 +16,8 @@ interface UserInfoSource {
     suspend fun getUserList(): List<UserInfoData>
     suspend fun updateIsAdmin(uid: String, isAdmin: Boolean)
     suspend fun deleteAllUserInfo(uid: String)
+    suspend fun switchChatNotiOn(uid: String, isOn: Boolean)
+    suspend fun switchCommentNotiOn(uid: String, isOn: Boolean)
+    suspend fun getChatNotiOn(uid: String): Boolean
+    suspend fun getCommentNotiOn(uid: String): Boolean
 }
