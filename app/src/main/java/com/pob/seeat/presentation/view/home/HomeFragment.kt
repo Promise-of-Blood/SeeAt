@@ -19,6 +19,8 @@ import android.view.ViewTreeObserver
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
+import androidx.core.app.ActivityCompat.finishAffinity
 import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getColor
 import androidx.fragment.app.Fragment
@@ -65,6 +67,8 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import kotlin.random.Random
 
+private const val BACK_PRESSED_DURATION = 2_000L // 2000ms
+
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
@@ -86,6 +90,8 @@ class HomeFragment : Fragment() {
 
     private val homeViewModel: HomeViewModel by viewModels()
 
+    private var backPressedTime: Long = 0
+
     private val bottomSheetFeedAdapter: BottomSheetFeedAdapter by lazy {
         BottomSheetFeedAdapter(
             ::handleClickFeed,
@@ -101,6 +107,21 @@ class HomeFragment : Fragment() {
     override fun onAttach(context: Context) {
         super.onAttach(context)
         Timber.d("onAttach")
+        requireActivity().onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (!::bottomSheetBehavior.isInitialized) return
+                if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_COLLAPSED) {
+                    if (System.currentTimeMillis() - backPressedTime >= BACK_PRESSED_DURATION) {
+                        backPressedTime = System.currentTimeMillis()
+                        Toast.makeText(context, "한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show()
+                    } else {
+                        finishAffinity(context as MainActivity)
+                    }
+                } else {
+                    bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                }
+            }
+        })
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -151,8 +172,6 @@ class HomeFragment : Fragment() {
     }
 
     private fun initialSetting() {
-
-
         binding.run {
             // 피드 새로 고침
             ibRefresh.setOnClickListener {

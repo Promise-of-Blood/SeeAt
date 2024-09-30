@@ -25,7 +25,6 @@ import com.pob.seeat.presentation.view.home.HomeFragment
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 
-private const val BACK_PRESSED_DURATION = 2_000L // 2000ms
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -34,7 +33,6 @@ class MainActivity : AppCompatActivity() {
     private val LOCATION_PERMISSION_REQUEST_CODE = 1001
 
     lateinit var fusedLocationClient: FusedLocationProviderClient
-    private var backPressedTime: Long = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,7 +48,6 @@ class MainActivity : AppCompatActivity() {
             Timber.tag("token").d(it)
         }
 
-        onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         askNotificationPermission()
         checkLocationPermission()
     }
@@ -188,17 +185,6 @@ class MainActivity : AppCompatActivity() {
                         ACCESS_COARSE_LOCATION
                     ), LOCATION_PERMISSION_REQUEST_CODE
                 )
-            }
-        }
-    }
-
-    private val onBackPressedCallback = object : OnBackPressedCallback(true) {
-        override fun handleOnBackPressed() {
-            if (System.currentTimeMillis() - backPressedTime >= BACK_PRESSED_DURATION) {
-                backPressedTime = System.currentTimeMillis()
-                Toast.makeText(this@MainActivity, "한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show()
-            } else {
-                finishAffinity()
             }
         }
     }
