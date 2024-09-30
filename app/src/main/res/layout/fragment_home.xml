@@ -155,7 +155,7 @@
             android:src="@drawable/ic_search"
             app:layout_constraintDimensionRatio="1.2:1"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHeight_percent="0.40"
+            app:layout_constraintHeight_percent="0.36"
             app:layout_constraintTop_toTopOf="parent"
             app:tint="@color/white" />
 
@@ -230,8 +230,9 @@
             android:alpha="0"
             android:paddingVertical="8dp"
             android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/view_top_bar"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="@id/view_top_bar" />
 
         <TextView
             android:id="@+id/tv_bottom_sheet_post_list_empty"
@@ -249,7 +250,7 @@
             android:id="@+id/rv_bottom_sheet_post_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="28dp"
+            android:layout_marginTop="20dp"
             app:layout_constrainedHeight="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
