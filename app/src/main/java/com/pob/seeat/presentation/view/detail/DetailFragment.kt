@@ -318,6 +318,7 @@ class DetailFragment : Fragment() {
                             Timber.i("HomeFragment", "Loading..")
                             binding.pbDetail.visibility = View.VISIBLE
                             binding.swipeRefreshDetail.visibility = View.GONE
+                            binding.clCommentLayout.visibility = View.GONE
                         }
 
                         is Result.Success -> {
@@ -328,6 +329,7 @@ class DetailFragment : Fragment() {
                             if (activity !is AdminActivity) initToolbar(feed)
                             binding.pbDetail.visibility = View.GONE
                             binding.swipeRefreshDetail.visibility = View.VISIBLE
+                            binding.clCommentLayout.visibility = View.VISIBLE
                         }
                     }
                 }
