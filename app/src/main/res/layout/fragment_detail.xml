@@ -26,8 +26,10 @@
         android:id="@+id/swipe_refresh_detail"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:visibility="invisible"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tb_feed">
 
         <androidx.core.widget.NestedScrollView
@@ -396,89 +398,10 @@
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.core.widget.NestedScrollView>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/cl_comment_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/white"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
-
-            <EditText
-                android:id="@+id/et_add_comment"
-                android:layout_width="0dp"
-                android:layout_height="55dp"
-                android:background="@drawable/edittext_shadow"
-                android:hint="@string/input_comment"
-                android:paddingStart="16dp"
-                android:paddingEnd="8dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintWidth_percent="0.78" />
-
-            <TextView
-                android:id="@+id/tv_add_comment_button"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_marginTop="3dp"
-                android:background="@drawable/selector_btn_green_fill"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center"
-                android:text="@string/send"
-                android:textColor="@color/white"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="@id/et_add_comment"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/et_add_comment"
-                app:layout_constraintWidth_percent="0.2" />
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btn_admin_delete"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:background="@drawable/background_corners_radius_10dp_gray_border"
-                android:backgroundTint="@android:color/holo_red_light"
-                android:text="@string/admin_report_delete"
-                android:textColor="@color/white"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
-
-            <!--        <androidx.cardview.widget.CardView-->
-            <!--            android:id="@+id/cv_send_comment_my_image_layout"-->
-            <!--            android:layout_width="wrap_content"-->
-            <!--            android:layout_height="wrap_content"-->
-            <!--            android:layout_marginStart="10dp"-->
-            <!--            android:layout_marginTop="15dp"-->
-            <!--            app:cardCornerRadius="15dp"-->
-            <!--            app:cardElevation="0dp"-->
-            <!--            app:layout_constraintStart_toStartOf="@id/et_add_comment"-->
-            <!--            app:layout_constraintTop_toTopOf="@id/et_add_comment">-->
-
-            <!--            <ImageView-->
-            <!--                android:id="@+id/iv_send_comment_my_image"-->
-            <!--                android:layout_width="25dp"-->
-            <!--                android:layout_height="25dp"-->
-            <!--                tools:src="@drawable/ic_home" />-->
-
-            <!--        </androidx.cardview.widget.CardView>-->
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
@@ -492,5 +415,84 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_comment_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/white"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <EditText
+            android:id="@+id/et_add_comment"
+            android:layout_width="0dp"
+            android:layout_height="55dp"
+            android:background="@drawable/edittext_shadow"
+            android:hint="@string/input_comment"
+            android:paddingStart="16dp"
+            android:paddingEnd="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_percent="0.78" />
+
+        <TextView
+            android:id="@+id/tv_add_comment_button"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="3dp"
+            android:background="@drawable/selector_btn_green_fill"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:text="@string/send"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@id/et_add_comment"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/et_add_comment"
+            app:layout_constraintWidth_percent="0.2" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_admin_delete"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/background_corners_radius_10dp_gray_border"
+            android:backgroundTint="@android:color/holo_red_light"
+            android:text="@string/admin_report_delete"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <!--        <androidx.cardview.widget.CardView-->
+        <!--            android:id="@+id/cv_send_comment_my_image_layout"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:layout_marginStart="10dp"-->
+        <!--            android:layout_marginTop="15dp"-->
+        <!--            app:cardCornerRadius="15dp"-->
+        <!--            app:cardElevation="0dp"-->
+        <!--            app:layout_constraintStart_toStartOf="@id/et_add_comment"-->
+        <!--            app:layout_constraintTop_toTopOf="@id/et_add_comment">-->
+
+        <!--            <ImageView-->
+        <!--                android:id="@+id/iv_send_comment_my_image"-->
+        <!--                android:layout_width="25dp"-->
+        <!--                android:layout_height="25dp"-->
+        <!--                tools:src="@drawable/ic_home" />-->
+
+        <!--        </androidx.cardview.widget.CardView>-->
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
