@@ -54,8 +54,12 @@ import com.pob.seeat.domain.model.FeedModel
 import com.pob.seeat.domain.model.ItemKey
 import com.pob.seeat.presentation.common.CustomDecoration
 import com.pob.seeat.presentation.view.UiState
+import com.pob.seeat.presentation.view.home.adapter.BottomSheetFeedAdapter
+import com.pob.seeat.presentation.view.home.adapter.SearchType
+import com.pob.seeat.presentation.view.home.adapter.TagAdapter
 import com.pob.seeat.presentation.viewmodel.HomeViewModel
 import com.pob.seeat.presentation.viewmodel.RestroomViewModel
+import com.pob.seeat.utils.GetUserLocation
 import com.pob.seeat.utils.Utils.calculateDistance
 import com.pob.seeat.utils.Utils.px
 import com.pob.seeat.utils.Utils.tagList
@@ -177,7 +181,6 @@ class HomeFragment : Fragment() {
 
     private fun initialSetting() {
 
-
         binding.run {
             // 피드 새로 고침
             ibRefresh.setOnClickListener {
@@ -226,7 +229,6 @@ class HomeFragment : Fragment() {
     private fun handleEmptyFeedList(size: Int) = with(binding) {
         if (size == 0) {
             tvBottomSheetPostListEmpty.visibility = View.VISIBLE
-            pbBottomSheetPostList.visibility = View.GONE
             tvBottomSheetPostListEmpty.text = getString(R.string.empty_search)
         } else {
             tvBottomSheetPostListEmpty.visibility = View.GONE
@@ -245,13 +247,23 @@ class HomeFragment : Fragment() {
      * 호출된 피드 리스트는 feedList에 저장
      */
     private fun getFeed() = with(homeViewModel) {
-        val centerPoint = naverMap.cameraPosition.target
-        val radiusKm = getMapHeight() / 1000
-
-        Timber.d("getFeed: ${centerPoint.latitude}, ${centerPoint.longitude}, $radiusKm ")
-        getFeedList(centerPoint.latitude, centerPoint.longitude, radiusKm)
-
+        // 코루틴 블록 시작
         viewLifecycleOwner.lifecycleScope.launch {
+            val centerPoint = naverMap.cameraPosition.target
+            val radiusKm = getMapHeight() / 1000
+
+            // suspend 함수는 반드시 코루틴 내에서 호출해야 합니다.
+            val currentLocation = GetUserLocation.getCurrentLocation(requireContext())
+
+            if (currentLocation != null) {
+                Timber.d("getFeed: ${centerPoint.latitude}, ${centerPoint.longitude}, $radiusKm ")
+                getFeedList(centerPoint.latitude, centerPoint.longitude, currentLocation, radiusKm)
+            } else {
+                // 현재 위치를 가져올 수 없는 경우 처리
+                Timber.e("현재 위치를 가져올 수 없습니다.")
+            }
+
+            // Feed 데이터를 처리하는 부분
             feedResponse.flowWithLifecycle(viewLifecycleOwner.lifecycle)
                 .collectLatest { response ->
                     when (response) {
@@ -262,7 +274,6 @@ class HomeFragment : Fragment() {
                         is Result.Loading -> {
                             Timber.tag("HomeFragment").d("Loading..")
                             binding.tvBottomSheetPostListEmpty.visibility = View.GONE
-                            binding.pbBottomSheetPostList.visibility = View.VISIBLE
                             binding.pbRefresh.visibility = View.VISIBLE
                             binding.ibRefresh.imageTintList =
                                 ColorStateList.valueOf(getColor(requireContext(), R.color.white))
@@ -283,12 +294,12 @@ class HomeFragment : Fragment() {
 
                             if (feedList.isEmpty()) {
                                 binding.tvBottomSheetPostListEmpty.visibility = View.VISIBLE
-                                binding.pbBottomSheetPostList.visibility = View.GONE
                                 binding.tvBottomSheetPostListEmpty.text =
                                     getString(R.string.empty_default)
+                                bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
                             } else {
                                 binding.tvBottomSheetPostListEmpty.visibility = View.GONE
-                                binding.pbBottomSheetPostList.visibility = View.GONE
+                                bottomSheetBehavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
                             }
                         }
                     }
@@ -401,9 +412,13 @@ class HomeFragment : Fragment() {
             model.content
         )
         model.location.let {
-            val cameraUpdate =
+            val cameraUpdate = if(naverMap.cameraPosition.zoom < 14.0) {
+                CameraUpdate.scrollTo(LatLng(it!!.latitude - 0.001, it.longitude))
+                    .animate(CameraAnimation.Easing, 2000)
+            } else {
                 CameraUpdate.scrollAndZoomTo(LatLng(it!!.latitude - 0.001, it.longitude), 14.0)
                     .animate(CameraAnimation.Easing, 2000)
+            }
 
             naverMap.moveCamera(cameraUpdate)
         }

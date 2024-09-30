@@ -5,14 +5,12 @@ import com.firebase.geofire.GeoFireUtils
 import com.firebase.geofire.GeoLocation
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
-import android.widget.Toast
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.GeoPoint
-import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.QuerySnapshot
 import com.pob.seeat.data.model.chat.ChatFeedInfoModel
 import com.pob.seeat.domain.model.CommentModel
@@ -28,6 +26,7 @@ class FeedRemote @Inject constructor(
     override suspend fun getFeedList(
         centerLat: Double,
         centerLng: Double,
+        userLocation: GeoPoint,
         radiusInKm: Double
     ): List<FeedModel> {
         val center = GeoLocation(centerLat, centerLng)
@@ -52,7 +51,6 @@ class FeedRemote @Inject constructor(
 
         // 모든 쿼리 결과를 비동기적으로 기다림
         val results = Tasks.whenAllComplete(tasks).await()
-
         val matchingFeeds = mutableListOf<FeedModel>()
 
         for (task in tasks) {
@@ -67,22 +65,31 @@ class FeedRemote @Inject constructor(
                     // 위치 정보가 있는 경우만 필터링
                     if (lat != null && lng != null) {
                         val docLocation = GeoLocation(lat, lng)
+
+                        // 지도 중심점과의 거리
                         val distanceInM = GeoFireUtils.getDistanceBetween(docLocation, center)
+
+                        // 실제 사용자 위치와의 거리
+                        val userDistance = GeoFireUtils.getDistanceBetween(
+                            docLocation,
+                            GeoLocation(userLocation.latitude, userLocation.longitude)
+                        )
 
                         // 반경 내에 있는 문서만 처리
                         if (distanceInM <= radiusInM) {
                             val tagList = documentSnapshot.get("tagList") as? List<*>
 
+                            Timber.tag("distance").d("distance: $distanceInM")
+                            Timber.tag("distance").d("distanceInt: ${distanceInM.toInt()}")
+
                             val feedModel = documentSnapshot.toObject(FeedModel::class.java)?.copy(
                                 feedId = documentSnapshot.id,
-                                tags = tagList?.filterIsInstance<String>() ?: emptyList()
+                                tags = tagList?.filterIsInstance<String>() ?: emptyList(),
+                                distance = userDistance.toInt()
                             )?.run {
                                 val nickname = (user as? DocumentReference)?.get()
                                     ?.await()
                                     ?.getString("nickname") ?: "탈퇴한 사용자"
-
-                                // 닉네임 확인
-                                Log.d("FeedRemote", "Fetched nickname: $nickname for user: ${user?.id}")
 
                                 nickname?.let {
                                     copy(nickname = it)
@@ -101,7 +108,7 @@ class FeedRemote @Inject constructor(
         return matchingFeeds
     }
 
-    override suspend fun getFeedById(postId: String): FeedModel? {
+    override suspend fun getFeedById(postId: String, userLocation: GeoPoint): FeedModel? {
         val documentSnapshot = firestore.collection("feed")
             .document(postId)
             .get()
@@ -114,25 +121,36 @@ class FeedRemote @Inject constructor(
         val tagList = documentSnapshot.get("tagList") as? List<*>
         val userRef = documentSnapshot.getDocumentReference("user")
 
+        Timber.tag("distance").d("userLocation FeedRemote: $userLocation")
+
         return documentSnapshot.toObject(FeedModel::class.java)?.copy(
             user = userRef,
             feedId = documentSnapshot.id,
             tags = tagList?.filterIsInstance<String>() ?: emptyList(),
-            comments = comments
+            comments = comments,
         )?.run {
             val userDocument = (user as? DocumentReference)?.get()?.await()
             val userData = userDocument?.data
             val nickname = userData?.get("nickname") as? String ?: "탈퇴한 사용자"
             val userImage = userData?.get("profileUrl") as? String
                 ?: "https://firebasestorage.googleapis.com/v0/b/see-at.appspot.com/o/profile_images%2Fiv_main_icon.png?alt=media&token=33eb6196-76b4-419d-8bc3-f986219b290b"
-
+            val lat = documentSnapshot.getGeoPoint("location")?.latitude ?: 0.0
+            val lng = documentSnapshot.getGeoPoint("location")?.longitude ?: 0.0
+            val userDistance = if (userLocation == GeoPoint(0.0, 0.0) || lat == 0.0 || lng == 0.0) {
+                0.0
+            } else {
+                GeoFireUtils.getDistanceBetween(
+                    GeoLocation(lat, lng),
+                    GeoLocation(userLocation.latitude, userLocation.longitude)
+                )
+            }
             // 로그로 nickname 값을 출력하여 확인
             Log.d("FeedRemote", "Fetched nickname: $nickname for user: ${user?.id}")
             copy(
                 nickname = nickname.toString(),
                 userImage = userImage.toString(),
+                distance = userDistance.toInt()
             )
-
         }
     }
 

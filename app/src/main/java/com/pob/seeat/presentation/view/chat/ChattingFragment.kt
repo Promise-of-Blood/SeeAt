@@ -21,6 +21,7 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.GeoPoint
 import com.pob.seeat.R
 import com.pob.seeat.data.database.chat.ChatEntity
 import com.pob.seeat.data.database.chat.ChatRoomDb
@@ -32,6 +33,7 @@ import com.pob.seeat.presentation.view.chat.adapter.ChattingAdapter
 import com.pob.seeat.presentation.view.chat.items.ChattingUiItem
 import com.pob.seeat.presentation.viewmodel.ChatViewModel
 import com.pob.seeat.presentation.viewmodel.DetailViewModel
+import com.pob.seeat.utils.GetUserLocation
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
@@ -175,7 +177,12 @@ class ChattingFragment : Fragment() {
     }
 
     private fun getFeedData() {
-        detailViewModel.getFeedById(feedId)
+        viewLifecycleOwner.lifecycleScope.launch {
+            val userLocation = GetUserLocation.getCurrentLocation(requireContext())
+                ?: GeoPoint(0.0, 0.0)
+            detailViewModel.getFeedById(feedId, userLocation)
+        }
+
     }
 
     private fun initViewModel() {
