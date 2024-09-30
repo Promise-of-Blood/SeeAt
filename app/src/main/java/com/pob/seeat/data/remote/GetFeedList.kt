@@ -8,6 +8,7 @@ interface GetFeedList {
         centerLat: Double,
         centerLng: Double,
         userLocation: GeoPoint,
-        radiusInKm: Double
+        radiusInKm: Double,
+        sortBy: String,
     ): List<FeedModel>
 }
