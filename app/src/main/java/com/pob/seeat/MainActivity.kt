@@ -9,6 +9,7 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -23,6 +24,7 @@ import com.pob.seeat.databinding.ActivityMainBinding
 import com.pob.seeat.presentation.view.home.HomeFragment
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
+
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -70,8 +72,9 @@ class MainActivity : AppCompatActivity() {
                     navController.navigate(R.id.navigation_home)
                     true
                 }
+
                 else -> {
-                    navController.navigate(item.itemId )
+                    navController.navigate(item.itemId)
                     showNavHostFragment(true)
                     true
                 }
@@ -80,7 +83,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun showNavHostFragment(isVisible: Boolean) {
-        if(isVisible) {
+        if (isVisible) {
             binding.navHostFragment.visibility = View.VISIBLE
         } else {
             binding.navHostFragment.visibility = View.INVISIBLE
@@ -185,5 +188,4 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
 }

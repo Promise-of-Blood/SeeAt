@@ -64,7 +64,8 @@ import com.pob.seeat.presentation.viewmodel.CommentViewModel
 import com.pob.seeat.presentation.viewmodel.DetailViewModel
 import com.pob.seeat.presentation.viewmodel.ReportCommentViewModel
 import com.pob.seeat.utils.EventBus
-import com.pob.seeat.utils.Utils.calculateDistance
+import com.pob.seeat.utils.GetUserLocation
+import com.pob.seeat.utils.Utils
 import com.pob.seeat.utils.Utils.px
 import com.pob.seeat.utils.Utils.toKoreanDiffString
 import com.pob.seeat.utils.Utils.toLocalDateTime
@@ -92,8 +93,6 @@ class DetailFragment : Fragment() {
     private val commentViewModel: CommentViewModel by viewModels()
     private val reportCommentViewModel: ReportCommentViewModel by viewModels()
     private val chatViewModel: ChatViewModel by viewModels()
-
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     private val feedCommentAdapter: FeedCommentAdapter by lazy {
         FeedCommentAdapter(
@@ -125,6 +124,21 @@ class DetailFragment : Fragment() {
         initCommentRecyclerView()
         Timber.i(args.feedIdArg)
         initCommentViewModel()
+        initRefresh()
+
+    }
+
+    private fun initRefresh() {
+        binding.apply {
+            // 어느정도 스와이프 했을때 새로고침 할지 픽셀단위
+            swipeRefreshDetail.setDistanceToTriggerSync(1000)
+
+            swipeRefreshDetail.setOnRefreshListener {
+                initDetailViewmodel()
+                Timber.i("refresh")
+                swipeRefreshDetail.isRefreshing = false
+            }
+        }
     }
 
     private fun setupAdminUI() = with(binding) {
@@ -251,7 +265,14 @@ class DetailFragment : Fragment() {
     }
 
     private fun initDetailViewmodel() {
-        detailViewModel.getFeedById(args.feedIdArg)
+        viewLifecycleOwner.lifecycleScope.launch {
+            // suspend 함수는 코루틴 내부에서 호출해야 함
+            val userLocation = GetUserLocation.getCurrentLocation(requireContext())
+                ?: GeoPoint(0.0, 0.0)
+            Timber.tag("distance").d("userLocation: $userLocation")
+            // userLocation을 가져온 후의 로직 처리
+            detailViewModel.getFeedById(args.feedIdArg, userLocation)
+        }
 
         initFeedLiked()
         initIsBookmarked()
@@ -295,6 +316,8 @@ class DetailFragment : Fragment() {
 
                         is Result.Loading -> {
                             Timber.i("HomeFragment", "Loading..")
+                            binding.pbDetail.visibility = View.VISIBLE
+                            binding.swipeRefreshDetail.visibility = View.GONE
                         }
 
                         is Result.Success -> {
@@ -303,6 +326,8 @@ class DetailFragment : Fragment() {
                             Timber.i("HomeFragment", feed.toString())
                             initView(feed)
                             if (activity !is AdminActivity) initToolbar(feed)
+                            binding.pbDetail.visibility = View.GONE
+                            binding.swipeRefreshDetail.visibility = View.VISIBLE
                         }
                     }
                 }
@@ -340,14 +365,16 @@ class DetailFragment : Fragment() {
             tvWriterUsername.text = feed.nickname
 
             Glide.with(requireContext()).load(feed.userImage).into(ivWriterImage)
+            Timber.tag("distance").d(feed.distance.toString())
+            val distance = Utils.formatDistanceToString(feed.distance)
 
             tvFeedTitle.text = feed.title
             tvFeedTimeAgo.text = feed.date?.toLocalDateTime()?.toKoreanDiffString()
+            tvMyDistance.text = distance
             tvFeedContent.text = feed.content
             tvFeedDetailLikeCount.text = feed.like.toString()
+            Timber.i("feed.like ${feed.like}")
             tvCommentCount.text = "(" + feed.commentsCount.toString() + ")"
-
-            initLocation()
 
             // 툴바 뒤로가기
             tbFeed.setNavigationOnClickListener {
@@ -366,8 +393,10 @@ class DetailFragment : Fragment() {
             setFeedLikeButton(ivLikeIcon)
 
             ivLikeIcon.setOnClickListener {
-                detailViewModel.isLikedToggle(args.feedIdArg)
-                detailViewModel.modifyIsLiked(tvFeedDetailLikeCount.text.toString().toInt())
+                viewLifecycleOwner.lifecycleScope.launch {
+                    detailViewModel.isLikedToggle(args.feedIdArg)
+                    detailViewModel.modifyIsLiked(tvFeedDetailLikeCount.text.toString().toInt())
+                }
             }
 
             viewLifecycleOwner.lifecycleScope.launch {
@@ -388,7 +417,8 @@ class DetailFragment : Fragment() {
                 }
             }
 
-            if(feed.user?.id == FirebaseAuth.getInstance().currentUser?.uid) tvChatButton.visibility = View.GONE
+            if (feed.user?.id == FirebaseAuth.getInstance().currentUser?.uid) tvChatButton.visibility =
+                View.GONE
 
             tvChatButton.setOnClickListener {
                 val intent = Intent(requireContext(), ChattingActivity::class.java)
@@ -396,7 +426,6 @@ class DetailFragment : Fragment() {
                 intent.putExtra("chatId", chatId)
                 startActivity(intent)
             }
-
 
             initTag(feed.tags)
 
@@ -408,78 +437,6 @@ class DetailFragment : Fragment() {
                 initImageViewPager(feed.contentImage)
             }
         }
-    }
-
-    private fun initLocation() {
-
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
-
-        when (PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.checkSelfPermission(requireContext(), ACCESS_FINE_LOCATION) -> {
-                requestFineLocation()
-            }
-
-            ActivityCompat.checkSelfPermission(requireContext(), ACCESS_COARSE_LOCATION) -> {
-                requestCoarseLocation()
-            }
-
-            else -> {
-                Timber.e("위치 권한이 없습니다.")
-                hideDistance()
-            }
-        }
-
-    }
-
-    @SuppressLint("MissingPermission")
-    private fun requestFineLocation() {
-        val locationRequest = LocationRequest.Builder(
-            Priority.PRIORITY_HIGH_ACCURACY, 10000
-        ).setMaxUpdates(1).build()
-
-        fusedLocationClient.requestLocationUpdates(
-            locationRequest, object : LocationCallback() {
-                override fun onLocationResult(locationResult: LocationResult) {
-                    if (_binding == null) return
-                    val location = locationResult.lastLocation
-                    if (location != null) {
-                        val currentGeoPoint = GeoPoint(location.latitude, location.longitude)
-                        Timber.i("고정밀 위치: $currentGeoPoint")
-                        feed.location?.let {
-                            val distance = calculateDistance(currentGeoPoint, it)
-                            binding.tvMyDistance.text = formatDistanceToString(distance)
-                        }
-                    }
-                    fusedLocationClient.removeLocationUpdates(this)
-                }
-            }, Looper.getMainLooper()
-        )
-    }
-
-    @SuppressLint("MissingPermission")
-    private fun requestCoarseLocation() {
-
-        val locationRequest = LocationRequest.Builder(
-            Priority.PRIORITY_BALANCED_POWER_ACCURACY, 10000
-        ).setWaitForAccurateLocation(true).setMaxUpdates(1).build()
-
-        fusedLocationClient.requestLocationUpdates(
-            locationRequest, object : LocationCallback() {
-                override fun onLocationResult(locationResult: LocationResult) {
-                    if (_binding == null) return
-                    val location = locationResult.lastLocation
-                    if (location != null) {
-                        val currentGeoPoint = GeoPoint(location.latitude, location.longitude)
-                        Timber.i("저정밀 위치: $currentGeoPoint")
-                        feed.location?.let {
-                            val distance = calculateDistance(currentGeoPoint, it)
-                            binding.tvMyDistance.text = formatDistanceToString(distance)
-                        }
-                    }
-                    fusedLocationClient.removeLocationUpdates(this)
-                }
-            }, Looper.getMainLooper()
-        )
     }
 
     private fun hideDistance() {
@@ -525,33 +482,28 @@ class DetailFragment : Fragment() {
         }
     }
 
-    private fun changeDP(value: Int): Int {
-        val displayMetrics = resources.displayMetrics
-        val dp = Math.round(value * displayMetrics.density)
-        return dp
-    }
-
-    private fun setLikeCount() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            detailViewModel.isLiked.collect { isLiked ->
-                val currentLikeCount =
-                    binding.tvFeedDetailLikeCount.text.toString().toIntOrNull() ?: 0
-
-                val newCount = if (isLiked) {
-                    currentLikeCount + 1
-                } else {
-                    currentLikeCount - 1
-                }
-
-                binding.tvFeedDetailLikeCount.text = newCount.toString()
-
-            }
-        }
-    }
+//    private fun setLikeCount() {
+//        viewLifecycleOwner.lifecycleScope.launch {
+//            detailViewModel.isLiked.collect { isLiked ->
+//                val currentLikeCount =
+//                    binding.tvFeedDetailLikeCount.text.toString().toIntOrNull() ?: 0
+//
+//                val newCount = if (isLiked) {
+//                    currentLikeCount + 1
+//                } else {
+//                    currentLikeCount - 1
+//                }
+//
+//                binding.tvFeedDetailLikeCount.text = newCount.toString()
+//
+//            }
+//        }
+//    }
 
     private fun setFeedLikeButton(clLikeBtn: ImageView) {
         viewLifecycleOwner.lifecycleScope.launch {
             detailViewModel.isLiked.collect { isLiked ->
+                Timber.i("isLiked in like btn $isLiked")
                 when (isLiked) {
                     true -> {
                         clLikeBtn.setImageResource(R.drawable.ic_thumb_up_filled)
@@ -622,14 +574,6 @@ class DetailFragment : Fragment() {
         }
     }
 
-
-    private fun formatDistanceToString(meter: Int): String {
-        return when {
-            meter in 0..999 -> "${meter}m"
-            meter > 1000 -> String.format(Locale.KOREA, "%dkm", meter / 1000)
-            else -> "Invalid distance"
-        }
-    }
 
     private fun handleClickFeed(feedModel: CommentModel) {
         // Todo 댓글 클릭시

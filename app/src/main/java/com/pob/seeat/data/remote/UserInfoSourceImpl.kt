@@ -107,44 +107,38 @@ class UserInfoSourceImpl @Inject constructor(
     }
 
     override suspend fun deleteAllUserInfo(uid: String) {
-        try {
-            val batch = firestore.batch()
+        val batch = firestore.batch()
 
-            // 1. 유저 정보 삭제
-            val userRef = firestore.collection("user").document(uid)
-            val likedFeedRef = userRef.collection("likedFeed")
-            val alarmRef = userRef.collection("alarm")
-            likedFeedRef.get().await().documents.forEach { batch.delete(it.reference) }
-            alarmRef.get().await().documents.forEach { batch.delete(it.reference) }
-            batch.delete(userRef)
+        // 1. 유저 정보 삭제
+        val userRef = firestore.collection("user").document(uid)
+        val likedFeedRef = userRef.collection("likedFeed")
+        val alarmRef = userRef.collection("alarm")
+        likedFeedRef.get().await().documents.forEach { batch.delete(it.reference) }
+        alarmRef.get().await().documents.forEach { batch.delete(it.reference) }
+        batch.delete(userRef)
 
-            // 2. 게시글 / 댓글 정보 삭제
-            val comments = firestore.collectionGroup("comments").whereEqualTo("user", userRef)
-            val feeds = firestore.collection("feed").whereEqualTo("user", userRef)
-            comments.get().await().documents.forEach { batch.delete(it.reference) }
-            feeds.get().await().documents.forEach { batch.delete(it.reference) }
+        // 2. 게시글 / 댓글 정보 삭제
+        val comments = firestore.collectionGroup("comments").whereEqualTo("user", userRef)
+        val feeds = firestore.collection("feed").whereEqualTo("user", userRef)
+        comments.get().await().documents.forEach { batch.delete(it.reference) }
+        feeds.get().await().documents.forEach { batch.delete(it.reference) }
 
-            // 3. 신고 정보 삭제
-            val reportedComments =
-                firestore.collection("report_comment").whereEqualTo("reportedUserId", uid)
-            val reportComments =
-                firestore.collection("report_comment").whereEqualTo("reporterId", uid)
-            val reportedFeeds =
-                firestore.collection("report_feed").whereEqualTo("reportedUserId", uid)
-            val reportFeeds = firestore.collection("report_feed").whereEqualTo("reporterId", uid)
-            reportedComments.get().await().documents.forEach { batch.delete(it.reference) }
-            reportComments.get().await().documents.forEach { batch.delete(it.reference) }
-            reportedFeeds.get().await().documents.forEach { batch.delete(it.reference) }
-            reportFeeds.get().await().documents.forEach { batch.delete(it.reference) }
+        // 3. 신고 정보 삭제
+        val reportedComments =
+            firestore.collection("report_comment").whereEqualTo("reportedUserId", uid)
+        val reportComments = firestore.collection("report_comment").whereEqualTo("reporterId", uid)
+        val reportedFeeds = firestore.collection("report_feed").whereEqualTo("reportedUserId", uid)
+        val reportFeeds = firestore.collection("report_feed").whereEqualTo("reporterId", uid)
+        reportedComments.get().await().documents.forEach { batch.delete(it.reference) }
+        reportComments.get().await().documents.forEach { batch.delete(it.reference) }
+        reportedFeeds.get().await().documents.forEach { batch.delete(it.reference) }
+        reportFeeds.get().await().documents.forEach { batch.delete(it.reference) }
 
-            // 4. 관리자인 경우, 관리자 정보 삭제
-            val admin = firestore.collection("admin").document(uid)
-            batch.delete(admin)
+        // 4. 관리자인 경우, 관리자 정보 삭제
+        val admin = firestore.collection("admin").document(uid)
+        batch.delete(admin)
 
-            batch.commit().await()
-        } catch (e: Exception) {
-            Timber.e(e.message)
-        }
+        batch.commit().await()
     }
 
     private suspend fun checkIsAdmin(uid: String): Boolean {
@@ -172,10 +166,12 @@ class UserInfoSourceImpl @Inject constructor(
     }
 
     override suspend fun getChatNotiOn(uid: String): Boolean {
-        return firestore.collection("user").document(uid).get().await().getBoolean("chatNotiOn") ?: true
+        return firestore.collection("user").document(uid).get().await().getBoolean("chatNotiOn")
+            ?: true
     }
 
     override suspend fun getCommentNotiOn(uid: String): Boolean {
-        return firestore.collection("user").document(uid).get().await().getBoolean("commentNotiOn") ?: true
+        return firestore.collection("user").document(uid).get().await().getBoolean("commentNotiOn")
+            ?: true
     }
 }

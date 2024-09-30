@@ -35,8 +35,7 @@ class AdminUserViewModel @Inject constructor(
         private set
     var userDetail = MutableStateFlow<UiState<UserInfoModel>>(UiState.Loading)
         private set
-    var reportedList =
-        MutableStateFlow<Result<List<AdminReportListItem>>>(Result.Loading)
+    var reportedList = MutableStateFlow<Result<List<AdminReportListItem>>>(Result.Loading)
         private set
 
     fun getUserList() {
@@ -63,8 +62,7 @@ class AdminUserViewModel @Inject constructor(
     fun getReportedList(uid: String) {
         viewModelScope.launch {
             combine(
-                reportedCommentHistoryListUseCase(uid),
-                reportedFeedHistoryListUseCase(uid)
+                reportedCommentHistoryListUseCase(uid), reportedFeedHistoryListUseCase(uid)
             ) { comment, feed ->
                 when {
                     comment is Result.Success && feed is Result.Success -> {
@@ -101,9 +99,18 @@ class AdminUserViewModel @Inject constructor(
         }
     }
 
-    fun deleteUser(uid: String) {
+    fun deleteUser(uid: String, onSuccess: (String) -> Unit, onError: (String) -> Unit) {
         viewModelScope.launch {
-            deleteAllUserInfoUseCase(uid)
+            deleteAllUserInfoUseCase(uid).collect {
+                when (it) {
+                    is Result.Loading -> {}
+                    is Result.Error -> onError(it.message)
+                    is Result.Success -> {
+                        onSuccess(it.data)
+                        getUserList()
+                    }
+                }
+            }
         }
     }
 
@@ -119,8 +126,7 @@ class AdminUserViewModel @Inject constructor(
         var feedIndex = 0
 
         while (commentIndex < commentList.size && feedIndex < feedList.size) {
-            val commentDate =
-                (commentList[commentIndex] as AdminReportListItem.CommentReport).date
+            val commentDate = (commentList[commentIndex] as AdminReportListItem.CommentReport).date
             val feedDate = (feedList[feedIndex] as AdminReportListItem.FeedReport).date
 
             if (commentDate >= feedDate) {

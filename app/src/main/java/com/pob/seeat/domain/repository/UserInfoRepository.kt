@@ -16,5 +16,5 @@ interface UserInfoRepository {
     suspend fun removeLikedFeed(uid: String, feedUid: String)
     suspend fun getUserList(): Flow<Result<List<UserInfoModel>>>
     suspend fun updateIsAdmin(uid: String, isAdmin: Boolean)
-    suspend fun deleteAllUserInfo(uid: String)
+    suspend fun deleteAllUserInfo(uid: String): Flow<Result<String>>
 }

@@ -2,6 +2,7 @@ package com.pob.seeat.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.firestore.GeoPoint
 import com.pob.seeat.data.model.Result
 import com.pob.seeat.domain.model.FeedModel
 import com.pob.seeat.domain.repository.FeedRepository
@@ -31,10 +32,11 @@ class HomeViewModel @Inject constructor(
     fun getFeedList(
         centerLat: Double,
         centerLng: Double,
+        userLocation: GeoPoint,
         radiusInKm: Double
     ) {
         viewModelScope.launch {
-            feedRepository.getFeedList(centerLat, centerLng, radiusInKm).collect { uiState ->
+            feedRepository.getFeedList(centerLat, centerLng, userLocation, radiusInKm).collect { uiState ->
                 _feedResponse.value = uiState
             }
         }

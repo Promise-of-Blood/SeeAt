@@ -19,6 +19,8 @@ import android.view.ViewTreeObserver
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
+import androidx.core.app.ActivityCompat.finishAffinity
 import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getColor
 import androidx.fragment.app.Fragment
@@ -54,8 +56,12 @@ import com.pob.seeat.domain.model.FeedModel
 import com.pob.seeat.domain.model.ItemKey
 import com.pob.seeat.presentation.common.CustomDecoration
 import com.pob.seeat.presentation.view.UiState
+import com.pob.seeat.presentation.view.home.adapter.BottomSheetFeedAdapter
+import com.pob.seeat.presentation.view.home.adapter.SearchType
+import com.pob.seeat.presentation.view.home.adapter.TagAdapter
 import com.pob.seeat.presentation.viewmodel.HomeViewModel
 import com.pob.seeat.presentation.viewmodel.RestroomViewModel
+import com.pob.seeat.utils.GetUserLocation
 import com.pob.seeat.utils.Utils.calculateDistance
 import com.pob.seeat.utils.Utils.px
 import com.pob.seeat.utils.Utils.tagList
@@ -64,6 +70,8 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import kotlin.random.Random
+
+private const val BACK_PRESSED_DURATION = 2_000L // 2000ms
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
@@ -86,6 +94,8 @@ class HomeFragment : Fragment() {
 
     private val homeViewModel: HomeViewModel by viewModels()
 
+    private var backPressedTime: Long = 0
+
     private val bottomSheetFeedAdapter: BottomSheetFeedAdapter by lazy {
         BottomSheetFeedAdapter(
             ::handleClickFeed,
@@ -101,6 +111,21 @@ class HomeFragment : Fragment() {
     override fun onAttach(context: Context) {
         super.onAttach(context)
         Timber.d("onAttach")
+        requireActivity().onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (!::bottomSheetBehavior.isInitialized) return
+                if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_COLLAPSED) {
+                    if (System.currentTimeMillis() - backPressedTime >= BACK_PRESSED_DURATION) {
+                        backPressedTime = System.currentTimeMillis()
+                        Toast.makeText(context, "한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show()
+                    } else {
+                        finishAffinity(context as MainActivity)
+                    }
+                } else {
+                    bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                }
+            }
+        })
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -109,8 +134,7 @@ class HomeFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         Timber.d("onCreateView")
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
@@ -128,6 +152,16 @@ class HomeFragment : Fragment() {
         initialSetting()
     }
 
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        Timber.d("onViewStateRestored")
+    }
+
+    override fun onStart() {
+        super.onStart()
+        Timber.d("onStart")
+    }
+
     override fun onResume() {
         super.onResume()
         Timber.d("onResume")
@@ -137,6 +171,16 @@ class HomeFragment : Fragment() {
         super.onPause()
         Timber.d("onPause")
         binding.etSearch.text?.clear()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Timber.d("onStop")
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        Timber.d("onSaveInstanceState")
     }
 
     override fun onDestroyView() {
@@ -150,8 +194,12 @@ class HomeFragment : Fragment() {
         Timber.d("onDestroy")
     }
 
-    private fun initialSetting() {
+    override fun onDetach() {
+        super.onDetach()
+        Timber.d("onDetach")
+    }
 
+    private fun initialSetting() {
 
         binding.run {
             // 피드 새로 고침
@@ -201,7 +249,6 @@ class HomeFragment : Fragment() {
     private fun handleEmptyFeedList(size: Int) = with(binding) {
         if (size == 0) {
             tvBottomSheetPostListEmpty.visibility = View.VISIBLE
-            pbBottomSheetPostList.visibility = View.GONE
             tvBottomSheetPostListEmpty.text = getString(R.string.empty_search)
         } else {
             tvBottomSheetPostListEmpty.visibility = View.GONE
@@ -220,54 +267,62 @@ class HomeFragment : Fragment() {
      * 호출된 피드 리스트는 feedList에 저장
      */
     private fun getFeed() = with(homeViewModel) {
-        val centerPoint = naverMap.cameraPosition.target
-        val radiusKm = getMapHeight() / 1000
-
-        Timber.d("getFeed: ${centerPoint.latitude}, ${centerPoint.longitude}, $radiusKm ")
-        getFeedList(centerPoint.latitude, centerPoint.longitude, radiusKm)
-
+        // 코루틴 블록 시작
         viewLifecycleOwner.lifecycleScope.launch {
-            feedResponse.flowWithLifecycle(viewLifecycleOwner.lifecycle)
-                .collectLatest { response ->
-                    when (response) {
-                        is Result.Error -> {
-                            Timber.tag("HomeFragment").e("Error: %s", response.message)
-                        }
+            val centerPoint = naverMap.cameraPosition.target
+            val radiusKm = getMapHeight() / 1000
 
-                        is Result.Loading -> {
-                            Timber.tag("HomeFragment").d("Loading..")
+            // suspend 함수는 반드시 코루틴 내에서 호출해야 합니다.
+            val currentLocation = GetUserLocation.getCurrentLocation(requireContext())
+
+            if (currentLocation != null) {
+                Timber.d("getFeed: ${centerPoint.latitude}, ${centerPoint.longitude}, $radiusKm ")
+                getFeedList(centerPoint.latitude, centerPoint.longitude, currentLocation, radiusKm)
+            } else {
+                // 현재 위치를 가져올 수 없는 경우 처리
+                Timber.e("현재 위치를 가져올 수 없습니다.")
+            }
+
+            // Feed 데이터를 처리하는 부분
+            feedResponse.flowWithLifecycle(viewLifecycleOwner.lifecycle).collectLatest { response ->
+                when (response) {
+                    is Result.Error -> {
+                        Timber.tag("HomeFragment").e("Error: %s", response.message)
+                    }
+
+                    is Result.Loading -> {
+                        Timber.tag("HomeFragment").d("Loading..")
+                        binding.tvBottomSheetPostListEmpty.visibility = View.GONE
+                        binding.pbRefresh.visibility = View.VISIBLE
+                        binding.ibRefresh.imageTintList =
+                            ColorStateList.valueOf(getColor(requireContext(), R.color.white))
+                    }
+
+                    is Result.Success -> {
+                        binding.ibRefresh.imageTintList =
+                            ColorStateList.valueOf(getColor(requireContext(), R.color.primary))
+                        binding.pbRefresh.visibility = View.INVISIBLE
+
+                        feedList = response.data
+
+                        Timber.tag("HomeFragment Result")
+                            .d("Result.Success: " + feedList.toString())
+
+                        bottomSheetFeedAdapter.submitList(feedList)
+                        updateMarker(feedList)
+
+                        if (feedList.isEmpty()) {
+                            binding.tvBottomSheetPostListEmpty.visibility = View.VISIBLE
+                            binding.tvBottomSheetPostListEmpty.text =
+                                getString(R.string.empty_default)
+                            bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+                        } else {
                             binding.tvBottomSheetPostListEmpty.visibility = View.GONE
-                            binding.pbBottomSheetPostList.visibility = View.VISIBLE
-                            binding.pbRefresh.visibility = View.VISIBLE
-                            binding.ibRefresh.imageTintList =
-                                ColorStateList.valueOf(getColor(requireContext(), R.color.white))
-                        }
-
-                        is Result.Success -> {
-                            binding.ibRefresh.imageTintList =
-                                ColorStateList.valueOf(getColor(requireContext(), R.color.primary))
-                            binding.pbRefresh.visibility = View.INVISIBLE
-
-                            feedList = response.data
-
-                            Timber.tag("HomeFragment Result")
-                                .d("Result.Success: " + feedList.toString())
-
-                            bottomSheetFeedAdapter.submitList(feedList)
-                            updateMarker(feedList)
-
-                            if (feedList.isEmpty()) {
-                                binding.tvBottomSheetPostListEmpty.visibility = View.VISIBLE
-                                binding.pbBottomSheetPostList.visibility = View.GONE
-                                binding.tvBottomSheetPostListEmpty.text =
-                                    getString(R.string.empty_default)
-                            } else {
-                                binding.tvBottomSheetPostListEmpty.visibility = View.GONE
-                                binding.pbBottomSheetPostList.visibility = View.GONE
-                            }
+                            bottomSheetBehavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
                         }
                     }
                 }
+            }
         }
     }
 
@@ -277,11 +332,9 @@ class HomeFragment : Fragment() {
         val screenHeight = homeViewModel.screenHeight!!.toDouble()
 
         // ViewModel에 화면 크기 값 할당
-        val topPoint =
-            Pair((screenWidth * 0.5).toFloat(), (screenHeight * 0.05).toFloat())
+        val topPoint = Pair((screenWidth * 0.5).toFloat(), (screenHeight * 0.05).toFloat())
 
-        val bottomPoint =
-            Pair((screenWidth * 0.5).toFloat(), (screenHeight * 0.85).toFloat())
+        val bottomPoint = Pair((screenWidth * 0.5).toFloat(), (screenHeight * 0.85).toFloat())
 
         val topLatLng = projection.fromScreenLocation(PointF(topPoint.first, topPoint.second))
         val bottomLatLng =
@@ -307,8 +360,7 @@ class HomeFragment : Fragment() {
         clusterer?.clear()
         val listSize = feedList.size
 
-        clusterer = Clusterer.Builder<ItemKey>()
-            .screenDistance(40.0)
+        clusterer = Clusterer.Builder<ItemKey>().screenDistance(40.0)
             .leafMarkerUpdater(object : DefaultLeafMarkerUpdater() {
                 override fun updateLeafMarker(info: LeafMarkerInfo, marker: Marker) {
                     super.updateLeafMarker(info, marker)
@@ -337,7 +389,6 @@ class HomeFragment : Fragment() {
                             else -> OverlayImage.fromResource(R.drawable.ic_seed)           // 씨앗
                         }
 
-
                         // 마커 클릭 이벤트 설정
                         marker.onClickListener = Overlay.OnClickListener {
                             // 마커 클릭 시 FeedModel을 사용한 작업 처리
@@ -346,9 +397,7 @@ class HomeFragment : Fragment() {
                         }
                     } ?: Timber.tag("HomeFragment").e("FeedModel not found for marker")
                 }
-            })
-            .build()
-            .apply {
+            }).build().apply {
                 val keyTagMap = buildMap(listSize) {
                     repeat(listSize) { i ->
                         val latitude = feedList[i].location?.latitude
@@ -372,14 +421,16 @@ class HomeFragment : Fragment() {
 
     private fun clickMarker(model: FeedModel) {
         Timber.d(
-            "%s%s",
-            "Marker Clicked: " + model.feedId + ", " + model.title + ", ",
-            model.content
+            "%s%s", "Marker Clicked: " + model.feedId + ", " + model.title + ", ", model.content
         )
         model.location.let {
-            val cameraUpdate =
+            val cameraUpdate = if (naverMap.cameraPosition.zoom < 14.0) {
+                CameraUpdate.scrollTo(LatLng(it!!.latitude - 0.001, it.longitude))
+                    .animate(CameraAnimation.Easing, 2000)
+            } else {
                 CameraUpdate.scrollAndZoomTo(LatLng(it!!.latitude - 0.001, it.longitude), 14.0)
                     .animate(CameraAnimation.Easing, 2000)
+            }
 
             naverMap.moveCamera(cameraUpdate)
         }
@@ -417,8 +468,7 @@ class HomeFragment : Fragment() {
             location?.let {
                 val currentLatLng = LatLng(location.latitude, location.longitude)
 
-                options
-                    .camera(CameraPosition(currentLatLng, 16.0))
+                options.camera(CameraPosition(currentLatLng, 16.0))
             }
 
             val mapFragment = MapFragment.newInstance(options).also {
@@ -446,8 +496,7 @@ class HomeFragment : Fragment() {
 
     private fun changeStatusLocationButton() {
         isLocationTrackingEnabled = !isLocationTrackingEnabled
-        Timber.tag("HomeFragment")
-            .d("isLocationTrackingEnabled: " + isLocationTrackingEnabled)
+        Timber.tag("HomeFragment").d("isLocationTrackingEnabled: " + isLocationTrackingEnabled)
 
         binding.apply {
             if (isLocationTrackingEnabled) {
@@ -455,8 +504,7 @@ class HomeFragment : Fragment() {
                 naverMap.locationTrackingMode = LocationTrackingMode.Follow
                 ibLocation.imageTintList = ColorStateList.valueOf(
                     getColor(
-                        requireContext(),
-                        R.color.primary
+                        requireContext(), R.color.primary
                     )
                 )
             } else {
@@ -464,8 +512,7 @@ class HomeFragment : Fragment() {
                 naverMap.locationTrackingMode = LocationTrackingMode.NoFollow
                 ibLocation.imageTintList = ColorStateList.valueOf(
                     getColor(
-                        requireContext(),
-                        R.color.light_gray
+                        requireContext(), R.color.light_gray
                     )
                 )
             }
@@ -497,8 +544,7 @@ class HomeFragment : Fragment() {
         naverMap.addOnCameraChangeListener { reason, animated ->
             if (!isMoving) {
                 isMoving = true
-                Timber
-                    .d("카메라가 움직이고 있습니다. Reason: " + reason + ", Animated: " + animated)
+                Timber.d("카메라가 움직이고 있습니다. Reason: " + reason + ", Animated: " + animated)
                 if (binding.etSearch.isFocused) hideKeyboard()
 
                 // animated가 false (사용자가 직접 카메라를 조작) 일때
@@ -544,8 +590,7 @@ class HomeFragment : Fragment() {
                     if (selectedTag != null) {
                         val tagName = selectedTag.tagName
                         bottomSheetFeedAdapter.performSearch(
-                            SearchType.TAG,
-                            if (tagName == "전체") null else tagName
+                            SearchType.TAG, if (tagName == "전체") null else tagName
                         )
                     } else bottomSheetFeedAdapter.performSearch(SearchType.TAG, null)
                 }
@@ -565,9 +610,7 @@ class HomeFragment : Fragment() {
         binding.rvBottomSheetPostList.layoutManager = LinearLayoutManager(requireContext())
         binding.rvBottomSheetPostList.addItemDecoration(
             CustomDecoration(
-                1f,
-                0f,
-                getColor(requireContext(), R.color.light_gray)
+                1f, 0f, getColor(requireContext(), R.color.light_gray)
             )
         )
 
@@ -586,8 +629,7 @@ class HomeFragment : Fragment() {
                     BottomSheetBehavior.STATE_HALF_EXPANDED -> {
                     }
 
-                    BottomSheetBehavior.STATE_COLLAPSED,
-                    BottomSheetBehavior.STATE_HIDDEN -> {
+                    BottomSheetBehavior.STATE_COLLAPSED, BottomSheetBehavior.STATE_HIDDEN -> {
                         isExpanded = false
                     }
 
@@ -681,10 +723,7 @@ class HomeFragment : Fragment() {
                     persistentBottomSheet.setBackgroundResource(R.color.white)
 
                     // viewTopBar의 투명도를 서서히 줄여서 보이지 않게 함
-                    viewTopBar.animate()
-                        .alpha(0f)
-                        .setDuration(300)
-                        .start()
+                    viewTopBar.animate().alpha(0f).setDuration(300).start()
                 }
             }
 
@@ -696,17 +735,12 @@ class HomeFragment : Fragment() {
                     // bottomSheet 배경 변경
                     persistentBottomSheet.setBackgroundResource(R.drawable.white_round_top_border_20)
 
-                    viewTopBar.animate()
-                        .alpha(1f)
-                        .setDuration(300)
-                        .start()
+                    viewTopBar.animate().alpha(1f).setDuration(300).start()
                 }
             }
 
             private fun animateBackgroundColor(
-                view: View,
-                startColorResId: Int,
-                endColorResId: Int
+                view: View, startColorResId: Int, endColorResId: Int
             ) {
                 val startColor = ContextCompat.getColor(requireContext(), startColorResId)
                 val endColor = ContextCompat.getColor(requireContext(), endColorResId)
@@ -741,9 +775,7 @@ class HomeFragment : Fragment() {
     }
 
     override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
+        requestCode: Int, permissions: Array<out String>, grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
@@ -792,10 +824,7 @@ class HomeFragment : Fragment() {
 class MarginItemDecoration(private val margin: Int, private val paddingSide: Int = 0) :
     RecyclerView.ItemDecoration() {
     override fun getItemOffsets(
-        outRect: Rect,
-        view: View,
-        parent: RecyclerView,
-        state: RecyclerView.State
+        outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State
     ) {
         val position = parent.getChildAdapterPosition(view)
         val itemCount = state.itemCount
