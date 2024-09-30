@@ -48,8 +48,8 @@ class MainActivity : AppCompatActivity() {
             Timber.tag("token").d(it)
         }
 
-        askNotificationPermission()
-        checkLocationPermission()
+//        askNotificationPermission()
+//        checkLocationPermission()
     }
 
     private fun initBottomNavigation() = with(binding) {
