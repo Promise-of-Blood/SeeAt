@@ -9,6 +9,7 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -24,6 +25,8 @@ import com.pob.seeat.presentation.view.home.HomeFragment
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 
+private const val BACK_PRESSED_DURATION = 2_000L // 2000ms
+
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
@@ -31,6 +34,7 @@ class MainActivity : AppCompatActivity() {
     private val LOCATION_PERMISSION_REQUEST_CODE = 1001
 
     lateinit var fusedLocationClient: FusedLocationProviderClient
+    private var backPressedTime: Long = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,6 +50,7 @@ class MainActivity : AppCompatActivity() {
             Timber.tag("token").d(it)
         }
 
+        onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         askNotificationPermission()
         checkLocationPermission()
     }
@@ -70,8 +75,9 @@ class MainActivity : AppCompatActivity() {
                     navController.navigate(R.id.navigation_home)
                     true
                 }
+
                 else -> {
-                    navController.navigate(item.itemId )
+                    navController.navigate(item.itemId)
                     showNavHostFragment(true)
                     true
                 }
@@ -80,7 +86,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun showNavHostFragment(isVisible: Boolean) {
-        if(isVisible) {
+        if (isVisible) {
             binding.navHostFragment.visibility = View.VISIBLE
         } else {
             binding.navHostFragment.visibility = View.INVISIBLE
@@ -186,4 +192,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private val onBackPressedCallback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            if (System.currentTimeMillis() - backPressedTime >= BACK_PRESSED_DURATION) {
+                backPressedTime = System.currentTimeMillis()
+                Toast.makeText(this@MainActivity, "한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show()
+            } else {
+                finishAffinity()
+            }
+        }
+    }
 }
