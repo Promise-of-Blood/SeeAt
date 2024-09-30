@@ -650,9 +650,12 @@ class HomeFragment : Fragment() {
 
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
                 // BottomSheet의 슬라이드 상태에 따라 호출됨 (0.0f ~ 1.0f)
-                binding.ibAddMarker.translationY = -bottomSheet.height * slideOffset
-                binding.ibLocation.translationY = -bottomSheet.height * slideOffset
-                binding.ibRefresh.translationY = -bottomSheet.height * slideOffset
+                binding.run {
+                    binding.ibAddMarker.translationY = -bottomSheet.height * slideOffset
+                    binding.ibLocation.translationY = -bottomSheet.height * slideOffset
+                    binding.ibRefresh.translationY = -bottomSheet.height * slideOffset
+                    binding.pbRefresh.translationY = -bottomSheet.height * slideOffset
+                }
             }
 
             /**
