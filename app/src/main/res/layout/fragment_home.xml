@@ -205,7 +205,7 @@
         app:behavior_draggable="true"
         app:behavior_expandedOffset="0dp"
         app:behavior_fitToContents="false"
-        app:behavior_halfExpandedRatio="0.45"
+        app:behavior_halfExpandedRatio="0.25"
         app:behavior_hideable="false"
         app:behavior_peekHeight="50dp"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
@@ -227,16 +227,6 @@
             android:textColor="@color/gray"
             android:textSize="14sp"
             android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/view_top_bar" />
-
-        <ProgressBar
-            android:id="@+id/pb_bottom_sheet_post_list"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:indeterminateTint="@color/primary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
