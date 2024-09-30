@@ -2,7 +2,9 @@ package com.pob.seeat.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.firebase.geofire.GeoLocation
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.GeoPoint
 import com.pob.seeat.data.model.BookmarkEntity
 import com.pob.seeat.data.model.Result
 import com.pob.seeat.domain.model.FeedModel
@@ -64,9 +66,9 @@ class DetailViewModel @Inject constructor(
         }
     }
 
-    fun getFeedById(feedId: String) {
+    fun getFeedById(feedId: String, userLocation: GeoPoint) {
         viewModelScope.launch {
-            feedRepository.getFeed(feedId).collect { uiState ->
+            feedRepository.getFeed(feedId, userLocation).collect { uiState ->
                 _singleFeedResponse.value = uiState
             }
         }

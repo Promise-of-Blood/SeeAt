@@ -26,6 +26,7 @@
         android:id="@+id/scrollView2"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@id/cl_comment_layout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -475,10 +476,11 @@
         android:id="@+id/pb_detail"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:visibility="gone"
+        android:indeterminate="true"
+        android:indeterminateTint="@color/primary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/tb_feed" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

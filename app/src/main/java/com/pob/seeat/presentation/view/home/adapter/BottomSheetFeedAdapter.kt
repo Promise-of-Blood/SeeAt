@@ -1,4 +1,4 @@
-package com.pob.seeat.presentation.view.home
+package com.pob.seeat.presentation.view.home.adapter
 
 import android.view.LayoutInflater
 import android.view.View
@@ -18,6 +18,7 @@ import com.pob.seeat.databinding.PostItemBinding
 import com.pob.seeat.domain.model.FeedModel
 import com.pob.seeat.presentation.view.common.ViewHolder
 import com.pob.seeat.utils.KoreanMatcher
+import com.pob.seeat.utils.Utils
 import com.pob.seeat.utils.Utils.px
 import com.pob.seeat.utils.Utils.toKoreanDiffString
 import com.pob.seeat.utils.Utils.toLocalDateTime
@@ -52,9 +53,12 @@ class BottomSheetFeedAdapter(
                 ivPostMainImage.visibility = View.GONE
             }
 
+            val distance = Utils.formatDistanceToString(item.distance)
+
             tvPostTitle.text = item.title
             tvPostContent.text = item.content
             tvPostCommentCount.text = item.commentsCount.toString()
+            tvFeedDistance.text = distance
             tvPostLikeCount.text = item.like.toString()
             tvPostTimeAgo.text = item.date?.toLocalDateTime()?.toKoreanDiffString()
             tvPostUsername.text = item.nickname
@@ -78,7 +82,7 @@ class BottomSheetFeedAdapter(
 
                     chipBackgroundColor = ContextCompat.getColorStateList(context, R.color.white)
                     chipStrokeWidth = 1f
-                    chipStrokeColor = ContextCompat.getColorStateList(context,R.color.gray)
+                    chipStrokeColor = ContextCompat.getColorStateList(context,R.color.gray_light)
                     chipIconSize = 12f.px.toFloat()
                     chipCornerRadius = 32f.px.toFloat()
                     chipStartPadding = 10f.px.toFloat()

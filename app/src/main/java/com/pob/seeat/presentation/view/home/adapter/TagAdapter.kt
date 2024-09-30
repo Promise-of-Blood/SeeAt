@@ -1,4 +1,4 @@
-package com.pob.seeat.presentation.view.home
+package com.pob.seeat.presentation.view.home.adapter
 
 import android.content.res.ColorStateList
 import android.view.LayoutInflater

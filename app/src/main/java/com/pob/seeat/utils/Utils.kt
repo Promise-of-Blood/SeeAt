@@ -236,6 +236,14 @@ object Utils {
         return (R * c).toInt()
     }
 
+    fun formatDistanceToString(meter: Int): String {
+        return when {
+            meter in 0..999 -> "${meter}m"
+            meter > 1000 -> String.format(Locale.KOREA, "%dkm", meter / 1000)
+            else -> "Invalid distance"
+        }
+    }
+
     /**
      * 키보드를 숨깁니다.
      * */
