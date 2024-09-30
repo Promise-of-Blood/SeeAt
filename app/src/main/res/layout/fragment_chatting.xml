@@ -15,10 +15,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:menu="@menu/menu_message"
         app:navigationIcon="@drawable/ic_arrow_left"
         app:title="@string/message_title"
         app:titleTextColor="@color/black" />
+<!--    app:menu="@menu/menu_message"-->
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_feed_info"
@@ -146,6 +146,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
+                android:visibility="gone"
                 app:tint="@color/primary" />
 
             <EditText
