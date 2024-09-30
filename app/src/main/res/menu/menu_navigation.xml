@@ -4,10 +4,10 @@
         android:id="@+id/navigation_alarm"
         android:icon="@drawable/ic_bell_filled"
         android:title="@string/navigation_alarm" />
-<!--    <item-->
-<!--        android:id="@+id/navigation_message"-->
-<!--        android:icon="@drawable/ic_message"-->
-<!--        android:title="@string/navigation_message" />-->
+    <item
+        android:id="@+id/navigation_message"
+        android:icon="@drawable/ic_message"
+        android:title="@string/navigation_message" />
     <item
         android:id="@+id/navigation_home"
         android:icon="@drawable/ic_home"

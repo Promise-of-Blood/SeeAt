@@ -11,6 +11,6 @@ data class ChatsChattingModel(
     val feedFrom: String,
     val lastMessage: String,
     val whenLast: Long,
-) {
-    constructor() : this("", "", 0L)
-}
+    val userList: List<String>,
+    val sender: String,
+)

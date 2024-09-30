@@ -2,6 +2,7 @@
 agp = "8.5.2"
 androidImageCropper = "4.6.0"
 circleindicator = "2.1.6"
+geofireAndroidCommon = "3.2.0"
 glide = "4.16.0"
 kakaoMap = "2.11.9"
 firebaseBom = "33.2.0"
@@ -53,6 +54,7 @@ androidx-swiperefreshlayout = { module = "androidx.swiperefreshlayout:swiperefre
 androidx-viewpager2 = { module = "androidx.viewpager2:viewpager2", version.ref = "viewpager2" }
 circleindicator = { module = "me.relex:circleindicator", version.ref = "circleindicator" }
 dagger-hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
+geofire-android-common = { module = "com.firebase:geofire-android-common", version.ref = "geofireAndroidCommon" }
 glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
 glide-compiler = { module = "com.github.bumptech.glide:compiler", version.ref = "glide" }
 hilt-android-gradle-plugin = { module = "com.google.dagger:hilt-android-gradle-plugin", version.ref = "hilt" }
@@ -109,6 +111,7 @@ androidx-room-runtime = { group = "androidx.room", name = "room-runtime", versio
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 androidx-room-testing = { group = "androidx.room", name = "room-testing", version.ref = "room" }
+androidx-room-paging = { group = "androidx.room", name = "room-paging", version.ref = "room" }
 toggle = { module = "com.github.angads25:toggle", version.ref = "toggle" }
 
 [plugins]

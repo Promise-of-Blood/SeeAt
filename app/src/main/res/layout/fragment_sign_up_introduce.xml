@@ -32,6 +32,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <TextView
+        android:id="@+id/tv_skip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/signup_skip"
+        style="@style/body_p"
+        android:textColor="@color/primary"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tb_signup"
+        app:layout_constraintBottom_toBottomOf="@id/tb_signup"/>
+
     <ImageView
         android:id="@+id/iv_signup_background"
         android:layout_width="match_parent"
@@ -59,6 +71,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/signup_title_introduce"
+        style="@style/subtitle_b_p"
         android:textSize="26sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@id/gl_signup_1"
@@ -73,7 +86,9 @@
         android:textSize="20sp"
         android:padding="16dp"
         android:background="@drawable/background_etv"
+        style="@style/body_p"
         android:hint="@string/signup_title_introduce"
+        android:maxLength="30"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"

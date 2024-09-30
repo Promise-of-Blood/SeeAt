@@ -4,20 +4,28 @@ import android.Manifest
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.content.pm.PackageManager
+import android.location.Location
 import android.os.Build
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.firebase.messaging.FirebaseMessaging
 import com.pob.seeat.databinding.ActivityMainBinding
+import com.pob.seeat.presentation.view.home.HomeFragment
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
+
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -25,8 +33,11 @@ class MainActivity : AppCompatActivity() {
 
     private val LOCATION_PERMISSION_REQUEST_CODE = 1001
 
+    lateinit var fusedLocationClient: FusedLocationProviderClient
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         setContentView(binding.root)
 
@@ -38,28 +49,61 @@ class MainActivity : AppCompatActivity() {
             Timber.tag("token").d(it)
         }
 
-        askNotificationPermission()
-        checkLocationPermission()
-
-        // 주제 정해서 보낼 수 있음
-//        Firebase.messaging.subscribeToTopic("weather")
-//            .addOnCompleteListener { task ->
-//                var msg = "Subscribed"
-//                if (!task.isSuccessful) {
-//                    msg = "Subscribe failed"
-//                }
-//                Timber.tag(TAG).d(msg)
-//                Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
-//            }
-
+//        askNotificationPermission()
+//        checkLocationPermission()
     }
 
     private fun initBottomNavigation() = with(binding) {
+        val homeFragment = HomeFragment() // HomeFragment의 인스턴스 생성
+
+        supportFragmentManager.beginTransaction().replace(R.id.home_fragment, homeFragment).commit()
+
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHostFragment.navController
+        val navOptions = NavOptions.Builder().setPopUpTo(R.id.navigation_home, true).build()
+
         navMain.setupWithNavController(navController)
+        navMain.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.navigation_home -> {
+                    showNavHostFragment(false)
+                    navController.setGraph(R.navigation.main_navigation)
+                    navController.navigate(R.id.navigation_home, null, navOptions)
+                    true
+                }
+
+                else -> {
+                    navController.navigate(item.itemId)
+                    showNavHostFragment(true)
+                    true
+                }
+            }
+        }
     }
+
+    fun showNavHostFragment(isVisible: Boolean) {
+        if (isVisible) {
+            binding.navHostFragment.visibility = View.VISIBLE
+        } else {
+            binding.navHostFragment.visibility = View.INVISIBLE
+        }
+    }
+
+    fun getCurrentLocation(callback: (Location?) -> Unit) {
+        try {
+            fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+                callback(location)
+            }.addOnFailureListener { exception ->
+                Timber.tag("SelectLocateFragment").e(exception, "위치 정보를 가져오는 중 에러 발생")
+                callback(null)
+            }
+        } catch (e: SecurityException) {
+            Timber.tag("SelectLocateFragment").e(e, "위치 권한이 없습니다.")
+            callback(null)
+        }
+    }
+
 
     /**
      * Bottom Navigation의 Visibility를 설정합니다.
@@ -110,37 +154,32 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun checkLocationPermission() {
-        if (ActivityCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION)
-            != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(
                 this, ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(
-                    this,
-                    ACCESS_FINE_LOCATION
+                    this, ACCESS_FINE_LOCATION
                 )
             ) {
                 // 권한이 없을 경우 권한 요청
                 Toast.makeText(this, "앱 실행을 위해서는 권한을 설정해야 합니다.", Toast.LENGTH_SHORT).show()
                 ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(
-                        ACCESS_FINE_LOCATION,
-                        ACCESS_COARSE_LOCATION
-                    ),
-                    LOCATION_PERMISSION_REQUEST_CODE
+                    this, arrayOf(
+                        ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION
+                    ), LOCATION_PERMISSION_REQUEST_CODE
                 )
             } else {
                 // 권한 요청
                 ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(
-                        ACCESS_FINE_LOCATION,
-                        ACCESS_COARSE_LOCATION
+                    this, arrayOf(
+                        ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION
                     ), LOCATION_PERMISSION_REQUEST_CODE
                 )
             }
         }
     }
-
 }

@@ -2,6 +2,7 @@ package com.pob.seeat.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.firestore.GeoPoint
 import com.pob.seeat.data.model.Result
 import com.pob.seeat.domain.model.FeedModel
 import com.pob.seeat.domain.repository.FeedRepository
@@ -20,24 +21,48 @@ class HomeViewModel @Inject constructor(
     private val _feedResponse = MutableStateFlow<Result<List<FeedModel>>>(Result.Loading)
     val feedResponse: StateFlow<Result<List<FeedModel>>> = _feedResponse
 
-    private val _singleFeedResponse = MutableStateFlow<Result<FeedModel>>(Result.Loading)
-    val singleFeedResponse: StateFlow<Result<FeedModel>> = _singleFeedResponse
-
     private val _unreadAlarmCount = MutableStateFlow<Result<Long>>(Result.Loading)
     val unreadAlarmCount: StateFlow<Result<Long>> = _unreadAlarmCount
 
-    fun getFeedList() {
+    var feedList: List<FeedModel> = emptyList()
+    private var recentQueryOption = hashMapOf<String, Any>()
+
+    var screenWidth: Int? = null
+    var screenHeight: Int? = null
+
+    fun getFeedList(
+        centerLat: Double,
+        centerLng: Double,
+        userLocation: GeoPoint,
+        radiusInKm: Double,
+        sortBy: String,
+    ) {
         viewModelScope.launch {
-            feedRepository.getFeedList().collect { uiState ->
+            feedRepository.getFeedList(
+                centerLat, centerLng, userLocation, radiusInKm, sortBy
+            ).collect { uiState ->
                 _feedResponse.value = uiState
             }
+            recentQueryOption = hashMapOf(
+                "centerLat" to centerLat,
+                "centerLng" to centerLng,
+                "userLocation" to userLocation,
+                "radiusInKm" to radiusInKm,
+                "sortBy" to sortBy,
+            )
         }
     }
 
-    fun getFeedById(feedId: String) {
+    fun sortFeedList(sortBy: String) {
         viewModelScope.launch {
-            feedRepository.getFeed(feedId).collect { uiState ->
-                _singleFeedResponse.value = uiState
+            feedRepository.getFeedList(
+                recentQueryOption["centerLat"] as Double,
+                recentQueryOption["centerLng"] as Double,
+                recentQueryOption["userLocation"] as GeoPoint,
+                recentQueryOption["radiusInKm"] as Double,
+                sortBy,
+            ).collect { uiState ->
+                _feedResponse.value = uiState
             }
         }
     }

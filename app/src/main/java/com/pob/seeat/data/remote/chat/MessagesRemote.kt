@@ -37,12 +37,14 @@ class MessagesRemote {
                 .addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         for (messageSnapshot in snapshot.children) {
+                            val messageId = messageSnapshot.key.toString()
                             val message = messageSnapshot.child("message").value.toString()
                             val sender = messageSnapshot.child("sender").value.toString()
                             val timestamp =
                                 Timestamp(Date(messageSnapshot.child("timestamp").value as Long))
                             infoList.add(
                                 MessagesInfoModel(
+                                    messageId = messageId,
                                     message = message,
                                     sender = sender,
                                     timestamp = timestamp
@@ -76,10 +78,12 @@ class MessagesRemote {
                         return
                     }
                     Timber.d("onChildAdded 임 ${snapshot.key}")
+                    val messageId = snapshot.key.toString()
                     val message = snapshot.child("message").value.toString()
                     val sender = snapshot.child("sender").value.toString()
                     val timestamp = Timestamp(Date(snapshot.child("timestamp").value as Long))
                     val nowChatModel = MessagesInfoModel(
+                        messageId = messageId,
                         message = message,
                         sender = sender,
                         timestamp = timestamp
@@ -120,18 +124,22 @@ class MessagesRemote {
         }
     }
 
-    suspend fun sendMessage(chatId: String, message: String) {
-        val messageDb = messageRef.child(chatId)
-        val newMessage = messageDb.push()
-        val messageMap = hashMapOf(
-            "message" to message,
-            "sender" to uid,
-            "timestamp" to ServerValue.TIMESTAMP,
-        )
-        newMessage.setValue(messageMap).addOnSuccessListener {
-            Timber.d("message success")
-        }.addOnFailureListener {
-            Timber.d("message fail")
+    suspend fun sendMessage(chatId: String, message: String) : Boolean {
+        return suspendCancellableCoroutine { continuation ->
+            val messageDb = messageRef.child(chatId)
+            val newMessage = messageDb.push()
+            val messageMap = hashMapOf(
+                "message" to message,
+                "sender" to uid,
+                "timestamp" to ServerValue.TIMESTAMP,
+            )
+            newMessage.setValue(messageMap).addOnSuccessListener {
+                Timber.d("message success")
+                continuation.resume(true)
+            }.addOnFailureListener {
+                Timber.d("message fail")
+                continuation.resume(false)
+            }
         }
     }
 }

@@ -4,6 +4,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="background_gray">#FFF4F4F4</color>
     <color name="gray">#FF808080</color>
+    <color name="gray_light">#ABA6A6A6</color>
     <color name="light_gray">#FFC6C6C6</color>
     <color name="primary">#FF2ECC87</color>
     <color name="secondary">#FF16B200</color>
@@ -11,4 +12,10 @@
     <color name="light_tertiary">#E7FFF3</color>
     <color name="quaternary">#FF4Bff00</color>
     <color name="transparent">#00FFFFFF</color>
+    <color name="rule_red">#F44336</color>
+    <color name="admin_red">#FFF1F0</color>
+    <color name="alarm_read">#FFFFFFFF</color>
+    <color name="alarm_unread">#E9F6F1</color>
+    <color name="alarm_new">#FF2ECC87</color>
+    <color name="alarm_description">#575757</color>
 </resources>

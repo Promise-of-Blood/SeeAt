@@ -88,6 +88,7 @@ class HistoryFragment : Fragment() {
 
                     is UiState.Loading -> {
                         binding.rvHistory.visibility = View.INVISIBLE
+                        binding.tvHistoryMore.visibility = View.GONE
                     }
 
                     is UiState.Success -> {

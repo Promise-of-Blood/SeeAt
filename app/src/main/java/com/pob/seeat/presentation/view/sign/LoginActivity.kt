@@ -3,6 +3,7 @@ package com.pob.seeat.presentation.view.sign
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
@@ -19,9 +20,12 @@ import com.pob.seeat.databinding.ActivityLoginBinding
 import com.pob.seeat.presentation.view.PermissionGuideActivity
 import com.pob.seeat.presentation.viewmodel.UserInfoViewModel
 import com.pob.seeat.utils.GoogleAuthUtil
+import com.pob.seeat.utils.NotificationTokenUtils.getNotificationToken
 import com.pob.seeat.utils.NotificationTokenUtils.initNotificationToken
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @AndroidEntryPoint
 class LoginActivity : AppCompatActivity() {
@@ -35,8 +39,12 @@ class LoginActivity : AppCompatActivity() {
                 onSuccess = { uid, email, nickname ->
                     isOurFamily(
                         email,
-                        { navigateToHome() },
                         {
+                            hideProgressBar()
+                            navigateToHome()
+                        },
+                        {
+                            hideProgressBar()
                             navigateToSignUp(uid, email, nickname)
                         }
                     )
@@ -45,6 +53,7 @@ class LoginActivity : AppCompatActivity() {
                     Toast.makeText(this, "Google 로그인에 실패했습니다.", Toast.LENGTH_SHORT).show()
                 })
         }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,14 +72,14 @@ class LoginActivity : AppCompatActivity() {
     private fun initView() = with(binding) {
 
         val sharedPref = getSharedPreferences("app_preferences", MODE_PRIVATE)
-        val isFirstRun = sharedPref.getBoolean("isFirstRun",true)
+        val isFirstRun = sharedPref.getBoolean("isFirstRun", true)
 
-        if(isFirstRun){
-            val intent = Intent(this@LoginActivity,PermissionGuideActivity::class.java)
+        if (isFirstRun) {
+            val intent = Intent(this@LoginActivity, PermissionGuideActivity::class.java)
             startActivity(intent)
 
             val editor = sharedPref.edit()
-            editor.putBoolean("isFirstRun",false)
+            editor.putBoolean("isFirstRun", false)
             editor.apply()
         }
 
@@ -80,6 +89,7 @@ class LoginActivity : AppCompatActivity() {
 
 
         clBtnLogin.setOnClickListener {
+            showProgressBar()
             GoogleAuthUtil.googleLogin(this@LoginActivity, googleSignInLauncher)
         }
 
@@ -97,6 +107,7 @@ class LoginActivity : AppCompatActivity() {
             lifecycleScope.launch {
                 userViewModel.userInfo.collect { userInfo ->
                     if (userInfo != null) {
+                        hideProgressBar()
                         navigateToHome()
                     }
                 }
@@ -104,26 +115,44 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
+    private fun showProgressBar() {
+        binding.pbLogin.visibility = View.VISIBLE
+    }
+
+    private fun hideProgressBar() {
+        binding.pbLogin.visibility = View.GONE
+    }
+
+
     private fun navigateToHome() {
-        val intent = Intent(this, MainActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
-        startActivity(intent)
-        finish()
+        lifecycleScope.launch {
+            withContext(Dispatchers.Main) {
+                val intent = Intent(this@LoginActivity, MainActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                startActivity(intent)
+                finish()
+            }
+        }
     }
 
     private fun navigateToSignUp(uid: String, email: String, nickname: String) {
-        userViewModel.signUp(uid,email,nickname, profileUrl ="" , introduce ="",token="")
-        val intent = Intent(this, SignUpActivity::class.java).apply {
-            putExtra("uid", uid)
-            putExtra("email", email)
-            putExtra("nickname", nickname)
+        val token = getNotificationToken()
+        userViewModel.signUp(uid, email, nickname, profileUrl = "", introduce = "", token = token)
+        lifecycleScope.launch {
+            withContext(Dispatchers.Main) {
+                val intent = Intent(this@LoginActivity, SignUpActivity::class.java).apply {
+                    putExtra("uid", uid)
+                    putExtra("email", email)
+                    putExtra("nickname", nickname)
+                }
+                startActivity(intent)
+            }
         }
-        startActivity(intent)
     }
 
     private fun isOurFamily(email: String, onUserExists: () -> Unit, onUserNotExist: () -> Unit) {
         val database = FirebaseFirestore.getInstance()
-        Log.d("가족","$email")
+        Log.d("가족", "$email")
         if (email.isNotEmpty()) {
             // 이메일 필드가 email과 일치하는 문서 찾기
             database.collection("user")

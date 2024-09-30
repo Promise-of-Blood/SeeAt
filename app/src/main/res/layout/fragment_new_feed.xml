@@ -46,49 +46,80 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <androidx.appcompat.widget.AppCompatEditText
-                android:id="@+id/et_title"
+            <LinearLayout
+                android:id="@+id/ll_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:background="@color/white"
-                android:defaultFocusHighlightEnabled="true"
-                android:hint="글 제목"
-                android:padding="16dp"
-                android:textColorHighlight="@color/primary"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:orientation="vertical"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="12dp"
+                app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
-                android:id="@+id/tv_select_tag"
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="제목"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                    <androidx.appcompat.widget.AppCompatEditText
+                        android:id="@+id/et_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/background_edit_text"
+                        android:defaultFocusHighlightEnabled="true"
+                        android:hint="제목을 작성해 주세요."
+                        android:maxLength="100"
+                        android:maxLines="1"
+                        android:padding="12dp"
+                        android:textColorHighlight="@color/primary"
+                        android:textSize="14sp" />
+
+            </LinearLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/ll_tag"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:background="@color/white"
-                android:padding="16dp"
-                android:text="태그를 선택해 주세요"
-                android:textColor="@color/light_gray"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/et_title" />
+                android:orientation="vertical"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="12dp"
+                app:layout_constraintTop_toBottomOf="@id/ll_title">
 
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/chip_group"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:visibility="visible"
-                app:layout_constraintBottom_toBottomOf="@id/tv_select_tag"
-                app:layout_constraintTop_toTopOf="@id/tv_select_tag"
-                app:selectionRequired="false" />
+                <TextView
+                    android:id="@+id/tv_tag"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="태그"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-            <ImageView
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_marginEnd="16dp"
-                android:src="@drawable/ic_arrow_down"
-                app:layout_constraintBottom_toBottomOf="@id/tv_select_tag"
-                app:layout_constraintEnd_toEndOf="@id/tv_select_tag"
-                app:layout_constraintTop_toTopOf="@id/tv_select_tag"
-                app:tint="@color/light_gray" />
+                <ImageView
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@drawable/ic_arrow_down"
+                    app:layout_constraintBottom_toBottomOf="@id/tv_tag"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/tv_tag"
+                    app:tint="@color/light_gray" />
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chip_group"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:visibility="visible"
+                    app:layout_constraintTop_toBottomOf="@id/tv_tag"
+                    app:selectionRequired="false" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/cl_select_locate"
@@ -96,9 +127,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:background="@color/white"
-                android:padding="16dp"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="12dp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_select_tag">
+                app:layout_constraintTop_toBottomOf="@id/ll_tag">
 
                 <TextView
                     android:id="@+id/tv_select_locate"
@@ -106,28 +138,37 @@
                     android:layout_height="30dp"
                     android:gravity="center_vertical"
                     android:text="씨앗 위치"
-                    android:textSize="16sp"
+                    android:textSize="18sp"
                     android:textStyle="bold"
                     app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@drawable/ic_search"
+                    app:layout_constraintBottom_toBottomOf="@id/tv_select_locate"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/tv_select_locate"
+                    app:tint="@color/light_gray" />
 
                 <androidx.fragment.app.FragmentContainerView
                     android:id="@+id/map"
                     android:name="com.naver.maps.map.MapFragment"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="0dp"
+                    android:layout_marginTop="8dp"
                     android:background="@drawable/background_select_locate"
                     android:clipToOutline="true"
-                    android:visibility="invisible"
-                    app:layout_constraintBottom_toBottomOf="@id/tv_map"
-                    app:layout_constraintEnd_toEndOf="@id/tv_map"
-                    app:layout_constraintStart_toStartOf="@id/tv_map"
-                    app:layout_constraintTop_toTopOf="@id/tv_map" />
+                    android:visibility="gone"
+                    app:layout_constraintDimensionRatio="'h,5:3"
+                    app:layout_constraintTop_toBottomOf="@id/tv_select_locate" />
 
                 <ImageView
                     android:id="@+id/iv_marker_shadow"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_marker_shadow"
+                    android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="@id/map"
                     app:layout_constraintEnd_toEndOf="@id/map"
                     app:layout_constraintStart_toStartOf="@id/map"
@@ -135,40 +176,53 @@
 
                 <ImageView
                     android:id="@+id/iv_marker"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
                     android:src="@drawable/ic_location_pin"
+                    android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="@id/iv_marker_shadow"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:tint="@color/primary" />
 
-                <TextView
-                    android:id="@+id/tv_map"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_marginTop="8dp"
-                    android:background="@drawable/background_select_locate"
-                    android:clipToOutline="true"
-                    android:gravity="center"
-                    android:text="씨앗 위치를 정해주세요!"
-                    app:layout_constraintDimensionRatio="3:2"
-                    app:layout_constraintTop_toBottomOf="@id/tv_select_locate" />
-
-
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <androidx.appcompat.widget.AppCompatEditText
-                android:id="@+id/et_content"
+
+            <LinearLayout
+                android:id="@+id/ll_content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:background="@color/white"
-                android:gravity="top"
-                android:hint="내용 입력"
-                android:minHeight="200dp"
-                android:padding="16dp"
-                app:layout_constraintTop_toBottomOf="@id/cl_select_locate" />
+                android:orientation="vertical"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="12dp"
+                app:layout_constraintTop_toBottomOf="@id/cl_select_locate">
+
+                <TextView
+                    android:id="@+id/tv_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:gravity="center_vertical"
+                    android:text="내용 입력"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/et_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/background_edit_text"
+                    android:gravity="top"
+                    android:hint="내용 입력"
+                    android:minHeight="200dp"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="12dp" />
+
+            </LinearLayout>
+
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_image_list"
@@ -177,7 +231,7 @@
                 android:layout_marginTop="8dp"
                 android:clipToPadding="false"
                 android:paddingHorizontal="16dp"
-                app:layout_constraintTop_toBottomOf="@+id/et_content"
+                app:layout_constraintTop_toBottomOf="@+id/ll_content"
                 tools:itemCount="1"
                 tools:listitem="@layout/item_image_upload" />
 
@@ -201,10 +255,10 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_progress"
-        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#88000000">
+        android:background="#88000000"
+        android:visibility="gone">
 
         <ProgressBar
             android:layout_width="100dp"
@@ -216,5 +270,10 @@
             app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/select_location_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

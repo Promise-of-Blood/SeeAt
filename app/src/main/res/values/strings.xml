@@ -4,6 +4,10 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+    <!-- common -->
+    <string name="common_more">더보기</string>
+    <string name="common_close">닫기</string>
+
     <!-- bottom navigation -->
     <string name="navigation_add_marker">마커 추가</string>
     <string name="navigation_alarm">알림</string>
@@ -30,10 +34,12 @@
 
     <!-- SignUp Activity -->
     <string name="signup_title_tb">프로필 설정</string>
+    <string name="signup_skip">나중에 설정하기</string>
     <string name="signup_page1">1/3</string>
     <string name="signup_page2">2/3</string>
     <string name="signup_page3">3/3</string>
     <string name="signup_title_nickname">활동명을 정해주세요</string>
+    <string name="signup_rule_1">닉네임에 공백문자는 사용할 수 없습니다</string>
     <string name="signup_etv_hint">활동명을 입력해주세요</string>
     <string name="signup_title_photo">프로필 사진을 설정해주세요</string>
     <string name="signup_title_introduce">한줄 소개를 입력해주세요</string>
@@ -42,6 +48,11 @@
     <!-- home fragment -->
     <string name="search_hint">검색어를 입력하세요</string>
     <string name="search">검색</string>
+    <string-array name="home_sort_options">
+        <item>최신순</item>
+        <item>추천순</item>
+        <item>거리순</item>
+    </string-array>
 
     <!-- my page -->
     <string name="my_page_user_post">작성글</string>
@@ -62,7 +73,6 @@
     <string name="history_feed">작성글</string>
     <string name="history_comment">작성 댓글</string>
     <string name="history_liked_feed">추천한 글</string>
-    <string name="history_more">더보기</string>
     <string name="history_feed_title">제목</string>
     <string-array name="history_title">
         <item>작성글</item>
@@ -97,20 +107,20 @@
 
     <!-- chat -->
     <string name="chat_list_title">채팅 목록</string>
-    <string name="chat_list_item_title">글 제목 글 제목 글 제목 글 제목 글 제목</string>
+    <string name="chat_list_item_title">채팅 제목</string>
     <string name="chat_list_item_time">1시간 전</string>
-    <string name="chat_list_item_content">글 내용 글 내용 글 내용 글 내용 글 내용 글 내용</string>
+    <string name="chat_list_item_content">채팅 내용</string>
     <string name="chat_list_item_count">3</string>
     <string name="message_title">상대방</string>
-    <string name="message_feed_title">글 제목 글 제목 글 제목 글 제목 글 제목 글 제목 글 제목 글 제목 글 제목 글 제목</string>
-    <string name="message_feed_content">글 내용 글 내용 글 내용 글 내용 글 내용 글 내용 글 내용 글 내용 글 내용</string>
+    <string name="message_feed_title">글 제목</string>
+    <string name="message_feed_content">글 내용</string>
     <string name="detail_comment">댓글</string>
     <string name="detail_like">추천</string>
     <string name="detail_bookmark">북마크</string>
     <string name="feed">게시글</string>
     <string name="writer_info">작성자 정보</string>
     <string name="do_chat">채팅하기</string>
-    <string name="get_position">위치보기</string>
+    <string name="get_position"><u>위치보기</u></string>
     <string name="report">신고</string>
     <string name="input_comment">댓글을 입력해주세요</string>
     <string name="send">전송</string>
@@ -119,6 +129,9 @@
     <string name="chatting">채팅 메시지예요 채팅 메시지예요 채팅 메시지예요 채팅 메시지예요 채팅 메시지예요 채팅 메시지예요 채팅 메시지예요</string>
     <string name="only_time">2024년 9월 4일</string>
     <string name="exit_user">탈퇴한 사용자</string>
+    <string name="timestamp">오전 12:00</string>
+    <string name="chat_list_error_content">알 수 없는 오류입니다. 다시 시도해주세요.</string>
+    <string name="chat_list_empty_content">아직 채팅이 없어요. 게시글에서 채팅을 시작해보세요!</string>
 
     <!-- new feed -->
     <string name="navigation_select_locate">마커 선택 화면</string>
@@ -130,6 +143,17 @@
     <string name="dialog_my_comment_edit">수정</string>
     <string name="dialog_other_comment_report">신고</string>
     <string name="navigation_detail_image">이미지 확대 화면</string>
+    <string name="dialog_confirm_title">프로필 설정 취소</string>
+    <string name="dialog_confirm_content">이전에 기입한 정보가 저장되지 않습니다. \n나중에 설정하시겠습니까?</string>
+    <string name="dialog_next_confirm_title">프로필 사진 설정</string>
+    <string name="dialog_next_confirm_content">아직 프로필 사진을 설정하지 않았습니다. 그냥 넘어가시겠습니까?</string>
+    <string name="dialog_btn_cancel">취소</string>
+    <string name="dialog_btn_confirm">확인</string>
+    <string name="dialog_reported_comment">삭제한 댓글은 복구되지 않습니다.\n정말로 삭제하시겠습니까?</string>
+    <string name="dialog_reported_feed">삭제한 게시글은 복구되지 않습니다.\n정말로 삭제하시겠습니까?</string>
+    <string name="dialog_ignore_reported_feed">선택한 게시글에 대한 모든 신고들이 삭제됩니다.\n정말로 무시하시겠습니까?</string>
+    <string name="dialog_ignore_reported_comment">선택한 댓글에 대한 모든 신고들이 삭제됩니다.\n정말로 무시하시겠습니까?</string>
+    <string name="dialog_delete_user">사용자에 대한 모든 정보가 삭제되며 복구할 수 없습니다.\n정말로 삭제하시겠습니까?</string>
 
     <!-- detail -->
     <string-array name="detail_spinner_string">
@@ -146,5 +170,34 @@
     <string name="empty_alarm">받은 알림이 없습니다.</string>
     <string name="empty_bookmark">저장한 글이 없습니다.</string>
     <string name="empty_search">검색 결과가 없습니다.</string>
+    <string name="empty_comment">등록된 댓글이 없습니다.</string>
+    <string name="detail_edit">게시글 수정</string>
 
+    <!-- admin -->
+    <string name="admin_title">관리자</string>
+    <string name="admin_detail_title">게시글 상세</string>
+    <string name="admin_tab_user">유저 관리</string>
+    <string name="admin_tab_report">신고 관리</string>
+    <string name="admin_profile_image">프로필 이미지</string>
+    <string name="admin_sort_option">최신순</string>
+    <string name="admin_report_navigate">전체보기</string>
+    <string name="admin_report_ignore">무시하기</string>
+    <string name="admin_report_delete">삭제하기</string>
+    <string name="admin_option_all">전체</string>
+    <string name="admin_option_feed">게시글</string>
+    <string name="admin_option_comment">댓글</string>
+    <string name="admin_menu_user">사용자 관리</string>
+    <string name="admin_menu_is_admin">관리자 권한</string>
+    <string name="admin_menu_user_delete">계정 정보 삭제</string>
+    <string name="admin_menu_user_report">사용자 신고 기록</string>
+    <string name="admin_report_count">총 %d건의 신고를 받았습니다.</string>
+    <string-array name="admin_sort">
+        <item>최신순</item>
+        <item>신고순</item>
+    </string-array>
+    <string-array name="admin_option">
+        <item>전체</item>
+        <item>댓글</item>
+        <item>게시글</item>
+    </string-array>
 </resources>

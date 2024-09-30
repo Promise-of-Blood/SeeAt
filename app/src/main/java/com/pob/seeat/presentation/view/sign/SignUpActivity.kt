@@ -15,9 +15,9 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class SignUpActivity : AppCompatActivity() {
 
-    val signUpBinding : ActivitySignUpBinding by lazy { ActivitySignUpBinding.inflate(layoutInflater) }
+    val signUpBinding: ActivitySignUpBinding by lazy { ActivitySignUpBinding.inflate(layoutInflater) }
 
-    private val userViewModel : UserInfoViewModel by viewModels()
+    private val userViewModel: UserInfoViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,14 +32,14 @@ class SignUpActivity : AppCompatActivity() {
     }
 
 
-    private fun initView() = with(signUpBinding){
+    private fun initView() = with(signUpBinding) {
 
         val uid = intent.getStringExtra("uid") ?: ""
-        val email = intent.getStringExtra("email") ?:""
-        val nickname = intent.getStringExtra("nickname") ?:""
+        val email = intent.getStringExtra("email") ?: ""
+        val nickname = intent.getStringExtra("nickname") ?: ""
 
-        userViewModel.saveTempUserInfo(uid = uid, email = email, name= nickname)
-        Log.d("TempUserInfo","tempUserInfo : ${userViewModel.tempUserInfo.value}")
+        userViewModel.saveTempUserInfo(uid = uid, email = email, name = nickname)
+        Log.d("TempUserInfo", "tempUserInfo : ${userViewModel.tempUserInfo.value}")
 
         val vpAdapter = SignUpViewPager(this@SignUpActivity)
 

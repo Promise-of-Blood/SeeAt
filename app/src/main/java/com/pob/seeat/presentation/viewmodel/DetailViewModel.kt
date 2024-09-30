@@ -2,7 +2,9 @@ package com.pob.seeat.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.firebase.geofire.GeoLocation
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.GeoPoint
 import com.pob.seeat.data.model.BookmarkEntity
 import com.pob.seeat.data.model.Result
 import com.pob.seeat.domain.model.FeedModel
@@ -10,6 +12,8 @@ import com.pob.seeat.domain.model.FeedReportModel
 import com.pob.seeat.domain.model.UserInfoModel
 import com.pob.seeat.domain.repository.FeedRepository
 import com.pob.seeat.domain.usecase.DeleteBookmarkUseCase
+import com.pob.seeat.domain.usecase.EditFeedUseCase
+import com.pob.seeat.domain.usecase.DeleteReportedFeedUseCase
 import com.pob.seeat.domain.usecase.IsBookmarkedUseCase
 import com.pob.seeat.domain.usecase.RemoveFeedUseCase
 import com.pob.seeat.domain.usecase.ReportFeedUseCase
@@ -32,7 +36,9 @@ class DetailViewModel @Inject constructor(
     private val isBookmarkedUseCase: IsBookmarkedUseCase,
     private val reportFeedUseCase: ReportFeedUseCase,
     private val firebaseAuth: FirebaseAuth,
-    private val removeFeedUseCase: RemoveFeedUseCase
+    private val removeFeedUseCase: RemoveFeedUseCase,
+    private val editFeedUseCase: EditFeedUseCase,
+    private val deleteReportedFeedUseCase: DeleteReportedFeedUseCase,
 ) : ViewModel() {
 
     private val _userInfo = MutableStateFlow<UserInfoModel?>(null)
@@ -52,17 +58,17 @@ class DetailViewModel @Inject constructor(
     fun modifyIsLiked(count: Int) {
         viewModelScope.launch {
             if (isLiked.value) {
-                EventBus.post(count - 1)
-            } else {
                 EventBus.post(count + 1)
+            } else {
+                EventBus.post(count - 1)
             }
 
         }
     }
 
-    fun getFeedById(feedId: String) {
+    fun getFeedById(feedId: String, userLocation: GeoPoint) {
         viewModelScope.launch {
-            feedRepository.getFeed(feedId).collect { uiState ->
+            feedRepository.getFeed(feedId, userLocation).collect { uiState ->
                 _singleFeedResponse.value = uiState
             }
         }
@@ -88,6 +94,7 @@ class DetailViewModel @Inject constructor(
             when (isLiked.value) {
                 true -> {
                     if (uid != null) {
+                        _isLiked.value = false
                         userInfoUseCases.removeLikedFeed.execute(uid, feedUid)
                         feedRepository.setLikeMinus(feedUid)
                     } else {
@@ -97,6 +104,7 @@ class DetailViewModel @Inject constructor(
 
                 false -> {
                     if (uid != null) {
+                        _isLiked.value = true
                         userInfoUseCases.createLikedFeed.execute(uid, feedUid)
                         feedRepository.setLikePlus(feedUid)
                     } else {
@@ -104,7 +112,7 @@ class DetailViewModel @Inject constructor(
                     }
                 }
             }
-            _isLiked.value = !isLiked.value
+
         }
     }
 
@@ -134,10 +142,29 @@ class DetailViewModel @Inject constructor(
         }
     }
 
-    fun removeFeed(feedId: String){
+    fun removeFeed(feedId: String) {
         viewModelScope.launch {
             removeFeedUseCase(feedId)
         }
     }
 
+    fun editFeed(feedModel: FeedModel) {
+        viewModelScope.launch {
+
+            try {
+                Timber.tag("editFeedRemote").i("feedMap: $feedModel")
+                editFeedUseCase(feedModel)
+            } catch (e: Exception) {
+                Timber.e(e, "Error occurred in editFeed")
+            }
+
+        }
+    }
+
+
+    fun deleteReportedFeed(feedId: String) {
+        viewModelScope.launch {
+            deleteReportedFeedUseCase(feedId)
+        }
+    }
 }

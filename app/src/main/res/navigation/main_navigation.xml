@@ -5,19 +5,29 @@
     android:id="@+id/mobile_navigation"
     app:startDestination="@+id/navigation_home">
 
-<!--    <fragment-->
-<!--        android:id="@+id/navigation_message"-->
-<!--        android:name="com.pob.seeat.presentation.view.chat.ChatListFragment"-->
-<!--        android:label="@string/navigation_message"-->
-<!--        tools:layout="@layout/fragment_chat_list" />-->
+    <fragment
+        android:id="@+id/navigation_message"
+        android:name="com.pob.seeat.presentation.view.chat.ChatListFragment"
+        android:label="@string/navigation_message"
+        tools:layout="@layout/fragment_chat_list" />
     <fragment
         android:id="@+id/navigation_home"
-        android:name="com.pob.seeat.presentation.view.home.HomeFragment"
+        android:name="com.pob.seeat.presentation.view.home.EmptyFragment"
         android:label="@string/navigation_home"
         tools:layout="@layout/fragment_home">
         <action
             android:id="@+id/action_home_to_new_feed"
-            app:destination="@id/navigation_new_feed" />
+            app:destination="@id/navigation_new_feed">
+            <argument
+                android:name="homeLatitude"
+                app:argType="float" />
+            <argument
+                android:name="homeLongitude"
+                app:argType="float" />
+            <argument
+                android:name="homeZoom"
+                app:argType="float" />
+        </action>
         <action
             android:id="@+id/action_navigation_home_to_navigation_detail"
             app:destination="@id/navigation_detail">
@@ -70,6 +80,15 @@
         android:name="com.pob.seeat.presentation.view.feed.NewFeedFragment"
         android:label="@string/navigation_add_marker"
         tools:layout="@layout/fragment_new_feed">
+        <argument
+            android:name="homeLatitude"
+            app:argType="float" />
+        <argument
+            android:name="homeLongitude"
+            app:argType="float" />
+        <argument
+            android:name="homeZoom"
+            app:argType="float" />
         <action
             android:id="@+id/action_new_feed_to_select_locate"
             app:destination="@id/navigation_select_locate" />
@@ -154,10 +173,15 @@
         <argument
             android:name="feedIdArg"
             app:argType="string" />
+        <argument
+            android:name="commentIdArg"
+            android:defaultValue=""
+            app:argType="string"
+            app:nullable="true" />
 
         <action
             android:id="@+id/action_detail_to_show_locate"
-            app:destination="@id/navigation_show_locate" >
+            app:destination="@id/navigation_show_locate">
             <argument
                 android:name="feedLatitude"
                 app:argType="float" />
@@ -165,6 +189,9 @@
                 android:name="feedLongitude"
                 app:argType="float" />
         </action>
+        <action
+            android:id="@+id/action_navigation_detail_to_navigation_detail_edit"
+            app:destination="@id/navigation_detail_edit" />
     </fragment>
     <fragment
         android:id="@+id/navigation_show_locate"
@@ -179,6 +206,16 @@
             app:argType="float" />
 
 
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_detail_edit"
+        android:name="com.pob.seeat.presentation.view.detail.EditDetailFragment"
+        android:label="@string/detail_edit"
+        tools:layout="@layout/fragment_edit_detail">
+        <action
+            android:id="@+id/action_navigation_detail_edit_to_navigation_select_locate"
+            app:destination="@id/navigation_select_locate" />
     </fragment>
 
 </navigation>

@@ -32,6 +32,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <TextView
+        android:id="@+id/tv_skip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/signup_skip"
+        style="@style/body_p"
+        android:textColor="@color/primary"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tb_signup"
+        app:layout_constraintBottom_toBottomOf="@id/tb_signup"/>
+
     <ImageView
         android:id="@+id/iv_signup_background"
         android:layout_width="match_parent"
@@ -59,35 +71,37 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/signup_title_photo"
+        style="@style/subtitle_b_p"
         android:textSize="26sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@id/gl_signup_1"
         app:layout_constraintStart_toStartOf="@id/gl_signup_vertical" />
 
-    <FrameLayout
-        android:id="@+id/fl_image_input"
+    <ImageView
+        android:id="@+id/iv_image_input"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintWidth_percent="0.8"
         app:layout_constraintDimensionRatio="1"
         android:background="@drawable/background_etv"
-
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" >
+    </ImageView>
 
-        <ImageView
-            android:id="@+id/ic_camera"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:src="@drawable/baseline_photo_camera_24"
-            android:background="@drawable/background_etv"
-            android:backgroundTint="@color/primary"
-            android:layout_gravity="center"/>
-
-    </FrameLayout>
+    <ImageView
+        android:id="@+id/ic_camera"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:src="@drawable/baseline_photo_camera_24"
+        android:background="@drawable/background_etv"
+        android:backgroundTint="@color/primary"
+        app:layout_constraintTop_toTopOf="@id/iv_image_input"
+        app:layout_constraintStart_toStartOf="@id/iv_image_input"
+        app:layout_constraintBottom_toBottomOf="@id/iv_image_input"
+        app:layout_constraintEnd_toEndOf="@id/iv_image_input"/>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_pb"
