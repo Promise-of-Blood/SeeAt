@@ -1,1 +1,4 @@
 /build
+key.properties
+SeeAtKeyStore.jks
+google-services.json

@@ -12,8 +12,11 @@ plugins {
     id("androidx.navigation.safeargs.kotlin")
 }
 
+val keystorePropertiesFile = rootProject.file("app/key.properties")
+
 val properties = Properties().apply {
     load(FileInputStream(rootProject.file("local.properties")))
+    load(FileInputStream(keystorePropertiesFile))
 }
 
 android {
@@ -24,8 +27,8 @@ android {
         applicationId = "com.pob.seeat"
         minSdk = 30
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -49,10 +52,30 @@ android {
 
     }
 
+    signingConfigs {
+        getByName("debug") {
+            storeFile = properties["storeFile"]?.toString()?.let { file(it) }
+            storePassword = properties["storePassword"]?.toString()
+            keyAlias = properties["keyAlias"]?.toString()
+            keyPassword = properties["keyPassword"]?.toString()
+        }
+        create("release") {
+            storeFile = properties["storeFile"]?.toString()?.let { file(it) }
+            storePassword = properties["storePassword"]?.toString()
+            keyAlias = properties["keyAlias"]?.toString()
+            keyPassword = properties["keyPassword"]?.toString()
+        }
+    }
+
     buildTypes {
         debug {
             isMinifyEnabled = false
             manifestPlaceholders["NAVER_CLIENT_ID"] = properties["NAVER_CLIENT_ID"] as String
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+            signingConfig = signingConfigs.getByName("debug")
         }
         release {
             isMinifyEnabled = false
@@ -61,6 +84,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release")
         }
     }
     compileOptions {
@@ -106,7 +130,7 @@ dependencies {
     // firebase
     implementation(platform(libs.firebase.bom))
     implementation(libs.bundles.firebase)
-    implementation (libs.geofire.android.common)
+    implementation(libs.geofire.android.common)
 
     // hilt
     implementation(libs.dagger.hilt.android)
