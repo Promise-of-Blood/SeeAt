@@ -45,6 +45,7 @@ import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -429,7 +430,7 @@ class DetailFragment : Fragment() {
                 startActivity(intent)
             }
 
-            initTag(feed.tags)
+            initTag(feed.tags, chipsGroupDetail)
 
             Timber.i(feed.contentImage.toString())
             if (feed.contentImage.isEmpty()) {
@@ -545,7 +546,10 @@ class DetailFragment : Fragment() {
         }
     }
 
-    private fun initTag(tags: List<String>) {
+    private fun initTag(tags: List<String>, chipsGroupMainFeed: ChipGroup) {
+
+        chipsGroupMainFeed.removeAllViews()
+
         val chipGroup = _binding?.chipsGroupDetail ?: return
         val tagLists = tags.toTagList()
         // tagList를 이용해 Chip을 동적으로 생성
