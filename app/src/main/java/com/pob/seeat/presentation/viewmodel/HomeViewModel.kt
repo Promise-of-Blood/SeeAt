@@ -55,6 +55,7 @@ class HomeViewModel @Inject constructor(
 
     fun sortFeedList(sortBy: String) {
         viewModelScope.launch {
+            if (recentQueryOption.size != 4) return@launch
             feedRepository.getFeedList(
                 recentQueryOption["centerLat"] as Double,
                 recentQueryOption["centerLng"] as Double,

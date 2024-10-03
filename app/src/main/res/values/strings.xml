@@ -53,6 +53,7 @@
         <item>추천순</item>
         <item>거리순</item>
     </string-array>
+    <string name="home_location_permission">위치 권한을 허용해주세요.\n설정 > 애플리케이션 > SeeAt > 위치 권한 허용</string>
 
     <!-- my page -->
     <string name="my_page_user_post">작성글</string>
