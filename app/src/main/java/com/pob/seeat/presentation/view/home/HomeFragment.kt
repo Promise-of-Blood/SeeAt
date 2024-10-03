@@ -838,6 +838,10 @@ class HomeFragment : Fragment() {
             } else {
                 // 권한이 거부된 경우
                 Toast.makeText(requireContext(), "위치 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
+                binding.tvBottomSheetPostListEmpty.text =
+                    requireContext().getString(R.string.home_location_permission)
+                binding.tvBottomSheetPostListEmpty.visibility = View.VISIBLE
+                binding.pbLoading.visibility = View.GONE
             }
         }
     }
