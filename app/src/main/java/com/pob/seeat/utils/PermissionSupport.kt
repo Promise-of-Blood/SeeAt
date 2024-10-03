@@ -10,7 +10,7 @@ import com.pob.seeat.utils.dialog.Dialog
 
 object PermissionSupport {
     private const val MULTIPLE_PERMISSIONS = 1023 // 위치 권한 요청 코드
-    private const val RETRY_PERMISSIONS = 1024 // 재요청 코드
+    const val RETRY_PERMISSIONS = 1024 // 재요청 코드
 
     // 요청할 권한 배열 저장
     private val permissionNeeded = listOf(
@@ -47,14 +47,13 @@ object PermissionSupport {
     // 요청한 권한에 대한 결과값 판단 및 처리
     fun permissionResult(requestCode: Int, grantResults: IntArray): Boolean {
         return when (requestCode) {
-            MULTIPLE_PERMISSIONS -> {
+            MULTIPLE_PERMISSIONS, RETRY_PERMISSIONS -> {
                 // -1 (거부된 권한)이 있는지 체크하여 거부된 것이 있다면 false 반환
                 return permissionNeeded.filterIndexed { index, _ ->
                     grantResults[index] == PackageManager.PERMISSION_DENIED
                 }.isEmpty()
             }
 
-            RETRY_PERMISSIONS -> true
             else -> false
         }
     }
