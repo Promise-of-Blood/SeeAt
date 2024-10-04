@@ -289,14 +289,15 @@ class DetailFragment : Fragment() {
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
-            detailViewModel.userInfo.collect { userInfo ->
-                if (userInfo != null) {
-                    Timber.i(userInfo.likedFeedList.toString())
-                    detailViewModel.setIsLiked(args.feedIdArg in userInfo.likedFeedList)
-                } else {
-                    Timber.e("userInfo is null")
+            detailViewModel.userInfo.flowWithLifecycle(viewLifecycleOwner.lifecycle)
+                .collect { userInfo ->
+                    if (userInfo != null) {
+                        Timber.i(userInfo.likedFeedList.toString())
+                        detailViewModel.setIsLiked(args.feedIdArg in userInfo.likedFeedList)
+                    } else {
+                        Timber.e("userInfo is null")
+                    }
                 }
-            }
         }
     }
 
@@ -403,7 +404,7 @@ class DetailFragment : Fragment() {
             }
 
             viewLifecycleOwner.lifecycleScope.launch {
-                EventBus.subscribe().collect { value ->
+                EventBus.events.flowWithLifecycle(viewLifecycleOwner.lifecycle).collect { value ->
                     tvFeedDetailLikeCount.text = value.toString()
                 }
             }
