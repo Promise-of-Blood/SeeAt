@@ -126,6 +126,11 @@ class HomeFragment : Fragment() {
                     }
                 } else {
                     bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                    binding.apply {
+                        animateBackgroundColor(clTopBar, R.color.white, R.color.transparent)
+                        persistentBottomSheet.setBackgroundResource(R.drawable.white_round_top_border_20)
+                        viewTopBar.animate().alpha(0f).setDuration(300).start()
+                    }
                 }
             }
         })
@@ -784,20 +789,6 @@ class HomeFragment : Fragment() {
                     sBottomSheetSort.visibility = View.GONE
                 }
             }
-
-            private fun animateBackgroundColor(
-                view: View, startColorResId: Int, endColorResId: Int
-            ) {
-                val startColor = ContextCompat.getColor(requireContext(), startColorResId)
-                val endColor = ContextCompat.getColor(requireContext(), endColorResId)
-
-                val colorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), startColor, endColor)
-                colorAnimation.duration = 300 // 애니메이션 시간 (밀리초)
-                colorAnimation.addUpdateListener { animator ->
-                    view.setBackgroundColor(animator.animatedValue as Int)
-                }
-                colorAnimation.start()
-            }
         })
 
         // 바텀 시트의 최대 높이를 태그 리스트 하단까지 이동
@@ -820,6 +811,20 @@ class HomeFragment : Fragment() {
         })
     }
 
+    private fun animateBackgroundColor(
+        view: View, startColorResId: Int, endColorResId: Int
+    ) {
+        val startColor = ContextCompat.getColor(requireContext(), startColorResId)
+        val endColor = ContextCompat.getColor(requireContext(), endColorResId)
+
+        val colorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), startColor, endColor)
+        colorAnimation.duration = 300 // 애니메이션 시간 (밀리초)
+        colorAnimation.addUpdateListener { animator ->
+            view.setBackgroundColor(animator.animatedValue as Int)
+        }
+        colorAnimation.start()
+    }
+
     override fun onRequestPermissionsResult(
         requestCode: Int, permissions: Array<out String>, grantResults: IntArray
     ) {
@@ -833,6 +838,10 @@ class HomeFragment : Fragment() {
             } else {
                 // 권한이 거부된 경우
                 Toast.makeText(requireContext(), "위치 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
+                binding.tvBottomSheetPostListEmpty.text =
+                    requireContext().getString(R.string.home_location_permission)
+                binding.tvBottomSheetPostListEmpty.visibility = View.VISIBLE
+                binding.pbLoading.visibility = View.GONE
             }
         }
     }

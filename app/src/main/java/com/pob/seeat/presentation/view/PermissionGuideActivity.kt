@@ -13,7 +13,6 @@ import com.pob.seeat.presentation.view.sign.LoginActivity
 import com.pob.seeat.utils.PermissionSupport
 
 class PermissionGuideActivity : AppCompatActivity() {
-    private var isRequested: Boolean = false
 
     private val binding: ActivityPermissionGuideBinding by lazy {
         ActivityPermissionGuideBinding.inflate(
@@ -45,16 +44,20 @@ class PermissionGuideActivity : AppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (PermissionSupport.permissionResult(requestCode, grantResults)) {
             // 권한을 허용한 경우
-            if (isRequested) Toast.makeText(
-                this@PermissionGuideActivity, "위치 권한 사용을 거부했습니다.", Toast.LENGTH_SHORT
-            ).show()
             val intent = Intent(this@PermissionGuideActivity, LoginActivity::class.java)
             startActivity(intent)
         } else {
             // 권한을 거부한 경우
-            Toast.makeText(this, "앱 실행을 위해서는 권한을 설정해야 합니다.", Toast.LENGTH_SHORT).show()
-            PermissionSupport.checkLocationPermissions(this@PermissionGuideActivity)
-            isRequested = true
+            if (requestCode == PermissionSupport.RETRY_PERMISSIONS) {
+                Toast.makeText(
+                    this@PermissionGuideActivity, "위치 권한 사용을 거부했습니다.", Toast.LENGTH_SHORT
+                ).show()
+                val intent = Intent(this@PermissionGuideActivity, LoginActivity::class.java)
+                startActivity(intent)
+            } else {
+                Toast.makeText(this, "앱 실행을 위해서는 권한을 설정해야 합니다.", Toast.LENGTH_SHORT).show()
+                PermissionSupport.checkLocationPermissions(this@PermissionGuideActivity)
+            }
         }
     }
 }
