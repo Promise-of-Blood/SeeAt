@@ -488,18 +488,19 @@ class DetailFragment : Fragment() {
 
     private fun setFeedLikeButton(clLikeBtn: ImageView) {
         viewLifecycleOwner.lifecycleScope.launch {
-            detailViewModel.isLiked.collect { isLiked ->
-                Timber.i("isLiked in like btn $isLiked")
-                when (isLiked) {
-                    true -> {
-                        clLikeBtn.setImageResource(R.drawable.ic_thumb_up_filled)
-                    }
+            detailViewModel.isLiked.flowWithLifecycle(viewLifecycleOwner.lifecycle)
+                .collect { isLiked ->
+                    Timber.i("isLiked in like btn $isLiked")
+                    when (isLiked) {
+                        true -> {
+                            clLikeBtn.setImageResource(R.drawable.ic_thumb_up_filled)
+                        }
 
-                    false -> {
-                        clLikeBtn.setImageResource(R.drawable.ic_thumb_up_off_alt_24)
+                        false -> {
+                            clLikeBtn.setImageResource(R.drawable.ic_thumb_up_off_alt_24)
+                        }
                     }
                 }
-            }
         }
     }
 
