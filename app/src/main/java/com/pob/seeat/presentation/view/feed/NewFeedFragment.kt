@@ -16,6 +16,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -334,52 +335,53 @@ class NewFeedFragment : Fragment(), OnLocationSelectedListener {
 
             // ViewModel에서 이미지 업로드 결과를 확인
             viewLifecycleOwner.lifecycleScope.launch {
-                viewModel.feedImageUploadResult.collect { result ->
-                    when (result) {
-                        "SUCCESS" -> {
-                            Log.d("NewFeedFragment", "contentImage: ${viewModel.feedImageList}")
+                viewModel.feedImageUploadResult.flowWithLifecycle(viewLifecycleOwner.lifecycle)
+                    .collect { result ->
+                        when (result) {
+                            "SUCCESS" -> {
+                                Log.d("NewFeedFragment", "contentImage: ${viewModel.feedImageList}")
 
-                            val lat = selectLocation!!.latitude
-                            val lng = selectLocation!!.longitude
+                                val lat = selectLocation!!.latitude
+                                val lng = selectLocation!!.longitude
 
-                            val geohash = GeoFireUtils.getGeoHashForLocation(
-                                GeoLocation(lat, lng)
-                            )
-                            // 이미지 업로드가 성공했을 때, contentImage 필드에 추가
-                            val feedData: HashMap<String, Any> = hashMapOf(
-                                "title" to binding.etTitle.text.toString(),
-                                "content" to binding.etContent.text.toString(),
-                                "date" to Timestamp(Date()),
-                                "tagList" to tagNameList,
-                                "location" to GeoPoint(lat, lng),
-                                "geohash" to geohash,
-                                "like" to 0,
-                                "commentsCount" to 0,
-                                "user" to userDocRef,
-                                "contentImage" to viewModel.feedImageList // 이미지 리스트 추가
-                            )
+                                val geohash = GeoFireUtils.getGeoHashForLocation(
+                                    GeoLocation(lat, lng)
+                                )
+                                // 이미지 업로드가 성공했을 때, contentImage 필드에 추가
+                                val feedData: HashMap<String, Any> = hashMapOf(
+                                    "title" to binding.etTitle.text.toString(),
+                                    "content" to binding.etContent.text.toString(),
+                                    "date" to Timestamp(Date()),
+                                    "tagList" to tagNameList,
+                                    "location" to GeoPoint(lat, lng),
+                                    "geohash" to geohash,
+                                    "like" to 0,
+                                    "commentsCount" to 0,
+                                    "user" to userDocRef,
+                                    "contentImage" to viewModel.feedImageList // 이미지 리스트 추가
+                                )
 
-                            // 피드 데이터를 업로드
-                            viewModel.uploadFeed(feedData, feedId)
+                                // 피드 데이터를 업로드
+                                viewModel.uploadFeed(feedData, feedId)
 
-                            // 업로드 완료 후 ProgressBar를 숨김
-                            binding.clProgress.visibility = View.GONE
-                            Toast.makeText(context, "업로드 성공", Toast.LENGTH_SHORT).show()
-                            requireActivity().onBackPressed()
-                        }
+                                // 업로드 완료 후 ProgressBar를 숨김
+                                binding.clProgress.visibility = View.GONE
+                                Toast.makeText(context, "업로드 성공", Toast.LENGTH_SHORT).show()
+                                requireActivity().onBackPressed()
+                            }
 
-                        "ERROR" -> {
-                            // 업로드 실패 시 ProgressBar 숨김 및 오류 메시지 출력
-                            binding.clProgress.visibility = View.GONE
-                            Toast.makeText(context, "이미지 업로드 실패", Toast.LENGTH_SHORT).show()
-                        }
+                            "ERROR" -> {
+                                // 업로드 실패 시 ProgressBar 숨김 및 오류 메시지 출력
+                                binding.clProgress.visibility = View.GONE
+                                Toast.makeText(context, "이미지 업로드 실패", Toast.LENGTH_SHORT).show()
+                            }
 
-                        "LOADING" -> {
-                            // 업로드 중에는 ProgressBar를 계속 표시
-                            binding.clProgress.visibility = View.VISIBLE
+                            "LOADING" -> {
+                                // 업로드 중에는 ProgressBar를 계속 표시
+                                binding.clProgress.visibility = View.VISIBLE
+                            }
                         }
                     }
-                }
             }
         }
     }
