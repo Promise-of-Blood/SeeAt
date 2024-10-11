@@ -486,24 +486,6 @@ class DetailFragment : Fragment() {
         }
     }
 
-//    private fun setLikeCount() {
-//        viewLifecycleOwner.lifecycleScope.launch {
-//            detailViewModel.isLiked.collect { isLiked ->
-//                val currentLikeCount =
-//                    binding.tvFeedDetailLikeCount.text.toString().toIntOrNull() ?: 0
-//
-//                val newCount = if (isLiked) {
-//                    currentLikeCount + 1
-//                } else {
-//                    currentLikeCount - 1
-//                }
-//
-//                binding.tvFeedDetailLikeCount.text = newCount.toString()
-//
-//            }
-//        }
-//    }
-
     private fun setFeedLikeButton(clLikeBtn: ImageView) {
         viewLifecycleOwner.lifecycleScope.launch {
             detailViewModel.isLiked.collect { isLiked ->
