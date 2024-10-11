@@ -95,6 +95,8 @@ class DetailFragment : Fragment() {
     private val reportCommentViewModel: ReportCommentViewModel by viewModels()
     private val chatViewModel: ChatViewModel by viewModels()
 
+    private var currentMenuProvider: MenuProvider? = null
+
     private val feedCommentAdapter: FeedCommentAdapter by lazy {
         FeedCommentAdapter(
             commentViewModel, ::handleClickFeed, ::onLongClicked
@@ -102,7 +104,6 @@ class DetailFragment : Fragment() {
     }
 
     private lateinit var chattingResultLauncher: ActivityResultLauncher<Intent>
-    private var currentGeoPoint: GeoPoint = GeoPoint(0.0, 0.0)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -180,14 +181,20 @@ class DetailFragment : Fragment() {
     }
 
     private fun initToolbar(feed: FeedModel) {
-        (activity as AppCompatActivity).setSupportActionBar(binding.tbFeed)
-        (activity as AppCompatActivity).supportActionBar?.title = getString(R.string.feed)
-        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        val appCompatActivity = (activity as AppCompatActivity)
+        appCompatActivity.setSupportActionBar(binding.tbFeed)
+        appCompatActivity.supportActionBar?.title = getString(R.string.feed)
+        appCompatActivity.supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        currentMenuProvider?.let {
+            requireActivity().removeMenuProvider(it)
+        }
+
         val reportedUserId = feed.user?.id
         val loginUserId = detailViewModel.uid
 
-        if (reportedUserId == loginUserId) {
-            requireActivity().addMenuProvider(object : MenuProvider {
+        val menuProvider = if (reportedUserId == loginUserId) {
+            object : MenuProvider {
                 override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                     menuInflater.inflate(R.menu.menu_detail, menu)
                 }
@@ -221,9 +228,9 @@ class DetailFragment : Fragment() {
                         else -> false
                     }
                 }
-            }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+            }
         } else {
-            requireActivity().addMenuProvider(object : MenuProvider {
+            object : MenuProvider {
                 override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                     menuInflater.inflate(R.menu.menu_detail_another_user, menu)
                 }
@@ -259,9 +266,10 @@ class DetailFragment : Fragment() {
                         else -> false
                     }
                 }
-            }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+            }
         }
-
+        requireActivity().addMenuProvider(menuProvider, viewLifecycleOwner, Lifecycle.State.RESUMED)
+        currentMenuProvider = menuProvider
 
     }
 
