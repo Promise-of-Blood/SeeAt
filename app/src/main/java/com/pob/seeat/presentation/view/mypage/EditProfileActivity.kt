@@ -89,36 +89,42 @@ class EditProfileActivity : AppCompatActivity() {
             launchImagePickerAndCrop(pickImageLauncher, cropImageLauncher)
         }
 
-        etvEditNickname.addTextChangedListener(object : TextWatcher{
+        etvEditNickname.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
 
             override fun afterTextChanged(s: Editable?) {
-                if(s.toString().contains("\\s".toRegex())){
+                if (s.toString().contains("\\s".toRegex())) {
                     tvNicknameRule.visibility = View.VISIBLE
-                }else{
+                } else {
                     tvNicknameRule.visibility = View.GONE
                 }
             }
         })
 
         btnEditFinish.setOnClickListener {
-            when(userViewModel.profileUploadResult.value){
+            when (userViewModel.profileUploadResult.value) {
                 "LOADING" -> {
-                    Toast.makeText(this@EditProfileActivity, "이미지 업로드까지 기다려주세요", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@EditProfileActivity, "이미지 업로드까지 기다려주세요", Toast.LENGTH_SHORT)
+                        .show()
                 }
-                null-> {
+
+                null -> {
                     val uid = userViewModel.userInfo.value?.uid
                     val nickname = etvEditNickname.text.toString().trim()
                     val introduce = etvEditIntroduce.text.toString().trim()
 
-                    if(nickname.isValidNickname()){
+                    if (nickname.isValidNickname()) {
 
                         if (uid != null) {
 
                             userViewModel.editProfile(uid, nickname, introduce)
-                            Toast.makeText(this@EditProfileActivity, "프로필 업데이트 완료", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                this@EditProfileActivity,
+                                "프로필 업데이트 완료",
+                                Toast.LENGTH_SHORT
+                            ).show()
 
                             val intent = Intent()
                             intent.putExtra("updatedNickname", nickname)
@@ -128,36 +134,49 @@ class EditProfileActivity : AppCompatActivity() {
                             finish()
 
                         } else {
-                            Toast.makeText(this@EditProfileActivity, "프로필 업데이트 실패", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                this@EditProfileActivity,
+                                "프로필 업데이트 실패",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
 
-                    }else{
-                        Toast.makeText(this@EditProfileActivity, "유효하지 않은 닉네임입니다. 다시 확인해주세요", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(
+                            this@EditProfileActivity,
+                            "유효하지 않은 닉네임입니다. 다시 확인해주세요",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
 
 
                     if (introduce.isBlank()) {
-                        Toast.makeText(this@EditProfileActivity, "소개글을 입력해주세요.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@EditProfileActivity, "소개글을 입력해주세요.", Toast.LENGTH_SHORT)
+                            .show()
                     }
 
                 }
-                else ->{
+
+                else -> {
                     val uid = userViewModel.userInfo.value?.uid
                     val nickname = etvEditNickname.text.toString().trim()
                     val introduce = etvEditIntroduce.text.toString().trim()
 
                     if (nickname.isBlank()) {
-                        Toast.makeText(this@EditProfileActivity, "닉네임을 입력해주세요.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@EditProfileActivity, "닉네임을 입력해주세요.", Toast.LENGTH_SHORT)
+                            .show()
                     }
 
                     if (introduce.isBlank()) {
-                        Toast.makeText(this@EditProfileActivity, "소개글을 입력해주세요.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@EditProfileActivity, "소개글을 입력해주세요.", Toast.LENGTH_SHORT)
+                            .show()
                     }
 
                     if (uid != null) {
 
                         userViewModel.editProfile(uid, nickname, introduce)
-                        Toast.makeText(this@EditProfileActivity, "프로필 업데이트 완료", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@EditProfileActivity, "프로필 업데이트 완료", Toast.LENGTH_SHORT)
+                            .show()
 
                         val intent = Intent()
                         intent.putExtra("updatedNickname", nickname)
@@ -168,12 +187,12 @@ class EditProfileActivity : AppCompatActivity() {
                         finish()
 
                     } else {
-                        Toast.makeText(this@EditProfileActivity, "프로필 업데이트 실패", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@EditProfileActivity, "프로필 업데이트 실패", Toast.LENGTH_SHORT)
+                            .show()
                     }
 
                 }
             }
-
 
 
         }
@@ -182,43 +201,44 @@ class EditProfileActivity : AppCompatActivity() {
 
     private fun observeViewModel() {
         lifecycleScope.launch {
-            userViewModel.profileUploadResult.flowWithLifecycle(lifecycle, Lifecycle.State.STARTED).collect { imageUrl ->
-                binding.pbBackground.visibility = View.GONE // 업로드가 완료되면 프로그래스 바 숨김
-                binding.pbEditPhoto.visibility = View.GONE
+            userViewModel.profileUploadResult.flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
+                .collect { imageUrl ->
+                    binding.pbBackground.visibility = View.GONE // 업로드가 완료되면 프로그래스 바 숨김
+                    binding.pbEditPhoto.visibility = View.GONE
 
-                when {
-                    imageUrl == "LOADING" -> {
-                        // 업로드 중에는 아무 메시지도 표시하지 않음
-                        binding.pbBackground.visibility = View.VISIBLE
-                        binding.pbEditPhoto.visibility = View.VISIBLE
-                    }
+                    when {
+                        imageUrl == "LOADING" -> {
+                            // 업로드 중에는 아무 메시지도 표시하지 않음
+                            binding.pbBackground.visibility = View.VISIBLE
+                            binding.pbEditPhoto.visibility = View.VISIBLE
+                        }
 
-                    imageUrl.isNullOrBlank() -> {
-                        if (imageUrl == null) {
-                            // 초기 상태이므로 아무것도 하지 않음
-                            return@collect
-                        } else {
-                            // 업로드 실패 처리
+                        imageUrl.isNullOrBlank() -> {
+                            if (imageUrl == null) {
+                                // 초기 상태이므로 아무것도 하지 않음
+                                return@collect
+                            } else {
+                                // 업로드 실패 처리
+                                Toast.makeText(
+                                    this@EditProfileActivity,
+                                    "프로필 사진 업로드에 실패했습니다.",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+
+                        else -> {
+                            // 업로드 성공 처리
+                            Log.d("ImageUpload", "이미지 업로드 성공: $imageUrl")
                             Toast.makeText(
                                 this@EditProfileActivity,
-                                "프로필 사진 업로드에 실패했습니다.",
+                                "프로필 사진 업로드를 완료했습니다.",
                                 Toast.LENGTH_SHORT
-                            ).show()
+                            )
+                                .show()
                         }
                     }
-
-                    else -> {
-                        // 업로드 성공 처리
-                        Log.d("ImageUpload", "이미지 업로드 성공: $imageUrl")
-                        Toast.makeText(
-                            this@EditProfileActivity,
-                            "프로필 사진 업로드를 완료했습니다.",
-                            Toast.LENGTH_SHORT
-                        )
-                            .show()
-                    }
                 }
-            }
         }
     }
 
@@ -256,20 +276,21 @@ class EditProfileActivity : AppCompatActivity() {
 
     private fun observeUserInfo() {
         lifecycleScope.launch {
-            userViewModel.userInfo.flowWithLifecycle(lifecycle, Lifecycle.State.STARTED).collect { userInfo ->
-                if (userInfo != null) {
-                    Log.d("EditProfileActivity", "${userInfo.uid}")
-                    binding.etvEditNickname.setText(userInfo.nickname)
-                    binding.etvEditIntroduce.setText(userInfo.introduce)
+            userViewModel.userInfo.flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
+                .collect { userInfo ->
+                    if (userInfo != null) {
+                        Log.d("EditProfileActivity", "${userInfo.uid}")
+                        binding.etvEditNickname.setText(userInfo.nickname)
+                        binding.etvEditIntroduce.setText(userInfo.introduce)
 
-                    Glide.with(this@EditProfileActivity)
-                        .load(userInfo.profileUrl)
-                        .diskCacheStrategy(DiskCacheStrategy.NONE)
-                        .skipMemoryCache(true)
-                        .into(binding.ivEditProfileImage)
-                    Log.d("사진","${userInfo.profileUrl}")
+                        Glide.with(this@EditProfileActivity)
+                            .load(userInfo.profileUrl)
+                            .diskCacheStrategy(DiskCacheStrategy.NONE)
+                            .skipMemoryCache(true)
+                            .into(binding.ivEditProfileImage)
+                        Log.d("사진", "${userInfo.profileUrl}")
+                    }
                 }
-            }
         }
     }
 
