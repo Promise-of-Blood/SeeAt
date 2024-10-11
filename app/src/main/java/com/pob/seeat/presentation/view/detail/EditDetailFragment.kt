@@ -473,7 +473,6 @@ class EditDetailFragment : Fragment(), OnLocationSelectedListener {
                                 "contentImage: ${newFeedViewModel.feedImageList}"
                             )
 
-
                             // 피드 데이터를 업로드
                             val tagNameList = if (selectedTagList.isEmpty()) {
                                 listOf("기타")
@@ -508,7 +507,7 @@ class EditDetailFragment : Fragment(), OnLocationSelectedListener {
                             // 업로드 완료 후 ProgressBar를 숨김
                             binding.clProgress.visibility = View.GONE
                             Toast.makeText(context, "수정 성공", Toast.LENGTH_SHORT).show()
-                            requireActivity().onBackPressed()
+                            requireActivity().onBackPressedDispatcher.onBackPressed()
                         }
 
                         "ERROR" -> {
