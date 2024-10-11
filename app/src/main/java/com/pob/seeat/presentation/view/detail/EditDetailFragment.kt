@@ -447,8 +447,17 @@ class EditDetailFragment : Fragment(), OnLocationSelectedListener {
 
                 }
 
-                is Result.Error -> Timber.i("이전 디테일 페이지 데이터 에러")
-                Result.Loading -> Timber.i("이전 디테일 페이지 데이터 로딩중")
+                is Result.Error -> {
+                    Timber.e(beforeFeed.message)
+                    Toast.makeText(
+                        requireContext(),
+                        "오류 발생: ${beforeFeed.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                }
+
+                Result.Loading -> binding.clProgress.visibility = View.VISIBLE
             }
         }
     }
