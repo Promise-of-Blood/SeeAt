@@ -199,11 +199,19 @@
         android:text="등록"
         app:layout_constraintBottom_toBottomOf="parent" />
 
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/cv_edit_select_location_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_progress"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#88000000"
+        android:clickable="true"
+        android:focusable="true"
         android:visibility="gone">
 
         <ProgressBar
@@ -216,10 +224,5 @@
             app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/cv_edit_select_location_fragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
