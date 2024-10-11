@@ -14,6 +14,8 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -180,7 +182,7 @@ class EditProfileActivity : AppCompatActivity() {
 
     private fun observeViewModel() {
         lifecycleScope.launch {
-            userViewModel.profileUploadResult.collect { imageUrl ->
+            userViewModel.profileUploadResult.flowWithLifecycle(lifecycle, Lifecycle.State.STARTED).collect { imageUrl ->
                 binding.pbBackground.visibility = View.GONE // 업로드가 완료되면 프로그래스 바 숨김
                 binding.pbEditPhoto.visibility = View.GONE
 
@@ -254,7 +256,7 @@ class EditProfileActivity : AppCompatActivity() {
 
     private fun observeUserInfo() {
         lifecycleScope.launch {
-            userViewModel.userInfo.collect { userInfo ->
+            userViewModel.userInfo.flowWithLifecycle(lifecycle, Lifecycle.State.STARTED).collect { userInfo ->
                 if (userInfo != null) {
                     Log.d("EditProfileActivity", "${userInfo.uid}")
                     binding.etvEditNickname.setText(userInfo.nickname)
