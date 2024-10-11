@@ -12,6 +12,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
@@ -158,7 +159,7 @@ class MyPageFragment : Fragment() {
 
     private fun observeUserInfo() {
         viewLifecycleOwner.lifecycleScope.launch {
-            userViewModel.userInfo.collect { userInfo ->
+            userViewModel.userInfo.flowWithLifecycle(viewLifecycleOwner.lifecycle).collect { userInfo ->
                 if (userInfo != null) {
                     binding.apply {
                         val file =
