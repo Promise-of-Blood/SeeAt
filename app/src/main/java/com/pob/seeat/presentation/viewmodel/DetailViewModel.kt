@@ -45,7 +45,7 @@ class DetailViewModel @Inject constructor(
     val userInfo: StateFlow<UserInfoModel?> get() = _userInfo
 
     private val _isLiked = MutableStateFlow(false)
-    val isLiked: MutableStateFlow<Boolean> get() = _isLiked
+    val isLiked: StateFlow<Boolean> get() = _isLiked
 
     private val _singleFeedResponse = MutableStateFlow<Result<FeedModel>>(Result.Loading)
     val singleFeedResponse: StateFlow<Result<FeedModel>> get() = _singleFeedResponse

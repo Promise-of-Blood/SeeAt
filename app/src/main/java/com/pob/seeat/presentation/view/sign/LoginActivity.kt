@@ -11,6 +11,8 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -105,12 +107,13 @@ class LoginActivity : AppCompatActivity() {
 
             // 비동기로 StateFlow를 감지하여 홈 화면으로 이동
             lifecycleScope.launch {
-                userViewModel.userInfo.collect { userInfo ->
-                    if (userInfo != null) {
-                        hideProgressBar()
-                        navigateToHome()
+                userViewModel.userInfo.flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
+                    .collect { userInfo ->
+                        if (userInfo != null) {
+                            hideProgressBar()
+                            navigateToHome()
+                        }
                     }
-                }
             }
         }
     }

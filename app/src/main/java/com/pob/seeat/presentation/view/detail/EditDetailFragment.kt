@@ -15,12 +15,11 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.chip.Chip
-import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.GeoPoint
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraPosition
@@ -433,7 +432,6 @@ class EditDetailFragment : Fragment(), OnLocationSelectedListener {
     private fun uploadFeed() {
         val beforeFeed = detailViewModel.singleFeedResponse.value
 
-
         if (checkException()) {
             Timber.tag("NewFeed").d("Upload Feed")
 
@@ -445,71 +443,86 @@ class EditDetailFragment : Fragment(), OnLocationSelectedListener {
 
                     newFeedViewModel.uploadFeedImageList(uriList, beforeFeed.data.feedId)
 
-                    viewLifecycleOwner.lifecycleScope.launch {
-                        newFeedViewModel.feedImageUploadResult.collect { result ->
-                            when (result) {
-                                "SUCCESS" -> {
-                                    Log.d(
-                                        "NewFeedFragment",
-                                        "contentImage: ${newFeedViewModel.feedImageList}"
-                                    )
+                    uploadFeedData(beforeFeed)
 
+                }
 
-                                    // 피드 데이터를 업로드
-                                    val tagNameList = if (selectedTagList.isEmpty()) {
-                                        listOf("기타")
-                                    } else {
-                                        selectedTagList.map { it.tagName }
-                                    }
+                is Result.Error -> {
+                    Timber.e(beforeFeed.message)
+                    Toast.makeText(
+                        requireContext(),
+                        "오류 발생: ${beforeFeed.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
 
-                                    val feedModel = FeedModel(
-                                        feedId = beforeFeed.data.feedId,
-                                        user = beforeFeed.data.user,
-                                        nickname = beforeFeed.data.nickname,
-                                        title = binding.etTitle.text.toString(),
-                                        content = binding.etContent.text.toString(),
-                                        like = beforeFeed.data.like,
-                                        commentsCount = beforeFeed.data.commentsCount,
-                                        location = newFeedViewModel.selectLocation?.let {
-                                            GeoPoint(
-                                                it.latitude,
-                                                it.longitude
-                                            )
-                                        },
-                                        comments = beforeFeed.data.comments,
-                                        tags = tagNameList,
-                                        userImage = beforeFeed.data.userImage,
-                                        contentImage = newFeedViewModel.feedImageList
-                                    )
-                                    Timber.tag("editFeedRemote").i("editFragment: $feedModel")
+                }
 
-                                    detailViewModel.editFeed(feedModel)
+                Result.Loading -> binding.clProgress.visibility = View.VISIBLE
+            }
+        }
+    }
 
+    private fun uploadFeedData(beforeFeed: Result.Success<FeedModel>) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            newFeedViewModel.feedImageUploadResult.flowWithLifecycle(viewLifecycleOwner.lifecycle)
+                .collect { result ->
+                    when (result) {
+                        "SUCCESS" -> {
+                            Timber.i(
+                                "editFeedFragment",
+                                "contentImage: ${newFeedViewModel.feedImageList}"
+                            )
 
-                                    // 업로드 완료 후 ProgressBar를 숨김
-                                    binding.clProgress.visibility = View.GONE
-                                    Toast.makeText(context, "수정 성공", Toast.LENGTH_SHORT).show()
-                                    requireActivity().onBackPressed()
-                                }
-
-                                "ERROR" -> {
-                                    // 업로드 실패 시 ProgressBar 숨김 및 오류 메시지 출력
-                                    binding.clProgress.visibility = View.GONE
-                                    Toast.makeText(context, "이미지 업로드 실패", Toast.LENGTH_SHORT).show()
-                                }
-
-                                "LOADING" -> {
-                                    // 업로드 중에는 ProgressBar를 계속 표시
-                                    binding.clProgress.visibility = View.VISIBLE
-                                }
+                            // 피드 데이터를 업로드
+                            val tagNameList = if (selectedTagList.isEmpty()) {
+                                listOf("기타")
+                            } else {
+                                selectedTagList.map { it.tagName }
                             }
+
+                            val feedModel = FeedModel(
+                                feedId = beforeFeed.data.feedId,
+                                user = beforeFeed.data.user,
+                                nickname = beforeFeed.data.nickname,
+                                title = binding.etTitle.text.toString(),
+                                content = binding.etContent.text.toString(),
+                                like = beforeFeed.data.like,
+                                commentsCount = beforeFeed.data.commentsCount,
+                                location = newFeedViewModel.selectLocation?.let {
+                                    GeoPoint(
+                                        it.latitude,
+                                        it.longitude
+                                    )
+                                },
+                                comments = beforeFeed.data.comments,
+                                tags = tagNameList,
+                                userImage = beforeFeed.data.userImage,
+                                contentImage = newFeedViewModel.feedImageList
+                            )
+                            Timber.tag("editFeedRemote").i("editFragment: $feedModel")
+
+                            detailViewModel.editFeed(feedModel)
+
+
+                            // 업로드 완료 후 ProgressBar를 숨김
+                            binding.clProgress.visibility = View.GONE
+                            Toast.makeText(context, "수정 성공", Toast.LENGTH_SHORT).show()
+                            requireActivity().onBackPressedDispatcher.onBackPressed()
+                        }
+
+                        "ERROR" -> {
+                            // 업로드 실패 시 ProgressBar 숨김 및 오류 메시지 출력
+                            binding.clProgress.visibility = View.GONE
+                            Toast.makeText(context, "이미지 업로드 실패", Toast.LENGTH_SHORT)
+                                .show()
+                        }
+
+                        "LOADING" -> {
+                            // 업로드 중에는 ProgressBar를 계속 표시
+                            binding.clProgress.visibility = View.VISIBLE
                         }
                     }
                 }
-
-                is Result.Error -> Timber.i("이전 디테일 페이지 데이터 에러")
-                Result.Loading -> Timber.i("이전 디테일 페이지 데이터 로딩중")
-            }
         }
     }
 

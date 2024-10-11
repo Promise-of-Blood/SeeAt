@@ -474,25 +474,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
-        <!--        <androidx.cardview.widget.CardView-->
-        <!--            android:id="@+id/cv_send_comment_my_image_layout"-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:layout_marginStart="10dp"-->
-        <!--            android:layout_marginTop="15dp"-->
-        <!--            app:cardCornerRadius="15dp"-->
-        <!--            app:cardElevation="0dp"-->
-        <!--            app:layout_constraintStart_toStartOf="@id/et_add_comment"-->
-        <!--            app:layout_constraintTop_toTopOf="@id/et_add_comment">-->
-
-        <!--            <ImageView-->
-        <!--                android:id="@+id/iv_send_comment_my_image"-->
-        <!--                android:layout_width="25dp"-->
-        <!--                android:layout_height="25dp"-->
-        <!--                tools:src="@drawable/ic_home" />-->
-
-        <!--        </androidx.cardview.widget.CardView>-->
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

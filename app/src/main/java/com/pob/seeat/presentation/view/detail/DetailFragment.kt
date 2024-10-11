@@ -45,6 +45,7 @@ import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -94,6 +95,8 @@ class DetailFragment : Fragment() {
     private val reportCommentViewModel: ReportCommentViewModel by viewModels()
     private val chatViewModel: ChatViewModel by viewModels()
 
+    private var currentMenuProvider: MenuProvider? = null
+
     private val feedCommentAdapter: FeedCommentAdapter by lazy {
         FeedCommentAdapter(
             commentViewModel, ::handleClickFeed, ::onLongClicked
@@ -101,7 +104,6 @@ class DetailFragment : Fragment() {
     }
 
     private lateinit var chattingResultLauncher: ActivityResultLauncher<Intent>
-    private var currentGeoPoint: GeoPoint = GeoPoint(0.0, 0.0)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -179,14 +181,20 @@ class DetailFragment : Fragment() {
     }
 
     private fun initToolbar(feed: FeedModel) {
-        (activity as AppCompatActivity).setSupportActionBar(binding.tbFeed)
-        (activity as AppCompatActivity).supportActionBar?.title = getString(R.string.feed)
-        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        val appCompatActivity = (activity as AppCompatActivity)
+        appCompatActivity.setSupportActionBar(binding.tbFeed)
+        appCompatActivity.supportActionBar?.title = getString(R.string.feed)
+        appCompatActivity.supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        currentMenuProvider?.let {
+            requireActivity().removeMenuProvider(it)
+        }
+
         val reportedUserId = feed.user?.id
         val loginUserId = detailViewModel.uid
 
-        if (reportedUserId == loginUserId) {
-            requireActivity().addMenuProvider(object : MenuProvider {
+        val menuProvider = if (reportedUserId == loginUserId) {
+            object : MenuProvider {
                 override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                     menuInflater.inflate(R.menu.menu_detail, menu)
                 }
@@ -220,9 +228,9 @@ class DetailFragment : Fragment() {
                         else -> false
                     }
                 }
-            }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+            }
         } else {
-            requireActivity().addMenuProvider(object : MenuProvider {
+            object : MenuProvider {
                 override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                     menuInflater.inflate(R.menu.menu_detail_another_user, menu)
                 }
@@ -258,9 +266,10 @@ class DetailFragment : Fragment() {
                         else -> false
                     }
                 }
-            }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+            }
         }
-
+        requireActivity().addMenuProvider(menuProvider, viewLifecycleOwner, Lifecycle.State.RESUMED)
+        currentMenuProvider = menuProvider
 
     }
 
@@ -288,14 +297,15 @@ class DetailFragment : Fragment() {
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
-            detailViewModel.userInfo.collect { userInfo ->
-                if (userInfo != null) {
-                    Timber.i(userInfo.likedFeedList.toString())
-                    detailViewModel.setIsLiked(args.feedIdArg in userInfo.likedFeedList)
-                } else {
-                    Timber.e("userInfo is null")
+            detailViewModel.userInfo.flowWithLifecycle(viewLifecycleOwner.lifecycle)
+                .collect { userInfo ->
+                    if (userInfo != null) {
+                        Timber.i(userInfo.likedFeedList.toString())
+                        detailViewModel.setIsLiked(args.feedIdArg in userInfo.likedFeedList)
+                    } else {
+                        Timber.e("userInfo is null")
+                    }
                 }
-            }
         }
     }
 
@@ -402,7 +412,7 @@ class DetailFragment : Fragment() {
             }
 
             viewLifecycleOwner.lifecycleScope.launch {
-                EventBus.subscribe().collect { value ->
+                EventBus.events.flowWithLifecycle(viewLifecycleOwner.lifecycle).collect { value ->
                     tvFeedDetailLikeCount.text = value.toString()
                 }
             }
@@ -429,7 +439,7 @@ class DetailFragment : Fragment() {
                 startActivity(intent)
             }
 
-            initTag(feed.tags)
+            initTag(feed.tags, chipsGroupDetail)
 
             Timber.i(feed.contentImage.toString())
             if (feed.contentImage.isEmpty()) {
@@ -484,38 +494,21 @@ class DetailFragment : Fragment() {
         }
     }
 
-//    private fun setLikeCount() {
-//        viewLifecycleOwner.lifecycleScope.launch {
-//            detailViewModel.isLiked.collect { isLiked ->
-//                val currentLikeCount =
-//                    binding.tvFeedDetailLikeCount.text.toString().toIntOrNull() ?: 0
-//
-//                val newCount = if (isLiked) {
-//                    currentLikeCount + 1
-//                } else {
-//                    currentLikeCount - 1
-//                }
-//
-//                binding.tvFeedDetailLikeCount.text = newCount.toString()
-//
-//            }
-//        }
-//    }
-
     private fun setFeedLikeButton(clLikeBtn: ImageView) {
         viewLifecycleOwner.lifecycleScope.launch {
-            detailViewModel.isLiked.collect { isLiked ->
-                Timber.i("isLiked in like btn $isLiked")
-                when (isLiked) {
-                    true -> {
-                        clLikeBtn.setImageResource(R.drawable.ic_thumb_up_filled)
-                    }
+            detailViewModel.isLiked.flowWithLifecycle(viewLifecycleOwner.lifecycle)
+                .collect { isLiked ->
+                    Timber.i("isLiked in like btn $isLiked")
+                    when (isLiked) {
+                        true -> {
+                            clLikeBtn.setImageResource(R.drawable.ic_thumb_up_filled)
+                        }
 
-                    false -> {
-                        clLikeBtn.setImageResource(R.drawable.ic_thumb_up_off_alt_24)
+                        false -> {
+                            clLikeBtn.setImageResource(R.drawable.ic_thumb_up_off_alt_24)
+                        }
                     }
                 }
-            }
         }
     }
 
@@ -545,7 +538,10 @@ class DetailFragment : Fragment() {
         }
     }
 
-    private fun initTag(tags: List<String>) {
+    private fun initTag(tags: List<String>, chipsGroupMainFeed: ChipGroup) {
+
+        chipsGroupMainFeed.removeAllViews()
+
         val chipGroup = _binding?.chipsGroupDetail ?: return
         val tagLists = tags.toTagList()
         // tagList를 이용해 Chip을 동적으로 생성

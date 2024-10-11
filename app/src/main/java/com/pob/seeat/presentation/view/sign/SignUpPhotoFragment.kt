@@ -14,6 +14,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -109,7 +111,8 @@ class SignUpPhotoFragment : Fragment() {
 
                 null -> {
                     val titleText = requireContext().getString(R.string.dialog_next_confirm_title)
-                    val contentText = requireContext().getString(R.string.dialog_next_confirm_content)
+                    val contentText =
+                        requireContext().getString(R.string.dialog_next_confirm_content)
                     showDialog(
                         requireContext(),
                         titleText,
@@ -137,37 +140,42 @@ class SignUpPhotoFragment : Fragment() {
 
     private fun observeViewModel() {
         lifecycleScope.launch {
-            userViewModel.profileUploadResult.collect { imageUrl ->
-                binding.clPb.visibility = View.GONE // 업로드가 완료되면 프로그래스 바 숨김
+            userViewModel.profileUploadResult.flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
+                .collect { imageUrl ->
+                    binding.clPb.visibility = View.GONE // 업로드가 완료되면 프로그래스 바 숨김
 
-                when {
-                    imageUrl == "LOADING" -> {
-                        // 업로드 중에는 아무 메시지도 표시하지 않음
-                        binding.clPb.visibility = View.VISIBLE
-                    }
+                    when {
+                        imageUrl == "LOADING" -> {
+                            // 업로드 중에는 아무 메시지도 표시하지 않음
+                            binding.clPb.visibility = View.VISIBLE
+                        }
 
-                    imageUrl.isNullOrBlank() -> {
-                        if (imageUrl == null) {
-                            // 초기 상태이므로 아무것도 하지 않음
-                            return@collect
-                        } else {
-                            // 업로드 실패 처리
+                        imageUrl.isNullOrBlank() -> {
+                            if (imageUrl == null) {
+                                // 초기 상태이므로 아무것도 하지 않음
+                                return@collect
+                            } else {
+                                // 업로드 실패 처리
+                                Toast.makeText(
+                                    requireContext(),
+                                    "프로필 사진 업로드에 실패했습니다.",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+
+                        else -> {
+                            // 업로드 성공 처리
+                            Log.d("ImageUpload", "이미지 업로드 성공: $imageUrl")
                             Toast.makeText(
                                 requireContext(),
-                                "프로필 사진 업로드에 실패했습니다.",
+                                "프로필 사진 업로드를 완료했습니다.",
                                 Toast.LENGTH_SHORT
-                            ).show()
+                            )
+                                .show()
                         }
                     }
-
-                    else -> {
-                        // 업로드 성공 처리
-                        Log.d("ImageUpload", "이미지 업로드 성공: $imageUrl")
-                        Toast.makeText(requireContext(), "프로필 사진 업로드를 완료했습니다.", Toast.LENGTH_SHORT)
-                            .show()
-                    }
                 }
-            }
         }
     }
 

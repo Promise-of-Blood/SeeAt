@@ -847,10 +847,14 @@ class HomeFragment : Fragment() {
     }
 
     private fun handleClickFeed(feedModel: FeedModel) {
-        val action =
-            EmptyFragmentDirections.actionNavigationHomeToNavigationDetail(feedModel.feedId)
-        navController.navigate(action)
-        (requireActivity() as MainActivity).showNavHostFragment(true)
+        try {
+            val action =
+                EmptyFragmentDirections.actionNavigationHomeToNavigationDetail(feedModel.feedId)
+            navController.navigate(action)
+            (requireActivity() as MainActivity).showNavHostFragment(true)
+        } catch (e: Exception) {
+            Timber.e("handleClickFeed navigation exception ${e.message}")
+        }
     }
 
     private fun initRestroomViewModel() {
