@@ -21,8 +21,10 @@ import com.pob.seeat.domain.usecase.SaveBookmarkUseCase
 import com.pob.seeat.domain.usecase.UserInfoUseCases
 import com.pob.seeat.utils.EventBus
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -68,9 +70,11 @@ class DetailViewModel @Inject constructor(
 
     fun getFeedById(feedId: String, userLocation: GeoPoint) {
         viewModelScope.launch {
-            feedRepository.getFeed(feedId, userLocation).collect { uiState ->
-                _singleFeedResponse.value = uiState
-            }
+            feedRepository.getFeed(feedId, userLocation)
+                .flowOn(Dispatchers.IO)
+                .collect { uiState ->
+                    _singleFeedResponse.value = uiState
+                }
         }
     }
 
