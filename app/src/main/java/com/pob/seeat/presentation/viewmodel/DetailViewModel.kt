@@ -44,13 +44,13 @@ class DetailViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _userInfo = MutableStateFlow<UserInfoModel?>(null)
-    val userInfo: StateFlow<UserInfoModel?> get() = _userInfo
+    val userInfo: StateFlow<UserInfoModel?> = _userInfo
 
     private val _isLiked = MutableStateFlow(false)
-    val isLiked: StateFlow<Boolean> get() = _isLiked
+    val isLiked: StateFlow<Boolean> = _isLiked
 
     private val _singleFeedResponse = MutableStateFlow<Result<FeedModel>>(Result.Loading)
-    val singleFeedResponse: StateFlow<Result<FeedModel>> get() = _singleFeedResponse
+    val singleFeedResponse: StateFlow<Result<FeedModel>> = _singleFeedResponse
 
     private val _isBookmarked = MutableStateFlow(false)
     val isBookmarked: StateFlow<Boolean> get() = _isBookmarked
