@@ -21,8 +21,10 @@ import com.pob.seeat.domain.usecase.SaveBookmarkUseCase
 import com.pob.seeat.domain.usecase.UserInfoUseCases
 import com.pob.seeat.utils.EventBus
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -42,13 +44,13 @@ class DetailViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _userInfo = MutableStateFlow<UserInfoModel?>(null)
-    val userInfo: StateFlow<UserInfoModel?> get() = _userInfo
+    val userInfo: StateFlow<UserInfoModel?> = _userInfo
 
     private val _isLiked = MutableStateFlow(false)
-    val isLiked: StateFlow<Boolean> get() = _isLiked
+    val isLiked: StateFlow<Boolean> = _isLiked
 
     private val _singleFeedResponse = MutableStateFlow<Result<FeedModel>>(Result.Loading)
-    val singleFeedResponse: StateFlow<Result<FeedModel>> get() = _singleFeedResponse
+    val singleFeedResponse: StateFlow<Result<FeedModel>> = _singleFeedResponse
 
     private val _isBookmarked = MutableStateFlow(false)
     val isBookmarked: StateFlow<Boolean> get() = _isBookmarked
@@ -68,9 +70,11 @@ class DetailViewModel @Inject constructor(
 
     fun getFeedById(feedId: String, userLocation: GeoPoint) {
         viewModelScope.launch {
-            feedRepository.getFeed(feedId, userLocation).collect { uiState ->
-                _singleFeedResponse.value = uiState
-            }
+            feedRepository.getFeed(feedId, userLocation)
+                .flowOn(Dispatchers.IO)
+                .collect { uiState ->
+                    _singleFeedResponse.value = uiState
+                }
         }
     }
 
