@@ -12,15 +12,18 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.tabs.TabLayoutMediator
 import com.google.firebase.storage.FirebaseStorage
 import com.pob.seeat.BuildConfig
 import com.pob.seeat.R
 import com.pob.seeat.databinding.FragmentMyPageBinding
+import com.pob.seeat.presentation.view.admin.AdminActivity
 import com.pob.seeat.presentation.view.mypage.settings.SettingsActivity
 import com.pob.seeat.presentation.viewmodel.MyPageSharedViewModel
 import com.pob.seeat.presentation.viewmodel.UserInfoViewModel
@@ -47,11 +50,14 @@ class MyPageFragment : Fragment() {
             if (data != null) {
                 val updatedNickname = data.getStringExtra("updatedNickname")
                 val updatedIntroduce = data.getStringExtra("updatedIntroduce")
+                val updatedProfileUrl = data.getStringExtra("updatedProfileUrl")
+                Log.d("공명선", "$updatedProfileUrl")
 
                 if (updatedNickname != null && updatedIntroduce != null) {
 
                     binding.tvUserName.text = updatedNickname
                     binding.tvUserIntroduce.text = updatedIntroduce
+                    displayImage(updatedProfileUrl)
 
                     userViewModel.getUserInfo(uid!!)
                 } else {
@@ -68,8 +74,7 @@ class MyPageFragment : Fragment() {
 
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentMyPageBinding.inflate(inflater, container, false)
         return binding.root
@@ -133,11 +138,15 @@ class MyPageFragment : Fragment() {
             GoogleAuthUtil.googleLogout(requireActivity())
         }
 
+        mbMyPageAdmin.setOnClickListener {
+            startActivity(Intent(requireContext(), AdminActivity::class.java))
+        }
+
         tvMyPageVersion.setOnClickListener {
-            when ((easterEgg) % 3) {
-                0 -> toast("IDKOS : 난 너무 잘생겼어")
-                1 -> toast("IDKOS : 날 보면 볼수록 너무 좋아")
-                2 -> toast("IDKOS : 거울이 나의 삶의 낙이야")
+            when ((easterEgg) % 10) {
+                7 -> toast("IDKOS : 난 너무 잘생겼어")
+                8 -> toast("IDKOS : 날 보면 볼수록 너무 좋아")
+                9 -> toast("IDKOS : 거울이 나의 삶의 낙이야")
             }
             _easterEgg++
         }
@@ -150,7 +159,7 @@ class MyPageFragment : Fragment() {
 
     private fun observeUserInfo() {
         viewLifecycleOwner.lifecycleScope.launch {
-            userViewModel.userInfo.collect { userInfo ->
+            userViewModel.userInfo.flowWithLifecycle(viewLifecycleOwner.lifecycle).collect { userInfo ->
                 if (userInfo != null) {
                     binding.apply {
                         val file =
@@ -161,23 +170,37 @@ class MyPageFragment : Fragment() {
                         }.addOnFailureListener { _ ->
                             Log.e("Image Load Error", "이미지 Url 가져오는데 실패")
                         }
+                        pbMyPage.visibility = View.GONE
                         tvUserName.text = userInfo.nickname
                         tvUserIntroduce.text = userInfo.introduce
                         tvUserPostNum.text = userInfo.feedCount.toFormatShortenedString()
                         tvUserCommentNum.text = userInfo.commentCount.toFormatShortenedString()
+                        mbMyPageAdmin.visibility = if (userInfo.isAdmin) View.VISIBLE else View.GONE
                     }
                 } else {
+                    binding.pbMyPage.visibility = View.VISIBLE
                     Log.e("MyPageFragment", "UserInfo is null")
                 }
             }
         }
     }
 
-    private fun displayImage(imageUrl: String) {
+    private fun displayImage(imageUrl: String?) {
         if (isAdded) {
-            Glide.with(this)
-                .load(imageUrl)
-                .into(binding.ivProfileImage)
+            if (imageUrl != null) {
+                Glide.with(this).load(imageUrl).preload()
+                Glide.with(this).load(imageUrl).into(binding.ivProfileImage)
+                Glide.with(this).load(imageUrl).onlyRetrieveFromCache(true)
+                    .into(binding.ivProfileImage)
+                Glide.with(this).load(imageUrl).skipMemoryCache(true)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(binding.ivProfileImage)
+            } else {
+                Glide.with(this)
+                    .load(R.drawable.baseline_person_24)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(binding.ivProfileImage)
+            }
         }
     }
 

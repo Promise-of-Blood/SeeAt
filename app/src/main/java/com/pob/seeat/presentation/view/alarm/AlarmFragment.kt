@@ -71,12 +71,14 @@ class AlarmFragment : Fragment() {
 
                         is Result.Loading -> {
                             binding.rvAlarm.isVisible = false
+                            binding.pbAlarm.isVisible = true
                         }
 
                         is Result.Success -> {
                             binding.tvAlarmEmpty.visibility =
                                 if (response.data.isEmpty()) View.VISIBLE else View.GONE
                             binding.rvAlarm.isVisible = true
+                            binding.pbAlarm.isVisible = false
                             alarmAdapter.submitList(response.data)
                         }
                     }

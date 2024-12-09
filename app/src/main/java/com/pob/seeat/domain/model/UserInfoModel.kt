@@ -11,9 +11,12 @@ data class UserInfoModel(
     val token: String = "",
     val feedCount: Long = 0,
     val commentCount: Long = 0,
-    val likedFeedList: List<String> = emptyList()
+    val likedFeedList: List<String> = emptyList(),
+    val isAdmin: Boolean = false,
+    val reportedCount: Long = 0,
+    val isCommentNotiOn : Boolean = true,
+    val isChatNotiOn : Boolean = true,
 )
-
 
 fun UserInfoModel.toUserInfo(): UserInfoData {
     return UserInfoData(
@@ -25,6 +28,10 @@ fun UserInfoModel.toUserInfo(): UserInfoData {
         token = this.token,
         feedCount = this.feedCount,
         commentCount = this.commentCount,
-        likedFeedList = this.likedFeedList
+        likedFeedList = this.likedFeedList,
+        isAdmin = this.isAdmin,
+        reportedCount = this.reportedCount,
+        isCommentNotiOn = this.isCommentNotiOn,
+        isChatNotiOn = this.isChatNotiOn,
     )
 }

@@ -17,7 +17,4 @@ object EventBus {
         _events.emit(event)
     }
 
-    fun subscribe(): Flow<Int> {
-        return events
-    }
 }

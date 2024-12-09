@@ -8,6 +8,7 @@ import com.pob.seeat.data.repository.CommentRepositoryImpl
 import com.pob.seeat.data.repository.UserInfoRepositoryImpl
 import com.pob.seeat.domain.repository.AlarmRepository
 import com.pob.seeat.domain.repository.CommentRepository
+import com.pob.seeat.domain.repository.FeedRepository
 import com.pob.seeat.domain.repository.RestroomApiRepository
 import com.pob.seeat.domain.repository.SampleRepository
 import com.pob.seeat.domain.repository.UserHistoryRepository
@@ -19,6 +20,7 @@ import com.pob.seeat.domain.usecase.CreateLikedFeed
 import com.pob.seeat.domain.usecase.CreateUserInfoUseCase
 import com.pob.seeat.domain.usecase.DeleteCommentUseCases
 import com.pob.seeat.domain.usecase.DeleteUserInfoUseCase
+import com.pob.seeat.domain.usecase.EditFeedUseCase
 import com.pob.seeat.domain.usecase.UpdateCommentUseCases
 import com.pob.seeat.domain.usecase.GetCommentListUseCases
 import com.pob.seeat.domain.usecase.GetCommentUseCases
@@ -178,5 +180,16 @@ object AlarmUseCaseModule {
         alarmRepository: AlarmRepository
     ): AlarmUseCase {
         return AlarmUseCase(userInfoRepository, alarmRepository)
+    }
+}
+
+@Module
+@InstallIn(ViewModelComponent::class)
+object EditFeedUseCaseModule {
+    @Provides
+    fun provideEditFeedUseCase(
+        feedRepository: FeedRepository
+    ): EditFeedUseCase {
+        return EditFeedUseCase(feedRepository)
     }
 }

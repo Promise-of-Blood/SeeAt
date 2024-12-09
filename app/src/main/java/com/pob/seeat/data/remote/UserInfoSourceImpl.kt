@@ -21,8 +21,7 @@ class UserInfoSourceImpl @Inject constructor(
         firestore.collection("user").document(userInfoData.uid).set(userInfoData)
             .addOnSuccessListener {
                 Log.d("회원가입", "성공")
-            }
-            .addOnFailureListener { e ->
+            }.addOnFailureListener { e ->
                 Log.e("회원가입", "실패 ( 에러 : $e )")
             }
     }
@@ -40,12 +39,12 @@ class UserInfoSourceImpl @Inject constructor(
                     .get(AggregateSource.SERVER).await().count // 작성 댓글 수
             val myData = userRef.get().await() // 유저 정보
             emit(
-                myData.toObject<UserInfoData>()
-                    ?.copy(
-                        feedCount = feedCount,
-                        commentCount = commentCount,
-                        likedFeedList = likedFeedList
-                    )
+                myData.toObject<UserInfoData>()?.copy(
+                    feedCount = feedCount,
+                    commentCount = commentCount,
+                    likedFeedList = likedFeedList,
+                    isAdmin = checkIsAdmin(myData.id),
+                )
             )
         }
     }
@@ -71,12 +70,8 @@ class UserInfoSourceImpl @Inject constructor(
 
     override suspend fun createLikedFeed(userUid: String, feedUid: String) {
         try {
-            firestore.collection("user")
-                .document(userUid)
-                .collection("likedFeed")
-                .document(feedUid)
-                .set(mapOf("feed" to "/feed/$feedUid"))
-                .await()
+            firestore.collection("user").document(userUid).collection("likedFeed").document(feedUid)
+                .set(mapOf("feed" to "/feed/$feedUid")).await()
             Timber.tag("likedFeed 생성").i("성공)")
         } catch (e: Exception) {
             Timber.tag("likedFeed 생성").i("실패 ( 에러: $e)")
@@ -85,17 +80,98 @@ class UserInfoSourceImpl @Inject constructor(
 
     override suspend fun removeLikedFeed(userUid: String, feedUid: String) {
         try {
-            firestore.collection("user")
-                .document(userUid)
-                .collection("likedFeed")
-                .document(feedUid)
-                .delete()
-                .await()
+            firestore.collection("user").document(userUid).collection("likedFeed").document(feedUid)
+                .delete().await()
 
             Timber.tag("likedFeed 제거").i("제거 성공 $feedUid")
 
         } catch (e: Exception) {
             Timber.tag("likedFeed 제거").i("실패 ( 에러: $e)")
         }
+    }
+
+    override suspend fun getUserList(): List<UserInfoData> {
+        return firestore.collection("user").get().await().documents.mapNotNull { documentSnapshot ->
+            documentSnapshot.toObject<UserInfoData>()?.copy(
+                isAdmin = checkIsAdmin(documentSnapshot.id)
+            )
+        }.sortedByDescending { it.isAdmin }
+    }
+
+    override suspend fun updateIsAdmin(uid: String, isAdmin: Boolean) {
+        try {
+            if (isAdmin) addUserToAdmin(uid) else deleteUserFromAdmin(uid)
+        } catch (e: Exception) {
+            Timber.e(e.message)
+        }
+    }
+
+    override suspend fun deleteAllUserInfo(uid: String) {
+        val batch = firestore.batch()
+
+        // 1. 유저 정보 삭제
+        val userRef = firestore.collection("user").document(uid)
+        val likedFeedRef = userRef.collection("likedFeed")
+        val alarmRef = userRef.collection("alarm")
+        likedFeedRef.get().await().documents.forEach { batch.delete(it.reference) }
+        alarmRef.get().await().documents.forEach { batch.delete(it.reference) }
+        batch.delete(userRef)
+
+        // 2. 게시글 / 댓글 정보 삭제
+        val comments = firestore.collectionGroup("comments").whereEqualTo("user", userRef)
+        val feeds = firestore.collection("feed").whereEqualTo("user", userRef)
+        comments.get().await().documents.forEach { batch.delete(it.reference) }
+        feeds.get().await().documents.forEach { batch.delete(it.reference) }
+
+        // 3. 신고 정보 삭제
+        val reportedComments =
+            firestore.collection("report_comment").whereEqualTo("reportedUserId", uid)
+        val reportComments = firestore.collection("report_comment").whereEqualTo("reporterId", uid)
+        val reportedFeeds = firestore.collection("report_feed").whereEqualTo("reportedUserId", uid)
+        val reportFeeds = firestore.collection("report_feed").whereEqualTo("reporterId", uid)
+        reportedComments.get().await().documents.forEach { batch.delete(it.reference) }
+        reportComments.get().await().documents.forEach { batch.delete(it.reference) }
+        reportedFeeds.get().await().documents.forEach { batch.delete(it.reference) }
+        reportFeeds.get().await().documents.forEach { batch.delete(it.reference) }
+
+        // 4. 관리자인 경우, 관리자 정보 삭제
+        val admin = firestore.collection("admin").document(uid)
+        batch.delete(admin)
+
+        batch.commit().await()
+    }
+
+    private suspend fun checkIsAdmin(uid: String): Boolean {
+        return firestore.collection("admin").document(uid).get().await().exists()
+    }
+
+    private suspend fun addUserToAdmin(uid: String) {
+        firestore.collection("admin").document(uid).set(mapOf("uid" to uid)).await()
+    }
+
+    private suspend fun deleteUserFromAdmin(uid: String) {
+        firestore.collection("admin").document(uid).delete().await()
+    }
+
+    suspend fun getUserDetail(uid: String): UserInfoData {
+        return firestore.collection("user").document(uid).get().await().toObject<UserInfoData>()!!
+    }
+
+    override suspend fun switchChatNotiOn(uid: String, isOn: Boolean) {
+        firestore.collection("user").document(uid).update("chatNotiOn", isOn)
+    }
+
+    override suspend fun switchCommentNotiOn(uid: String, isOn: Boolean) {
+        firestore.collection("user").document(uid).update("commentNotiOn", isOn)
+    }
+
+    override suspend fun getChatNotiOn(uid: String): Boolean {
+        return firestore.collection("user").document(uid).get().await().getBoolean("chatNotiOn")
+            ?: true
+    }
+
+    override suspend fun getCommentNotiOn(uid: String): Boolean {
+        return firestore.collection("user").document(uid).get().await().getBoolean("commentNotiOn")
+            ?: true
     }
 }

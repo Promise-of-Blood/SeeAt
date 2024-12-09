@@ -1,5 +1,7 @@
 package com.pob.seeat.presentation.view.detail
 
+import android.animation.ObjectAnimator
+import android.animation.ValueAnimator
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -19,6 +21,7 @@ import com.pob.seeat.presentation.view.common.ViewHolder
 import com.pob.seeat.presentation.viewmodel.CommentViewModel
 import com.pob.seeat.utils.Utils.toKoreanDiffString
 import com.pob.seeat.utils.Utils.toLocalDateTime
+
 class FeedCommentAdapter(
     private val viewModel: CommentViewModel,
     private val onClick: (CommentModel) -> Unit,
@@ -33,14 +36,15 @@ class FeedCommentAdapter(
         return oldItem == newItem
     }
 }) {
-
+    private var isAdmin = false
 
     // ViewHolder 정의
     class PostViewHolder(
         private val binding: ItemCommentBinding,
         private val viewModel: CommentViewModel,
         private val onClick: (CommentModel) -> Unit,
-        private val onLongClick: (CommentModel) -> Unit
+        private val onLongClick: (CommentModel) -> Unit,
+        private val isAdmin: Boolean = false,
     ) : ViewHolder<CommentModel>(binding.root) {
 
         override fun onBind(item: CommentModel) = with(binding) {
@@ -51,45 +55,100 @@ class FeedCommentAdapter(
             viewModel.checkMyComment(uid)
             isOwnerComment(tvCommentFeedOner, uid, feedId)
             // UI 요소 초기화
-            Glide.with(itemView.context)
-                .load(item.userImage)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .skipMemoryCache(true)
-                .into(ivCommentItemUserImage)
+
+            val userRef = item.user
+
+            userRef?.get()?.addOnSuccessListener { snapshot ->
+                if (snapshot != null && snapshot.exists()) {
+                    val userImageUrl = snapshot.getString("profileUrl")
+
+                    if (!userImageUrl.isNullOrEmpty()) {
+                        Glide.with(itemView.context)
+                            .load(userImageUrl)
+                            .diskCacheStrategy(DiskCacheStrategy.NONE)
+                            .skipMemoryCache(true)
+                            .into(ivCommentItemUserImage)
+                    } else {
+                        ivCommentItemUserImage.setImageResource(R.drawable.baseline_person_24)
+                    }
+                }
+            }
+
+
 
             tvCommentItemUsername.text = item.userNickname
             tvCommentItemTimeStamp.text = item.timeStamp?.toLocalDateTime()?.toKoreanDiffString()
             tvCommentItemContent.text = item.comment
 
 
+            // UI 업데이트: 사용자의 댓글 여부와 소유자/관리자 여부에 따른 배경 및 표시 설정
 
-            // UI 업데이트: 사용자의 댓글 여부와 소유자 여부에 따른 배경 및 표시 설정
-
-            if(viewModel.isMyComment.value){
-                clCommentLayout.setBackgroundColor(ContextCompat.getColor(root.context,R.color.background_gray))
-            }else{
-                clCommentLayout.setBackgroundColor(ContextCompat.getColor(root.context,R.color.white))
+            if (isAdmin) {
+                if (item.commentId == viewModel.highlightComment.value) {
+                    clCommentLayout.setBackgroundColor(
+                        ContextCompat.getColor(
+                            root.context,
+                            R.color.admin_red
+                        )
+                    )
+                    startBlinkAnimation()
+                } else {
+                    clCommentLayout.setBackgroundColor(
+                        ContextCompat.getColor(
+                            root.context,
+                            R.color.white
+                        )
+                    )
+                    stopBlinkAnimation()
+                }
+            } else if (viewModel.isMyComment.value) {
+                clCommentLayout.setBackgroundColor(
+                    ContextCompat.getColor(
+                        root.context,
+                        R.color.background_gray
+                    )
+                )
+            } else {
+                clCommentLayout.setBackgroundColor(
+                    ContextCompat.getColor(
+                        root.context,
+                        R.color.white
+                    )
+                )
             }
 
-            if (viewModel.isOwnerComment.value[uid]?:false){
+            if (viewModel.isOwnerComment.value[uid] ?: false) {
                 tvCommentFeedOner.visibility = View.VISIBLE
-            }else{
+            } else {
                 tvCommentFeedOner.visibility = View.GONE
             }
 
             // 클릭 리스너 설정
-            clCommentLayout.setOnClickListener { onClick(item) }
+            clCommentLayout.setOnClickListener { if (!isAdmin) onClick(item) }
             clCommentLayout.setOnLongClickListener {
                 onLongClick(item)
                 true
             }
         }
 
+        private val animator = ObjectAnimator.ofFloat(itemView, "alpha", 1f, 0f, 1f)
+
+        private fun startBlinkAnimation() {
+            animator.duration = 500
+            animator.repeatCount = 1
+            animator.repeatMode = ValueAnimator.REVERSE
+            animator.start()
+        }
+
+        private fun stopBlinkAnimation() {
+            animator?.cancel()
+            itemView.alpha = 1f
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
         val binding = ItemCommentBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return PostViewHolder(binding, viewModel, onClick, onLongClick)
+        return PostViewHolder(binding, viewModel, onClick, onLongClick, isAdmin)
     }
 
     override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
@@ -97,11 +156,14 @@ class FeedCommentAdapter(
         holder.onBind(item) // `onBind` 메서드 호출
     }
 
+    fun getHighlightCommentPosition(commentId: String): Int {
+        return currentList.indexOfFirst { it.commentId == commentId }
+    }
 
-
+    fun setIsAdmin(isAdmin: Boolean) {
+        this.isAdmin = isAdmin
+    }
 }
-
-
 
 
 fun isOwnerComment(textView: TextView, commentUserUid: String, feedId: String) {

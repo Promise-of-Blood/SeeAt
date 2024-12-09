@@ -14,6 +14,7 @@ data class FeedModel(
     val like: Int = 0,
     val commentsCount: Int = 0,
     val location: @RawValue GeoPoint? = null,
+    val distance: Int = 0,
     val date: Timestamp? = null,
     val comments: List<CommentModel> = emptyList(),
     val tags: List<String> = emptyList(),

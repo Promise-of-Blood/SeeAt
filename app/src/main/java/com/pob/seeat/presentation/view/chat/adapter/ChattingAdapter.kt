@@ -17,8 +17,9 @@ import com.pob.seeat.data.model.Result
 class ChattingAdapter : ListAdapter<Result<ChattingUiItem>, ChattingViewHolder>(
     ChattingDiffUtil()
 ) {
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChattingViewHolder {
-        val chattingViewType = ChattingViewType.entries.find { it.viewType == viewType }
+        val chattingViewType = ChattingViewType.entries.find { it.viewType == viewType } ?: ChattingViewType.EMPTY
         return when(chattingViewType) {
             ChattingViewType.EMPTY -> TODO()
             ChattingViewType.MY_CHAT -> MyChattingSuccessViewHolder(ItemChattingMessageMeBinding.inflate(
@@ -27,7 +28,6 @@ class ChattingAdapter : ListAdapter<Result<ChattingUiItem>, ChattingViewHolder>(
                 LayoutInflater.from(parent.context), parent, false))
             ChattingViewType.ONLY_TIME -> ChattingOnlyTimeViewHolder(ItemOnlyTimeBinding.inflate(
                 LayoutInflater.from(parent.context), parent, false))
-            null -> TODO()
         }
     }
 

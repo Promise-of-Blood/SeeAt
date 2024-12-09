@@ -10,14 +10,28 @@
         android:id="@+id/tv_your_chat"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:maxWidth="200dp"
+        android:maxWidth="300dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         android:background="@drawable/background_chatting_message"
         android:text="@string/chatting"
-        android:backgroundTint="@color/light_gray"
+        android:textColor="@color/black"
+        android:backgroundTint="#ECECEC"
         android:paddingHorizontal="20dp"
         android:paddingVertical="12dp"
+        style="@style/chat_message"
+        />
+
+    <TextView
+        android:id="@+id/tv_your_chat_timestamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@id/tv_your_chat"
+        app:layout_constraintStart_toEndOf="@id/tv_your_chat"
+        android:text="@string/timestamp"
+        android:textColor="@color/gray"
+        android:layout_marginStart="8dp"
+        style="@style/chat_timestamp"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

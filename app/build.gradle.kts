@@ -10,6 +10,7 @@ plugins {
     id("com.google.dagger.hilt.android")
     id("com.google.android.gms.oss-licenses-plugin")
     id("androidx.navigation.safeargs.kotlin")
+    id("com.google.firebase.crashlytics")
 }
 
 val properties = Properties().apply {
@@ -30,21 +31,15 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField(
-            "String",
-            "KAKAO_APP_KEY",
-            "\"${properties["KAKAO_APP_KEY"]}\""
+            "String", "KAKAO_APP_KEY", "\"${properties["KAKAO_APP_KEY"]}\""
         )
 
         buildConfigField(
-            "String",
-            "NAVER_CLIENT_SECRET",
-            "\"${properties["NAVER_CLIENT_SECRET"]}\""
+            "String", "NAVER_CLIENT_SECRET", "\"${properties["NAVER_CLIENT_SECRET"]}\""
         )
 
         buildConfigField(
-            "String",
-            "WEB_CLIENT_ID",
-            "\"${properties["WEB_CLIENT_ID"]}\""
+            "String", "WEB_CLIENT_ID", "\"${properties["WEB_CLIENT_ID"]}\""
         )
 
     }
@@ -58,8 +53,7 @@ android {
             isMinifyEnabled = false
             manifestPlaceholders["NAVER_CLIENT_ID"] = properties["NAVER_CLIENT_ID"] as String
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             )
         }
     }
@@ -74,6 +68,10 @@ android {
         viewBinding = true
         buildConfig = true
     }
+}
+
+ksp {
+    arg("room.schemaLocation", "${projectDir}/schemas")
 }
 
 dependencies {
@@ -102,6 +100,7 @@ dependencies {
     // firebase
     implementation(platform(libs.firebase.bom))
     implementation(libs.bundles.firebase)
+    implementation(libs.geofire.android.common)
 
     // hilt
     implementation(libs.dagger.hilt.android)
@@ -149,6 +148,7 @@ dependencies {
     annotationProcessor(libs.androidx.room.compiler)
     ksp(libs.androidx.room.compiler)
     testImplementation(libs.androidx.room.testing)
+    implementation(libs.androidx.room.paging)
 
     // pull to refresh
     implementation(libs.androidx.swiperefreshlayout)

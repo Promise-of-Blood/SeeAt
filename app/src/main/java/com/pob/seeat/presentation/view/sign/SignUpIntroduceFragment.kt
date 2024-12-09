@@ -15,12 +15,13 @@ import com.pob.seeat.MainActivity
 import com.pob.seeat.databinding.FragmentSignUpIntroduceBinding
 import com.pob.seeat.presentation.viewmodel.UserInfoViewModel
 import com.pob.seeat.utils.NotificationTokenUtils.getNotificationToken
+import com.pob.seeat.utils.dialog.Dialog.showProfileConfirmDialog
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class SignUpIntroduceFragment : Fragment() {
 
-    private var _binding : FragmentSignUpIntroduceBinding? = null
+    private var _binding: FragmentSignUpIntroduceBinding? = null
     private val binding get() = _binding!!
 
     private val userViewModel: UserInfoViewModel by activityViewModels()
@@ -33,7 +34,7 @@ class SignUpIntroduceFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = FragmentSignUpIntroduceBinding.inflate(inflater,container,false)
+        _binding = FragmentSignUpIntroduceBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -48,27 +49,37 @@ class SignUpIntroduceFragment : Fragment() {
         _binding = null
     }
 
-    private fun initView() = with(binding){
+    private fun initView() = with(binding) {
+        tvSkip.setOnClickListener {
+            showProfileConfirmDialog(
+                requireContext(),
+                onConfirm = {
+                    val intent = Intent(requireContext(), MainActivity::class.java)
+                    startActivity(intent)
+                }
+            )
+        }
+
         btnSignupNext.setOnClickListener {
             //클릭했을때 홈화면으로 넘어가게 + 한줄소개 저장
             val introduce = etvSignupIntroduce.text.toString()
 
             if (introduce.isNotBlank()) {
                 userViewModel.saveTempUserInfo(introduce = introduce)
-                Log.d("TempUserInfo","tempUserInfo : ${userViewModel.tempUserInfo.value}")
+                Log.d("TempUserInfo", "tempUserInfo : ${userViewModel.tempUserInfo.value}")
 
-                val uid = userViewModel.tempUserInfo.value?.uid ?:""
+                val uid = userViewModel.tempUserInfo.value?.uid ?: ""
                 val name = userViewModel.tempUserInfo.value?.name ?: ""
                 val email = userViewModel.tempUserInfo.value?.email ?: ""
                 val profile = userViewModel.tempUserInfo.value?.profileUrl ?: ""
                 val introduce = userViewModel.tempUserInfo.value?.introduce ?: ""
                 val token = getNotificationToken()
-                Log.d("토큰","토큰이지롱  : $token")
+                Log.d("토큰", "토큰이지롱  : $token")
 
-                userViewModel.signUp(uid, email,name,profile,introduce,token)
+                userViewModel.signUp(uid, email, name, profile, introduce, token)
 
-                val intent = Intent(requireContext(),MainActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                val intent = Intent(requireContext(), MainActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
                 startActivity(intent)
 
             } else {

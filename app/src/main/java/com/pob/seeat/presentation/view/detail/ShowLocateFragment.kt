@@ -1,11 +1,10 @@
 package com.pob.seeat.presentation.view.detail
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.lifecycleScope
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraPosition
@@ -15,12 +14,11 @@ import com.naver.maps.map.NaverMapOptions
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.OverlayImage
 import com.pob.seeat.R
-import com.pob.seeat.presentation.service.NaverMapWrapper
 import com.pob.seeat.databinding.FragmentShowLocateBinding
+import com.pob.seeat.presentation.view.admin.AdminActivity
 import com.pob.seeat.utils.Utils.px
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class ShowLocateFragment : Fragment() {
@@ -28,10 +26,6 @@ class ShowLocateFragment : Fragment() {
     private val binding get() = _binding!!
 
     val args: ShowLocateFragmentArgs by navArgs()
-
-    @Inject
-    lateinit var naverMapWrapper: NaverMapWrapper  // NaverMapWrapper를 Hilt로 주입받음
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,6 +39,13 @@ class ShowLocateFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initialSetting()
         initNaverMap()
+        if (activity is AdminActivity) initAdminView()
+    }
+
+    private fun initAdminView() = with(binding) {
+        (activity as AdminActivity).setNavigateButton()
+        root.fitsSystemWindows = false
+        toolbarMessage.visibility = View.GONE
     }
 
     private fun initialSetting() {
@@ -58,7 +59,14 @@ class ShowLocateFragment : Fragment() {
     private fun initNaverMap() {
         Timber.tag("SelectLocateFragment").d("initNaverMap")
         val options = NaverMapOptions()
-            .camera(CameraPosition(LatLng(args.feedLatitude.toDouble(), args.feedLongitude.toDouble()), 16.0))
+            .camera(
+                CameraPosition(
+                    LatLng(
+                        args.feedLatitude.toDouble(),
+                        args.feedLongitude.toDouble()
+                    ), 16.0
+                )
+            )
             .mapType(NaverMap.MapType.Basic)
 
         val mapFragment = MapFragment.newInstance(options)
@@ -77,12 +85,6 @@ class ShowLocateFragment : Fragment() {
             marker.iconTintColor = resources.getColor(R.color.primary)
             marker.width = 42f.px
             marker.height = 42f.px
-        }
-        // StateFlow로 naverMap 객체를 구독하여 값이 설정되면 작업 처리
-        lifecycleScope.launchWhenResumed {
-            naverMapWrapper.getNaverMap().collect { naverMap ->
-
-            }
         }
     }
 

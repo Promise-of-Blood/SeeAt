@@ -41,8 +41,7 @@ class HistoryFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentHistoryBinding.inflate(inflater, container, false)
         return binding.root
@@ -71,7 +70,7 @@ class HistoryFragment : Fragment() {
                 CustomDecoration(1f, 48f, resources.getColor(R.color.light_gray, null))
             )
         }
-        tvHistoryMore.setOnClickListener {
+        mbHistoryMore.setOnClickListener {
             val action = HistoryFragmentDirections.actionUserHistoryToUserHistoryList(position ?: 0)
             findNavController().navigate(action)
         }
@@ -88,10 +87,11 @@ class HistoryFragment : Fragment() {
 
                     is UiState.Loading -> {
                         binding.rvHistory.visibility = View.INVISIBLE
+                        binding.mbHistoryMore.visibility = View.GONE
                     }
 
                     is UiState.Success -> {
-                        historyAdapter.submitList(response.data)
+                        historyAdapter.submitList(response.data.take(if (position == 1) 4 else 3))
                         handleEmptyListView(response.data.size)
                     }
                 }
@@ -108,9 +108,9 @@ class HistoryFragment : Fragment() {
     }
 
     private fun getHistoryList() = when (position) {
-        0 -> userHistoryViewModel.getUserFeedHistory(3)
-        1 -> userHistoryViewModel.getUserCommentHistory(4)
-        else -> userHistoryViewModel.getUserLikedHistory(3)
+        0 -> userHistoryViewModel.getUserFeedHistory(4)
+        1 -> userHistoryViewModel.getUserCommentHistory(5)
+        else -> userHistoryViewModel.getUserLikedHistory(4)
     }
 
     private fun onClickListItem(item: HistoryListItem) {
@@ -128,21 +128,27 @@ class HistoryFragment : Fragment() {
         when (size) {
             0 -> {
                 binding.rvHistory.visibility = View.GONE
-                binding.tvHistoryMore.visibility = View.GONE
+                binding.mbHistoryMore.visibility = View.GONE
                 binding.tvHistoryEmpty.visibility = View.VISIBLE
                 binding.tvHistoryEmpty.text =
                     position?.let { emptyHistoryStringArray[it] } ?: defaultString
             }
 
-            in 1..3 -> {
-                binding.rvHistory.visibility = View.VISIBLE
-                binding.tvHistoryMore.visibility = View.GONE
-                binding.tvHistoryEmpty.visibility = View.GONE
+            in 1..4 -> {
+                if (position != 1 && size == 4) {
+                    binding.rvHistory.visibility = View.VISIBLE
+                    binding.mbHistoryMore.visibility = View.VISIBLE
+                    binding.tvHistoryEmpty.visibility = View.GONE
+                } else {
+                    binding.rvHistory.visibility = View.VISIBLE
+                    binding.mbHistoryMore.visibility = View.GONE
+                    binding.tvHistoryEmpty.visibility = View.GONE
+                }
             }
 
             else -> {
                 binding.rvHistory.visibility = View.VISIBLE
-                binding.tvHistoryMore.visibility = View.VISIBLE
+                binding.mbHistoryMore.visibility = View.VISIBLE
                 binding.tvHistoryEmpty.visibility = View.GONE
             }
         }
@@ -151,9 +157,8 @@ class HistoryFragment : Fragment() {
     companion object {
 
         @JvmStatic
-        fun newInstance(position: Int) =
-            HistoryFragment().apply {
-                arguments = Bundle().apply { putInt(ARG_POSITION, position) }
-            }
+        fun newInstance(position: Int) = HistoryFragment().apply {
+            arguments = Bundle().apply { putInt(ARG_POSITION, position) }
+        }
     }
 }

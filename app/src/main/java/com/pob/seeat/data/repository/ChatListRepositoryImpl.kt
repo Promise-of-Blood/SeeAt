@@ -12,8 +12,10 @@ import com.pob.seeat.data.model.Result
 import com.pob.seeat.data.model.chat.ChatFeedInfoModel
 import com.pob.seeat.data.model.chat.ChatModel
 import com.pob.seeat.data.remote.FeedRemote
+import com.pob.seeat.data.remote.UserInfoSource
 import com.pob.seeat.presentation.view.chat.items.ChatListUiItem
 import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flattenMerge
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -24,6 +26,7 @@ class ChatListRepositoryImpl @Inject constructor(
     private val messagesRemote: MessagesRemote,
     private val usersRemote: UsersRemote,
     private val feedRemote: FeedRemote,
+    private val userInfoSource: UserInfoSource,
 ) : ChatListRepository {
     override fun receiveChatList(): Flow<Result<ChatListUiItem>> {
         val userId = FirebaseAuth.getInstance().currentUser?.uid
@@ -37,7 +40,12 @@ class ChatListRepositoryImpl @Inject constructor(
                             chatsRemote.receiveChat(chatId).map {
                                 when(it) {
                                     is Result.Success -> {
-                                        Result.Success(it.data.toChatListUiItem(feedRemote.getUserByFeedId(it.data.chatInfo.feedFrom)))
+                                        val feedInfo = userInfoSource.getUserInfo(it.data.chatInfo.userList.filter { uid -> uid != userId }.first())
+                                        var chatFeedInfoModel = ChatFeedInfoModel("", "")
+                                        feedInfo.collectLatest { info ->
+                                            chatFeedInfoModel = ChatFeedInfoModel(info?.nickname, info?.profileUrl)
+                                        }
+                                        Result.Success(it.data.toChatListUiItem(chatFeedInfoModel))
                                     }
                                     is Result.Error -> {
                                         Result.Error(it.message)

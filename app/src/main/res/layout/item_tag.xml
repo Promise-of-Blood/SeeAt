@@ -10,7 +10,7 @@
     android:clipToPadding="false"
     android:elevation="4dp"
     android:paddingHorizontal="12dp"
-    android:paddingVertical="6dp" >
+    android:paddingVertical="8dp" >
 
     <ImageView
         android:id="@+id/iv_tag_icon"
